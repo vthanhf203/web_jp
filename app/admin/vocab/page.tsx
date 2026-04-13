@@ -93,14 +93,6 @@ export default async function AdminVocabPage(props: { searchParams: SearchParams
             <Link href="/vocab" className="btn-soft">
               Ve trang hoc
             </Link>
-            <a
-              href="/api/vocab-library"
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-            >
-              Xem API JSON
-            </a>
           </div>
         </div>
 

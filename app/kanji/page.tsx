@@ -358,9 +358,6 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
               Loc theo cap do, ve net de tim nhanh, va tao bo flashcard rieng de hoc ngay.
             </p>
           </div>
-          <Link href="/api/kanji-library" className="btn-soft text-sm">
-            API JSON
-          </Link>
         </div>
 
         <div className="mt-5 flex flex-wrap items-center gap-2">

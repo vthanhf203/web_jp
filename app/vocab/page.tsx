@@ -198,9 +198,6 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
               Chon cach hoc ban muon: kham pha kho tu vung hoac tu hoc ca nhan.
             </p>
           </div>
-          <Link href="/api/vocab-library" className="btn-soft text-sm">
-            API JSON
-          </Link>
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           <Link

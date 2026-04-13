@@ -163,8 +163,8 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
   const levelTotalPoints = lessonsByLevel.reduce((sum, lesson) => sum + lesson.pointCount, 0);
 
   return (
-    <section className="space-y-6 rounded-3xl border border-sky-100 bg-[#d8e5f7] p-6 shadow-[0_8px_28px_rgba(28,78,140,0.08)] [background-image:linear-gradient(rgba(255,255,255,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.3)_1px,transparent_1px)] [background-size:30px_30px]">
-      <div className="rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+    <section className="grammar-shell space-y-6 p-5 sm:p-6">
+      <div className="rounded-2xl border border-slate-200/90 bg-white/90 p-5 shadow-[0_12px_32px_rgba(26,49,91,0.1)] backdrop-blur-[2px] sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-3xl font-bold text-slate-800">Ngu phap JLPT N5 - N4</h1>
@@ -199,31 +199,35 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
           Chua co du lieu ngu phap. Hay chay script import PDF de nap du lieu.
         </div>
       ) : selectedLesson ? (
-        <div className="grid gap-5 lg:grid-cols-[0.95fr_2.05fr]">
-          <aside className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
+        <div className="grid gap-5 lg:grid-cols-[0.85fr_2.15fr]">
+          <aside className="rounded-2xl border border-slate-200/90 bg-white/92 p-4 shadow-[0_10px_24px_rgba(15,23,42,0.08)] backdrop-blur-[2px]">
             <h2 className="text-xl font-bold text-slate-800">Danh sach bai {level}</h2>
-            <div className="mt-4 max-h-[68vh] space-y-2 overflow-y-auto pr-1">
+            <div className="mt-3 max-h-[66vh] space-y-1.5 overflow-y-auto pr-1">
               {lessonsByLevel.map((lesson) => {
                 const active = lesson.id === selectedLesson.id;
                 return (
                   <Link
                     key={lesson.id}
                     href={buildGrammarHref({ level, lessonId: lesson.id })}
-                    className={`block rounded-xl border px-4 py-3 transition ${
+                    className={`block rounded-lg border px-3 py-2 transition ${
                       active
                         ? "border-blue-300 bg-blue-50"
                         : "border-slate-200 bg-slate-50 hover:border-slate-300"
                     }`}
                   >
-                    <p className="text-lg font-semibold text-slate-800">{lesson.title}</p>
-                    <p className="mt-1 text-sm text-slate-500">{lesson.pointCount} mau ngu phap</p>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="line-clamp-1 text-sm font-semibold text-slate-800">{lesson.title}</p>
+                      <span className="shrink-0 rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
+                        {lesson.pointCount}
+                      </span>
+                    </div>
                   </Link>
                 );
               })}
             </div>
           </aside>
 
-          <div className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-200/90 bg-white/92 p-5 shadow-[0_10px_24px_rgba(15,23,42,0.08)] backdrop-blur-[2px]">
             <div className="mb-4">
               <Link href={buildGrammarHref({ level })} className="btn-soft text-sm">
                 ← Quay lai danh sach bai
@@ -437,36 +441,36 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
           </div>
         </div>
       ) : (
-        <div className="space-y-5 rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+        <div className="space-y-4 rounded-2xl border border-slate-200/90 bg-white/92 p-4 shadow-[0_10px_24px_rgba(15,23,42,0.08)] backdrop-blur-[2px] sm:p-5">
           <div>
             <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
               {level}
             </span>
-            <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-slate-900">
+            <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-[2rem]">
               {levelBookTitle}
             </h2>
-            <p className="mt-2 text-base text-slate-600">
+            <p className="mt-1 text-sm text-slate-600">
               {lessonsByLevel.length} bai hoc · {levelTotalPoints} mau ngu phap
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-2.5 md:grid-cols-2">
             {lessonsByLevel.map((lesson) => (
               <Link
                 key={lesson.id}
                 href={buildGrammarHref({ level, lessonId: lesson.id })}
-                className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-md"
+                className="group rounded-xl border border-slate-200 bg-white/95 px-3 py-2.5 shadow-[0_6px_16px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-[0_10px_22px_rgba(14,116,144,0.12)]"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-[1.7rem] font-bold text-slate-900">Bai {lesson.lessonNumber}</p>
-                    <p className="mt-1 line-clamp-2 text-[0.95rem] text-slate-600">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-[1.05rem] font-bold text-slate-900">Bai {lesson.lessonNumber}</p>
+                    <p className="mt-0.5 line-clamp-1 text-[0.82rem] text-slate-600">
                       {displayTopic(lesson.topic) ?? lesson.title}
                     </p>
                   </div>
-                  <span className="text-2xl text-slate-300 transition group-hover:text-sky-500">›</span>
+                  <span className="text-xl text-slate-300 transition group-hover:text-sky-500">›</span>
                 </div>
-                <p className="mt-4 text-[0.92rem] font-medium text-slate-500">{lesson.pointCount} mau cau</p>
+                <p className="mt-1.5 text-xs font-medium text-slate-500">{lesson.pointCount} mau cau</p>
               </Link>
             ))}
           </div>
