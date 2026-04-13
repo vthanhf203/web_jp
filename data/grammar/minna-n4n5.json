@@ -1,0 +1,1893 @@
+{
+  "source": "D:\\Downloads\\Minna-no-Nihongo-Ngu_Phap_50_bai (4).pdf",
+  "importedAt": "2026-04-12T05:22:17.055Z",
+  "lessonCount": 25,
+  "lessons": [
+    {
+      "id": "lesson-01-n5",
+      "lessonNumber": 1,
+      "level": "N5",
+      "title": "Bài 1",
+      "topic": "ok",
+      "pointCount": 5,
+      "points": [
+        {
+          "id": "cde44c0e-858b-4367-903e-7af735cc86f1",
+          "order": 1,
+          "title": "N1 は N2 です",
+          "meaning": "N1 là N2",
+          "usage": [
+            "Dùng ở cuối câu khẳng định.",
+            "Dùng để giới thiệu, xác nhận danh từ.",
+            "Mẫu câu lịch sự cơ bản trong tiếng Nhật."
+          ],
+          "examples": [
+            "わたしは たなかです。 (わたしは たなかです。) - Tôi là Tanaka.",
+            "わたしは がくせいです。 (わたしは がくせいです。) - Tôi là sinh viên."
+          ],
+          "notes": [
+            "Trợ từ は đọc là wa, không đọc là ha.",
+            "N1 và N2 thường là danh từ."
+          ],
+          "content": "Dùng để giới thiệu hoặc khẳng định N1 là N2."
+        },
+        {
+          "id": "66a21b20-f839-4c84-85af-65ffe5307b4a",
+          "order": 2,
+          "title": "N1 は N2 ではありません",
+          "meaning": "N1 không phải là N2",
+          "usage": [
+            "ではありません là dạng phủ định của です.",
+            "Dùng để phủ định danh từ trong câu lịch sự.",
+            "Trong hội thoại, có thể dùng じゃありません thay cho ではありません."
+          ],
+          "examples": [
+            "ラオさんは エンジニアではありません。 (らおさんは えんじにあではありません。) - Anh Rao không phải là kỹ sư.",
+            "ラオさんは エンジニアじゃありません。 (らおさんは えんじにあじゃありません。) - Anh Rao không phải là kỹ sư."
+          ],
+          "notes": [
+            "では đọc là dewa.",
+            "じゃありません là cách nói ngắn gọn, hay dùng trong hội thoại.",
+            "N1 và N2 thường là danh từ."
+          ],
+          "content": "Dùng để phủ định, nói rằng N1 không phải là N2."
+        },
+        {
+          "id": "c74b6b63-eb97-4643-8c36-269265f23a66",
+          "order": 3,
+          "title": "S か",
+          "meaning": "Câu hỏi nghi vấn / ... phải không? / ... là gì? / ... là ai?",
+          "usage": [
+            "Để tạo một câu hỏi, chỉ cần thêm か vào cuối câu.",
+            "Với câu hỏi Có/Không, câu trả lời thường là はい hoặc いいえ.",
+            "Với câu hỏi có từ để hỏi, đặt từ để hỏi vào đúng vị trí của phần muốn hỏi rồi thêm か ở cuối câu."
+          ],
+          "examples": [
+            "マイさんは ベトナムじんですか。 - Bạn Mai là người Việt Nam phải không?",
+            "はい、ベトナムじんです。 - Đúng, (bạn ấy) là người Việt Nam.",
+            "ミラさんは がくせいですか。 - Bạn Mira là học sinh phải không?",
+            "いいえ、がくせいではありません。 - Không, (bạn ấy) không phải là học sinh.",
+            "あのひとは だれですか。 - Người kia là ai?",
+            "（あのひとは）やまださんです。 - (Người kia) là anh Yamada."
+          ],
+          "notes": [
+            "Khi nói, thường lên giọng ở trợ từ か.",
+            "Nếu trả lời câu hỏi Có/Không thì không nên lược bỏ はい hoặc いいえ vì sẽ dễ bị xem là thất lễ."
+          ],
+          "content": "Dùng trợ từ か ở cuối câu để tạo câu hỏi trong tiếng Nhật."
+        },
+        {
+          "id": "11de97f6-34bf-4a7e-b4a5-866ce622ff2a",
+          "order": 4,
+          "title": "N も",
+          "meaning": "N cũng",
+          "usage": [
+            "Trợ từ も được dùng thay cho は khi thông tin về chủ đề của câu giống với thông tin của câu trước đó.",
+            "Dùng để diễn tả ý 'cũng'."
+          ],
+          "examples": [
+            "わたしは ベトナムじんです。 - Tôi là người Việt Nam.",
+            "タンさんも ベトナムじんです。 - Anh Tân cũng là người Việt Nam."
+          ],
+          "notes": [
+            "も thay thế cho は trong câu.",
+            "Thường dùng khi muốn bổ sung thêm một người hoặc một sự vật có cùng tính chất với câu trước."
+          ],
+          "content": "Trợ từ も được dùng với nghĩa là 'cũng'."
+        },
+        {
+          "id": "98b4d836-01b6-4536-807f-5d4259a4f5a5",
+          "order": 5,
+          "title": "N1 の N2",
+          "meaning": "N2 của N1 / N2 thuộc về N1",
+          "usage": [
+            "Trợ từ の dùng để nối hai danh từ.",
+            "N1 làm rõ nghĩa cho N2.",
+            "Trong bài này, N1 thường là một tổ chức, một nhóm mà N2 thuộc vào đó."
+          ],
+          "examples": [
+            "わたしは FPTだいがくの がくせいです。 - Tôi là sinh viên của trường Đại học FPT."
+          ],
+          "notes": [
+            "Có thể hiểu đơn giản là 'N2 của N1'.",
+            "Mẫu này rất hay gặp trong tên trường, công ty, quốc gia, sở hữu hoặc quan hệ."
+          ],
+          "content": "Trợ từ の dùng để nối hai danh từ, trong đó N1 bổ nghĩa cho N2."
+        }
+      ]
+    },
+    {
+      "id": "lesson-02-n5",
+      "lessonNumber": 2,
+      "level": "N5",
+      "title": "Bài 2",
+      "pointCount": 6,
+      "points": [
+        {
+          "id": "2aa65a28-86bb-40ce-91dd-119ec00ad7ce",
+          "order": 1,
+          "title": "これ / それ / あれ は N です",
+          "meaning": "Cái này / cái đó / cái kia là N",
+          "usage": [
+            "Đây là các đại từ chỉ thị, được dùng như một danh từ.",
+            "Không có danh từ đi liền ngay sau chúng.",
+            "これ dùng để chỉ vật ở gần người nói, xa người nghe.",
+            "それ dùng để chỉ vật ở gần người nghe, xa người nói.",
+            "あれ dùng để chỉ vật ở xa cả hai người."
+          ],
+          "examples": [
+            "これは ほんですか。 - Đây là quyển sách à?",
+            "いいえ、それは ノートです。 - Không, đó là quyển vở.",
+            "あれは じどうしゃです。 - Kia là cái ô tô."
+          ],
+          "notes": [
+            "Chỉ dùng cho đồ vật, không dùng trực tiếp để chỉ người.",
+            "Nếu muốn đi kèm danh từ thì dùng この / その / あの + N."
+          ],
+          "content": "Dùng các từ chỉ thị これ, それ, あれ để chỉ sự vật và nói đó là gì."
+        },
+        {
+          "id": "2c6f7b88-a979-429f-8350-7f97dfe4cbc6",
+          "order": 2,
+          "title": "この N / その N / あの N",
+          "meaning": "Cái N này / cái N đó / cái N kia",
+          "usage": [
+            "この, その, あの là các từ chỉ thị bổ nghĩa cho danh từ nên luôn phải có danh từ theo sau.",
+            "この N dùng để chỉ vật hay người ở gần người nói, xa người nghe.",
+            "その N dùng để chỉ vật hay người ở gần người nghe, xa người nói.",
+            "あの N dùng để chỉ vật hay người ở xa cả hai người."
+          ],
+          "examples": [
+            "あのひとは やまださんです。 - Người kia là anh Yamada.",
+            "これは なんですか。 - Đây là cái gì?",
+            "それは いすです。 - Đó là cái ghế.",
+            "このひとは だれですか。 - Người này là ai?",
+            "このひとは たなかさんです。 - Người đó là anh Tanaka."
+          ],
+          "notes": [
+            "Khác với これ / それ / あれ ở chỗ nhóm này phải đi cùng danh từ.",
+            "なん dùng để hỏi đồ vật, だれ dùng để hỏi người."
+          ],
+          "content": "Dùng この, その, あの để bổ nghĩa trực tiếp cho danh từ đứng sau."
+        },
+        {
+          "id": "0742b39e-caf0-469e-9209-50a0acf6f423",
+          "order": 3,
+          "title": "そうです / そうではありません",
+          "meaning": "Đúng vậy / Không phải thế",
+          "usage": [
+            "そう được dùng để trả lời câu hỏi nghi vấn mà tận cùng là danh từ.",
+            "Trong câu khẳng định dùng はい、そうです.",
+            "Trong câu phủ định dùng いいえ、そうではありません hoặc いいえ、そうじゃありません."
+          ],
+          "examples": [
+            "これは えんぴつですか。 - Đây là cái bút chì phải không?",
+            "はい、そうです。 - Vâng, đúng vậy.",
+            "それは テレホンカードですか。 - Đó là cái thẻ điện thoại phải không?",
+            "いいえ、そうではありません。 - Không, không phải thế."
+          ],
+          "notes": [
+            "Nếu câu hỏi có vị ngữ là động từ hoặc tính từ thì không dùng そうです / そうではありません để trả lời.",
+            "そうじゃありません là cách nói ngắn gọn trong hội thoại."
+          ],
+          "content": "Dùng để trả lời ngắn gọn cho câu hỏi nghi vấn mà vị ngữ là danh từ."
+        },
+        {
+          "id": "e5870827-6261-4ba0-af2e-09677950de30",
+          "order": 4,
+          "title": "N1 ですか、N2 ですか",
+          "meaning": "N1 hay là N2?",
+          "usage": [
+            "Đây là câu hỏi lựa chọn, được tạo bởi hai câu đơn.",
+            "Dùng khi phân vân, không biết đối tượng là cái này hay cái kia.",
+            "Mỗi mệnh đề trước chữ か đều là một câu hỏi về cùng một đối tượng."
+          ],
+          "examples": [
+            "それは ボールペンですか、シャープペンシルですか。 - Đó là cái bút bi hay là bút chì kim?",
+            "ボールペンです。 - Là cái bút bi."
+          ],
+          "notes": [
+            "Khi trả lời loại câu hỏi này không dùng はい hay いいえ.",
+            "Chỉ cần trả lời trực tiếp một trong hai lựa chọn."
+          ],
+          "content": "Dùng để hỏi lựa chọn giữa hai danh từ."
+        },
+        {
+          "id": "7e75e517-2ba8-4e24-bd10-fab699049cba",
+          "order": 5,
+          "title": "N1 の N2 (sở hữu)",
+          "meaning": "N2 của N1",
+          "usage": [
+            "Ở bài này, trợ từ の mang ý nghĩa sở hữu.",
+            "N2 là vật hoặc người thuộc về N1.",
+            "Có thể dùng để hỏi và trả lời về đồ vật hoặc mối quan hệ sở hữu."
+          ],
+          "examples": [
+            "これは わたしの ほんです。 - Đây là quyển sách của tôi.",
+            "あれは だれの かばんですか。 - Kia là cái cặp của ai?",
+            "わたしのです。 - Là của tôi.",
+            "そのつくえは ラオさんのですか。 - Cái bàn đó là của anh Rao phải không?",
+            "いいえ、ラオさんのではありません。 - Không, không phải của anh Rao.",
+            "ミラーさんは IMCの しゃいんですか。 - Mira là nhân viên công ty IMC phải không?",
+            "はい、IMCの しゃいんです。 - Vâng, (anh ấy/cô ấy) là nhân viên công ty IMC."
+          ],
+          "notes": [
+            "N2 đôi khi được lược bỏ khi đã rõ nghĩa hoặc đã được nhắc tới trước đó.",
+            "Khi N2 là từ chỉ người thì thường không được lược bỏ."
+          ],
+          "content": "Dùng trợ từ の để diễn tả sự sở hữu, nghĩa là N2 thuộc về N1."
+        },
+        {
+          "id": "4f6c4b28-07dc-42c1-aba1-2e21c4a76916",
+          "order": 6,
+          "title": "そうですか",
+          "meaning": "À, ra vậy",
+          "usage": [
+            "Dùng để đáp lại khi nghe một thông tin mới.",
+            "Thể hiện người nghe đã hiểu hoặc đã tiếp nhận thông tin."
+          ],
+          "examples": [
+            "このかさは あなたのですか。 - Cái ô này là của bạn à?",
+            "いいえ、タンさんのです。 - Không, là của anh Tân.",
+            "そうですか。 - À, ra vậy."
+          ],
+          "notes": [
+            "Ngữ điệu sẽ ảnh hưởng sắc thái, có thể là ngạc nhiên nhẹ hoặc xác nhận đã hiểu.",
+            "Khác với そうです là câu trả lời khẳng định."
+          ],
+          "content": "Dùng khi người nói nhận được thông tin mới và thể hiện rằng mình đã hiểu."
+        }
+      ]
+    },
+    {
+      "id": "lesson-03-n5",
+      "lessonNumber": 3,
+      "level": "N5",
+      "title": "Bài 3",
+      "pointCount": 6,
+      "points": [
+        {
+          "id": "37750649-3927-4412-8cef-4fee3d575d9a",
+          "order": 1,
+          "title": "ここ / そこ / あそこ は N（địa điểm）です",
+          "meaning": "Chỗ này / chỗ đó / chỗ kia là N",
+          "usage": [
+            "ここ, そこ, あそこ là các đại từ chỉ nơi chốn.",
+            "ここ chỉ chỗ của người nói.",
+            "そこ chỉ chỗ của người nghe.",
+            "あそこ chỉ chỗ xa cả hai người."
+          ],
+          "examples": [
+            "ここは きょうしつです。 - Đây là phòng học.",
+            "そこは おてあらいです。 - Đó là nhà vệ sinh.",
+            "あそこは しょくどうです。 - Kia là nhà ăn tập thể."
+          ],
+          "notes": [
+            "Khi người nói và người nghe ở cùng một địa điểm thì cả hai thường dùng ここ.",
+            "Mẫu này dùng để giới thiệu một địa điểm là gì."
+          ],
+          "content": "Dùng ここ、そこ、あそこ để chỉ địa điểm và nói nơi đó là gì."
+        },
+        {
+          "id": "1f628b37-a818-476d-95b4-bbbf1d857a73",
+          "order": 2,
+          "title": "N（địa điểm）は ここ / そこ / あそこ です",
+          "meaning": "N ở chỗ này / chỗ đó / chỗ kia",
+          "usage": [
+            "Dùng để chỉ vị trí của địa điểm, người hoặc vật.",
+            "Câu hỏi tương ứng là N は どこですか.",
+            "Cũng có thể mở rộng để chỉ nơi tồn tại của người và vật."
+          ],
+          "examples": [
+            "ロビーは ここです。 - Hành lang ở đây.",
+            "エレベーターは あそこです。 - Cầu thang máy ở chỗ kia.",
+            "うけつけは そこです。 - Tiếp tân ở chỗ đó.",
+            "ラオさんは うちです。 - Anh Rao ở nhà.",
+            "マイさんは あそこです。 - Bạn Mai ở đằng kia.",
+            "せんせいは きょうしつです。 - Cô giáo ở trong phòng học.",
+            "マリアさんは どこですか。 - Bạn Maria ở đâu?",
+            "にわです。 - Ở ngoài sân."
+          ],
+          "notes": [
+            "Có thể dùng cho cả địa điểm, người và vật trong văn cảnh bài này.",
+            "Mẫu mở rộng: N1（người hoặc vật）は N2（địa điểm）です."
+          ],
+          "content": "Dùng để nói vị trí, nơi tồn tại của một địa điểm, người hoặc vật."
+        },
+        {
+          "id": "3d10c140-d9ec-43e8-87ad-179e2253ac97",
+          "order": 3,
+          "title": "こちら / そちら / あちら / どちら",
+          "meaning": "Phía này / phía đó / phía kia / phía nào",
+          "usage": [
+            "Nghĩa tương đương với ここ, そこ, あそこ, どこ nhưng lịch sự hơn.",
+            "Được dùng như đại từ chỉ phương hướng hoặc nơi chốn.",
+            "どちら còn có thể dùng để hỏi lịch sự về nơi chốn hoặc xuất xứ."
+          ],
+          "examples": [
+            "でんわは どちらですか。 - Điện thoại ở đâu nhỉ?",
+            "あちらです。 - Ở đằng kia.",
+            "おくには どちらですか。 - Đất nước của bạn là ở đâu?",
+            "ベトナムです。 - Việt Nam.",
+            "あなたの かいしゃは どちらですか。 - Công ty của bạn là công ty nào?",
+            "FPTです。 - FPT."
+          ],
+          "notes": [
+            "Câu あなたの かいしゃは どちらですか có thể hiểu là 'Công ty bạn ở đâu?' hoặc 'Công ty bạn là công ty nào?'.",
+            "Trong giáo trình này, câu trên được hiểu là hỏi tên công ty."
+          ],
+          "content": "Đây là cách nói lịch sự hơn của ここ / そこ / あそこ / どこ, cũng có thể dùng để chỉ phương hướng hoặc nơi chốn."
+        },
+        {
+          "id": "ea63bf30-4157-4f4b-a8dd-e50a5313d0fd",
+          "order": 4,
+          "title": "これ / それ / あれ は N1 の N2 です",
+          "meaning": "Cái này / cái đó / cái kia là N2 của N1",
+          "usage": [
+            "Dùng khi muốn nói một đồ vật xuất xứ từ đâu, do nước nào hoặc công ty nào sản xuất.",
+            "N1 là nơi chốn, quốc gia, công ty hoặc đơn vị tạo ra N2.",
+            "Câu hỏi tương ứng là どこ の N2 ですか."
+          ],
+          "examples": [
+            "あれは にほんの シャープペンシルです。 - Kia là bút chì kim của Nhật.",
+            "それは ソニーの テレビです。 - Đó là ti vi của Sony.",
+            "これは どこの じどうしゃですか。 - Đây là ô tô của nước nào / của công ty nào?",
+            "にほんの じどうしゃです。 - Ô tô của Nhật."
+          ],
+          "notes": [
+            "Ở mẫu này, の mang ý nghĩa xuất xứ hoặc thuộc về nguồn gốc nào đó.",
+            "Đây là cách dùng khác với の chỉ sở hữu ở bài trước."
+          ],
+          "content": "Dùng để nói nguồn gốc, xuất xứ hoặc đơn vị sản xuất của một đồ vật."
+        },
+        {
+          "id": "5813c7e5-4250-4f02-8412-8035ba07d02f",
+          "order": 5,
+          "title": "これ / それ / あれ は N1 の N2 です (thuộc tính)",
+          "meaning": "Cái này / cái đó / cái kia là N2 về N1",
+          "usage": [
+            "Dùng để nói thuộc tính của đồ vật như lĩnh vực, chuyên ngành, nội dung hoặc ngôn ngữ.",
+            "N1 là nội dung, chủ đề, lĩnh vực, thể loại hoặc ngôn ngữ của N2.",
+            "Câu hỏi tương ứng là なん の N ですか."
+          ],
+          "examples": [
+            "これは じどうしゃの ほんです。 - Đây là quyển sách về xe ô tô.",
+            "それは にほんごの しんぶんです。 - Đó là tờ báo tiếng Nhật.",
+            "これは なんの ざっしですか。 - Đây là tạp chí gì?",
+            "それは コンピューターのです。 - Đó là tạp chí về máy tính.",
+            "FPTは コンピューターの かいしゃです。 - FPT là công ty máy tính.",
+            "ひたちは なんの かいしゃですか。 - Hitachi là công ty gì?",
+            "テレビの かいしゃです。 - Là công ty sản xuất TV."
+          ],
+          "notes": [
+            "Mẫu này có hình thức giống mẫu xuất xứ nhưng ý nghĩa khác.",
+            "Có thể mở rộng để nói công ty hoạt động trong lĩnh vực nào."
+          ],
+          "content": "Dùng để nói đồ vật thuộc lĩnh vực gì, về chủ đề gì, viết bằng tiếng gì hoặc thuộc loại nào."
+        },
+        {
+          "id": "d3b9f8a2-8e21-4a30-945a-f504413c638e",
+          "order": 6,
+          "title": "N は いくらですか",
+          "meaning": "N bao nhiêu tiền?",
+          "usage": [
+            "Dùng để hỏi giá tiền.",
+            "N thường là đồ vật, món hàng hoặc dịch vụ."
+          ],
+          "examples": [
+            "このざっしは いくらですか。 - Cái này bao nhiêu tiền?",
+            "100円です。 - 100 yên."
+          ],
+          "notes": [
+            "Khi trả lời thường dùng đơn vị tiền như 円.",
+            "Đây là mẫu hỏi giá rất cơ bản trong giao tiếp mua sắm."
+          ],
+          "content": "Dùng để hỏi giá tiền của một đồ vật."
+        }
+      ]
+    },
+    {
+      "id": "lesson-04-n5",
+      "lessonNumber": 4,
+      "level": "N5",
+      "title": "Bài 4",
+      "pointCount": 8,
+      "points": [
+        {
+          "id": "5efec248-ab58-4fc2-b385-b6292598e00a",
+          "order": 1,
+          "title": "今 ～時 ～分 です",
+          "meaning": "Bây giờ là ~ giờ ~ phút",
+          "usage": [
+            "～じ đặt sau số đếm để chỉ giờ.",
+            "～ふん / ～ぷん đặt sau số đếm để chỉ phút.",
+            "Dùng mẫu いま なんじ ですか để hỏi giờ.",
+            "～はん được dùng để chỉ giờ rưỡi."
+          ],
+          "examples": [
+            "いま 8じです。 - Bây giờ là 8 giờ.",
+            "とうきょうはいま 9じ30ぷんです。 - Tokyo bây giờ là 9 giờ 30 phút.",
+            "いま なんじですか。 - Bây giờ là mấy giờ?",
+            "いま 9じはんです。 - Bây giờ là 9 giờ rưỡi."
+          ],
+          "notes": [
+            "Một số cách đọc giờ và phút là đặc biệt, cần học thuộc riêng.",
+            "Ví dụ: 4 giờ là よじ, 7 giờ là しちじ, 9 giờ là くじ.",
+            "Ví dụ: 1 phút là いっぷん, 3 phút là さんぷん, 6 phút là ろっぷん, 8 phút là はっぷん, 10 phút là じゅっぷん."
+          ],
+          "content": "Dùng để nói giờ giấc hiện tại."
+        },
+        {
+          "id": "a04b9d53-5632-4e32-a346-66030d4de98e",
+          "order": 2,
+          "title": "N（danh từ chỉ ngày） は ～曜日です",
+          "meaning": "N là thứ ~",
+          "usage": [
+            "Dùng để nói hôm nay, ngày mai, ngày kia... là thứ mấy.",
+            "Dùng mẫu N は なんようびですか để hỏi thứ.",
+            "N thường là các từ chỉ ngày như きょう, あした, あさって."
+          ],
+          "examples": [
+            "きょうは かようびです。 - Hôm nay là thứ ba.",
+            "あしたは すいようびです。 - Ngày mai là thứ tư.",
+            "あさっては もくようびです。 - Ngày kia là thứ năm.",
+            "あさっては なんようびですか。 - Ngày kia là thứ mấy?",
+            "どようびです。 - Thứ bảy."
+          ],
+          "notes": [
+            "ようび dùng cho các ngày trong tuần như 月曜日, 火曜日, 水曜日...",
+            "Khi hỏi thứ mấy thì dùng なんようび."
+          ],
+          "content": "Dùng để nói một ngày nào đó là thứ mấy trong tuần."
+        },
+        {
+          "id": "f0a3d3d5-c72e-41fe-ba00-ce496a4540c1",
+          "order": 3,
+          "title": "Vます",
+          "meaning": "Động từ dạng ます",
+          "usage": [
+            "～ます là dạng lịch sự của động từ.",
+            "Dùng để biểu thị hành động ở hiện tại hoặc tương lai.",
+            "Thường dùng trong hội thoại lịch sự với người nghe."
+          ],
+          "examples": [
+            "あした はたらきます。 - Ngày mai tôi sẽ làm việc.",
+            "まいばん べんきょうします。 - Hằng ngày tôi đều học bài."
+          ],
+          "notes": [
+            "Dạng ます chưa cho biết rõ là hiện tại hay tương lai, phải dựa vào ngữ cảnh.",
+            "Đây là dạng cơ bản rất quan trọng của động từ trong tiếng Nhật."
+          ],
+          "content": "Đây là dạng lịch sự của động từ, dùng để nói hành động ở hiện tại hoặc tương lai."
+        },
+        {
+          "id": "758b6b16-6f68-4c74-bf3d-031234f25517",
+          "order": 4,
+          "title": "Vます / Vません / Vました / Vませんでした",
+          "meaning": "Chia thì và khẳng định/phủ định của động từ",
+          "usage": [
+            "Vます: khẳng định hiện tại / tương lai.",
+            "Vません: phủ định hiện tại / tương lai.",
+            "Vました: khẳng định quá khứ.",
+            "Vませんでした: phủ định quá khứ."
+          ],
+          "examples": [
+            "まいあさ べんきょうします。 - Hằng ngày tôi đều học bài.",
+            "あした べんきょうしません。 - Ngày mai tôi sẽ không học bài.",
+            "きのう べんきょうしました。 - Hôm qua tôi đã học bài.",
+            "おととい べんきょうしませんでした。 - Hôm kia tôi đã không học bài."
+          ],
+          "notes": [
+            "Đây là bảng chia cơ bản của động từ dạng ます.",
+            "Cần nhớ rõ sự khác nhau giữa hiện tại / tương lai và quá khứ."
+          ],
+          "content": "Dùng để diễn tả hiện tại, tương lai, quá khứ; khẳng định hoặc phủ định của động từ dạng ます."
+        },
+        {
+          "id": "f57d6415-4e83-4a0c-a360-9f79e25610a4",
+          "order": 5,
+          "title": "N（chỉ thời gian） に Vます",
+          "meaning": "Làm gì vào lúc nào",
+          "usage": [
+            "Để chỉ thời điểm tiến hành hành động, thêm に sau danh từ chỉ thời gian.",
+            "Nếu từ chỉ thời gian không biểu hiện bằng con số thì có thể có hoặc không có に tùy trường hợp.",
+            "Mẫu này thường dùng với giờ, ngày, thời điểm cụ thể."
+          ],
+          "examples": [
+            "わたしは まいあさ 6じに おきます。 - Hằng sáng tôi dậy lúc 6 giờ.",
+            "きのうの 7じに ねました。 - Hôm qua tôi ngủ lúc 7 giờ.",
+            "あした にほんへ いきます。 - Ngày mai tôi sẽ đến Nhật.",
+            "にちようび（に）べんきょうしません。 - Chủ nhật tôi thường không học bài."
+          ],
+          "notes": [
+            "Với giờ cụ thể như 6時, 7時 thì thường dùng に.",
+            "Với các từ như きょう, あした, きのう thì thường không cần に."
+          ],
+          "content": "Dùng trợ từ に sau danh từ chỉ thời gian để nói một hành động xảy ra vào thời điểm đó."
+        },
+        {
+          "id": "7d9bc4eb-10b7-4a12-b575-744321ebc314",
+          "order": 6,
+          "title": "～から ～まで",
+          "meaning": "Từ ~ đến ~",
+          "usage": [
+            "～から biểu thị điểm bắt đầu của thời gian hay nơi chốn.",
+            "～まで biểu thị điểm kết thúc của thời gian hay nơi chốn.",
+            "Có thể dùng cả hai cùng nhau hoặc dùng riêng từng trợ từ."
+          ],
+          "examples": [
+            "8じ半から 5じ半まではたらきます。 - Tôi làm việc từ 8 rưỡi đến 5 rưỡi.",
+            "9じから べんきょうします。 - Tôi học từ 9 giờ.",
+            "5じまで べんきょうします。 - Tôi học đến 5 giờ.",
+            "こうぎは 8じ半から11じ半までです。 - Bài giảng sẽ từ 8 rưỡi đến 11 rưỡi.",
+            "にほんごの べんきょうは 8じから4じまでです。 - Học tiếng Nhật từ 8 giờ đến 4 giờ."
+          ],
+          "notes": [
+            "Không giống trợ từ に, sau から và まで có thể dùng ngay です.",
+            "Ví dụ: 8時半から11時半までです.",
+            "～から và ～まで không nhất thiết phải luôn xuất hiện cùng nhau."
+          ],
+          "content": "Dùng để nói khoảng thời gian hoặc khoảng không gian từ đâu đến đâu, từ lúc nào đến lúc nào."
+        },
+        {
+          "id": "689de416-7c2f-4403-9811-1a3e2359091f",
+          "order": 7,
+          "title": "N1 と N2",
+          "meaning": "N1 và N2",
+          "usage": [
+            "Trợ từ と dùng để nối hai danh từ.",
+            "Diễn tả liệt kê theo kiểu đầy đủ: N1 và N2."
+          ],
+          "examples": [
+            "ぎんこうの やすみは どようびと にちようびです。 - Buổi nghỉ của ngân hàng là thứ 7 và chủ nhật."
+          ],
+          "notes": [
+            "Khác với や, trợ từ と thường mang nghĩa liệt kê đầy đủ hai đối tượng được nhắc tới."
+          ],
+          "content": "Dùng trợ từ と để nối hai danh từ với nghĩa là 'và', 'với', 'cùng'."
+        },
+        {
+          "id": "2cece220-a54c-464a-9da1-7512fd0505ed",
+          "order": 8,
+          "title": "～ね",
+          "meaning": "Nhỉ / nhé",
+          "usage": [
+            "～ね được đặt ở cuối câu để truyền cho người nghe tình cảm của mình hoặc kỳ vọng người nghe đồng ý với mình.",
+            "Thường được phát âm dài và giọng xuống thấp."
+          ],
+          "examples": [
+            "何時から何時まで はたらきますか。 - Bạn làm việc từ mấy giờ đến mấy giờ?",
+            "7じはんから5じはんまでです。 - Từ 7 rưỡi đến 5 rưỡi.",
+            "たいへんですね。 - Bạn vất vả nhỉ."
+          ],
+          "notes": [
+            "～ね tạo cảm giác mềm mại, thân thiện hơn trong hội thoại.",
+            "Hay dùng khi nhận xét, xác nhận nhẹ hoặc bày tỏ sự đồng cảm."
+          ],
+          "content": "Đặt ở cuối câu để truyền đạt cảm xúc, mong người nghe đồng tình hoặc xác nhận với mình."
+        }
+      ]
+    },
+    {
+      "id": "lesson-05-n5",
+      "lessonNumber": 5,
+      "level": "N5",
+      "title": "Bài 5",
+      "pointCount": 5,
+      "points": [
+        {
+          "id": "38ab0375-9d6c-406d-8797-a20aef550f0f",
+          "order": 1,
+          "title": "N は ～月（がつ） ～日（にち）です",
+          "meaning": "N là ngày ~ tháng ~",
+          "usage": [
+            "Dùng để nói ngày tháng của một sự việc.",
+            "Có thể hỏi thời điểm bằng いつですか.",
+            "Có thể hỏi riêng tháng bằng なんがつですか.",
+            "Có thể hỏi riêng ngày bằng なんにちですか."
+          ],
+          "examples": [
+            "きょうは しちがつ ようかです。 - Hôm nay là ngày mùng 8 tháng 7.",
+            "あしたは 12にちです。 - Mai là ngày 12.",
+            "たんじょうびは いつですか。 - Sinh nhật bạn là bao giờ?",
+            "7がつ 7にちです。 - Mùng 7 tháng 7.",
+            "こんげつは なんがつですか。 - Tháng này là tháng mấy?",
+            "10がつです。 - Tháng 10.",
+            "あしたは なんにちですか。 - Ngày mai là mùng mấy?",
+            "14にちです。 - Ngày 14."
+          ],
+          "notes": [
+            "Cách nói ngày tháng trong tiếng Nhật theo thứ tự: năm, tháng, ngày.",
+            "いつ có thể thay cho các từ hỏi thời gian như なんじ, なんがつ, なんにち trong nhiều trường hợp."
+          ],
+          "content": "Dùng để nói một sự việc rơi vào ngày nào, tháng nào."
+        },
+        {
+          "id": "f9d133a8-a395-411c-ba00-339e9c79c7ed",
+          "order": 2,
+          "title": "N（địa điểm）へ いきます / きます / かえります",
+          "meaning": "Đi / đến / về đâu đó",
+          "usage": [
+            "N là danh từ chỉ nơi chốn, địa điểm.",
+            "へ là trợ từ chỉ phương hướng di chuyển.",
+            "Đi sau là các động từ chỉ sự di chuyển như いきます, きます, かえります.",
+            "Dùng mẫu ～は どこへ ～ますか để hỏi đi đâu, đến đâu, về đâu."
+          ],
+          "examples": [
+            "わたしは だいがくへ いきます。 - Tôi đi đến trường.",
+            "マイさんは ここへ きます。 - Bạn Mai đến đây.",
+            "わたしは うちへ かえります。 - Tôi trở về nhà.",
+            "きょうのごご どこへ いきますか。 - Chiều hôm nay bạn sẽ đi đâu?",
+            "スーパーへ いきます。 - Tôi sẽ đi đến siêu thị.",
+            "おととい どこへ いきましたか。 - Hôm kia bạn đã đi đâu?",
+            "ぎんこうへ いきました。 - Tôi đã đi đến ngân hàng.",
+            "きょうのごご どこへ いきますか。 - Chiều hôm nay bạn sẽ đi đâu?",
+            "どこも いきません。 - Tôi sẽ không đi đâu cả.",
+            "きのう どこへ いきましたか。 - Hôm qua bạn đã đi đâu vậy?",
+            "どこへも いきませんでした。 - Tôi đã không đi đâu cả."
+          ],
+          "notes": [
+            "Trong câu phủ định hoàn toàn, dùng どこ（へ）も + động từ phủ định.",
+            "Có thể dùng も hoặc cả ～も đều được, nhưng dùng ～も thì ý nghĩa phủ định mạnh hơn."
+          ],
+          "content": "Dùng trợ từ へ với địa điểm để nói đi đâu, đến đâu hoặc về đâu."
+        },
+        {
+          "id": "827ba6af-47aa-4b5f-a718-faa621c52235",
+          "order": 3,
+          "title": "N（phương tiện）で いきます / きます / かえります",
+          "meaning": "Đi / đến / về bằng N",
+          "usage": [
+            "N là danh từ chỉ phương tiện giao thông hoặc phương tiện đi lại.",
+            "Trợ từ で dùng để chỉ phương tiện, có thể hiểu là 'bằng', 'với'.",
+            "Dùng mẫu なんで ～ますか để hỏi đi bằng phương tiện gì."
+          ],
+          "examples": [
+            "わたしは じどうしゃで びょういんへ いきます。 - Tôi đi đến bệnh viện bằng ô tô.",
+            "ラオさんは バスで かいしゃへ きます。 - Bạn Rao đến nơi làm bằng xe buýt.",
+            "せんさんは ひこうきで べとなんへ かえります。 - Bạn Sen về nước bằng máy bay.",
+            "なんで ここへ きましたか。 - Bạn đã đến đây bằng gì vậy?",
+            "あるいて きました。 - Tôi đã đi bộ đến."
+          ],
+          "notes": [
+            "Nếu muốn nói đi bộ thì dùng あるいて, không dùng で.",
+            "Mẫu này dùng với các động từ di chuyển như いきます, きます, かえります."
+          ],
+          "content": "Dùng trợ từ で để nói cách thức, phương tiện di chuyển."
+        },
+        {
+          "id": "681b3b12-2d1b-46b8-bb59-22aa6e36ff9b",
+          "order": 4,
+          "title": "N（người）と Vます",
+          "meaning": "Làm gì cùng với ai",
+          "usage": [
+            "N là danh từ chỉ người.",
+            "Trợ từ と ở đây mang nghĩa 'với', 'cùng với'.",
+            "Dùng để xác định đối tượng cùng tham gia hành động."
+          ],
+          "examples": [
+            "ともだちと だいがくへ きます。 - Tôi đến trường cùng với bạn.",
+            "ははと デパートへ いきます。 - Tôi đi đến bách hóa cùng với mẹ.",
+            "ひとりで くにへ かえりました。 - Tôi đã về nước một mình.",
+            "だれと ぎんこうへ いきましたか。 - Bạn đã đi đến ngân hàng cùng ai?",
+            "ジョンさんと いきました。 - Tôi đã đi với John."
+          ],
+          "notes": [
+            "Nếu muốn nói làm một mình thì dùng ひとりで, không dùng と.",
+            "Câu hỏi tương ứng thường dùng だれと."
+          ],
+          "content": "Dùng trợ từ と để nói làm một hành động cùng với một người nào đó."
+        },
+        {
+          "id": "152c258c-4435-488f-8e55-5b58d464667a",
+          "order": 5,
+          "title": "Sentence よ",
+          "meaning": "Đấy / đó / nhé",
+          "usage": [
+            "Đặt ở cuối câu để nhấn mạnh một sự việc mà người nghe chưa biết.",
+            "Dùng để bộc lộ sự phán xét hay ý kiến bản thân một cách khá chắc chắn.",
+            "Không nên nói quá mạnh vì có thể khiến người nghe có cảm giác bị ép buộc."
+          ],
+          "examples": [
+            "このバスは ぎあばっとへ いきますか。 - Xe buýt này đi đến Giáp Bát phải không?",
+            "いいえ、いきません。21ばんせんですよ。 - Không, không đi. Đường số 21 cơ."
+          ],
+          "notes": [
+            "よ khác với ね ở chỗ よ mang sắc thái nhấn mạnh, truyền thông tin cho người nghe.",
+            "Trong hội thoại tự nhiên, よ thường dùng khi người nói tin rằng người nghe chưa biết điều đó."
+          ],
+          "content": "Đặt ở cuối câu để nhấn mạnh thông tin mà người nghe chưa biết hoặc để nói chắc chắn ý của mình."
+        }
+      ]
+    },
+    {
+      "id": "lesson-06-n5",
+      "lessonNumber": 6,
+      "level": "N5",
+      "title": "Bài 6",
+      "pointCount": 6,
+      "points": [
+        {
+          "id": "c47bf1f0-9d09-4e8a-93c6-8f65f1b3944c",
+          "order": 1,
+          "title": "N を Vます",
+          "meaning": "Làm gì với N / tác động vào N",
+          "usage": [
+            "N là danh từ chỉ đối tượng của hành động.",
+            "V là tha động từ.",
+            "Trợ từ を dùng để chỉ đối tượng bị tác động bởi hành động.",
+            "Dùng mẫu なにを Vますか để hỏi ai đó làm gì, ăn gì, uống gì, đọc gì..."
+          ],
+          "examples": [
+            "ごはんを たべます。 - Tôi ăn cơm.",
+            "ほんを よみました。 - Tôi đã đọc sách.",
+            "なにを しますか。 - Bạn làm cái gì?",
+            "けさ なにを かいましたか。 - Sáng nay bạn đã mua gì thế?",
+            "やさいを かいました。 - Tôi đã mua rau.",
+            "としょかんで なにを しますか。 - Bạn làm gì ở thư viện.",
+            "ほんを よみます。 - Tôi đọc sách.",
+            "わたしは ビールを のみます。おさけも のみます。 - Tôi uống bia. Tôi cũng uống rượu nữa.",
+            "わたしは さかなと たまごを たべます。 - Tôi ăn cá và trứng."
+          ],
+          "notes": [
+            "を có thể đọc là o.",
+            "を có thể dùng với hai đối tượng khác nhau khi cùng một hành động tác động lên nhiều vật.",
+            "を cũng có thể nối hai danh từ cùng làm đối tượng của hành động trong câu."
+          ],
+          "content": "Dùng trợ từ を để chỉ đối tượng trực tiếp của hành động."
+        },
+        {
+          "id": "ecc99b5b-8320-402d-ad89-bc033d1423ce",
+          "order": 2,
+          "title": "なにも Vません",
+          "meaning": "Không làm gì cả / không có gì",
+          "usage": [
+            "Khi từ để hỏi đi với も và câu ở dạng phủ định thì mang nghĩa phủ định hoàn toàn.",
+            "Dùng để nói không làm gì, không ăn gì, không mua gì..."
+          ],
+          "examples": [
+            "けさ なにも たべませんでした。 - Sáng nay tôi đã không ăn gì cả.",
+            "あした なにも しません。 - Ngày mai tôi sẽ không làm gì cả."
+          ],
+          "notes": [
+            "Mẫu này luôn đi với động từ phủ định.",
+            "なに + も thường biến thành なにも trong câu."
+          ],
+          "content": "Dùng với câu phủ định để diễn tả không có đối tượng nào trong phạm vi từ để hỏi."
+        },
+        {
+          "id": "73e5634c-2fc8-4b0c-bde3-4a09b24c3c20",
+          "order": 3,
+          "title": "N1 で N2 を Vます",
+          "meaning": "Làm N2 ở / tại N1",
+          "usage": [
+            "N1 là danh từ chỉ địa điểm diễn ra hành động.",
+            "N2 là danh từ chỉ đối tượng của hành động.",
+            "Trợ từ で dùng để chỉ nơi diễn ra hành động.",
+            "Dùng mẫu どこで Vますか để hỏi ai đó làm gì ở đâu."
+          ],
+          "examples": [
+            "レストランで ごはんを たべます。 - Tôi ăn cơm ở nhà hàng.",
+            "としょかんで ほんを よみました。 - Tôi đã đọc sách ở thư viện.",
+            "どこで このしゃしんを とりましたか。 - Bạn đã chụp bức ảnh này ở đâu?",
+            "こうえんで とりました。 - Tôi chụp ở công viên."
+          ],
+          "notes": [
+            "Khác với に hoặc へ, で nhấn mạnh nơi hành động xảy ra.",
+            "Mẫu này rất hay dùng với ăn, học, đọc, chụp ảnh, làm việc..."
+          ],
+          "content": "Dùng trợ từ で để chỉ địa điểm diễn ra hành động."
+        },
+        {
+          "id": "69172015-c54c-4dd3-a890-c88714918e4b",
+          "order": 4,
+          "title": "いっしょに Vませんか",
+          "meaning": "Cùng làm ~ nhé?",
+          "usage": [
+            "Đây không phải là câu phủ định, mà là mẫu câu mời mọc, rủ rê.",
+            "Dùng khi muốn rủ người khác cùng làm việc gì đó với mình."
+          ],
+          "examples": [
+            "いっしょに ビールを のみませんか。 - Cùng uống bia nhé!",
+            "ええ、いいですね。 - Vâng, tốt quá!",
+            "すみません。ちょっと… - Xin lỗi. Nhưng mà..."
+          ],
+          "notes": [
+            "Khi muốn từ chối nhẹ, lịch sự có thể dùng すみません、ちょっと…",
+            "Mẫu này mềm hơn ra lệnh, phù hợp trong hội thoại thường ngày."
+          ],
+          "content": "Dùng để mời, rủ ai đó cùng làm gì với mình."
+        },
+        {
+          "id": "cc4601d6-5c29-4357-834a-9cf538a1183f",
+          "order": 5,
+          "title": "Vましょう",
+          "meaning": "Cùng làm ~ nhé / hãy cùng ~",
+          "usage": [
+            "Dùng khi đã ngầm hiểu hoặc tin rằng người nghe sẽ đồng ý cùng làm.",
+            "Mang sắc thái thỏa thuận, hô hào hoặc cùng nhau bắt đầu hành động."
+          ],
+          "examples": [
+            "ロビーで やすみましょう。 - Chúng ta hãy nghỉ ở hành lang nhé!",
+            "はじめましょう。 - Nào, chúng ta bắt đầu nào!"
+          ],
+          "notes": [
+            "Khác với Vませんか ở chỗ Vましょう dùng khi mức độ đồng thuận đã cao hơn.",
+            "Hay gặp trong lớp học, công việc, hội thoại hợp tác."
+          ],
+          "content": "Dùng để đề nghị hoặc cùng nhau quyết định làm một việc gì đó."
+        },
+        {
+          "id": "c58e9a17-d9c5-4ad5-aeab-2e23ad69b891",
+          "order": 6,
+          "title": "なん / なに",
+          "meaning": "Cái gì",
+          "usage": [
+            "Đọc là なん khi đứng trước một từ bắt đầu bằng âm d, n, t.",
+            "Đọc là なん khi đứng sau là các từ chỉ cách đếm như さい, ようび, に.",
+            "Các trường hợp khác thường đọc là なに."
+          ],
+          "examples": [
+            "なんですか。 - Cái gì vậy?",
+            "なんの かいしゃですか。 - Công ty gì vậy?",
+            "なにを たべますか。 - Bạn ăn gì?",
+            "なにも のみませんでした。 - Tôi đã không uống gì."
+          ],
+          "notes": [
+            "Ví dụ đọc là なん: 何ですか、何の会社ですか、何さい、何ようび、何に.",
+            "Ví dụ đọc là なに: 何をたべますか、何ものみませんでした."
+          ],
+          "content": "なん và なに đều có nghĩa là 'cái gì', nhưng cách đọc thay đổi theo từ đứng sau."
+        }
+      ]
+    },
+    {
+      "id": "lesson-07-n5",
+      "lessonNumber": 7,
+      "level": "N5",
+      "title": "Bài 7",
+      "pointCount": 5,
+      "points": [
+        {
+          "id": "94419820-ec4a-4988-b1f9-18a4a9fc35bf",
+          "order": 1,
+          "title": "N で Vます",
+          "meaning": "Làm gì bằng N",
+          "usage": [
+            "N là danh từ chỉ phương tiện, công cụ.",
+            "で là trợ từ chỉ phương tiện, phương thức, phương pháp thực hiện hành động.",
+            "Dùng mẫu なんで Vますか để hỏi làm bằng gì."
+          ],
+          "examples": [
+            "はしで ごはんを たべます。 - Tôi ăn cơm bằng đũa.",
+            "コンピューターで レポートを かきます。 - Tôi viết báo cáo bằng máy tính.",
+            "なんで りんごを きりますか。 - Bạn cắt táo bằng gì thế?",
+            "ナイフで きります。 - Tôi cắt bằng dao.",
+            "にほんごで でんわを かけます。 - Tôi nói chuyện điện thoại bằng tiếng Nhật."
+          ],
+          "notes": [
+            "Ngoài ra, trợ từ で cũng có thể chỉ phương tiện ngôn ngữ.",
+            "Mẫu này khác với で chỉ địa điểm ở bài trước, ở đây で mang nghĩa 'bằng'."
+          ],
+          "content": "Dùng trợ từ で để chỉ phương tiện, công cụ hoặc cách thức thực hiện hành động."
+        },
+        {
+          "id": "1d7f5b57-3aaf-4a4c-bd79-76a688ba2779",
+          "order": 2,
+          "title": "N / Câu は ～語で 何ですか",
+          "meaning": "Từ / câu trong tiếng ~ là gì?",
+          "usage": [
+            "Dùng để hỏi cách nói một từ hoặc một câu bằng một thứ tiếng nào đó.",
+            "Khi viết, từ hoặc câu được hỏi thường được đặt trong dấu ngoặc kép kiểu Nhật."
+          ],
+          "examples": [
+            "「ありがとう」は えいごで なんですか。 - “ありがとう” trong tiếng Anh là gì?",
+            "Thank you です。 - Là “Thank you”.",
+            "「テト」は にほんごで なんですか。 - “Tết” trong tiếng Nhật là gì?",
+            "「おしょうがつ」です。 - Là “お正月”."
+          ],
+          "notes": [
+            "～語 mang nghĩa là ngôn ngữ, ví dụ: 英語, 日本語.",
+            "Đây là mẫu rất hay dùng khi học ngoại ngữ."
+          ],
+          "content": "Dùng để hỏi một từ hoặc một câu được nói bằng ngôn ngữ khác như thế nào."
+        },
+        {
+          "id": "31e154ec-739f-4386-bc17-d684a1a7c1ed",
+          "order": 3,
+          "title": "N1 に N2 を Vます",
+          "meaning": "Làm ~ cho ai / hướng tới đối tượng nào",
+          "usage": [
+            "N1 là người, công ty hoặc quốc gia nhận hành động.",
+            "に là trợ từ chỉ hướng đến của hành động, mang nghĩa 'cho ai'.",
+            "Dùng với các động từ như あげます, かします, かきます, おしえます."
+          ],
+          "examples": [
+            "ともだちに てがみを かきます。 - Tôi sẽ viết thư cho bạn.",
+            "ははに プレゼントを あげます。 - Tôi sẽ tặng quà cho mẹ.",
+            "だれに にほんごを おしえますか。 - Bạn dạy tiếng Nhật cho ai?",
+            "グンさんに おしえます。 - Tôi dạy cho bạn Gưn."
+          ],
+          "notes": [
+            "Với động từ あげます, N1 không dùng được là わたし.",
+            "Câu hỏi thường dùng là だれに Vますか."
+          ],
+          "content": "Dùng trợ từ に để chỉ người hoặc đối tượng nhận hành động như cho, tặng, viết, dạy, chỉ dẫn."
+        },
+        {
+          "id": "86a5bb63-f322-4bfb-8b15-6205ad90c176",
+          "order": 4,
+          "title": "N1 に / から N2 を Vます",
+          "meaning": "Nhận / vay / học từ ai",
+          "usage": [
+            "N1 là người hoặc nguồn mà mình nhận, vay hoặc học từ đó.",
+            "N2 là thứ hoặc vật mà mình nhận, vay hoặc học.",
+            "Dùng với các động từ như もらいます, かります, ならいます."
+          ],
+          "examples": [
+            "きむらさんは やまださんに はなを もらいました。 - Chị Kimura đã nhận được hoa từ Yamada.",
+            "すずきせんせいに にほんごを ならいました。 - Tôi đã học tiếng Nhật từ Suzuki.",
+            "ぎんこうから おかねを かります。 - Tôi sẽ vay tiền từ ngân hàng.",
+            "だいがくから プレゼントを もらいました。 - Tôi đã nhận được quà từ trường đại học.",
+            "だれに このとけいを もらいましたか。 - Bạn đã nhận chiếc đồng hồ này từ ai vậy?",
+            "ははに もらいました。 - Tôi nhận từ mẹ tôi."
+          ],
+          "notes": [
+            "Khi N1 không phải là người mà là cơ quan hoặc tổ chức thì thường dùng から thay cho に.",
+            "Câu hỏi thường dùng là だれに（から）Vますか."
+          ],
+          "content": "Dùng trợ từ に hoặc から để chỉ nguồn mà mình nhận được, vay được hoặc học được từ đó."
+        },
+        {
+          "id": "8daf58a5-a463-4ab9-b705-7c2f93759b96",
+          "order": 5,
+          "title": "もう / まだ",
+          "meaning": "Đã ~ rồi / vẫn chưa",
+          "usage": [
+            "Với câu hỏi もう Vましたか thì câu trả lời khẳng định là はい、もうVました.",
+            "Câu trả lời phủ định là いいえ、まだです."
+          ],
+          "examples": [
+            "もう ごはんを たべましたか。 - Bạn đã ăn cơm rồi à?",
+            "はい、もう たべました。 - Vâng, tôi ăn rồi.",
+            "いいえ、まだです。 - Không, tôi vẫn chưa ăn."
+          ],
+          "notes": [
+            "Không trả lời là いいえ、まだ Vませんでした.",
+            "まだ diễn tả trạng thái chưa xảy ra, chưa hoàn thành tính đến thời điểm nói."
+          ],
+          "content": "Dùng もう để nói hành động đã hoàn thành, và まだ để nói hành động vẫn chưa xảy ra hoặc chưa hoàn thành."
+        }
+      ]
+    },
+    {
+      "id": "lesson-08-n5",
+      "lessonNumber": 8,
+      "level": "N5",
+      "title": "Bài 8",
+      "pointCount": 9,
+      "points": [
+        {
+          "id": "9baf1dbb-7987-4e66-97d4-2cdd01de4a80",
+          "order": 1,
+          "title": "Giới thiệu tính từ trong tiếng Nhật",
+          "meaning": "Tính từ đuôi い / tính từ đuôi な",
+          "usage": [
+            "Tính từ đuôi い có tận cùng là い.",
+            "Tính từ đuôi な có đuôi là な khi đứng trước danh từ.",
+            "Dùng để miêu tả tính chất, trạng thái, đặc điểm của người hoặc vật."
+          ],
+          "examples": [
+            "小さい（ちいさい） - nhỏ",
+            "大きい（おおきい） - to",
+            "熱い（あつい） - nóng",
+            "寒い（さむい） - lạnh",
+            "高い（たかい） - cao, đắt",
+            "ハンサムな - đẹp trai",
+            "しんせつな - tốt bụng",
+            "ゆうめいな - nổi tiếng"
+          ],
+          "notes": [
+            "Một số từ nhìn giống đuôi い nhưng thực ra là tính từ な, ví dụ: きれい, ゆうめい.",
+            "Khi đứng một mình ở cuối câu, tính từ な không đi với な."
+          ],
+          "content": "Trong tiếng Nhật có 2 loại tính từ: tính từ đuôi い và tính từ đuôi な."
+        },
+        {
+          "id": "709abd0b-d131-4b29-ac25-81f63d363ff4",
+          "order": 2,
+          "title": "Câu khẳng định với tính từ",
+          "meaning": "N thì tính chất như thế nào đó",
+          "usage": [
+            "Tương tự mẫu câu danh từ, trong câu khẳng định dùng です ở cuối câu.",
+            "Nếu là tính từ đuôi い thì giữ nguyên い trước です.",
+            "Nếu là tính từ đuôi な thì bỏ な khi đứng cuối câu trước です."
+          ],
+          "examples": [
+            "田中先生（たなかせんせい）は しんせつです。 - Thầy Tanaka tốt bụng.",
+            "富士山（ふじさん）は 高い（たかい）です。 - Núi Phú Sĩ cao.",
+            "ハノイは あたたかいです。 - Hà Nội ấm áp.",
+            "あの人（ひと）は ゆうめいです。 - Người kia nổi tiếng."
+          ],
+          "notes": [
+            "Tính từ đứng trước です.",
+            "な chỉ dùng khi tính từ な đứng trước danh từ, không dùng trước です."
+          ],
+          "content": "Dùng tính từ để miêu tả danh từ trong câu khẳng định lịch sự."
+        },
+        {
+          "id": "be8acd31-ad36-4f8f-a881-23af26a4ed8d",
+          "order": 3,
+          "title": "Câu phủ định với tính từ",
+          "meaning": "N không ... / không phải là ...",
+          "usage": [
+            "Với tính từ đuôi な: đổi です thành ではありません hoặc じゃありません.",
+            "Với tính từ đuôi い: đổi い thành くないです.",
+            "Dùng mẫu N は どうですか để hỏi tính chất, cảm tưởng, trạng thái."
+          ],
+          "examples": [
+            "ハノイは 静か（しずか）ではありません。 - Hà Nội không yên tĩnh.",
+            "この映画（えいが）は おもしろくないです。 - Bộ phim này không hay.",
+            "日本（にほん）の生活（せいかつ）は どうですか。 - Cuộc sống ở Nhật thế nào?",
+            "楽しい（たのしい）です。 - Rất vui."
+          ],
+          "notes": [
+            "Trường hợp đặc biệt: いい đổi thành よくないです.",
+            "どう là từ để hỏi tính chất, cảm tưởng của người hoặc vật."
+          ],
+          "content": "Dùng để phủ định tính chất của người hoặc vật."
+        },
+        {
+          "id": "ea4d0717-c49e-4317-95aa-7d83f23e352e",
+          "order": 4,
+          "title": "Tính từ bổ nghĩa cho danh từ",
+          "meaning": "Danh từ có tính chất ...",
+          "usage": [
+            "Khi đứng trước danh từ, tính từ đuôi な giữ nguyên な.",
+            "Khi đứng trước danh từ, tính từ đuôi い giữ nguyên い.",
+            "Dùng để mô tả trực tiếp người, vật, sự việc."
+          ],
+          "examples": [
+            "ジョンさんは ハンサムな 人（ひと）です。 - Anh John là người đẹp trai.",
+            "今日（きょう）は 暑い（あつい）日（ひ）です。 - Hôm nay là một ngày nóng.",
+            "Anさんは 有名（ゆうめい）な 人（ひと）です。 - Bạn An là người nổi tiếng.",
+            "富士山（ふじさん）は 高い（たかい）山（やま）です。 - Núi Phú Sĩ là ngọn núi cao."
+          ],
+          "notes": [
+            "Đây là điểm khác giữa tính từ đứng cuối câu và đứng trước danh từ.",
+            "Tính từ な phải có な khi đứng trước danh từ."
+          ],
+          "content": "Dùng tính từ đứng trước danh từ để bổ nghĩa cho danh từ đó."
+        },
+        {
+          "id": "05a5e837-185f-4fbc-8ed7-c7f6d088dc8e",
+          "order": 5,
+          "title": "あまり + phủ định của tính từ",
+          "meaning": "Không ... lắm / không ... mấy",
+          "usage": [
+            "あまり đứng trước tính từ dạng phủ định.",
+            "Dùng để diễn tả 'không ... lắm'.",
+            "Dùng mẫu N1 は どんな N2 ですか để hỏi một danh từ có tính chất như thế nào."
+          ],
+          "examples": [
+            "この食べ物（たべもの）は あまり おいしくないです。 - Đồ ăn này không ngon lắm.",
+            "この辞書（じしょ）は あまり 便利（べんり）ではありません。 - Quyển từ điển này không tiện lắm.",
+            "日本語（にほんご）は 難しい（むずかしい）ですか。 - Tiếng Nhật khó phải không?",
+            "いいえ、あまり 難しく（むずかしく）ないです。 - Không, không khó lắm.",
+            "Hueは どんな町（まち）ですか。 - Huế là thành phố như thế nào?",
+            "静かな（しずかな）町（まち）です。 - Là thành phố yên tĩnh."
+          ],
+          "notes": [
+            "どんな phải đi với danh từ phía sau.",
+            "Khác với どう, どんな dùng khi hỏi trực tiếp về một danh từ nào đó."
+          ],
+          "content": "Dùng あまり trước tính từ phủ định để diễn tả mức độ không nhiều."
+        },
+        {
+          "id": "ab80c9ff-87a1-4d04-9ff4-0b33a2e46f12",
+          "order": 6,
+          "title": "どう / どんな",
+          "meaning": "Như thế nào / loại nào",
+          "usage": [
+            "どう là nghi vấn từ hỏi về cảm tưởng, tính chất, tình trạng của người hay vật.",
+            "どんな đi trực tiếp vào trước danh từ.",
+            "Dùng どんな khi muốn hỏi 'N1 là N2 như thế nào'."
+          ],
+          "examples": [
+            "日本（にほん）の料理（りょうり）は どうですか。 - Món ăn Nhật thế nào?",
+            "おいしいですが、高い（たかい）です。 - Ngon nhưng đắt.",
+            "鈴木（すずき）さんは どんな人（ひと）ですか。 - Suzuki là người thế nào?",
+            "親切（しんせつ）な 人（ひと）です。 - Chị ấy là người tốt."
+          ],
+          "notes": [
+            "どう không cần danh từ đi sau.",
+            "どんな bắt buộc phải có danh từ đi sau."
+          ],
+          "content": "どう dùng để hỏi tính chất chung, còn どんな dùng để hỏi tính chất của một danh từ cụ thể."
+        },
+        {
+          "id": "139e0f31-9189-45e5-80c5-dfb3e92fc677",
+          "order": 7,
+          "title": "Sentence1 が、Sentence2",
+          "meaning": "S1 nhưng S2",
+          "usage": [
+            "が có nghĩa là 'nhưng'.",
+            "Dùng để nối hai mệnh đề có ý nghĩa trái ngược hoặc tương phản."
+          ],
+          "examples": [
+            "日本（にほん）の食べ物（たべもの）は どうですか。 - Đồ ăn Nhật thế nào?",
+            "おいしいですが、高い（たかい）です。 - Ngon nhưng đắt."
+          ],
+          "notes": [
+            "Đây không phải là が làm trợ từ chủ ngữ.",
+            "Trong mẫu này, が là liên từ nối câu."
+          ],
+          "content": "Dùng が để nối hai mệnh đề có ý nghĩa tương phản nhau."
+        },
+        {
+          "id": "0699dc4f-6891-4fb6-8bdb-370ebaeeab98",
+          "order": 8,
+          "title": "Sentence1。そして Sentence2",
+          "meaning": "S1. Và rồi / và",
+          "usage": [
+            "そして là liên từ có nghĩa là 'và'.",
+            "Dùng để nối hai câu có nội dung tương đồng."
+          ],
+          "examples": [
+            "ベトナムの食べ物（たべもの）は おいしいです。そして、安い（やすい）です。 - Đồ ăn Việt Nam ngon. Và rẻ nữa."
+          ],
+          "notes": [
+            "Khác với と là nối hai danh từ.",
+            "そして nối hai câu hoàn chỉnh."
+          ],
+          "content": "Dùng そして để nối hai câu có nội dung tương đồng hoặc bổ sung cho nhau."
+        },
+        {
+          "id": "f68811fd-6de8-44df-9110-026ad00de55f",
+          "order": 9,
+          "title": "N は どれですか",
+          "meaning": "N là cái nào?",
+          "usage": [
+            "どれ là từ để hỏi mang nghĩa 'cái nào'.",
+            "Dùng khi có từ hai đối tượng trở lên để lựa chọn."
+          ],
+          "examples": [
+            "山田（やまだ）さんの とけいは どれですか。 - Đồng hồ của Yamada là cái nào?",
+            "あおい とけいです。 - Đồng hồ màu xanh.",
+            "あおい のです。 - Cái màu xanh."
+          ],
+          "notes": [
+            "Có thể trả lời bằng màu sắc, tên vật, hoặc dùng のです để thay cho danh từ đã rõ.",
+            "どれ dùng khi hỏi chọn một trong nhiều vật."
+          ],
+          "content": "Dùng どれ để yêu cầu người nghe chọn một trong từ hai vật trở lên."
+        }
+      ]
+    },
+    {
+      "id": "lesson-09-n5",
+      "lessonNumber": 9,
+      "level": "N5",
+      "title": "Bài 9",
+      "pointCount": 5,
+      "points": [
+        {
+          "id": "a70cc954-418e-4288-a562-9839f84e0752",
+          "order": 1,
+          "title": "N が あります / わかります / すきです...",
+          "meaning": "Có N / hiểu N / thích N / ghét N / giỏi N / kém N",
+          "usage": [
+            "Với あります và わかります, đối tượng đi với trợ từ が.",
+            "Một số tính từ như すき, きらい, じょうず, へた cũng dùng が.",
+            "あります ở đây dùng cho đồ vật, không dùng cho người hay động vật."
+          ],
+          "examples": [
+            "わたしは イタリア料理（りょうり）が すきです。 - Tôi thích món ăn Ý.",
+            "私（わたし）の 恋人（こいびと）は 英語（えいご）が わかります。 - Người yêu tôi hiểu được tiếng Anh.",
+            "田中（たなか）さんは バイクが あります。 - Anh Tanaka có xe máy."
+          ],
+          "notes": [
+            "あります chỉ sự sở hữu với đồ vật.",
+            "Không dùng あります cho người và động vật."
+          ],
+          "content": "Một số động từ và tính từ dùng trợ từ が thay vì を."
+        },
+        {
+          "id": "d80f5856-d174-4501-88e0-ba61b7885ac3",
+          "order": 2,
+          "title": "どんな N",
+          "meaning": "N như thế nào / loại N nào",
+          "usage": [
+            "どんな đứng trước danh từ.",
+            "Dùng để hỏi về loại đồ ăn, loại thể thao, loại người..."
+          ],
+          "examples": [
+            "どんな 食べ物（たべもの）が すきですか。 - Bạn thích đồ ăn thế nào?",
+            "魚（さかな）が すきです。 - Tôi thích cá.",
+            "どんな スポーツが 上手（じょうず）ですか。 - Bạn giỏi môn thể thao nào?",
+            "テニスが 上手（じょうず）です。 - Tôi giỏi tennis."
+          ],
+          "notes": [
+            "Khác với どう là hỏi trực tiếp tính chất, どんな phải có danh từ phía sau."
+          ],
+          "content": "Dùng để hỏi chọn một thứ trong nhóm danh từ đứng sau どんな."
+        },
+        {
+          "id": "7b9cced9-fcd3-44a4-8ce7-fb5f5dc39784",
+          "order": 3,
+          "title": "Phó từ chỉ mức độ",
+          "meaning": "Rất / đại khái / nhiều / hơi / không ... lắm / hoàn toàn không",
+          "usage": [
+            "よく, だいたい, たくさん, すこし dùng để diễn tả mức độ.",
+            "あまり và ぜんぜん thường đi với câu phủ định."
+          ],
+          "examples": [
+            "日本語（にほんご）が よく わかります。 - Tôi rất hiểu tiếng Nhật.",
+            "英語（えいご）が だいたい わかります。 - Tôi biết tiếng Anh cũng đại khái thôi.",
+            "お金（かね）が たくさん あります。 - Tôi có nhiều tiền.",
+            "きょうは すこし 寒い（さむい）です。 - Hôm nay hơi lạnh.",
+            "フランス語（ご）が あまり わかりません。 - Tôi không biết tiếng Pháp nhiều lắm."
+          ],
+          "notes": [
+            "あまり và ぜんぜん thường đi cùng phủ định."
+          ],
+          "content": "Các phó từ đứng trước động từ hoặc tính từ để chỉ mức độ."
+        },
+        {
+          "id": "bd2af3c1-1a43-4ffe-bd0f-5d74f1adc376",
+          "order": 4,
+          "title": "S1 から、S2",
+          "meaning": "Vì S1 nên S2",
+          "usage": [
+            "Đặt から sau câu chỉ nguyên nhân.",
+            "Câu sau là kết quả hoặc hành động phát sinh từ nguyên nhân đó."
+          ],
+          "examples": [
+            "時間（じかん）が ありませんから、テレビを 見（み）ません。 - Vì không có thời gian nên tôi không xem ti vi.",
+            "スポーツが 好（す）きですから、毎日（まいにち）します。 - Vì thích thể thao nên ngày nào tôi cũng chơi."
+          ],
+          "notes": [
+            "から ở đây mang nghĩa là vì."
+          ],
+          "content": "Dùng から để nối hai câu có quan hệ nguyên nhân - kết quả."
+        },
+        {
+          "id": "3aafef5f-b327-48c1-9b66-639ee315d365",
+          "order": 5,
+          "title": "どうして + Sentence か",
+          "meaning": "Tại sao ~?",
+          "usage": [
+            "どうして là từ để hỏi lý do.",
+            "Khi trả lời thường thêm から ở cuối câu."
+          ],
+          "examples": [
+            "どうして しゅくだいを しませんか。 - Vì sao bạn không làm bài tập?",
+            "時間（じかん）が ありませんから。 - Vì tôi không có thời gian.",
+            "あしたは 会社（かいしゃ）を 休（やす）みます。 - Ngày mai tôi sẽ nghỉ làm.",
+            "どうしてですか。 - Tại sao thế?",
+            "用事（ようじ）が ありますから。 - Vì tôi có việc."
+          ],
+          "notes": [
+            "どうしてですか có nghĩa là tại sao lại thế."
+          ],
+          "content": "Dùng どうして để hỏi lý do."
+        }
+      ]
+    },
+    {
+      "id": "lesson-10-n5",
+      "lessonNumber": 10,
+      "level": "N5",
+      "title": "Bài 10",
+      "pointCount": 5,
+      "points": [
+        {
+          "id": "6955833f-d4d6-47ea-873e-c264bbfc6504",
+          "order": 1,
+          "title": "N が あります / います",
+          "meaning": "Có N",
+          "usage": [
+            "あります dùng với đồ vật.",
+            "います dùng với người và động vật."
+          ],
+          "examples": [
+            "コンピューターが あります。 - Tôi có máy vi tính.",
+            "兄（あに）が います。 - Tôi có anh trai."
+          ],
+          "notes": [
+            "Đây cũng có thể dùng để diễn tả sở hữu."
+          ],
+          "content": "Dùng để nói sự tồn tại hoặc sở hữu của người, vật."
+        },
+        {
+          "id": "479ad76e-ca4c-4495-bd26-5eb113c93f35",
+          "order": 2,
+          "title": "N1 に N2 が あります / います",
+          "meaning": "Ở N1 có N2",
+          "usage": [
+            "N1 là địa điểm tồn tại của N2.",
+            "Nếu N2 là đồ vật dùng あります.",
+            "Nếu N2 là người hoặc động vật dùng います."
+          ],
+          "examples": [
+            "私（わたし）の 部屋（へや）に 電話（でんわ）が あります。 - Trong phòng tôi có cái điện thoại.",
+            "庭（にわ）に さくらの 木（き）が あります。 - Ở ngoài sân có cây hoa anh đào.",
+            "教室（きょうしつ）に 田中（たなか）さんが います。 - Trong phòng học có bạn Tanaka.",
+            "かばんに 何（なに）が ありますか。 - Trong cặp có gì thế?",
+            "本（ほん）や ペンが あります。 - Có sách và bút."
+          ],
+          "notes": [
+            "Mẫu này nhấn mạnh vào vị trí."
+          ],
+          "content": "Dùng để nói sự tồn tại của người hoặc vật ở một nơi."
+        },
+        {
+          "id": "a1ccff31-f102-4293-a1e3-5eda55bfd6ca",
+          "order": 3,
+          "title": "N1 は N2 に あります / います",
+          "meaning": "N1 ở N2",
+          "usage": [
+            "N1 là chủ đề của câu.",
+            "N2 là vị trí tồn tại của N1."
+          ],
+          "examples": [
+            "ランさんの 電話（でんわ）は うけつけに あります。 - Điện thoại của Lan ở quầy tiếp tân.",
+            "パソコンは 事務所（じむしょ）に あります。 - Máy laptop ở văn phòng.",
+            "犬（いぬ）は にわに います。 - Con chó ở ngoài sân.",
+            "鈴木（すずき）さんは 食堂（しょくどう）に います。 - Cô Suzuki ở phòng ăn."
+          ],
+          "notes": [
+            "Mẫu này nhấn mạnh vào chủ thể."
+          ],
+          "content": "Dùng để nói vị trí tồn tại của người hoặc vật."
+        },
+        {
+          "id": "ac5682d9-be21-4fb6-8784-d4a764dcdd92",
+          "order": 4,
+          "title": "N1 の N2（vị trí）",
+          "meaning": "Vị trí của N1 / chỗ ở trên, dưới, trước, sau...",
+          "usage": [
+            "Dùng để diễn tả tương quan vị trí.",
+            "Toàn bộ cụm N1 の N2 được xem như một danh từ chỉ nơi chốn."
+          ],
+          "examples": [
+            "つくえの 上（うえ）に 本（ほん）が あります。 - Ở trên bàn có quyển sách.",
+            "としょかんの 前（まえ）に こうえんが あります。 - Ở trước thư viện có công viên.",
+            "駅（えき）の 近く（ちかく）で ともだちと 会（あ）います。 - Tôi gặp bạn ở gần nhà ga."
+          ],
+          "notes": [
+            "Thường đi với に あります / います hoặc các động từ chỉ vị trí."
+          ],
+          "content": "Cả cụm N1 の N2 được dùng như một danh từ chỉ địa điểm."
+        },
+        {
+          "id": "379f6a16-4247-4e8d-beb8-670278a7d894",
+          "order": 5,
+          "title": "N1 や N2（など）",
+          "meaning": "N1, N2, ...",
+          "usage": [
+            "や dùng để nối các danh từ.",
+            "Khác với と, や chỉ liệt kê mang tính đại diện, không phải toàn bộ."
+          ],
+          "examples": [
+            "教室（きょうしつ）の 中（なか）に つくえや いすが あります。 - Trong phòng học có bàn, ghế...",
+            "かばんの 中（なか）に ペンや 本（ほん）などが あります。 - Trong cặp có bút, sách..."
+          ],
+          "notes": [
+            "など có thể thêm phía sau để nhấn mạnh là còn những thứ khác nữa."
+          ],
+          "content": "Dùng や để liệt kê không đầy đủ các danh từ."
+        }
+      ]
+    },
+    {
+      "id": "lesson-11-n5",
+      "lessonNumber": 11,
+      "level": "N5",
+      "title": "Bai 11",
+      "pointCount": 3,
+      "points": [
+        {
+          "id": "cc4d7fd1-cb8c-4ee7-8ffb-fb54e3840452",
+          "order": 1,
+          "title": "Số đếm và trợ từ số đếm",
+          "meaning": "Đếm đồ vật, người, con vật, số lần...",
+          "usage": [
+            "Dùng số đếm kèm trợ từ đếm phù hợp với từng loại đối tượng.",
+            "～つ thường dùng để đếm đồ vật thông thường.",
+            "～人 dùng để đếm người.",
+            "～枚 dùng để đếm vật mỏng, dẹt.",
+            "～回 dùng để đếm số lần."
+          ],
+          "examples": [
+            "りんごを ４つ 買（か）いました。 - Tôi đã mua 4 quả táo.",
+            "学生（がくせい）が ３人（にん） います。 - Có 3 học sinh.",
+            "切手（きって）を ５枚（まい） 買（か）いました。 - Tôi đã mua 5 con tem."
+          ],
+          "notes": [
+            "1 người là ひとり, 2 người là ふたり.",
+            "Từ 1 đến 10 có thể dùng bộ đếm chung với ～つ."
+          ],
+          "content": "Dùng số đếm kèm trợ từ để đếm người, vật, con vật, số lần, thời gian..."
+        },
+        {
+          "id": "df136f08-5f5b-41ce-9c97-3b624acfc975",
+          "order": 2,
+          "title": "N を 数量 V",
+          "meaning": "Làm gì với số lượng bao nhiêu",
+          "usage": [
+            "Số lượng thường đặt ngay trước động từ.",
+            "Dùng để nói đã mua bao nhiêu, có bao nhiêu, ăn bao nhiêu..."
+          ],
+          "examples": [
+            "毎日（まいにち） ７時間（じかん） 働（はたら）きます。 - Mỗi ngày tôi làm việc 7 tiếng.",
+            "日本人（にほんじん）の 学生（がくせい）が ２人（ふたり） います。 - Có 2 sinh viên người Nhật.",
+            "コーヒーを ２杯（はい） 飲（の）みました。 - Tôi đã uống 2 cốc cà phê."
+          ],
+          "notes": [
+            "Giữa số lượng và động từ thường không cần trợ từ.",
+            "Với người và vật tồn tại, cũng có thể đặt số lượng trước います / あります."
+          ],
+          "content": "Số lượng thường đứng trước động từ để bổ nghĩa cho hành động."
+        },
+        {
+          "id": "40efbb1a-f855-4927-953a-828db5766b46",
+          "order": 3,
+          "title": "どのくらい",
+          "meaning": "Bao lâu / bao nhiêu / mức độ bao nhiêu",
+          "usage": [
+            "Dùng để hỏi khoảng thời gian học, làm việc, đi lại...",
+            "Cũng có thể dùng để hỏi chi phí hoặc mức độ."
+          ],
+          "examples": [
+            "日本語（にほんご）を どのくらい 勉強（べんきょう）しましたか。 - Bạn đã học tiếng Nhật bao lâu rồi?",
+            "３年（ねん） 勉強（べんきょう）しました。 - Tôi đã học 3 năm.",
+            "大阪（おおさか）まで どのくらい かかりますか。 - Đi đến Osaka mất bao lâu?"
+          ],
+          "notes": [
+            "Thường đi với thời lượng như ～時間, ～週間, ～か月, ～年."
+          ],
+          "content": "Dùng để hỏi khoảng thời gian, số lượng hoặc mức độ."
+        }
+      ]
+    },
+    {
+      "id": "lesson-12-n5",
+      "lessonNumber": 12,
+      "level": "N5",
+      "title": "Bài 12",
+      "pointCount": 4,
+      "points": [
+        {
+          "id": "4459194f-ed94-4391-bab8-c5fc8ec57eb4",
+          "order": 1,
+          "title": "N1 は N2 より Adj です",
+          "meaning": "N1 ... hơn N2",
+          "usage": [
+            "N1 là đối tượng được đem ra so sánh.",
+            "N2 là mốc so sánh đi với より."
+          ],
+          "examples": [
+            "日本（にほん）は ベトナムより 寒（さむ）いです。 - Nhật lạnh hơn Việt Nam.",
+            "飛行機（ひこうき）は 電車（でんしゃ）より 速（はや）いです。 - Máy bay nhanh hơn tàu điện."
+          ],
+          "notes": [
+            "Đây là mẫu câu so sánh hơn, kém."
+          ],
+          "content": "Dùng より để so sánh hai đối tượng."
+        },
+        {
+          "id": "652fbb8c-83d4-457c-ba92-7d775345d582",
+          "order": 2,
+          "title": "N1 と N2 と どちらが Adj ですか",
+          "meaning": "Giữa N1 và N2, cái nào ... hơn?",
+          "usage": [
+            "Luôn dùng どちら khi so sánh giữa hai vật hay hai người.",
+            "Câu trả lời thường là N1 / N2 のほうが Adj です."
+          ],
+          "examples": [
+            "テニスと サッカーと どちらが おもしろいですか。 - Tennis và bóng đá, cái nào thú vị hơn?",
+            "サッカーの ほうが おもしろいです。 - Bóng đá thú vị hơn.",
+            "春（はる）と 秋（あき）と どちらが 好（す）きですか。 - Mùa xuân và mùa thu, bạn thích mùa nào hơn?",
+            "秋（あき）の ほうが 好（す）きです。 - Tôi thích mùa thu hơn."
+          ],
+          "notes": [
+            "Đây là câu hỏi so sánh giữa 2 đối tượng."
+          ],
+          "content": "Dùng để hỏi lựa chọn giữa hai đối tượng khi so sánh."
+        },
+        {
+          "id": "8f9d66e3-8c34-4d0a-a9ff-caf4094982b2",
+          "order": 3,
+          "title": "N1 の ほうが Adj です",
+          "meaning": "N1 ... hơn",
+          "usage": [
+            "Thường dùng để trả lời cho câu hỏi với どちらが.",
+            "Cũng có thể dùng độc lập khi mốc so sánh đã rõ."
+          ],
+          "examples": [
+            "サッカーの ほうが おもしろいです。 - Bóng đá thú vị hơn.",
+            "秋（あき）の ほうが 好（す）きです。 - Tôi thích mùa thu hơn."
+          ],
+          "notes": [
+            "ほうが nhấn mạnh bên được đánh giá cao hơn."
+          ],
+          "content": "Dùng để nhấn mạnh phía được chọn trong phép so sánh."
+        },
+        {
+          "id": "4ef0db2b-e388-45ea-a42a-559497169121",
+          "order": 4,
+          "title": "N1 の なかで N2 が いちばん Adj です",
+          "meaning": "Trong N1, N2 là ... nhất",
+          "usage": [
+            "N1 là phạm vi hoặc nhóm.",
+            "N2 là đối tượng nổi bật nhất trong phạm vi đó.",
+            "Có thể hỏi cái gì, ai, ở đâu, khi nào là ... nhất."
+          ],
+          "examples": [
+            "くだものの なかで、りんごが いちばん 好（す）きです。 - Trong các loại quả, tôi thích táo nhất.",
+            "スポーツで サッカーが いちばん おもしろいです。 - Trong các môn thể thao, bóng đá thú vị nhất.",
+            "１年（ねん）で いつが いちばん 寒（さむ）いですか。 - Trong 1 năm, khi nào lạnh nhất?",
+            "２月（がつ）が いちばん 寒（さむ）いです。 - Tháng 2 lạnh nhất.",
+            "クラスで だれが いちばん 若（わか）いですか。 - Trong lớp, ai trẻ nhất?",
+            "Anさんです。 - Bạn An."
+          ],
+          "notes": [
+            "Đây là mẫu so sánh cao nhất."
+          ],
+          "content": "Dùng để nói mức độ cao nhất trong một nhóm."
+        }
+      ]
+    },
+    {
+      "id": "lesson-13-n5",
+      "lessonNumber": 13,
+      "level": "N5",
+      "title": "Bài 13",
+      "pointCount": 4,
+      "points": [
+        {
+          "id": "867b4f6f-5234-463c-b005-23e36c9ce88c",
+          "order": 1,
+          "title": "N が ほしいです",
+          "meaning": "Muốn N",
+          "usage": [
+            "N là đồ vật hoặc thứ mình muốn có.",
+            "Dùng để nói mong muốn của bản thân."
+          ],
+          "examples": [
+            "わたしは コンピューターが ほしいです。 - Tôi muốn có máy tính.",
+            "新（あたら）しい くつが ほしいです。 - Tôi muốn đôi giày mới."
+          ],
+          "notes": [
+            "Không dùng trực tiếp để nói mong muốn của người thứ ba."
+          ],
+          "content": "Dùng để nói mình muốn có một đồ vật hay một thứ gì đó."
+        },
+        {
+          "id": "28d121a7-c743-4b79-a958-7f9882dd0901",
+          "order": 2,
+          "title": "Vます + たいです",
+          "meaning": "Muốn làm gì",
+          "usage": [
+            "Bỏ ます rồi thêm たいです.",
+            "Dùng để nói mong muốn của bản thân."
+          ],
+          "examples": [
+            "日本（にほん）へ 行（い）きたいです。 - Tôi muốn đi Nhật.",
+            "何（なに）か 飲（の）みたいです。 - Tôi muốn uống cái gì đó."
+          ],
+          "notes": [
+            "ほしいです hay ～たいです không dùng để nói mong muốn của người thứ ba."
+          ],
+          "content": "Dùng để nói mong muốn thực hiện một hành động."
+        },
+        {
+          "id": "90a901dc-ca00-40e3-9ff3-874d5618a75a",
+          "order": 3,
+          "title": "Đi / đến / về đâu để làm gì",
+          "meaning": "Đi / đến / về N để làm gì",
+          "usage": [
+            "Dùng để nói mục đích đi đến hoặc về đâu đó.",
+            "Động từ chỉ mục đích dùng ở dạng bỏ ます.",
+            "Nếu là danh động từ thì dùng trực tiếp với に."
+          ],
+          "examples": [
+            "私（わたし）は スーパーへ 服（ふく）を 買（か）いに 行（い）きました。 - Tôi đã đi siêu thị để mua quần áo.",
+            "田中（たなか）さんは 日本（にほん）へ 日本語（にほんご）を 勉強（べんきょう）しに 来（き）ました。 - Anh Tanaka đến Nhật để học tiếng Nhật.",
+            "田中（たなか）さんは 日本（にほん）へ 日本語（にほんご）の 勉強（べんきょう）に 来（き）ました。 - Anh Tanaka đến Nhật để học tiếng Nhật.",
+            "Giang Vo へ 桜（さくら）の 祭（まつ）りに 行（い）きました。 - Tôi đi đến Giảng Võ để tham gia lễ hội hoa anh đào."
+          ],
+          "notes": [
+            "Danh từ trước に cũng có thể là sự kiện như lễ hội, buổi hòa nhạc."
+          ],
+          "content": "Dùng để nói mục đích của việc đi đến hoặc về một nơi nào đó."
+        },
+        {
+          "id": "ab6ed009-1a59-4450-af16-50acca60976a",
+          "order": 4,
+          "title": "どこか / なにか",
+          "meaning": "Ở đâu đó / cái gì đó",
+          "usage": [
+            "どこか được dùng như danh từ chỉ địa điểm không xác định.",
+            "なにか được dùng như danh từ chỉ đồ vật, sự việc không xác định.",
+            "Khi đứng trước động từ đi với へ, が, を thì các trợ từ này có thể được lược bỏ."
+          ],
+          "examples": [
+            "夏休（なつやす）みは どこか（へ） 行（い）きましたか。 - Nghỉ hè, bạn có đi đâu không?",
+            "はい、行（い）きました。 - Có, tôi có đi.",
+            "暑（あつ）いですから、何（なに）か（を） 飲（の）みたいです。 - Vì trời nóng nên tôi muốn uống gì đó."
+          ],
+          "notes": [
+            "Các trợ từ khác ngoài へ, が, を thường vẫn giữ nguyên."
+          ],
+          "content": "Dùng để nói một nơi hay một vật nào đó không xác định rõ."
+        }
+      ]
+    },
+    {
+      "id": "lesson-14-n5",
+      "lessonNumber": 14,
+      "level": "N5",
+      "title": "Bài 14",
+      "pointCount": 3,
+      "points": [
+        {
+          "id": "66c163c2-4178-472d-bc5d-2bc0aaa79e8d",
+          "order": 1,
+          "title": "Các nhóm của động từ",
+          "meaning": "Nhóm 1 / Nhóm 2 / Nhóm 3",
+          "usage": [
+            "Nhóm 1: thường có âm i trước ます.",
+            "Nhóm 2: phần lớn có âm e trước ます, nhưng cũng có một số động từ âm i.",
+            "Nhóm 3: chỉ có します và きます."
+          ],
+          "examples": [
+            "かきます / のみます - Ví dụ nhóm 1",
+            "たべます / みせます / みます / おきます - Ví dụ nhóm 2",
+            "します / きます - Ví dụ nhóm 3"
+          ],
+          "notes": [
+            "Phân nhóm rất quan trọng để chia sang các thể như thể て."
+          ],
+          "content": "Động từ tiếng Nhật được chia thành 3 nhóm theo cách biến đổi."
+        },
+        {
+          "id": "a57b5ef1-e36d-4644-af5a-87cfa6d565d2",
+          "order": 2,
+          "title": "Thể て của động từ",
+          "meaning": "Động từ dạng て",
+          "usage": [
+            "Cách chia thể て phụ thuộc vào nhóm động từ.",
+            "Nhóm 1 chia khác nhau theo đuôi trước ます.",
+            "Nhóm 2 bỏ ます rồi thêm て.",
+            "Nhóm 3: します -> して, きます -> きて."
+          ],
+          "examples": [
+            "かきます → かいて - viết",
+            "のみます → のんで - uống",
+            "かいます → かって - mua",
+            "たべます → たべて - ăn",
+            "します → して - làm",
+            "きます → きて - đến"
+          ],
+          "notes": [
+            "いきます là trường hợp đặc biệt: いって.",
+            "Thể て là nền tảng để học các mẫu của bài 14 và 15."
+          ],
+          "content": "Các động từ kết thúc bằng て hoặc で được gọi là thể て."
+        },
+        {
+          "id": "13c1b6cb-9494-44ff-8328-fef27bb498bf",
+          "order": 3,
+          "title": "Vて ください",
+          "meaning": "Hãy / làm ơn ...",
+          "usage": [
+            "Dùng trong yêu cầu lịch sự.",
+            "Thường dùng khi chỉ dẫn, hướng dẫn hoặc nhờ vả."
+          ],
+          "examples": [
+            "ここに 名前（なまえ）を 書（か）いて ください。 - Xin hãy viết tên vào đây.",
+            "右（みぎ）へ 曲（ま）がって ください。 - Xin hãy rẽ phải.",
+            "まっすぐ 行（い）って ください。 - Xin hãy đi thẳng."
+          ],
+          "notes": [
+            "Phải chia động từ sang thể て trước."
+          ],
+          "content": "Dùng để yêu cầu hoặc nhờ ai đó làm một việc."
+        }
+      ]
+    },
+    {
+      "id": "lesson-15-n5",
+      "lessonNumber": 15,
+      "level": "N5",
+      "title": "Bài 15",
+      "pointCount": 4,
+      "points": [
+        {
+          "id": "e9af6cba-8497-472f-9815-74ebd5927b30",
+          "order": 1,
+          "title": "Vても いいです",
+          "meaning": "Có thể làm ~ / được phép làm ~",
+          "usage": [
+            "Dùng khi nói một việc được phép làm.",
+            "Dạng nghi vấn được dùng để xin phép."
+          ],
+          "examples": [
+            "その 部屋（へや）で タバコを 吸（す）っても いいです。 - Được phép hút thuốc ở phòng đó.",
+            "ここで 写真（しゃしん）を 撮（と）っても いいですか。 - Tôi chụp ảnh ở đây có được không?",
+            "ええ、いいです。 - Vâng, được.",
+            "タバコを 吸（す）っても いいですか。 - Tôi hút thuốc có được không?",
+            "すみません。いけません。 - Xin lỗi. Không được."
+          ],
+          "notes": [
+            "Thể nghi vấn của mẫu này dùng như câu xin phép."
+          ],
+          "content": "Dùng để nói một hành động được cho phép."
+        },
+        {
+          "id": "c3bae2d0-6554-4644-9001-95de8b3559eb",
+          "order": 2,
+          "title": "Vては いけません",
+          "meaning": "Không được làm ~",
+          "usage": [
+            "Dùng để cấm hoặc nói rằng hành động đó không được phép.",
+            "Hay gặp trong nội quy, quy định."
+          ],
+          "examples": [
+            "ここで タバコを 吸（す）っては いけません。 - Không được hút thuốc ở đây.",
+            "ここで 写真（しゃしん）を 撮（と）っても いいですか。 - Tôi chụp ảnh ở đây được không?",
+            "いいえ、いけません。 - Không, không được."
+          ],
+          "notes": [
+            "Mẫu này dùng để cấm đoán."
+          ],
+          "content": "Dùng để nói ý cấm đoán hoặc không được phép làm gì."
+        },
+        {
+          "id": "9fcf231b-328d-4f9e-ae15-8569f5485d99",
+          "order": 3,
+          "title": "Vています",
+          "meaning": "Đang làm ~ / đã ... và đang ở trạng thái đó / thói quen kéo dài",
+          "usage": [
+            "Diễn tả hành động đang diễn ra tại thời điểm nói.",
+            "Diễn tả trạng thái hiện tại là kết quả của một hành động đã xảy ra trước đó.",
+            "Cũng dùng để biểu thị tập quán, thói quen, công việc lặp lại trong thời gian dài."
+          ],
+          "examples": [
+            "私（わたし）は 結婚（けっこん）しています。 - Tôi đã kết hôn.",
+            "私（わたし）は 鈴木（すずき）さんを 知（し）っています。 - Tôi biết cô Suzuki.",
+            "私（わたし）は カメラを 持（も）っています。 - Tôi có máy ảnh.",
+            "私（わたし）は ハノイに 住（す）んでいます。 - Tôi sống ở Hà Nội.",
+            "FPT は コンピューターソフトを 作（つく）っています。 - FPT sản xuất phần mềm máy tính.",
+            "私（わたし）は CMC で 働（はたら）いています。 - Tôi làm việc ở CMC.",
+            "私（わたし）は FPT大学（だいがく）で 勉強（べんきょう）しています。 - Tôi học ở trường đại học FPT."
+          ],
+          "notes": [
+            "Một số động từ thường dùng ở thể tiếp diễn với nghĩa trạng thái: 知（し）っています、住（す）んでいます、結婚（けっこん）しています、持（も）っています."
+          ],
+          "content": "Dùng để diễn tả hành động đang tiếp diễn, trạng thái hiện tại do kết quả của hành động, hoặc thói quen lâu dài."
+        },
+        {
+          "id": "80d3698f-22d1-45e5-9e4d-fecc54e814a9",
+          "order": 4,
+          "title": "V（ます）しょうか",
+          "meaning": "Tôi làm giúp nhé? / tôi ... nhé?",
+          "usage": [
+            "Dùng khi người nói muốn chủ động đề nghị giúp đỡ.",
+            "Mang sắc thái lịch sự, mềm."
+          ],
+          "examples": [
+            "荷物（にもつ）を 持（も）ちましょうか。 - Tôi xách hành lý giúp nhé?",
+            "窓（まど）を 閉（し）めましょうか。 - Tôi đóng cửa sổ giúp nhé?"
+          ],
+          "notes": [
+            "Bỏ ます rồi thêm ましょうか."
+          ],
+          "content": "Dùng để đề nghị làm giúp ai đó một việc gì."
+        }
+      ]
+    },
+    {
+      "id": "lesson-16-n5",
+      "lessonNumber": 16,
+      "level": "N5",
+      "title": "Bài 16",
+      "pointCount": 0,
+      "points": []
+    },
+    {
+      "id": "lesson-17-n5",
+      "lessonNumber": 17,
+      "level": "N5",
+      "title": "Bài 17",
+      "pointCount": 0,
+      "points": []
+    },
+    {
+      "id": "lesson-18-n5",
+      "lessonNumber": 18,
+      "level": "N5",
+      "title": "Bài 18",
+      "pointCount": 0,
+      "points": []
+    },
+    {
+      "id": "lesson-19-n5",
+      "lessonNumber": 19,
+      "level": "N5",
+      "title": "Bài 19",
+      "pointCount": 0,
+      "points": []
+    },
+    {
+      "id": "lesson-20-n5",
+      "lessonNumber": 20,
+      "level": "N5",
+      "title": "Bài 20",
+      "pointCount": 0,
+      "points": []
+    },
+    {
+      "id": "lesson-21-n5",
+      "lessonNumber": 21,
+      "level": "N5",
+      "title": "Bài 21",
+      "pointCount": 0,
+      "points": []
+    },
+    {
+      "id": "lesson-22-n5",
+      "lessonNumber": 22,
+      "level": "N5",
+      "title": "Bài 22",
+      "pointCount": 0,
+      "points": []
+    },
+    {
+      "id": "lesson-23-n5",
+      "lessonNumber": 23,
+      "level": "N5",
+      "title": "Bài 23",
+      "pointCount": 0,
+      "points": []
+    },
+    {
+      "id": "lesson-24-n5",
+      "lessonNumber": 24,
+      "level": "N5",
+      "title": "Bài 24",
+      "pointCount": 0,
+      "points": []
+    },
+    {
+      "id": "lesson-25-n5",
+      "lessonNumber": 25,
+      "level": "N5",
+      "title": "Bài 25",
+      "pointCount": 0,
+      "points": []
+    }
+  ]
+}

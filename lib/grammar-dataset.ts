@@ -1,0 +1,180 @@
+import "server-only";
+
+import type { Prisma } from "@prisma/client";
+
+import { prisma } from "@/lib/prisma";
+
+export type GrammarPoint = {
+  id: string;
+  order: number;
+  title: string;
+  meaning: string;
+  usage: string[];
+  examples: string[];
+  notes: string[];
+  content: string;
+  image?: string;
+};
+
+export const GRAMMAR_LEVELS = ["N5", "N4"] as const;
+export type GrammarLevel = (typeof GRAMMAR_LEVELS)[number];
+
+export type GrammarLesson = {
+  id: string;
+  lessonNumber: number;
+  level: GrammarLevel;
+  title: string;
+  topic?: string;
+  pointCount: number;
+  points: GrammarPoint[];
+};
+
+export type GrammarDataset = {
+  source: string;
+  importedAt: string;
+  lessonCount: number;
+  lessons: GrammarLesson[];
+};
+
+const APP_DATA_KEY = "grammar_dataset";
+
+function normalizeText(value: unknown): string {
+  if (typeof value !== "string") {
+    return "";
+  }
+  return value.trim();
+}
+
+function nowIso(): string {
+  return new Date().toISOString();
+}
+
+function normalizeLevel(value: unknown): GrammarLevel {
+  const normalized = normalizeText(value).toUpperCase();
+  if (normalized === "N4") {
+    return "N4";
+  }
+  return "N5";
+}
+
+function normalizeStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.map((entry) => normalizeText(entry)).filter(Boolean);
+}
+
+function normalizePoint(input: unknown, lessonNumber: number, order: number): GrammarPoint | null {
+  if (!input || typeof input !== "object") {
+    return null;
+  }
+
+  const raw = input as Partial<GrammarPoint>;
+  const title = normalizeText(raw.title);
+
+  return {
+    id: normalizeText(raw.id) || `l${lessonNumber}-p${order}`,
+    order: typeof raw.order === "number" && Number.isFinite(raw.order) ? raw.order : order,
+    title: title || `Mau ${order}`,
+    meaning: normalizeText(raw.meaning),
+    usage: normalizeStringArray(raw.usage),
+    examples: normalizeStringArray(raw.examples),
+    notes: normalizeStringArray(raw.notes),
+    content: normalizeText(raw.content),
+    image: normalizeText(raw.image) || undefined,
+  };
+}
+
+function normalizeLesson(input: unknown): GrammarLesson | null {
+  if (!input || typeof input !== "object") {
+    return null;
+  }
+
+  const raw = input as Partial<GrammarLesson>;
+  const lessonNumber =
+    typeof raw.lessonNumber === "number" && Number.isFinite(raw.lessonNumber)
+      ? Math.max(1, Math.floor(raw.lessonNumber))
+      : 1;
+
+  const points = Array.isArray(raw.points)
+    ? raw.points
+        .map((point, index) => normalizePoint(point, lessonNumber, index + 1))
+        .filter((point): point is GrammarPoint => !!point)
+        .sort((a, b) => a.order - b.order)
+    : [];
+
+  const title = normalizeText(raw.title) || `Bai ${lessonNumber}`;
+
+  return {
+    id: normalizeText(raw.id) || `lesson-${String(lessonNumber).padStart(2, "0")}`,
+    lessonNumber,
+    level: normalizeLevel(raw.level),
+    title,
+    topic: normalizeText(raw.topic) || undefined,
+    pointCount: points.length,
+    points,
+  };
+}
+
+function normalizeDataset(input: unknown): GrammarDataset {
+  if (!input || typeof input !== "object") {
+    return {
+      source: "",
+      importedAt: "",
+      lessonCount: 0,
+      lessons: [],
+    };
+  }
+
+  const raw = input as Partial<GrammarDataset>;
+  const lessons = Array.isArray(raw.lessons) ? raw.lessons : [];
+  const normalizedLessons = lessons
+    .map((lesson) => normalizeLesson(lesson))
+    .filter((lesson): lesson is GrammarLesson => !!lesson)
+    .sort((a, b) => a.lessonNumber - b.lessonNumber);
+
+  return {
+    source: typeof raw.source === "string" ? raw.source : "",
+    importedAt: typeof raw.importedAt === "string" ? raw.importedAt : "",
+    lessonCount:
+      typeof raw.lessonCount === "number" ? raw.lessonCount : normalizedLessons.length,
+    lessons: normalizedLessons,
+  };
+}
+
+export async function loadGrammarDataset(): Promise<GrammarDataset> {
+  try {
+    const record = await prisma.appData.findUnique({
+      where: { key: APP_DATA_KEY },
+      select: { value: true },
+    });
+    return normalizeDataset(record?.value);
+  } catch {
+    return {
+      source: "",
+      importedAt: "",
+      lessonCount: 0,
+      lessons: [],
+    };
+  }
+}
+
+export async function saveGrammarDataset(data: GrammarDataset): Promise<void> {
+  const normalized = normalizeDataset(data);
+  const payload = {
+    ...normalized,
+    importedAt: nowIso(),
+    lessonCount: normalized.lessons.length,
+  };
+
+  await prisma.appData.upsert({
+    where: { key: APP_DATA_KEY },
+    create: {
+      key: APP_DATA_KEY,
+      value: payload as unknown as Prisma.InputJsonValue,
+    },
+    update: {
+      value: payload as unknown as Prisma.InputJsonValue,
+    },
+  });
+}

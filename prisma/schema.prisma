@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CardType {
+  KANJI
+  VOCAB
+}
+
+enum QuizOption {
+  A
+  B
+  C
+  D
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  level        String   @default("N5")
+  xp           Int      @default(0)
+  streak       Int      @default(0)
+  lastStudyAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  reviews      Review[]
+  quizAttempts QuizAttempt[]
+}
+
+model Kanji {
+  id             String   @id @default(cuid())
+  character      String   @unique
+  meaning        String
+  onReading      String
+  kunReading     String
+  strokeCount    Int
+  jlptLevel      String
+  exampleWord    String
+  exampleMeaning String
+  createdAt      DateTime @default(now())
+
+  reviews        Review[]
+}
+
+model Vocab {
+  id              String   @id @default(cuid())
+  word            String   @unique
+  reading         String
+  meaning         String
+  jlptLevel       String
+  partOfSpeech    String
+  exampleSentence String
+  exampleMeaning  String
+  createdAt       DateTime @default(now())
+
+  reviews         Review[]
+}
+
+model Review {
+  id             String   @id @default(cuid())
+  userId         String
+  cardType       CardType
+  kanjiId        String?
+  vocabId        String?
+  repetitions    Int      @default(0)
+  easeFactor     Float    @default(2.5)
+  intervalDays   Int      @default(0)
+  dueAt          DateTime @default(now())
+  lastReviewedAt DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kanji          Kanji?   @relation(fields: [kanjiId], references: [id], onDelete: Cascade)
+  vocab          Vocab?   @relation(fields: [vocabId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kanjiId])
+  @@unique([userId, vocabId])
+  @@index([userId, dueAt])
+}
+
+model QuizQuestion {
+  id            String     @id @default(cuid())
+  level         String
+  category      String
+  prompt        String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctOption QuizOption
+  explanation   String
+  createdAt     DateTime   @default(now())
+
+  answers       QuizAnswer[]
+}
+
+model QuizAttempt {
+  id         String     @id @default(cuid())
+  userId     String
+  score      Int
+  total      Int
+  createdAt  DateTime   @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers    QuizAnswer[]
+
+  @@index([userId, createdAt])
+}
+
+model QuizAnswer {
+  id             String     @id @default(cuid())
+  attemptId      String
+  questionId     String
+  selectedOption QuizOption
+  isCorrect      Boolean
+
+  attempt        QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question       QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([attemptId])
+  @@index([questionId])
+}
+
+model AppData {
+  key       String   @id
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
