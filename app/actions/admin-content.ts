@@ -489,10 +489,17 @@ export async function deleteAdminKanjiAction(formData: FormData) {
     return;
   }
 
-  await prisma.kanji.delete({
-    where: {
-      id: parsed.data.kanjiId,
-    },
-  });
+  const kanjiId = parsed.data.kanjiId;
+
+  // Delete dependent review rows first to avoid FK differences across environments.
+  await prisma.$transaction([
+    prisma.review.deleteMany({
+      where: { kanjiId },
+    }),
+    prisma.kanji.deleteMany({
+      where: { id: kanjiId },
+    }),
+  ]);
+
   touchKanjiPaths();
 }
