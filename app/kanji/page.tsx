@@ -475,13 +475,13 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
                 </Link>
                 {selectedDueAt ? (
                   <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
-                    Da co trong SRS: {formatTokyoDateTime(selectedDueAt)}
+                    Da luu de on tap: {formatTokyoDateTime(selectedDueAt)}
                   </p>
                 ) : (
                   <form action={addKanjiToReviewAction}>
                     <input type="hidden" name="kanjiId" value={selectedKanji.id} />
                     <button type="submit" className="btn-soft text-sm">
-                      + Them vao deck
+                      + Luu de on tap
                     </button>
                   </form>
                 )}
@@ -527,8 +527,8 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
               >
                 Flashcard chu nay
               </Link>
-              <Link href="/review" className="btn-soft text-sm">
-                On tap SRS
+              <Link href="/dashboard" className="btn-soft text-sm">
+                Ve trang hoc
               </Link>
             </div>
           </article>

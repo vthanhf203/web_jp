@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { getCurrentUser } from "@/lib/auth";
@@ -5,79 +6,145 @@ import { getCurrentUser } from "@/lib/auth";
 const highlights = [
   {
     title: "Kanji thong minh",
-    body: "Tra nghia, On/Kun, tim theo net ve va vao flashcard ngay.",
+    body: "Tra nghia, On/Kun, ve net tim chu va hoc theo tung cap do JLPT.",
   },
   {
     title: "Tu vung theo chu de",
-    body: "N5-N1 theo nhom, hoc nhanh bang flashcard, quiz va nhoi nhet.",
+    body: "N5-N1 theo nhom ro rang, hoc nhanh bang flashcard va luyen nho chu dong.",
   },
   {
     title: "Ngu phap de hieu",
-    body: "Xem tung mau cau, vi du va ghi chu theo bai, khong roi mat.",
+    body: "Vao bai truoc, mo chi tiet sau, bo cuc gon de khong roi mat.",
   },
   {
-    title: "SRS giu nhip hoc",
-    body: "Them vao deck, on dung han, theo doi XP va streak moi ngay.",
+    title: "Tien do ro rang",
+    body: "Theo doi XP, streak va cap do muc tieu de giu dong luc hoc moi ngay.",
   },
+];
+
+const studyTracks = [
+  {
+    href: "/kanji",
+    title: "Kanji Studio",
+    subtitle: "Tap trung net ve + ghi nho hinh",
+    image: "/images/kanji-logo.png",
+    fit: "contain",
+  },
+  {
+    href: "/vocab",
+    title: "Vocab Flow",
+    subtitle: "Hoc theo chu de, sat dung de thi",
+    image: "/images/home-vocab.png",
+    fit: "contain",
+  },
+  {
+    href: "/grammar",
+    title: "Grammar Map",
+    subtitle: "Nhap vao bai, xem mau cau theo logic",
+    image: "/images/home-grammar.png",
+    fit: "contain",
+  },
+];
+
+const routine = [
+  "7 phut on lai bai da hoc",
+  "10 phut hoc chu de moi",
+  "8 phut luyen flashcard de nho sau",
 ];
 
 export default async function Home() {
   const user = await getCurrentUser();
 
   return (
-    <section className="space-y-6">
-      <div className="floating-card rounded-3xl border border-blue-100/80 bg-gradient-to-br from-white/95 via-white/92 to-sky-50/90 p-7 lg:p-9">
-        <div className="grid gap-7 lg:grid-cols-[1.2fr_0.8fr]">
-          <div>
-            <p className="chip">Nhat ky hoc tap ca nhan hoa</p>
-            <h1 className="mt-4 text-4xl font-extrabold leading-tight text-slate-900 sm:text-5xl">
-              Hoc tieng Nhat <span className="text-grad-brand">de deu, de nho, de tien bo</span>
-            </h1>
-            <p className="mt-4 max-w-2xl text-base text-slate-600 sm:text-lg">
-              JP Lab giup ban hoc Kanji, tu vung, ngu phap theo luong ro rang. Moi thao tac deu
-              toi uu de ban mo vao la muon hoc ngay.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link href={user ? "/dashboard" : "/register"} className="btn-primary">
-                {user ? "Vao bang dieu khien" : "Bat dau hoc ngay"}
-              </Link>
-              <Link href="/kanji" className="btn-soft">
-                Kham pha Kanji
-              </Link>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-blue-100 bg-white/85 p-5 shadow-[0_12px_30px_rgba(24,75,146,0.12)]">
-            <p className="text-sm font-semibold uppercase tracking-[0.12em] text-blue-700">Lo trinh goi y</p>
-            <div className="mt-4 space-y-3 text-sm">
-              <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 px-3 py-2">
-                1. Chon Kanji va them vao deck
-              </div>
-              <div className="rounded-xl border border-sky-100 bg-sky-50/70 px-3 py-2">
-                2. Hoc tu vung theo chu de N5-N1
-              </div>
-              <div className="rounded-xl border border-violet-100 bg-violet-50/70 px-3 py-2">
-                3. Lam quiz de khoa kien thuc
-              </div>
-              <div className="rounded-xl border border-amber-100 bg-amber-50/70 px-3 py-2">
-                4. On SRS 20-30 phut moi ngay
-              </div>
-            </div>
-            <p className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
-              Meo: hoc it nhung deu, uu tien xem va nghe phat am moi ngay.
-            </p>
+    <section className="space-y-7">
+      <article className="hero-shell motion-rise">
+        <Image
+          src="https://images.unsplash.com/photo-1492571350019-22de08371fd3?auto=format&fit=crop&w=2000&q=80"
+          alt="Ban hoc tieng Nhat voi so tay va but"
+          fill
+          priority
+          sizes="(max-width: 1024px) 100vw, 1200px"
+          className="hero-media"
+        />
+        <div className="hero-overlay" />
+        <div className="hero-content">
+          <p className="chip">JLPT learning workspace</p>
+          <h1 className="mt-4 max-w-2xl text-4xl font-extrabold leading-tight text-white sm:text-5xl">
+            Hoc co nhip, nho lau, vao de la hoc duoc ngay
+          </h1>
+          <p className="mt-4 max-w-2xl text-base text-slate-200 sm:text-lg">
+            Tu Kanji den ngu phap, moi phan deu duoc sap lai de ban hoc nhanh nhung van chac.
+            Giao dien gon, de dung ca tren may tinh va dien thoai.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href={user ? "/dashboard" : "/register"} className="btn-primary">
+              {user ? "Tiep tuc hom nay" : "Bat dau mien phi"}
+            </Link>
+            <Link href="/vocab" className="btn-soft-dark">
+              Vao thu tu vung
+            </Link>
           </div>
         </div>
-      </div>
+      </article>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {highlights.map((item) => (
-          <article key={item.title} className="panel p-5">
-            <h2 className="text-xl font-bold text-slate-800">{item.title}</h2>
+          <article key={item.title} className="panel motion-rise p-5">
+            <h2 className="text-[1.08rem] font-bold text-slate-800">{item.title}</h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.body}</p>
           </article>
         ))}
-      </div>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-3">
+        {studyTracks.map((track) => (
+          <Link
+            key={track.title}
+            href={track.href}
+            className={`photo-tile motion-rise group overflow-hidden border border-slate-200 ${
+              track.fit === "contain" ? "poster-tile" : ""
+            }`}
+          >
+            <div className="photo-frame">
+              <Image
+                src={track.image}
+                alt={track.title}
+                fill
+                sizes="(max-width: 1024px) 100vw, 33vw"
+                loading="lazy"
+                className={track.fit === "contain" ? "photo-img photo-img-contain" : "photo-img"}
+              />
+              <div className="photo-shade" />
+            </div>
+            <div className="photo-copy">
+              <h3 className="text-2xl font-bold text-white">{track.title}</h3>
+              <p className="mt-1 text-sm text-slate-200">{track.subtitle}</p>
+            </div>
+          </Link>
+        ))}
+      </section>
+
+      <section className="panel motion-rise p-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="chip">Routine 25 phut</p>
+            <h2 className="mt-3 text-3xl font-bold text-slate-800">Nhip hoc de giu den cuoi tuan</h2>
+          </div>
+          <Link href="/dashboard" className="btn-soft">
+            Mo bang hoc
+          </Link>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          {routine.map((step, index) => (
+            <div
+              key={step}
+              className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700"
+            >
+              {index + 1}. {step}
+            </div>
+          ))}
+        </div>
+      </section>
     </section>
   );
 }

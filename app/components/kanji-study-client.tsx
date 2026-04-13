@@ -430,7 +430,7 @@ export function KanjiStudyClient({ title, backHref, items }: Props) {
         Phim tat: <span className="rounded-md bg-slate-500/55 px-2 py-0.5">Space</span> lat
         <span className="ml-2 rounded-md bg-slate-500/55 px-2 py-0.5">Z</span> biet
         <span className="ml-2 rounded-md bg-slate-500/55 px-2 py-0.5">X</span> chua biet
-        <span className="ml-2 rounded-md bg-slate-500/55 px-2 py-0.5">C</span> them deck
+        <span className="ml-2 rounded-md bg-slate-500/55 px-2 py-0.5">C</span> luu on tap
         <span className="ml-2 rounded-md bg-slate-500/55 px-2 py-0.5">R</span> phat am
       </div>
 
@@ -441,7 +441,7 @@ export function KanjiStudyClient({ title, backHref, items }: Props) {
             type="submit"
             onMouseDown={(event) => event.preventDefault()}
             className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-500 bg-slate-700 text-3xl text-slate-200"
-            title="Them vao deck SRS"
+            title="Luu de on tap"
           >
             +
           </button>
