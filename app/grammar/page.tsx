@@ -91,14 +91,6 @@ function displayTopic(topic?: string): string | null {
   return value;
 }
 
-function stripKanaReadingFromSentence(value: string): string {
-  return value
-    .replace(/\s*\([\u3040-\u30ffー・\s]+\)/g, "")
-    .replace(/\s*（[\u3040-\u30ffー・\s]+）/g, "")
-    .replace(/\s{2,}/g, " ")
-    .trim();
-}
-
 function splitExampleLine(line: string): { jp: string; vi: string } {
   const text = line.trim();
   if (!text) {
@@ -108,15 +100,20 @@ function splitExampleLine(line: string): { jp: string; vi: string } {
   const separatorIndex = text.lastIndexOf(" - ");
   if (separatorIndex < 0) {
     return {
-      jp: stripKanaReadingFromSentence(text),
+      jp: text,
       vi: "",
     };
   }
 
-  const jp = stripKanaReadingFromSentence(text.slice(0, separatorIndex));
+  const jp = text.slice(0, separatorIndex).trim();
   const vi = text.slice(separatorIndex + 3).trim();
 
   return { jp, vi };
+}
+
+function shouldHideGrammarNote(line: string): boolean {
+  const text = line.trim().toLowerCase();
+  return text.startsWith("tags:") || text.startsWith("lien quan:");
 }
 
 export default async function GrammarPage(props: { searchParams: SearchParams }) {
@@ -373,17 +370,19 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
                     </div>
                   ) : null}
 
-                  {selectedPoint.notes.length > 0 ? (
+                  {selectedPoint.notes.filter((line) => !shouldHideGrammarNote(line)).length > 0 ? (
                     <div className="mt-3 space-y-1">
                       <p className="text-sm font-semibold text-slate-700">Chu y</p>
-                      {selectedPoint.notes.map((line, index) => (
+                      {selectedPoint.notes
+                        .filter((line) => !shouldHideGrammarNote(line))
+                        .map((line, index) => (
                         <p
                           key={`${selectedPoint.id}-note-${index}`}
                           className="break-words text-sm leading-relaxed text-slate-700"
                         >
                           - {line}
                         </p>
-                      ))}
+                        ))}
                     </div>
                   ) : null}
 

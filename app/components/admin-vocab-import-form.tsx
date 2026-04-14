@@ -31,7 +31,7 @@ export function AdminVocabImportForm({ lessonId }: Props) {
         ref={textareaRef}
         name="rawInput"
         className="min-h-52 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-sky-400 focus:ring-3 focus:ring-sky-100"
-        placeholder="Paste JSON line hoac text (word, reading, kanji, hanviet, meaning). Neu word chi la hiragana/katakana thi nen co field kanji de lien ket trang Kanji."
+        placeholder="Ho tro JSON array / JSON-lines / text. Field chuan: word, reading, kanji, hanviet, partOfSpeech, meaning."
         disabled={!hasLesson || pending}
         required
       />
@@ -64,7 +64,7 @@ export function AdminVocabImportForm({ lessonId }: Props) {
               return;
             }
             textareaRef.current.value =
-              '{"word":"勉強","reading":"べんきょう","kanji":"勉強","hanviet":"Mien Cuong","meaning":"Hoc tap"},\n{"word":"電車","reading":"でんしゃ","kanji":"電車","hanviet":"Dien Xa","meaning":"Tau dien"}';
+              '[\n  {"word":"べんきょう","reading":"べんきょう","kanji":"勉強","hanviet":"Mien Cuong","partOfSpeech":"noun","meaning":"Hoc tap"},\n  {"word":"でんしゃ","reading":"でんしゃ","kanji":"電車","hanviet":"Dien Xa","partOfSpeech":"noun","meaning":"Tau dien"},\n  {"word":"ありがとう","reading":"ありがとう","kanji":"","hanviet":"","partOfSpeech":"expression","meaning":"Cam on"}\n]';
           }}
           disabled={!hasLesson || pending}
         >

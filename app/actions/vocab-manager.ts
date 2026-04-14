@@ -26,6 +26,10 @@ const createLessonSchema = z.object({
     (value) => (typeof value === "string" ? value : undefined),
     z.string().trim().max(64).optional()
   ),
+  returnTo: z.preprocess(
+    (value) => (typeof value === "string" ? value : undefined),
+    z.string().trim().optional()
+  ),
 });
 
 const importSchema = z.object({
@@ -76,6 +80,17 @@ function nowIso() {
   return new Date().toISOString();
 }
 
+function normalizeReturnTo(path: string | undefined): string | null {
+  const returnTo = path?.trim();
+  if (!returnTo) {
+    return null;
+  }
+  if (!returnTo.startsWith("/") || returnTo.startsWith("//")) {
+    return null;
+  }
+  return returnTo;
+}
+
 function findLesson(lessons: Lesson[], lessonId: string): Lesson | undefined {
   return lessons.find((lesson) => lesson.id === lessonId);
 }
@@ -85,6 +100,7 @@ export async function createVocabLessonAction(formData: FormData) {
 
   const parsed = createLessonSchema.safeParse({
     title: formData.get("title"),
+    returnTo: formData.get("returnTo"),
   });
 
   if (!parsed.success) {
@@ -107,6 +123,14 @@ export async function createVocabLessonAction(formData: FormData) {
   await saveUserVocabStore(user.id, store);
 
   revalidatePath("/vocab");
+  const returnTo = normalizeReturnTo(parsed.data.returnTo);
+  if (returnTo) {
+    const [basePath, queryString = ""] = returnTo.split("?");
+    const query = new URLSearchParams(queryString);
+    query.set("deck", `lesson:${lesson.id}`);
+    const nextUrl = `${basePath}?${query.toString()}`;
+    redirect(nextUrl);
+  }
   redirect(`/vocab?lesson=${lesson.id}`);
 }
 

@@ -258,7 +258,7 @@ export function VocabImportForm({ lessonId }: Props) {
         ref={textareaRef}
         name="rawInput"
         className="min-h-58 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-sky-400 focus:ring-3 focus:ring-sky-100"
-        placeholder="Dan danh sach tu vung vao day (JSON line, text, tab, pipe...)."
+        placeholder="Ho tro JSON array, JSON-lines, CSV/TSV. Field chuan: word, reading, kanji, hanviet, partOfSpeech, meaning."
         disabled={!hasLesson || pending}
         required
       />
@@ -336,23 +336,31 @@ export function VocabImportForm({ lessonId }: Props) {
               return;
             }
             textareaRef.current.value =
-              '{"word":"??","reading":"?????","kanji":"??","hanviet":"Mi?n Cu?ng","meaning":"H?c t?p"},\n{"word":"???","reading":"?????","kanji":"???","hanviet":"Ð? Thu Quán","meaning":"Thu vi?n"}';
+              '{"word":"べんきょう","reading":"べんきょう","kanji":"勉強","hanviet":"Mien Cuong","partOfSpeech":"noun","meaning":"Hoc tap"}\n{"word":"でんしゃ","reading":"でんしゃ","kanji":"電車","hanviet":"Dien Xa","partOfSpeech":"noun","meaning":"Tau dien"}\n{"word":"ありがとう","reading":"ありがとう","kanji":"","hanviet":"","partOfSpeech":"expression","meaning":"Cam on"}';
             setPreviewRows([
               {
-                word: "??",
-                reading: "?????",
-                kanji: "??",
-                hanviet: "Mi?n Cu?ng",
-                partOfSpeech: "",
-                meaning: "H?c t?p",
+                word: "べんきょう",
+                reading: "べんきょう",
+                kanji: "勉強",
+                hanviet: "Mien Cuong",
+                partOfSpeech: "noun",
+                meaning: "Hoc tap",
               },
               {
-                word: "???",
-                reading: "?????",
-                kanji: "???",
-                hanviet: "Ð? Thu Quán",
-                partOfSpeech: "",
-                meaning: "Thu vi?n",
+                word: "でんしゃ",
+                reading: "でんしゃ",
+                kanji: "電車",
+                hanviet: "Dien Xa",
+                partOfSpeech: "noun",
+                meaning: "Tau dien",
+              },
+              {
+                word: "ありがとう",
+                reading: "ありがとう",
+                kanji: "",
+                hanviet: "",
+                partOfSpeech: "expression",
+                meaning: "Cam on",
               },
             ]);
             setPreviewErrors([]);
@@ -360,7 +368,7 @@ export function VocabImportForm({ lessonId }: Props) {
           }}
           disabled={!hasLesson || pending}
         >
-          AI Format
+          Mau JSON
         </button>
         <button
           type="button"

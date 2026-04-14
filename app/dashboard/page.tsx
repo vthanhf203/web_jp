@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 
 import { SectionCard } from "@/app/components/section-card";
+import { loadAdminVocabLibrary } from "@/lib/admin-vocab-library";
 import { requireUser } from "@/lib/auth";
 import { toTokyoDateKey } from "@/lib/date";
 import { prisma } from "@/lib/prisma";
@@ -32,51 +33,61 @@ export default async function DashboardPage() {
   const last7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const last30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  const [kanjiCount, vocabCount, personalState, reviews7d, reviews30d, quizAttempts30d, dueReviews, wrongAnswers] =
-    await Promise.all([
-      prisma.kanji.count(),
-      prisma.vocab.count(),
-      loadUserPersonalState(user.id),
-      prisma.review.findMany({
-        where: {
-          userId: user.id,
-          lastReviewedAt: { gte: last7 },
-        },
-        select: { lastReviewedAt: true },
-      }),
-      prisma.review.findMany({
-        where: {
-          userId: user.id,
-          lastReviewedAt: { gte: last30 },
-        },
-        select: { lastReviewedAt: true },
-      }),
-      prisma.quizAttempt.findMany({
-        where: {
-          userId: user.id,
-          createdAt: { gte: last30 },
-        },
-        select: {
-          createdAt: true,
-          score: true,
-          total: true,
-        },
-        orderBy: { createdAt: "desc" },
-        take: 100,
-      }),
-      prisma.review.count({
-        where: {
-          userId: user.id,
-          dueAt: { lte: now },
-        },
-      }),
-      prisma.quizAnswer.count({
-        where: {
-          attempt: { userId: user.id },
-          isCorrect: false,
-        },
-      }),
-    ]);
+  const [
+    kanjiCount,
+    vocabCount,
+    adminLibrary,
+    personalState,
+    reviews7d,
+    reviews30d,
+    quizAttempts30d,
+    dueReviews,
+    wrongAnswers,
+  ] = await Promise.all([
+    prisma.kanji.count(),
+    prisma.vocab.count(),
+    loadAdminVocabLibrary(),
+    loadUserPersonalState(user.id),
+    prisma.review.findMany({
+      where: {
+        userId: user.id,
+        lastReviewedAt: { gte: last7 },
+      },
+      select: { lastReviewedAt: true },
+    }),
+    prisma.review.findMany({
+      where: {
+        userId: user.id,
+        lastReviewedAt: { gte: last30 },
+      },
+      select: { lastReviewedAt: true },
+    }),
+    prisma.quizAttempt.findMany({
+      where: {
+        userId: user.id,
+        createdAt: { gte: last30 },
+      },
+      select: {
+        createdAt: true,
+        score: true,
+        total: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
+    prisma.review.count({
+      where: {
+        userId: user.id,
+        dueAt: { lte: now },
+      },
+    }),
+    prisma.quizAnswer.count({
+      where: {
+        attempt: { userId: user.id },
+        isCorrect: false,
+      },
+    }),
+  ]);
 
   const reviewDates7d = reviews7d
     .map((entry) => entry.lastReviewedAt)
@@ -96,7 +107,14 @@ export default async function DashboardPage() {
 
   const totalQuizCorrect = quizAttempts30d.reduce((sum, item) => sum + item.score, 0);
   const totalQuizQuestions = quizAttempts30d.reduce((sum, item) => sum + item.total, 0);
-  const quizAccuracy = totalQuizQuestions > 0 ? Math.round((totalQuizCorrect / totalQuizQuestions) * 100) : 0;
+  const quizAccuracy =
+    totalQuizQuestions > 0 ? Math.round((totalQuizCorrect / totalQuizQuestions) * 100) : 0;
+
+  const adminVocabCount = adminLibrary.lessons.reduce(
+    (sum, lesson) => sum + lesson.items.length,
+    0
+  );
+  const totalVocabCount = vocabCount + adminVocabCount;
 
   const plan = personalState.plan;
 
@@ -123,7 +141,8 @@ export default async function DashboardPage() {
           </div>
           <div className="rounded-xl bg-violet-50 p-4">
             <p className="text-sm text-slate-600">Tong Tu vung</p>
-            <p className="mt-1 text-2xl font-bold text-violet-700">{vocabCount}</p>
+            <p className="mt-1 text-2xl font-bold text-violet-700">{totalVocabCount}</p>
+            <p className="mt-1 text-xs text-slate-500">He thong: {vocabCount} - Admin: {adminVocabCount}</p>
           </div>
         </div>
       </div>
@@ -194,4 +213,3 @@ export default async function DashboardPage() {
     </section>
   );
 }
-

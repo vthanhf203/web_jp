@@ -10,6 +10,7 @@ import {
 } from "@/app/components/audio-settings-client";
 
 export type StudyMode = "flashcard" | "quiz" | "recall";
+type FlashcardPromptMode = "jp_to_vi" | "vi_to_jp" | "kanji_to_answer";
 
 type StudyItem = {
   id: string;
@@ -139,6 +140,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
   const [wrongCount, setWrongCount] = useState(0);
 
   const [isFlipped, setIsFlipped] = useState(false);
+  const [flashPromptMode, setFlashPromptMode] = useState<FlashcardPromptMode>("jp_to_vi");
 
   const [selectedOptionId, setSelectedOptionId] = useState("");
   const [checkedQuiz, setCheckedQuiz] = useState(false);
@@ -219,6 +221,15 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
     flashcardAreaRef.current?.focus();
   }, []);
 
+  const changeFlashPromptMode = useCallback(
+    (nextMode: FlashcardPromptMode) => {
+      setFlashPromptMode(nextMode);
+      setIsFlipped(false);
+      focusFlashcardArea();
+    },
+    [focusFlashcardArea]
+  );
+
   function toggleShuffle() {
     if (isShuffled) {
       setOrder(items.map((_, idx) => idx));
@@ -288,16 +299,57 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
         ? `Goi y: bat dau bang "${currentDisplayWord.slice(0, 1)}" (1/2)`
         : `Goi y: cach doc la "${current.reading}" (2/2)`;
 
-  const flashFrontMain = (current.reading || current.word || currentDisplayWord).trim();
-  const flashFrontSub =
-    currentDisplayWord && currentDisplayWord !== flashFrontMain ? currentDisplayWord : "";
-  const flashBackMain = current.meaning.trim();
-  const flashBackSub = current.hanviet.trim();
+  const japaneseMain = (current.reading || current.word || currentDisplayWord).trim();
+  const japaneseSub = currentDisplayWord && currentDisplayWord !== japaneseMain ? currentDisplayWord : "";
+  const meaningMain = current.meaning.trim();
+  const hanvietMain = current.hanviet.trim();
+  const kanjiMain = (current.kanji || current.word || japaneseMain).trim();
+  const kanjiHint = current.reading.trim();
+  const hasRealKanji = current.kanji.trim().length > 0;
+
+  let flashFrontMain = japaneseMain;
+  let flashFrontSub = japaneseSub;
+  let flashFrontLabel = "Hiragana";
+  let flashFrontSubLabel = "Chu han";
+
+  let flashBackMain = meaningMain;
+  let flashBackSub = hanvietMain;
+  let flashBackLabel = "Nghia";
+  let flashBackSubLabel = "Han viet";
+
+  if (flashPromptMode === "vi_to_jp") {
+    flashFrontMain = meaningMain;
+    flashFrontSub = hanvietMain;
+    flashFrontLabel = "Nghia";
+    flashFrontSubLabel = "Han viet";
+
+    flashBackMain = japaneseMain;
+    flashBackSub = japaneseSub;
+    flashBackLabel = "Hiragana";
+    flashBackSubLabel = "Chu han";
+  }
+
+  if (flashPromptMode === "kanji_to_answer") {
+    flashFrontMain = kanjiMain;
+    flashFrontSub = "";
+    flashFrontLabel = hasRealKanji ? "Chu han" : "Tu vung";
+    flashFrontSubLabel = "";
+
+    flashBackMain = japaneseMain;
+    flashBackSub = hanvietMain
+      ? `${meaningMain} · Han viet: ${hanvietMain}`
+      : meaningMain;
+    if (!kanjiHint || kanjiHint === kanjiMain) {
+      flashBackMain = japaneseMain || kanjiMain;
+    }
+    flashBackLabel = "Hiragana";
+    flashBackSubLabel = "Nghia";
+  }
 
   const flashMainText = isFlipped ? flashBackMain : flashFrontMain;
   const flashSubText = isFlipped ? flashBackSub : flashFrontSub;
-  const flashMainLabel = isFlipped ? "Nghia" : "Hiragana";
-  const flashSubLabel = isFlipped ? "Han viet" : "Chu han";
+  const flashMainLabel = isFlipped ? flashBackLabel : flashFrontLabel;
+  const flashSubLabel = isFlipped ? flashBackSubLabel : flashFrontSubLabel;
 
   useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
@@ -403,6 +455,24 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
         return;
       }
 
+      if (key === "1") {
+        event.preventDefault();
+        changeFlashPromptMode("jp_to_vi");
+        return;
+      }
+
+      if (key === "2") {
+        event.preventDefault();
+        changeFlashPromptMode("vi_to_jp");
+        return;
+      }
+
+      if (key === "3") {
+        event.preventDefault();
+        changeFlashPromptMode("kanji_to_answer");
+        return;
+      }
+
       if (key === "z") {
         event.preventDefault();
         markFlashcard(true);
@@ -426,7 +496,16 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
 
     document.addEventListener("keydown", handleKeyDown, { capture: true });
     return () => document.removeEventListener("keydown", handleKeyDown, { capture: true });
-  }, [focusFlashcardArea, mode, flipCard, goNext, goPrev, markFlashcard, speakCurrentFlash]);
+  }, [
+    changeFlashPromptMode,
+    focusFlashcardArea,
+    mode,
+    flipCard,
+    goNext,
+    goPrev,
+    markFlashcard,
+    speakCurrentFlash,
+  ]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -479,6 +558,49 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
 
       {mode === "flashcard" ? (
         <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl bg-[#32416d]">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-500/35 bg-[#3a4a75] px-4 py-2.5">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-200/90">
+              Kieu luyen flashcard
+            </p>
+            <div className="inline-flex items-center rounded-full bg-slate-800/55 p-1 text-xs">
+              <button
+                type="button"
+                className={`rounded-full px-3 py-1.5 font-semibold transition ${
+                  flashPromptMode === "jp_to_vi"
+                    ? "bg-blue-500 text-white"
+                    : "text-slate-200 hover:bg-slate-700/70"
+                }`}
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => changeFlashPromptMode("jp_to_vi")}
+              >
+                1. JP -{">"} VI
+              </button>
+              <button
+                type="button"
+                className={`rounded-full px-3 py-1.5 font-semibold transition ${
+                  flashPromptMode === "vi_to_jp"
+                    ? "bg-emerald-500 text-white"
+                    : "text-slate-200 hover:bg-slate-700/70"
+                }`}
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => changeFlashPromptMode("vi_to_jp")}
+              >
+                2. VI -{">"} JP
+              </button>
+              <button
+                type="button"
+                className={`rounded-full px-3 py-1.5 font-semibold transition ${
+                  flashPromptMode === "kanji_to_answer"
+                    ? "bg-fuchsia-500 text-white"
+                    : "text-slate-200 hover:bg-slate-700/70"
+                }`}
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => changeFlashPromptMode("kanji_to_answer")}
+              >
+                3. Kanji -{">"} Doc/Nghia
+              </button>
+            </div>
+          </div>
           <div
             role="button"
             ref={flashcardAreaRef}
@@ -557,7 +679,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
           </div>
 
           <div className="border-y border-slate-500/35 bg-[#44517a] px-4 py-2 text-sm text-slate-200">
-            Phim tat: Space lat, Z biet, X chua biet, R phat am, mui ten trai/phai de chuyen the
+            Phim tat: Space lat, 1/2/3 doi kieu luyen, Z biet, X chua biet, R phat am, mui ten trai/phai de chuyen the
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 bg-[#1f2848] px-4 py-4">

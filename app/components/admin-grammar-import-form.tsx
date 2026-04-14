@@ -31,7 +31,7 @@ export function AdminGrammarImportForm({ lessonId }: Props) {
         ref={textareaRef}
         name="rawInput"
         className="min-h-48 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-sky-400 focus:ring-3 focus:ring-sky-100"
-        placeholder='JSON: {"title":"N1 wa N2 desu","meaning":"N1 la N2","usage":["..."],"examples":["..."],"notes":["..."],"image":"/grammar-images/n5/l1-1.png"}'
+        placeholder='Ho tro JSON array / JSON-lines. Field chuan: title (hoac pattern), meaning_vi (hoac meaning), meaning_simple, structure[], usage[], examples[] (string hoac {jp,kana,vi}), notes[], image. Khong can tags/related.'
         disabled={!hasLesson || pending}
         required
       />
@@ -64,7 +64,7 @@ export function AdminGrammarImportForm({ lessonId }: Props) {
               return;
             }
             textareaRef.current.value =
-              '{"title":"N1 wa N2 desu","meaning":"N1 la N2","usage":["Dung de gioi thieu, dinh nghia"],"examples":["Watashi wa Maikeru desu."],"notes":["Desu la dang lich su"],"image":"/grammar-images/sample/lesson-01/n1-ha-n2-desu.png"}';
+              '[\n  {\n    "title":"N1 は N2 です",\n    "pattern":"N1 は N2 です",\n    "meaning_vi":"N1 la N2",\n    "meaning_simple":"Dung de gioi thieu hoac dinh nghia N1.",\n    "structure":["N1 は N2 です"],\n    "usage":["Dung trong cau khang dinh lich su."],\n    "examples":[\n      {"jp":"わたしは がくせいです。","kana":"わたしは がくせいです。","vi":"Toi la sinh vien."},\n      {"jp":"たなかさんは せんせいです。","vi":"Anh Tanaka la giao vien."}\n    ],\n    "notes":["Tro tu は doc la wa."],\n    "image":"/grammar-images/n5/lesson-01/n1-ha-n2-desu.png"\n  }\n]';
           }}
           disabled={!hasLesson || pending}
         >

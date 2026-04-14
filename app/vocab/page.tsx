@@ -339,41 +339,59 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
       </div>
 
       <div
-        className={`rounded-2xl border border-slate-200 bg-white/95 p-7 shadow-sm ${
+        className={`relative overflow-hidden rounded-3xl border border-slate-200 bg-white/95 p-7 shadow-[0_14px_34px_rgba(15,23,42,0.08)] ${
           activeMode === "library" ? "" : "hidden"
         }`}
       >
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 className="inline bg-blue-500/85 px-2 text-[2.3rem] font-extrabold leading-tight text-slate-900">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.16),transparent_46%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.12),transparent_40%)]" />
+        <div className="relative grid items-stretch gap-4 lg:grid-cols-[1.6fr_0.9fr]">
+          <div className="rounded-2xl border border-sky-100 bg-white/90 p-5 backdrop-blur">
+            <h2 className="inline rounded-lg bg-blue-500/90 px-3 py-1 text-[2.1rem] font-extrabold leading-tight text-white shadow-sm">
               Hoc Ban Chat - Khong Hoc Vet
             </h2>
-            <p className="mt-3 text-[1.35rem] text-slate-700">
-              Khong chi la nghia cua tu ma la cach dung dung cua tu trong cau vi du.
+            <p className="mt-4 text-[1.2rem] text-slate-700">
+              Khong chi hoc nghia, ma hoc cach dung tu trong ngu canh thuc te.
             </p>
-            <p className="mt-1 text-[1.35rem] text-slate-700">
-              Website nay giup ban nam duoc Kanji, am Han Viet va nho lau hon bang flashcard.
+            <p className="mt-1 text-[1.2rem] text-slate-700">
+              Kham pha kho tu vung theo cap do, hoc nhanh, nho lau va dung dung.
             </p>
+          </div>
+          <div className="relative hidden overflow-hidden rounded-2xl border border-slate-200 bg-white lg:block">
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: "url('/images/home-vocab.png')" }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/45 via-slate-900/20 to-transparent" />
+            <div className="relative flex h-full items-end p-4">
+              <p className="rounded-lg bg-white/90 px-3 py-1 text-sm font-semibold text-slate-700">
+                Vocab Journey
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-          {totalByLevel.map((entry) => (
+        <div className="relative mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+          {totalByLevel.map((entry) => {
+            const active = entry.level === selectedLevel;
+            return (
             <Link
               key={entry.level}
               href={levelHref(entry.level)}
-              className={`rounded-xl border px-4 py-3 transition ${levelBadgeClass(
-                entry.level,
-                selectedLevel
-              )}`}
+              className={`group relative overflow-hidden rounded-2xl border px-4 py-3 transition-all duration-300 ${
+                active
+                  ? `${levelBadgeClass(entry.level, selectedLevel)} shadow-[0_10px_22px_rgba(56,189,248,0.2)]`
+                  : "border-slate-200 bg-white/90 text-slate-700 hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-[0_8px_18px_rgba(15,23,42,0.08)]"
+              }`}
             >
-              <p className="text-lg font-bold">{entry.level}</p>
-              <p className="text-xs opacity-80">{levelMeta[entry.level].jpLabel}</p>
-              <p className="mt-1 text-xs font-semibold">
+              <span className="pointer-events-none absolute -right-8 -top-8 h-20 w-20 rounded-full bg-white/60 blur-2xl" />
+              <p className="relative text-lg font-bold">{entry.level}</p>
+              <p className="relative text-xs opacity-80">{levelMeta[entry.level].jpLabel}</p>
+              <p className="relative mt-1 text-xs font-semibold">
                 {entry.lessonCount} nhom · {entry.vocabCount} tu
               </p>
             </Link>
-          ))}
+            );
+          })}
         </div>
 
         <div className="mt-8 flex items-center gap-3">
@@ -385,7 +403,7 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
         </div>
         <p className="mt-2 text-sm text-slate-500">{filteredAdminLessons.length} chu de</p>
 
-        <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="mt-3 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm">
           <div className="flex items-center justify-between text-xl text-slate-700">
             <p className="font-semibold">Tien do hoc</p>
             <p>
@@ -407,22 +425,36 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
           </p>
         ) : (
           <div className="mt-4 space-y-3">
-            {filteredAdminLessons.map((lesson) => (
+            {filteredAdminLessons.map((lesson, index) => {
+              const topicCover =
+                index % 2 === 0 ? "/images/home-vocab.png" : "/images/home-grammar.png";
+              return (
               <Link
                 key={lesson.id}
                 href={topicHref(selectedLevel, lesson.id)}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 transition hover:border-slate-300 hover:bg-white"
+                className="group relative isolate flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-slate-200 bg-white/90 px-5 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-[0_12px_26px_rgba(15,23,42,0.08)]"
               >
-                <div className="min-w-0">
-                  <p className="truncate text-2xl font-bold text-slate-800">{lesson.title}</p>
+                <span className="absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b from-sky-400 to-emerald-400" />
+                <span className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/85 to-white/65" />
+                <span
+                  className="absolute -right-2 top-0 h-full w-44 bg-cover bg-center opacity-30 transition group-hover:opacity-40"
+                  style={{ backgroundImage: `url('${topicCover}')` }}
+                />
+                <div className="relative min-w-0 pl-2">
+                  <p className="truncate text-2xl font-bold text-slate-800 group-hover:text-sky-900">
+                    {lesson.title}
+                  </p>
                   <p className="mt-1 truncate text-lg text-slate-600">
                     {lesson.description || "Chu de tu vung"}{" "}
                     <span className="text-slate-400">({lesson.items.length} tu)</span>
                   </p>
                 </div>
-                <span className="text-3xl font-bold text-slate-400">{">"}</span>
+                <span className="relative grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-xl font-bold text-slate-500 transition group-hover:border-sky-200 group-hover:text-sky-700">
+                  {">"}
+                </span>
               </Link>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

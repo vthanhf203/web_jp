@@ -60,7 +60,17 @@ function normalizeExample(value: unknown): string {
 
   const source = value as Record<string, unknown>;
   const jp = pickString(source, ["jp", "japanese", "ja", "sentence"]);
+  const kana = pickString(source, ["kana", "reading", "furigana"]);
   const vi = pickString(source, ["vi", "meaning", "translation"]);
+
+  if (jp && kana) {
+    const hasKanaInSentence = jp.includes(`(${kana})`) || jp.includes(`（${kana}）`);
+    const jpWithKana = hasKanaInSentence ? jp : `${jp}（${kana}）`;
+    if (vi) {
+      return `${jpWithKana} - ${vi}`;
+    }
+    return jpWithKana;
+  }
 
   if (jp && vi) {
     return `${jp} - ${vi}`;
@@ -91,19 +101,30 @@ function pointFromObject(source: Record<string, unknown>): ImportedGrammarPoint 
     return null;
   }
 
+  const meaning = pickString(source, [
+    "meaning",
+    "meaning_vi",
+    "nghia",
+    "translation",
+    "vi",
+  ]);
+  const simpleMeaning = pickString(source, ["meaning_simple", "simple", "explain"]);
+  const structureLines = normalizeStringArray(source.structure ?? source.structures);
+  const usageLines = normalizeStringArray(source.usage ?? source.use ?? source.howToUse);
+  const noteLines = normalizeStringArray(source.notes ?? source.note ?? source.memo);
+  const mergedUsage: string[] = [];
+  if (simpleMeaning && simpleMeaning !== meaning) {
+    mergedUsage.push(`Giai thich: ${simpleMeaning}`);
+  }
+  mergedUsage.push(...structureLines.map((line) => `Cau truc: ${line}`));
+  mergedUsage.push(...usageLines);
+
   return {
     title,
-    meaning: pickString(source, [
-      "meaning",
-      "meaning_vi",
-      "nghia",
-      "translation",
-      "vi",
-      "meaning_simple",
-    ]),
-    usage: normalizeStringArray(source.usage ?? source.use ?? source.howToUse),
+    meaning,
+    usage: mergedUsage,
     examples: normalizeExamples(source.examples ?? source.example ?? source.sample),
-    notes: normalizeStringArray(source.notes ?? source.note ?? source.memo),
+    notes: noteLines,
     content: pickString(source, ["content", "raw", "text", "meaning_simple"]),
     image: pickString(source, ["image", "imageUrl", "img"]),
   };

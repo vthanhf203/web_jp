@@ -22,7 +22,7 @@ export function AdminKanjiImportForm() {
         ref={textareaRef}
         name="rawInput"
         className="min-h-48 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-sky-400 focus:ring-3 focus:ring-sky-100"
-        placeholder='JSON: {"character":"日","meaning":"Mat troi, ngay","onReading":"NICHI, JITSU","kunReading":"hi, bi","strokeCount":4,"jlptLevel":"N5","exampleWord":"日本","exampleMeaning":"Nhat Ban"}'
+        placeholder='Ho tro JSON array / JSON-lines / text. Field chuan: character, meaning, onReading, kunReading, strokeCount, jlptLevel, exampleWord, exampleMeaning.'
         disabled={pending}
         required
       />
@@ -55,7 +55,7 @@ export function AdminKanjiImportForm() {
               return;
             }
             textareaRef.current.value =
-              '{"character":"日","meaning":"Mat troi, ngay","onReading":"NICHI, JITSU","kunReading":"hi, bi, ka","strokeCount":4,"jlptLevel":"N5","exampleWord":"日本","exampleMeaning":"Nhat Ban"},\n{"character":"月","meaning":"Mat trang, thang","onReading":"GETSU, GATSU","kunReading":"tsuki","strokeCount":4,"jlptLevel":"N5","exampleWord":"月曜日","exampleMeaning":"Thu hai"}';
+              '[\n  {"character":"日","meaning":"Mat troi, ngay","onReading":"NICHI, JITSU","kunReading":"ひ, び, か","strokeCount":4,"jlptLevel":"N5","exampleWord":"日本","exampleMeaning":"Nhat Ban"},\n  {"character":"月","meaning":"Mat trang, thang","onReading":"GETSU, GATSU","kunReading":"つき","strokeCount":4,"jlptLevel":"N5","exampleWord":"月曜日","exampleMeaning":"Thu hai"}\n]';
           }}
           disabled={pending}
         >

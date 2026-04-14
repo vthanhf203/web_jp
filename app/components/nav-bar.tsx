@@ -14,6 +14,7 @@ const privateLinks = [
   { href: "/focus", label: "On sai" },
   { href: "/search", label: "Search" },
   { href: "/kanji", label: "Kanji" },
+  { href: "/kanji/roadmap", label: "Lo trinh Kanji" },
   { href: "/vocab", label: "Tu vung" },
   { href: "/grammar", label: "Ngu phap" },
 ];

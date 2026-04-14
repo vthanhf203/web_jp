@@ -402,6 +402,12 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
           Dang hien thi: {selectedLevel ?? "Tat ca"} · {filteredKanji.length} ky tu phu hop
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
+          <Link
+            href={selectedLevel ? `/kanji/roadmap?level=${selectedLevel}` : "/kanji/roadmap"}
+            className="rounded-xl border border-sky-300 bg-sky-100 px-4 py-2 text-sm font-semibold text-sky-800 transition hover:-translate-y-0.5 hover:bg-sky-200"
+          >
+            Lo trinh Kanji + Luyen viet
+          </Link>
           <Link href={allFilteredFlashcardHref} className="btn-primary text-sm">
             Flashcard Kanji dang loc
           </Link>
