@@ -1,8 +1,10 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
 
+import { toggleBookmarkAction } from "@/app/actions/personal";
 import { requireUser } from "@/lib/auth";
 import { loadGrammarDataset, type GrammarPoint } from "@/lib/grammar-dataset";
+import { loadUserPersonalState } from "@/lib/user-personal-data";
 
 type SearchParams = Promise<{
   level?: string | string[];
@@ -118,9 +120,11 @@ function splitExampleLine(line: string): { jp: string; vi: string } {
 }
 
 export default async function GrammarPage(props: { searchParams: SearchParams }) {
-  await requireUser();
-
-  const dataset = await loadGrammarDataset();
+  const user = await requireUser();
+  const [dataset, personalState] = await Promise.all([
+    loadGrammarDataset(),
+    loadUserPersonalState(user.id),
+  ]);
   const params = await props.searchParams;
 
   const requestedLevel = pickSingle(params.level);
@@ -161,6 +165,12 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
   const levelBookTitle =
     level === "N5" ? "Minna no Nihongo I (第1〜25課)" : "Minna no Nihongo II (第26〜50課)";
   const levelTotalPoints = lessonsByLevel.reduce((sum, lesson) => sum + lesson.pointCount, 0);
+  const bookmarkKeySet = new Set(
+    personalState.bookmarks.map((item) => `${item.type}:${item.refId}`)
+  );
+  const selectedPointBookmarked = selectedPoint
+    ? bookmarkKeySet.has(`grammar:${selectedPoint.id}`)
+    : false;
 
   return (
     <section className="grammar-shell space-y-6 p-5 sm:p-6">
@@ -272,9 +282,25 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
                   >
                     ← Quay lai danh sach mau
                   </Link>
-                  <p className="text-sm text-slate-500">
-                    Mau {selectedPoint.order}/{filteredPoints.length}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-slate-500">
+                      Mau {selectedPoint.order}/{filteredPoints.length}
+                    </p>
+                    <form action={toggleBookmarkAction}>
+                      <input type="hidden" name="type" value="grammar" />
+                      <input type="hidden" name="refId" value={selectedPoint.id} />
+                      <input
+                        type="hidden"
+                        name="title"
+                        value={selectedPoint.title || `Mau ${selectedPoint.order}`}
+                      />
+                      <input type="hidden" name="subtitle" value={selectedPoint.meaning || ""} />
+                      <input type="hidden" name="returnTo" value="/grammar" />
+                      <button type="submit" className="btn-soft text-xs">
+                        {selectedPointBookmarked ? "Bo bookmark" : "Bookmark"}
+                      </button>
+                    </form>
+                  </div>
                 </div>
 
                 <article className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
@@ -479,3 +505,4 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
     </section>
   );
 }
+

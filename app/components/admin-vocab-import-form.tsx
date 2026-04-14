@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useActionState, useRef } from "react";
 
@@ -64,7 +64,7 @@ export function AdminVocabImportForm({ lessonId }: Props) {
               return;
             }
             textareaRef.current.value =
-              '{"word":"勉強","reading":"べんきょう","kanji":"勉強","hanviet":"Miễn Cường","meaning":"Học tập"},\n{"word":"電車","reading":"でんしゃ","kanji":"電車","hanviet":"Điện Xa","meaning":"Tàu điện"}';
+              '{"word":"勉強","reading":"べんきょう","kanji":"勉強","hanviet":"Mien Cuong","meaning":"Hoc tap"},\n{"word":"電車","reading":"でんしゃ","kanji":"電車","hanviet":"Dien Xa","meaning":"Tau dien"}';
           }}
           disabled={!hasLesson || pending}
         >

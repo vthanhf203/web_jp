@@ -2,11 +2,17 @@
 import Link from "next/link";
 
 import { logoutAction } from "@/app/actions/auth";
+import { DailyReminderClient } from "@/app/components/daily-reminder-client";
 import { isAdminEmail } from "@/lib/admin";
 import { getCurrentUser } from "@/lib/auth";
+import { loadUserPersonalState } from "@/lib/user-personal-data";
 
 const privateLinks = [
   { href: "/dashboard", label: "Tong quan" },
+  { href: "/personal", label: "Lo trinh" },
+  { href: "/placement", label: "Test dau vao" },
+  { href: "/focus", label: "On sai" },
+  { href: "/search", label: "Search" },
   { href: "/kanji", label: "Kanji" },
   { href: "/vocab", label: "Tu vung" },
   { href: "/grammar", label: "Ngu phap" },
@@ -14,6 +20,7 @@ const privateLinks = [
 
 export async function NavBar() {
   const user = await getCurrentUser();
+  const personalState = user ? await loadUserPersonalState(user.id) : null;
   const links =
     user && isAdminEmail(user.email)
       ? [...privateLinks, { href: "/admin", label: "Admin" }]
@@ -49,6 +56,14 @@ export async function NavBar() {
                   <span className="mx-1 text-slate-300">|</span>
                   <span className="font-bold text-orange-600">{user.streak} ngay</span>
                 </div>
+                {personalState ? (
+                  <DailyReminderClient
+                    enabled={personalState.reminders.enabled}
+                    hour={personalState.reminders.hour}
+                    minute={personalState.reminders.minute}
+                    label="Mo JP Lab 20 phut de giu streak hom nay."
+                  />
+                ) : null}
                 <form action={logoutAction}>
                   <button type="submit" className="btn-danger">
                     Dang xuat
@@ -81,3 +96,4 @@ export async function NavBar() {
     </header>
   );
 }
+

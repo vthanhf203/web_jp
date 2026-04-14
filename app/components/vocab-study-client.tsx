@@ -3,6 +3,12 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import {
+  AUDIO_AUTOPLAY_KEY,
+  AUDIO_RATE_KEY,
+  AUDIO_VOICE_KEY,
+} from "@/app/components/audio-settings-client";
+
 export type StudyMode = "flashcard" | "quiz" | "recall";
 
 type StudyItem = {
@@ -55,8 +61,6 @@ const preferredJaVoiceKeywords = [
   "haruka",
   "sayaka",
 ];
-
-const FLASH_VOICE_STORAGE_KEY = "jp_flashcard_voice_name";
 
 function pickJapaneseVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
   const jaVoices = voices.filter((voice) => voice.lang.toLowerCase().startsWith("ja"));
@@ -149,7 +153,13 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
     if (typeof window === "undefined") {
       return "";
     }
-    return window.localStorage.getItem(FLASH_VOICE_STORAGE_KEY) ?? "";
+    return window.localStorage.getItem(AUDIO_VOICE_KEY) ?? "";
+  });
+  const [autoPlay, setAutoPlay] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    return window.localStorage.getItem(AUDIO_AUTOPLAY_KEY) === "1";
   });
   const flashcardAreaRef = useRef<HTMLDivElement | null>(null);
 
@@ -267,7 +277,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
   const changeJaVoice = useCallback((voiceName: string) => {
     setSelectedJaVoiceName(voiceName);
     if (typeof window !== "undefined") {
-      window.localStorage.setItem(FLASH_VOICE_STORAGE_KEY, voiceName);
+      window.localStorage.setItem(AUDIO_VOICE_KEY, voiceName);
     }
   }, []);
 
@@ -331,7 +341,10 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.lang = hasJapaneseChars(textToSpeak) ? "ja-JP" : "vi-VN";
-    utterance.rate = 0.92;
+    const storedRate = Number(
+      typeof window !== "undefined" ? window.localStorage.getItem(AUDIO_RATE_KEY) ?? "0.95" : "0.95"
+    );
+    utterance.rate = Number.isFinite(storedRate) ? Math.min(1.25, Math.max(0.75, storedRate)) : 0.95;
     utterance.pitch = 1;
 
     if (utterance.lang === "ja-JP") {
@@ -414,6 +427,26 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
     document.addEventListener("keydown", handleKeyDown, { capture: true });
     return () => document.removeEventListener("keydown", handleKeyDown, { capture: true });
   }, [focusFlashcardArea, mode, flipCard, goNext, goPrev, markFlashcard, speakCurrentFlash]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const readAutoPlay = () => setAutoPlay(window.localStorage.getItem(AUDIO_AUTOPLAY_KEY) === "1");
+    readAutoPlay();
+    window.addEventListener("focus", readAutoPlay);
+    return () => window.removeEventListener("focus", readAutoPlay);
+  }, []);
+
+  useEffect(() => {
+    if (mode !== "flashcard" || !autoPlay) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      speakCurrentFlash();
+    }, 140);
+    return () => window.clearTimeout(timer);
+  }, [autoPlay, index, mode, speakCurrentFlash]);
 
   return (
     <section className="mx-auto w-full max-w-6xl rounded-3xl border border-[#41507c] bg-[#2f3c66] p-6 text-slate-100 shadow-[0_16px_35px_rgba(18,28,56,0.45)]">
@@ -740,3 +773,4 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
     </section>
   );
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useActionState, useRef } from "react";
 
@@ -31,7 +31,7 @@ export function AdminGrammarImportForm({ lessonId }: Props) {
         ref={textareaRef}
         name="rawInput"
         className="min-h-48 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-sky-400 focus:ring-3 focus:ring-sky-100"
-        placeholder='JSON: {"title":"N1 は N2 です","meaning":"N1 là N2","usage":["..."],"examples":["..."],"notes":["..."],"image":"/grammar-images/n5/l1-1.png"}'
+        placeholder='JSON: {"title":"N1 wa N2 desu","meaning":"N1 la N2","usage":["..."],"examples":["..."],"notes":["..."],"image":"/grammar-images/n5/l1-1.png"}'
         disabled={!hasLesson || pending}
         required
       />
@@ -64,7 +64,7 @@ export function AdminGrammarImportForm({ lessonId }: Props) {
               return;
             }
             textareaRef.current.value =
-              '{"title":"N1 は N2 です","meaning":"N1 là N2","usage":["Dùng để giới thiệu, định nghĩa"],"examples":["わたしはマイケルです。"],"notes":["です là dạng lịch sự"],"image":"/grammar-images/sample/lesson-01/n1-ha-n2-desu.png"}';
+              '{"title":"N1 wa N2 desu","meaning":"N1 la N2","usage":["Dung de gioi thieu, dinh nghia"],"examples":["Watashi wa Maikeru desu."],"notes":["Desu la dang lich su"],"image":"/grammar-images/sample/lesson-01/n1-ha-n2-desu.png"}';
           }}
           disabled={!hasLesson || pending}
         >

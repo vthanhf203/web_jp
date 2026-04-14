@@ -4,6 +4,11 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { addKanjiToReviewAction } from "@/app/actions/study";
+import {
+  AUDIO_AUTOPLAY_KEY,
+  AUDIO_RATE_KEY,
+  AUDIO_VOICE_KEY,
+} from "@/app/components/audio-settings-client";
 
 type StudyKanjiItem = {
   id: string;
@@ -41,8 +46,6 @@ const preferredJaVoiceKeywords = [
   "haruka",
   "sayaka",
 ];
-
-const KANJI_FLASH_VOICE_STORAGE_KEY = "jp_kanji_flash_voice_name";
 
 function hasJapaneseChars(value: string): boolean {
   return /[\u3040-\u30ff\u4e00-\u9fff]/.test(value);
@@ -99,7 +102,13 @@ export function KanjiStudyClient({ title, backHref, items }: Props) {
     if (typeof window === "undefined") {
       return "";
     }
-    return window.localStorage.getItem(KANJI_FLASH_VOICE_STORAGE_KEY) ?? "";
+    return window.localStorage.getItem(AUDIO_VOICE_KEY) ?? "";
+  });
+  const [autoPlay, setAutoPlay] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    return window.localStorage.getItem(AUDIO_AUTOPLAY_KEY) === "1";
   });
 
   const flashRef = useRef<HTMLDivElement | null>(null);
@@ -204,7 +213,7 @@ export function KanjiStudyClient({ title, backHref, items }: Props) {
   const changeJaVoice = useCallback((voiceName: string) => {
     setSelectedJaVoiceName(voiceName);
     if (typeof window !== "undefined") {
-      window.localStorage.setItem(KANJI_FLASH_VOICE_STORAGE_KEY, voiceName);
+      window.localStorage.setItem(AUDIO_VOICE_KEY, voiceName);
     }
   }, []);
 
@@ -227,7 +236,10 @@ export function KanjiStudyClient({ title, backHref, items }: Props) {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = hasJapaneseChars(text) ? "ja-JP" : "vi-VN";
-    utterance.rate = 0.93;
+    const storedRate = Number(
+      typeof window !== "undefined" ? window.localStorage.getItem(AUDIO_RATE_KEY) ?? "0.95" : "0.95"
+    );
+    utterance.rate = Number.isFinite(storedRate) ? Math.min(1.25, Math.max(0.75, storedRate)) : 0.95;
     utterance.pitch = 1;
 
     if (utterance.lang === "ja-JP") {
@@ -287,6 +299,26 @@ export function KanjiStudyClient({ title, backHref, items }: Props) {
       window.speechSynthesis.removeEventListener("voiceschanged", loadVoices);
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const readAutoPlay = () => setAutoPlay(window.localStorage.getItem(AUDIO_AUTOPLAY_KEY) === "1");
+    readAutoPlay();
+    window.addEventListener("focus", readAutoPlay);
+    return () => window.removeEventListener("focus", readAutoPlay);
+  }, []);
+
+  useEffect(() => {
+    if (!autoPlay) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      speakCurrent();
+    }, 120);
+    return () => window.clearTimeout(timer);
+  }, [autoPlay, index, speakCurrent]);
 
   useEffect(() => {
     focusFlashcardArea();
@@ -550,3 +582,4 @@ export function KanjiStudyClient({ title, backHref, items }: Props) {
     </section>
   );
 }
+

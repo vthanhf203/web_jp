@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -169,7 +169,7 @@ export async function createAdminGrammarLessonAction(formData: FormData) {
     id: lessonId,
     level,
     lessonNumber,
-    title: parsed.data.title || `Bài ${lessonNumber}`,
+    title: parsed.data.title || `Bai ${lessonNumber}`,
     topic: parsed.data.topic || "",
     pointCount: 0,
     points: [],
@@ -255,7 +255,7 @@ export async function importAdminGrammarPointsAction(
   if (!parsed.success) {
     return {
       status: "error",
-      message: "Hãy chọn bài và nhập dữ liệu ngữ pháp hợp lệ.",
+      message: "Hay chon bai va nhap du lieu ngu phap hop le.",
     };
   }
 
@@ -264,7 +264,7 @@ export async function importAdminGrammarPointsAction(
   if (!lesson) {
     return {
       status: "error",
-      message: "Không tìm thấy bài ngữ pháp.",
+      message: "Khong tim thay bai ngu phap.",
     };
   }
 
@@ -272,7 +272,7 @@ export async function importAdminGrammarPointsAction(
   if (rows.length === 0) {
     return {
       status: "error",
-      message: "Không parse được dữ liệu. Hãy thử JSON hoặc JSON-lines.",
+      message: "Khong parse duoc du lieu. Hay thu JSON hoac JSON-lines.",
     };
   }
 
@@ -296,7 +296,7 @@ export async function importAdminGrammarPointsAction(
   touchGrammarPaths();
   return {
     status: "success",
-    message: `Đã thêm ${rows.length} mẫu ngữ pháp vào bài.`,
+    message: `Da them ${rows.length} mau ngu phap vao bai.`, 
   };
 }
 
@@ -334,7 +334,7 @@ export async function uploadAdminGrammarImageAction(formData: FormData) {
   lesson.points.push({
     id: crypto.randomUUID(),
     order: nextOrder,
-    title: parsed.data.title || `Mẫu ảnh ${nextOrder}`,
+    title: parsed.data.title || `Máº«u áº£nh ${nextOrder}`,
     meaning: parsed.data.meaning || "",
     usage: [],
     examples: [],
@@ -411,7 +411,7 @@ export async function importAdminKanjiAction(
   if (!parsed.success) {
     return {
       status: "error",
-      message: "Hãy nhập dữ liệu Kanji hợp lệ.",
+      message: "Hay nhap du lieu Kanji hop le.",
     };
   }
 
@@ -419,7 +419,7 @@ export async function importAdminKanjiAction(
   if (rows.length === 0) {
     return {
       status: "error",
-      message: "Không parse được dữ liệu Kanji. Hãy thử JSON hoặc JSON-lines.",
+      message: "Khong parse duoc du lieu Kanji. Hay thu JSON hoac JSON-lines.",
     };
   }
 
@@ -475,7 +475,7 @@ export async function importAdminKanjiAction(
   touchKanjiPaths();
   return {
     status: "success",
-    message: `Đã xử lý ${rows.length} kanji (${createdCount} mới, ${updatedCount} cập nhật).`,
+    message: `Da xu ly ${rows.length} kanji (${createdCount} moi, ${updatedCount} cap nhat).`, 
   };
 }
 

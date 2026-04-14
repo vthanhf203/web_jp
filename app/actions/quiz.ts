@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { QuizOption } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -30,15 +30,31 @@ function parseSubmittedAnswers(formData: FormData): SelectedAnswer[] {
     .filter((item): item is SelectedAnswer => isQuizOption(item.selected));
 }
 
+function parseSubmittedQuestionIds(formData: FormData): string[] {
+  return Array.from(
+    new Set(
+      formData
+        .getAll("questionIds")
+        .map((item) => String(item))
+        .map((item) => item.trim())
+        .filter(Boolean)
+    )
+  );
+}
+
 export async function submitQuizAction(formData: FormData) {
   const user = await requireUser();
   const selectedAnswers = parseSubmittedAnswers(formData);
+  const submittedQuestionIds = parseSubmittedQuestionIds(formData);
 
-  if (selectedAnswers.length === 0) {
+  if (selectedAnswers.length === 0 && submittedQuestionIds.length === 0) {
     redirect("/quiz?status=empty");
   }
 
-  const questionIds = selectedAnswers.map((item) => item.questionId);
+  const questionIds =
+    submittedQuestionIds.length > 0
+      ? submittedQuestionIds
+      : selectedAnswers.map((item) => item.questionId);
   const answerMap = new Map(
     selectedAnswers.map((item) => [item.questionId, item.selected])
   );
@@ -57,14 +73,15 @@ export async function submitQuizAction(formData: FormData) {
 
   let score = 0;
   const answers = questions.map((question) => {
-    const selected = answerMap.get(question.id) ?? QuizOption.A;
-    const isCorrect = selected === question.correctOption;
+    const selected = answerMap.get(question.id);
+    const selectedOption = selected ?? QuizOption.A;
+    const isCorrect = Boolean(selected) && selectedOption === question.correctOption;
     if (isCorrect) {
       score += 1;
     }
     return {
       questionId: question.id,
-      selectedOption: selected,
+      selectedOption,
       isCorrect,
     };
   });
@@ -86,3 +103,4 @@ export async function submitQuizAction(formData: FormData) {
   revalidatePath("/dashboard");
   redirect(`/quiz?score=${score}&total=${questions.length}`);
 }
+

@@ -1,5 +1,6 @@
 ﻿import Link from "next/link";
 
+import { toggleBookmarkAction } from "@/app/actions/personal";
 import { addKanjiToReviewAction } from "@/app/actions/study";
 import { KanjiDrawSearch } from "@/app/components/kanji-draw-search";
 import { SpeakJpButton } from "@/app/components/speak-jp-button";
@@ -12,6 +13,7 @@ import {
 import { requireUser } from "@/lib/auth";
 import { formatTokyoDateTime } from "@/lib/date";
 import { prisma } from "@/lib/prisma";
+import { loadUserPersonalState } from "@/lib/user-personal-data";
 
 type SearchParams = Promise<{
   q?: string | string[];
@@ -225,7 +227,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
   const selectedLevel = rawLevel ? normalizeJlptLevel(rawLevel) : null;
   const query = rawQuery.trim().toLowerCase();
 
-  const [kanjiList, reviewList, vocabList, adminLibrary] = await Promise.all([
+  const [kanjiList, reviewList, vocabList, adminLibrary, personalState] = await Promise.all([
     prisma.kanji.findMany({
       orderBy: [{ jlptLevel: "asc" }, { character: "asc" }],
     }),
@@ -243,6 +245,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
       orderBy: [{ jlptLevel: "asc" }, { word: "asc" }],
     }),
     loadAdminVocabLibrary(),
+    loadUserPersonalState(user.id),
   ]);
 
   const reviewByKanjiId = new Map(
@@ -281,6 +284,12 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
 
   const selectedKanji = chooseSelectedKanji(filteredKanji, rawQuery, rawSelected);
   const selectedDueAt = selectedKanji ? reviewByKanjiId.get(selectedKanji.id) : undefined;
+  const bookmarkedKeySet = new Set(
+    personalState.bookmarks.map((item) => `${item.type}:${item.refId}`)
+  );
+  const selectedKanjiBookmarked = selectedKanji
+    ? bookmarkedKeySet.has(`kanji:${selectedKanji.character}`)
+    : false;
   const selectedKanjiPicked = selectedKanji ? pickedIdSet.has(selectedKanji.id) : false;
   const selectedKanjiToggledPickedIds = selectedKanji
     ? togglePickedId(activePickedIds, selectedKanji.id)
@@ -470,6 +479,24 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
                 >
                   {selectedKanjiPicked ? "Bo khoi flashcard" : "+ Them vao flashcard"}
                 </Link>
+                <form action={toggleBookmarkAction}>
+                  <input type="hidden" name="type" value="kanji" />
+                  <input type="hidden" name="refId" value={selectedKanji.character} />
+                  <input
+                    type="hidden"
+                    name="title"
+                    value={`${selectedKanji.character} - ${selectedKanji.meaning}`}
+                  />
+                  <input
+                    type="hidden"
+                    name="subtitle"
+                    value={`${selectedKanji.jlptLevel} · ${selectedKanji.strokeCount} net`}
+                  />
+                  <input type="hidden" name="returnTo" value="/kanji" />
+                  <button type="submit" className="btn-soft text-sm">
+                    {selectedKanjiBookmarked ? "Bo bookmark" : "Bookmark"}
+                  </button>
+                </form>
                 {selectedDueAt ? (
                   <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
                     Da luu de on tap: {formatTokyoDateTime(selectedDueAt)}
@@ -647,3 +674,4 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     </section>
   );
 }
+

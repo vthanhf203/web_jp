@@ -1,12 +1,13 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
-type AdminSection = "home" | "vocab" | "grammar" | "kanji";
+type AdminSection = "home" | "vocab" | "grammar" | "kanji" | "quiz";
 
 const links: Array<{ id: AdminSection; href: string; label: string }> = [
-  { id: "home", href: "/admin", label: "Tổng quan" },
-  { id: "vocab", href: "/admin/vocab", label: "Từ vựng" },
-  { id: "grammar", href: "/admin/grammar", label: "Ngữ pháp" },
+  { id: "home", href: "/admin", label: "Tong quan" },
+  { id: "vocab", href: "/admin/vocab", label: "Tu vung" },
+  { id: "grammar", href: "/admin/grammar", label: "Ngu phap" },
   { id: "kanji", href: "/admin/kanji", label: "Kanji" },
+  { id: "quiz", href: "/admin/quiz", label: "Bai tap" },
 ];
 
 type Props = {

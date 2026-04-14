@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 import { AdminNav } from "@/app/components/admin-nav";
 import { requireAdmin } from "@/lib/admin";
@@ -9,49 +9,59 @@ import { prisma } from "@/lib/prisma";
 export default async function AdminHomePage() {
   await requireAdmin();
 
-  const [vocabLibrary, grammarDataset, kanjiCount] = await Promise.all([
+  const [vocabLibrary, grammarDataset, kanjiCount, quizCount] = await Promise.all([
     loadAdminVocabLibrary(),
     loadGrammarDataset(),
     prisma.kanji.count(),
+    prisma.quizQuestion.count(),
   ]);
 
   return (
     <section className="space-y-6 rounded-3xl border border-sky-100 bg-[#d8e5f7] p-6 shadow-[0_8px_28px_rgba(28,78,140,0.08)] [background-image:linear-gradient(rgba(255,255,255,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.3)_1px,transparent_1px)] [background-size:30px_30px]">
       <div className="rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
-        <h1 className="text-3xl font-bold text-slate-800">Admin nội dung học</h1>
+        <h1 className="text-3xl font-bold text-slate-800">Admin noi dung hoc</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Quản lý tập trung dữ liệu Từ vựng, Ngữ pháp và Kanji cho toàn bộ người dùng.
+          Quan ly du lieu Tu vung, Ngu phap, Kanji va Bai tap cho toan bo nguoi dung.
         </p>
         <div className="mt-4">
           <AdminNav active="home" />
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <article className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
-          <p className="text-sm text-slate-500">Kho từ vựng admin</p>
+          <p className="text-sm text-slate-500">Kho tu vung admin</p>
           <p className="mt-2 text-3xl font-bold text-slate-800">{vocabLibrary.lessons.length}</p>
-          <p className="text-sm text-slate-600">nhóm</p>
+          <p className="text-sm text-slate-600">nhom</p>
           <Link href="/admin/vocab" className="btn-primary mt-4">
-            Quản lý từ vựng
+            Quan ly tu vung
           </Link>
         </article>
 
         <article className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
-          <p className="text-sm text-slate-500">Kho ngữ pháp</p>
+          <p className="text-sm text-slate-500">Kho ngu phap</p>
           <p className="mt-2 text-3xl font-bold text-slate-800">{grammarDataset.lessonCount}</p>
-          <p className="text-sm text-slate-600">bài</p>
+          <p className="text-sm text-slate-600">bai</p>
           <Link href="/admin/grammar" className="btn-primary mt-4">
-            Quản lý ngữ pháp
+            Quan ly ngu phap
           </Link>
         </article>
 
         <article className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
           <p className="text-sm text-slate-500">Kho Kanji</p>
           <p className="mt-2 text-3xl font-bold text-slate-800">{kanjiCount}</p>
-          <p className="text-sm text-slate-600">chữ</p>
+          <p className="text-sm text-slate-600">chu</p>
           <Link href="/admin/kanji" className="btn-primary mt-4">
-            Quản lý Kanji
+            Quan ly Kanji
+          </Link>
+        </article>
+
+        <article className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
+          <p className="text-sm text-slate-500">Kho bai tap</p>
+          <p className="mt-2 text-3xl font-bold text-slate-800">{quizCount}</p>
+          <p className="text-sm text-slate-600">cau hoi</p>
+          <Link href="/admin/quiz" className="btn-primary mt-4">
+            Quan ly bai tap
           </Link>
         </article>
       </div>

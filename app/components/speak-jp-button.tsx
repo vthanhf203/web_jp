@@ -1,4 +1,6 @@
-"use client";
+﻿"use client";
+
+import { AUDIO_RATE_KEY, AUDIO_VOICE_KEY } from "@/app/components/audio-settings-client";
 
 type Props = {
   text: string;
@@ -6,12 +8,41 @@ type Props = {
   title?: string;
 };
 
-function pickJapaneseVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
-  const jaVoices = voices.filter((voice) => voice.lang.toLowerCase().startsWith("ja"));
-  return jaVoices[0] ?? null;
+const preferredVoiceKeywords = [
+  "haruka online",
+  "nanami online",
+  "otoya online",
+  "natural",
+  "microsoft",
+  "google",
+  "japanese",
+  "nihongo",
+  "nanami",
+  "haruka",
+];
+
+function pickJapaneseVoice(voices: SpeechSynthesisVoice[], preferredName: string): SpeechSynthesisVoice | null {
+  const jpVoices = voices.filter((voice) => voice.lang.toLowerCase().startsWith("ja"));
+  if (jpVoices.length === 0) {
+    return null;
+  }
+
+  if (preferredName) {
+    const selected = jpVoices.find((voice) => voice.name === preferredName);
+    if (selected) {
+      return selected;
+    }
+  }
+
+  const preferred = jpVoices.find((voice) => {
+    const lowerName = voice.name.toLowerCase();
+    return preferredVoiceKeywords.some((keyword) => lowerName.includes(keyword));
+  });
+
+  return preferred ?? jpVoices[0] ?? null;
 }
 
-export function SpeakJpButton({ text, className = "", title = "Phát âm" }: Props) {
+export function SpeakJpButton({ text, className = "", title = "Phat am" }: Props) {
   const value = text.trim();
 
   return (
@@ -29,10 +60,15 @@ export function SpeakJpButton({ text, className = "", title = "Phát âm" }: Pro
 
         const utterance = new SpeechSynthesisUtterance(value);
         utterance.lang = "ja-JP";
-        utterance.rate = 0.94;
+
+        const savedRate = Number(window.localStorage.getItem(AUDIO_RATE_KEY) ?? "0.95");
+        utterance.rate = Number.isFinite(savedRate) ? Math.min(1.25, Math.max(0.75, savedRate)) : 0.95;
         utterance.pitch = 1;
 
-        const selectedVoice = pickJapaneseVoice(window.speechSynthesis.getVoices());
+        const selectedVoice = pickJapaneseVoice(
+          window.speechSynthesis.getVoices(),
+          window.localStorage.getItem(AUDIO_VOICE_KEY) ?? ""
+        );
         if (selectedVoice) {
           utterance.voice = selectedVoice;
         }
@@ -40,7 +76,8 @@ export function SpeakJpButton({ text, className = "", title = "Phát âm" }: Pro
         window.speechSynthesis.speak(utterance);
       }}
     >
-      🔊
+      ??
     </button>
   );
 }
+
