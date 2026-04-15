@@ -10,6 +10,7 @@ import {
 } from "@/app/actions/admin-vocab";
 import { AdminNav } from "@/app/components/admin-nav";
 import { AdminVocabImportForm } from "@/app/components/admin-vocab-import-form";
+import { AdminVocabSyncForm } from "@/app/components/admin-vocab-sync-form";
 import { requireAdmin } from "@/lib/admin";
 import {
   JLPT_LEVELS,
@@ -221,6 +222,15 @@ export default async function AdminVocabPage(props: { searchParams: SearchParams
                 <p className="mt-1 text-sm text-slate-600">Ho tro JSON, text thuong, tab, pipe...</p>
                 <div className="mt-3">
                   <AdminVocabImportForm lessonId={selectedLesson.id} />
+                </div>
+                <div className="mt-4">
+                  <p className="text-sm font-semibold text-slate-700">Sync tu URL/API</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Dan URL JSON, he thong se parse va nap vao lesson hien tai.
+                  </p>
+                  <div className="mt-2">
+                    <AdminVocabSyncForm lessonId={selectedLesson.id} />
+                  </div>
                 </div>
               </div>
 

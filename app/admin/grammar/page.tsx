@@ -33,16 +33,39 @@ function pickSingle(value?: string | string[]): string {
 }
 
 function normalizeLevel(value: string): GrammarLevel {
-  return value === "N4" ? "N4" : "N5";
+  const normalized = value.trim().toUpperCase();
+  if (normalized === "N1") {
+    return "N1";
+  }
+  if (normalized === "N2") {
+    return "N2";
+  }
+  if (normalized === "N3") {
+    return "N3";
+  }
+  if (normalized === "N4") {
+    return "N4";
+  }
+  return "N5";
 }
 
 function levelStyle(level: GrammarLevel, active: GrammarLevel): string {
   if (level !== active) {
     return "border-slate-200 bg-white text-slate-700 hover:bg-slate-50";
   }
-  return level === "N5"
-    ? "border-emerald-300 bg-emerald-100 text-emerald-800"
-    : "border-blue-300 bg-blue-100 text-blue-800";
+  if (level === "N5") {
+    return "border-emerald-300 bg-emerald-100 text-emerald-800";
+  }
+  if (level === "N4") {
+    return "border-blue-300 bg-blue-100 text-blue-800";
+  }
+  if (level === "N3") {
+    return "border-amber-300 bg-amber-100 text-amber-800";
+  }
+  if (level === "N2") {
+    return "border-orange-300 bg-orange-100 text-orange-800";
+  }
+  return "border-rose-300 bg-rose-100 text-rose-800";
 }
 
 function levelHref(level: GrammarLevel, lessonId: string | null = null): string {

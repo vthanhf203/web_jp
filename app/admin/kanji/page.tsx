@@ -2,6 +2,7 @@
 
 import { deleteAdminKanjiAction } from "@/app/actions/admin-content";
 import { AdminKanjiImportForm } from "@/app/components/admin-kanji-import-form";
+import { AdminKanjiSyncForm } from "@/app/components/admin-kanji-sync-form";
 import { AdminNav } from "@/app/components/admin-nav";
 import { requireAdmin } from "@/lib/admin";
 import { JLPT_LEVELS, normalizeJlptLevel, type JlptLevel } from "@/lib/admin-vocab-library";
@@ -100,6 +101,15 @@ export default async function AdminKanjiPage(props: { searchParams: SearchParams
         </p>
         <div className="mt-3">
           <AdminKanjiImportForm />
+        </div>
+        <div className="mt-4">
+          <p className="text-sm font-semibold text-slate-700">Sync tu URL/API</p>
+          <p className="mt-1 text-xs text-slate-500">
+            Dan URL JSON, he thong se parse va cap nhat kho Kanji.
+          </p>
+          <div className="mt-2">
+            <AdminKanjiSyncForm />
+          </div>
         </div>
       </div>
 

@@ -3,7 +3,12 @@ import Link from "next/link";
 
 import { toggleBookmarkAction } from "@/app/actions/personal";
 import { requireUser } from "@/lib/auth";
-import { loadGrammarDataset, type GrammarPoint } from "@/lib/grammar-dataset";
+import {
+  GRAMMAR_LEVELS,
+  loadGrammarDataset,
+  type GrammarLevel,
+  type GrammarPoint,
+} from "@/lib/grammar-dataset";
 import { loadUserPersonalState } from "@/lib/user-personal-data";
 
 type SearchParams = Promise<{
@@ -13,7 +18,7 @@ type SearchParams = Promise<{
   q?: string | string[];
 }>;
 
-type LevelFilter = "N5" | "N4";
+type LevelFilter = GrammarLevel;
 
 function pickSingle(value?: string | string[]): string {
   if (!value) {
@@ -26,7 +31,7 @@ function pickSingle(value?: string | string[]): string {
 }
 
 function isLevelFilter(value: string): value is LevelFilter {
-  return value === "N5" || value === "N4";
+  return GRAMMAR_LEVELS.includes(value as GrammarLevel);
 }
 
 function normalizeQuery(value: string): string {
@@ -89,6 +94,30 @@ function displayTopic(topic?: string): string | null {
     return null;
   }
   return value;
+}
+
+function extractLessonNumberFromTitle(title?: string): number | null {
+  if (!title) {
+    return null;
+  }
+  const normalized = title.trim().toLowerCase();
+  const match = normalized.match(/^bai\s*(\d+)$/);
+  if (!match) {
+    return null;
+  }
+  const parsed = Number(match[1]);
+  if (!Number.isFinite(parsed)) {
+    return null;
+  }
+  return parsed;
+}
+
+function lessonDisplayTitle(lessonNumber: number, title?: string): string {
+  const parsedTitleNumber = extractLessonNumberFromTitle(title);
+  if (!title?.trim() || parsedTitleNumber !== null) {
+    return `Bai ${lessonNumber}`;
+  }
+  return title.trim();
 }
 
 function splitExampleLine(line: string): { jp: string; vi: string } {
@@ -158,9 +187,17 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
       ? filteredPoints[selectedPointIndex + 1] ?? null
       : null;
 
-  const selectedTopic = selectedLesson ? displayTopic(selectedLesson.topic) : null;
+  const selectedTopicRaw = selectedLesson ? displayTopic(selectedLesson.topic) : null;
+  const selectedLessonTitle = selectedLesson
+    ? lessonDisplayTitle(selectedLesson.lessonNumber, selectedLesson.title)
+    : "";
+  const selectedTopic = selectedTopicRaw;
   const levelBookTitle =
-    level === "N5" ? "Minna no Nihongo I (第1〜25課)" : "Minna no Nihongo II (第26〜50課)";
+    level === "N5"
+      ? "Minna no Nihongo I (第1〜25課)"
+      : level === "N4"
+        ? "Minna no Nihongo II (第26〜50課)"
+        : `Ngu phap JLPT ${level}`;
   const levelTotalPoints = lessonsByLevel.reduce((sum, lesson) => sum + lesson.pointCount, 0);
   const bookmarkKeySet = new Set(
     personalState.bookmarks.map((item) => `${item.type}:${item.refId}`)
@@ -174,29 +211,26 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
       <div className="rounded-2xl border border-slate-200/90 bg-white/90 p-5 shadow-[0_12px_32px_rgba(26,49,91,0.1)] backdrop-blur-[2px] sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800">Ngu phap JLPT N5 - N4</h1>
+            <h1 className="text-3xl font-bold text-slate-800">Ngu phap JLPT N5 - N1</h1>
             <p className="mt-1 text-sm text-slate-600">
               Du lieu da import tu file PDF cua ban. Co {dataset.lessonCount} bai.
             </p>
           </div>
 
           <div className="inline-flex rounded-xl border border-slate-200 bg-slate-100 p-1">
-            <Link
-              href={buildGrammarHref({ level: "N5" })}
-              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-                level === "N5" ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              N5
-            </Link>
-            <Link
-              href={buildGrammarHref({ level: "N4" })}
-              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-                level === "N4" ? "bg-emerald-600 text-white" : "text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              N4
-            </Link>
+            {GRAMMAR_LEVELS.map((entry) => (
+              <Link
+                key={entry}
+                href={buildGrammarHref({ level: entry })}
+                className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                  level === entry
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                {entry}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
@@ -223,7 +257,9 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <p className="line-clamp-1 text-sm font-semibold text-slate-800">{lesson.title}</p>
+                      <p className="line-clamp-1 text-sm font-semibold text-slate-800">
+                        {lessonDisplayTitle(lesson.lessonNumber, lesson.title)}
+                      </p>
                       <span className="shrink-0 rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
                         {lesson.pointCount}
                       </span>
@@ -243,7 +279,7 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-slate-500">{selectedLesson.level}</p>
-                <h2 className="text-2xl font-bold text-slate-800">{selectedLesson.title}</h2>
+                <h2 className="text-2xl font-bold text-slate-800">{selectedLessonTitle}</h2>
                 {selectedTopic ? <p className="mt-1 text-sm text-slate-600">Chu de: {selectedTopic}</p> : null}
               </div>
 
@@ -490,7 +526,8 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
                   <div className="min-w-0">
                     <p className="text-[1.05rem] font-bold text-slate-900">Bai {lesson.lessonNumber}</p>
                     <p className="mt-0.5 line-clamp-1 text-[0.82rem] text-slate-600">
-                      {displayTopic(lesson.topic) ?? lesson.title}
+                      {displayTopic(lesson.topic) ??
+                        lessonDisplayTitle(lesson.lessonNumber, lesson.title)}
                     </p>
                   </div>
                   <span className="text-xl text-slate-300 transition group-hover:text-sky-500">›</span>

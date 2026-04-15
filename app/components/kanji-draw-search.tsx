@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
+import { Eraser, Search, Sparkles, WandSparkles } from "lucide-react";
 
 type KanjiLookupItem = {
   character: string;
@@ -42,6 +43,8 @@ type Signature = {
   colStrongCount: number;
   horizontalBandCount: number;
   verticalBandCount: number;
+  rowBandCenters: Float32Array;
+  colBandCenters: Float32Array;
   maxHorizontalRunRatio: number;
   maxVerticalRunRatio: number;
   cx: number;
@@ -111,6 +114,8 @@ function createEmptySignature(): Signature {
     colStrongCount: 0,
     horizontalBandCount: 0,
     verticalBandCount: 0,
+    rowBandCenters: new Float32Array(4).fill(-1),
+    colBandCenters: new Float32Array(4).fill(-1),
     maxHorizontalRunRatio: 0,
     maxVerticalRunRatio: 0,
     cx: 0.5,
@@ -227,6 +232,88 @@ function countBands(binary: Uint8Array): number {
   return bands;
 }
 
+function extractBandCenters(binary: Uint8Array, maxCenters = 4): Float32Array {
+  const centers = new Float32Array(maxCenters).fill(-1);
+  let index = 0;
+  let start = -1;
+
+  for (let i = 0; i < binary.length; i += 1) {
+    if (binary[i] === 1) {
+      if (start < 0) {
+        start = i;
+      }
+      continue;
+    }
+
+    if (start >= 0) {
+      if (index < maxCenters) {
+        centers[index] = ((start + i - 1) * 0.5) / Math.max(1, binary.length - 1);
+      }
+      index += 1;
+      start = -1;
+    }
+  }
+
+  if (start >= 0 && index < maxCenters) {
+    centers[index] = ((start + binary.length - 1) * 0.5) / Math.max(1, binary.length - 1);
+  }
+
+  return centers;
+}
+
+function compareBandCenters(input: Float32Array, target: Float32Array): number {
+  const inputValues: number[] = [];
+  const targetValues: number[] = [];
+
+  for (let i = 0; i < input.length; i += 1) {
+    if (input[i] >= 0) {
+      inputValues.push(input[i]);
+    }
+    if (target[i] >= 0) {
+      targetValues.push(target[i]);
+    }
+  }
+
+  if (inputValues.length === 0 || targetValues.length === 0) {
+    return 0.5;
+  }
+
+  const compareCount = Math.min(inputValues.length, targetValues.length);
+  let diff = 0;
+  for (let i = 0; i < compareCount; i += 1) {
+    diff += Math.abs(inputValues[i] - targetValues[i]);
+  }
+
+  const countDiff = Math.abs(inputValues.length - targetValues.length) * 0.1;
+  return Math.min(1, diff / compareCount + countDiff);
+}
+
+function compareStrokeBands(strokes: number[], targetCenters: Float32Array): number {
+  if (strokes.length === 0) {
+    return 0;
+  }
+
+  const targets: number[] = [];
+  for (let i = 0; i < targetCenters.length; i += 1) {
+    if (targetCenters[i] >= 0) {
+      targets.push(targetCenters[i]);
+    }
+  }
+  if (targets.length === 0) {
+    return 0.5;
+  }
+
+  const sortedStrokes = [...strokes].sort((a, b) => a - b);
+  const compareCount = Math.min(sortedStrokes.length, targets.length);
+  let diff = 0;
+  for (let i = 0; i < compareCount; i += 1) {
+    diff += Math.abs(sortedStrokes[i] - targets[i]);
+  }
+
+  const countPenalty = Math.abs(sortedStrokes.length - targets.length) * 0.08;
+  return Math.min(1, diff / compareCount + countPenalty);
+}
+
 function getLineBandFeatures(bits: Uint8Array) {
   const rowStrong = new Uint8Array(GRID_SIZE);
   const colStrong = new Uint8Array(GRID_SIZE);
@@ -282,6 +369,8 @@ function getLineBandFeatures(bits: Uint8Array) {
   return {
     horizontalBandCount: countBands(rowStrong),
     verticalBandCount: countBands(colStrong),
+    rowBandCenters: extractBandCenters(rowStrong),
+    colBandCenters: extractBandCenters(colStrong),
     maxHorizontalRunRatio: maxRowRun / GRID_SIZE,
     maxVerticalRunRatio: maxColRun / GRID_SIZE,
   };
@@ -535,6 +624,8 @@ function signatureFromCanvas(source: HTMLCanvasElement): Signature {
     colStrongCount,
     horizontalBandCount: lineBands.horizontalBandCount,
     verticalBandCount: lineBands.verticalBandCount,
+    rowBandCenters: lineBands.rowBandCenters,
+    colBandCenters: lineBands.colBandCenters,
     maxHorizontalRunRatio: lineBands.maxHorizontalRunRatio,
     maxVerticalRunRatio: lineBands.maxVerticalRunRatio,
     cx: inkCount > 0 ? sumX / inkCount / GRID_SIZE : 0.5,
@@ -590,6 +681,8 @@ function compareCoarseSignature(
   const colStrongDiff = Math.min(1, Math.abs(input.colStrongCount - target.colStrongCount) / 4);
   const hBandDiff = Math.min(1, Math.abs(input.horizontalBandCount - target.horizontalBandCount) / 4);
   const vBandDiff = Math.min(1, Math.abs(input.verticalBandCount - target.verticalBandCount) / 4);
+  const rowBandCenterDiff = compareBandCenters(input.rowBandCenters, target.rowBandCenters);
+  const colBandCenterDiff = compareBandCenters(input.colBandCenters, target.colBandCenters);
   const hRunDiff = Math.min(1, Math.abs(input.maxHorizontalRunRatio - target.maxHorizontalRunRatio));
   const vRunDiff = Math.min(1, Math.abs(input.maxVerticalRunRatio - target.maxVerticalRunRatio));
   let edgeDiff = 0;
@@ -616,8 +709,10 @@ function compareCoarseSignature(
     colPeakDiff * 0.03 +
     rowStrongDiff * 0.04 +
     colStrongDiff * 0.01 +
-    hBandDiff * 0.06 +
+    hBandDiff * 0.05 +
     vBandDiff * 0.02 +
+    rowBandCenterDiff * 0.05 +
+    colBandCenterDiff * 0.02 +
     hRunDiff * 0.01 +
     vRunDiff * 0.01
   );
@@ -658,6 +753,8 @@ function compareSignature(
   const colStrongDiff = Math.min(1, Math.abs(input.colStrongCount - target.colStrongCount) / 4);
   const hBandDiff = Math.min(1, Math.abs(input.horizontalBandCount - target.horizontalBandCount) / 4);
   const vBandDiff = Math.min(1, Math.abs(input.verticalBandCount - target.verticalBandCount) / 4);
+  const rowBandCenterDiff = compareBandCenters(input.rowBandCenters, target.rowBandCenters);
+  const colBandCenterDiff = compareBandCenters(input.colBandCenters, target.colBandCenters);
   const hRunDiff = Math.min(1, Math.abs(input.maxHorizontalRunRatio - target.maxHorizontalRunRatio));
   const vRunDiff = Math.min(1, Math.abs(input.maxVerticalRunRatio - target.maxVerticalRunRatio));
   let edgeDiff = 0;
@@ -709,8 +806,10 @@ function compareSignature(
     colPeakDiff * 0.04 +
     rowStrongDiff * 0.08 +
     colStrongDiff * 0.04 +
-    hBandDiff * 0.11 +
+    hBandDiff * 0.08 +
     vBandDiff * 0.03 +
+    rowBandCenterDiff * 0.09 +
+    colBandCenterDiff * 0.04 +
     hRunDiff * 0.04 +
     vRunDiff * 0.04
   );
@@ -738,6 +837,8 @@ export function KanjiDrawSearch({ items, initialQuery = "", level }: Props) {
   const strokeStartPointRef = useRef<{ x: number; y: number } | null>(null);
   const strokeOrientationRef = useRef<Float32Array>(new Float32Array(4));
   const strokeDirectionCountRef = useRef<Int32Array>(new Int32Array(4));
+  const horizontalStrokeYRef = useRef<number[]>([]);
+  const verticalStrokeXRef = useRef<number[]>([]);
   const strokeTotalLengthRef = useRef(0);
   const recognizeTimerRef = useRef<number | null>(null);
   const glyphSignatureCacheRef = useRef<Map<string, Signature[]>>(new Map());
@@ -819,6 +920,8 @@ export function KanjiDrawSearch({ items, initialQuery = "", level }: Props) {
     }
     strokeOrientationRef.current = new Float32Array(4);
     strokeDirectionCountRef.current = new Int32Array(4);
+    horizontalStrokeYRef.current = [];
+    verticalStrokeXRef.current = [];
     strokeTotalLengthRef.current = 0;
     strokeStartPointRef.current = null;
     setCandidates([]);
@@ -898,17 +1001,17 @@ export function KanjiDrawSearch({ items, initialQuery = "", level }: Props) {
             const strokeGap = Math.abs(item.item.strokeCount - drawnStrokeCount);
             if (item.item.strokeCount >= drawnStrokeCount) {
               const ratio = strokeGap / Math.max(8, item.item.strokeCount);
-              const weight = drawnStrokeCount <= 3 ? 0.02 : 0.05;
+              const weight = drawnStrokeCount <= 3 ? 0.015 : 0.04;
               score += ratio * weight;
             } else {
               // Allow user to split one logical stroke into many short strokes.
               const ratio = strokeGap / Math.max(5, drawnStrokeCount);
-              const weight = drawnStrokeCount <= 4 ? 0.03 : 0.06;
-              score += Math.min(0.06, ratio * weight);
+              const weight = drawnStrokeCount <= 4 ? 0.016 : 0.038;
+              score += Math.min(0.04, ratio * weight);
             }
 
             if (drawnStrokeCount <= 2 && item.item.strokeCount >= 14) {
-              score += 0.06;
+              score += 0.05;
             }
           }
 
@@ -922,7 +1025,22 @@ export function KanjiDrawSearch({ items, initialQuery = "", level }: Props) {
           const strokeLineDiff =
             Math.abs(inputHStrokes - targetHBands) / 4 +
             Math.abs(inputVStrokes - targetVBands) / 4;
-          score += strokeLineDiff * 0.08;
+          score += strokeLineDiff * 0.07;
+
+          if (horizontalStrokeYRef.current.length >= 2) {
+            const hStrokePosDiff = compareStrokeBands(
+              horizontalStrokeYRef.current,
+              bestSignature.rowBandCenters
+            );
+            score += hStrokePosDiff * 0.11;
+          }
+          if (verticalStrokeXRef.current.length >= 1) {
+            const vStrokePosDiff = compareStrokeBands(
+              verticalStrokeXRef.current,
+              bestSignature.colBandCenters
+            );
+            score += vStrokePosDiff * 0.08;
+          }
 
           const horizontalPatternInput =
             input.horizontalBandCount >= 3 && input.maxHorizontalRunRatio >= 0.42;
@@ -933,22 +1051,28 @@ export function KanjiDrawSearch({ items, initialQuery = "", level }: Props) {
             const targetLooksLikeHandFamily =
               bestSignature.horizontalBandCount >= 3 &&
               bestSignature.verticalBandCount >= 1 &&
-              bestSignature.maxHorizontalRunRatio >= 0.34;
+              bestSignature.maxHorizontalRunRatio >= 0.34 &&
+              bestSignature.rowBandCenters[0] >= 0 &&
+              bestSignature.rowBandCenters[1] >= 0 &&
+              bestSignature.rowBandCenters[2] >= 0;
             if (targetLooksLikeHandFamily) {
-              score -= 0.16;
+              score -= 0.18;
             } else {
-              score += 0.13;
+              score += 0.16;
             }
           }
 
           if (inputHStrokes >= 3 && targetHBands <= 2) {
-            score += 0.09;
+            score += 0.13;
           }
           if (inputDStrokes <= 1 && targetDiagBias >= 0.34) {
+            score += 0.1;
+          }
+          if (inputDStrokes >= 2 && targetDiagBias <= 0.22) {
             score += 0.07;
           }
 
-          return score;
+          return score * 0.86 + item.coarseScore * 0.14;
         })(),
       }))
       .sort((a, b) => a.score - b.score)
@@ -1038,10 +1162,14 @@ export function KanjiDrawSearch({ items, initialQuery = "", level }: Props) {
       if (length >= 14) {
         const absX = Math.abs(dx);
         const absY = Math.abs(dy);
+        const midX = (start.x + end.x) / 2 / CANVAS_WIDTH;
+        const midY = (start.y + end.y) / 2 / CANVAS_HEIGHT;
         if (absY <= absX * 0.5) {
           strokeDirectionCountRef.current[0] += 1; // horizontal
+          horizontalStrokeYRef.current = [...horizontalStrokeYRef.current, midY].slice(-8);
         } else if (absX <= absY * 0.5) {
           strokeDirectionCountRef.current[1] += 1; // vertical
+          verticalStrokeXRef.current = [...verticalStrokeXRef.current, midX].slice(-8);
         } else if (dx * dy > 0) {
           strokeDirectionCountRef.current[2] += 1; // down-right
         } else {
@@ -1098,134 +1226,144 @@ export function KanjiDrawSearch({ items, initialQuery = "", level }: Props) {
   }
 
   return (
-    <div className="panel grid gap-4 p-4 sm:p-5 lg:grid-cols-[1.15fr_1fr]">
-      <div>
-        <h2 className="text-2xl font-extrabold text-slate-800">Tim kiem Kanji</h2>
-        <form onSubmit={submitSearch} className="mt-3 flex gap-2">
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            className="input-base"
-            placeholder="Nhap kanji, nghia, am On/Kun"
-          />
-          <button type="submit" className="btn-primary shrink-0">
-            Tim
-          </button>
-        </form>
+    <section className="relative overflow-hidden rounded-3xl bg-white/80 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.05)] backdrop-blur-md sm:p-6">
+      <div className="pointer-events-none absolute -left-16 top-0 h-44 w-44 rounded-full bg-sky-200/35 blur-3xl" />
+      <div className="pointer-events-none absolute -right-12 bottom-0 h-44 w-44 rounded-full bg-violet-200/30 blur-3xl" />
 
-        <h3 className="mt-4 text-lg font-semibold text-slate-800">Hoac ve Kanji</h3>
-        <div className="mt-2 overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-[0_10px_30px_rgba(24,76,146,0.08)]">
-          <canvas
-            ref={canvasRef}
-            className="h-[280px] w-full touch-none bg-slate-50"
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={endDrawing}
-            onPointerLeave={(event) => {
-              if (pointerActiveRef.current) {
-                endDrawing(event);
-              }
-            }}
-          />
-        </div>
-        <div className="mt-2 flex items-center gap-2">
-          <button
-            type="button"
-            className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-sm font-semibold text-rose-700 hover:-translate-y-0.5 hover:bg-rose-100"
-            onClick={clearCanvas}
-          >
-            Xoa net
-          </button>
-          <button
-            type="button"
-            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 hover:-translate-y-0.5 hover:bg-slate-50"
-            onClick={runRecognition}
-          >
-            Nhan dien ngay
-          </button>
-        </div>
-      </div>
+      <div className="relative grid gap-5 lg:grid-cols-[1.52fr_1fr]">
+        <article className="rounded-3xl bg-white/84 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.05)] sm:p-5">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-2xl font-black tracking-tight text-slate-900">Kanji Creative Canvas</h2>
+            <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">
+              Interactive Lab
+            </span>
+          </div>
 
-      <div>
-        <h2 className="text-2xl font-extrabold text-slate-800">Goi y tu net ve</h2>
-        <p className="mt-1 text-sm text-slate-500">
-          Ve cang ro tung net thi ket qua cang chinh xac.
-        </p>
-        <p className="mt-1 text-sm font-semibold text-sky-700">
-          So net da ve: {drawnStrokeCount}
-        </p>
-        <p className="mt-1 text-xs text-slate-500">Goi y duoc sap xep theo do giong cao den thap.</p>
-        {candidates.length > 0 ? (
-          <button
-            type="button"
-            className="mt-2 rounded-xl border border-emerald-300 bg-emerald-100 px-3 py-1.5 text-sm font-semibold text-emerald-800 hover:-translate-y-0.5 hover:bg-emerald-200"
-            onClick={() => {
-              const top = candidates[0];
-              if (!top) {
-                return;
-              }
-              learnByCandidate(top.char);
-            }}
-          >
-            Hoc Flashcard tu net ve (Top 1)
-          </button>
-        ) : null}
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          {candidates.map((candidate, index) => (
-            <div
-              key={candidate.char}
-              className={`inline-flex items-center gap-1 rounded-xl border px-2 py-1 transition ${
-                index === 0
-                  ? "border-emerald-300 bg-emerald-100 shadow-[0_8px_20px_rgba(16,185,129,0.18)]"
-                  : "border-blue-200 bg-blue-50"
-              }`}
+          <form onSubmit={submitSearch} className="mt-3 flex gap-2">
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              className="input-base"
+              placeholder="Nhap kanji, nghia, am On/Kun"
+            />
+            <button
+              type="submit"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-800"
             >
+              <Search className="h-4 w-4" />
+              Tim
+            </button>
+          </form>
+
+          <div className="relative mt-4 overflow-hidden rounded-3xl p-2 kanji-dot-grid shadow-[inset_0_0_0_1px_rgba(255,255,255,0.85)]">
+            <canvas
+              ref={canvasRef}
+              className="h-[340px] w-full touch-none rounded-[1.25rem] bg-transparent"
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={endDrawing}
+              onPointerLeave={(event) => {
+                if (pointerActiveRef.current) {
+                  endDrawing(event);
+                }
+              }}
+            />
+            <div className="absolute right-5 top-5 flex items-center gap-2">
               <button
                 type="button"
-                className={`text-lg font-bold ${
-                  index === 0 ? "text-emerald-800" : "text-blue-700"
-                }`}
-                onClick={() => searchByCandidate(candidate.char)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-rose-600 shadow-[0_8px_20px_rgba(15,23,42,0.12)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-rose-50"
+                onClick={clearCanvas}
+                aria-label="Xoa net"
               >
-                {candidate.char}
-                {index === 0 ? <span className="ml-2 text-xs font-semibold">Top 1</span> : null}
+                <Eraser className="h-4 w-4" />
               </button>
               <button
                 type="button"
-                className={`rounded-lg px-2 py-0.5 text-xs font-semibold ${
-                  index === 0
-                    ? "bg-emerald-200 text-emerald-900 hover:bg-emerald-300"
-                    : "bg-blue-100 text-blue-800 hover:bg-blue-200"
-                }`}
-                onClick={() => learnByCandidate(candidate.char)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white shadow-[0_10px_20px_rgba(15,23,42,0.2)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-800"
+                onClick={runRecognition}
+                aria-label="Nhan dien"
               >
-                Flash
+                <WandSparkles className="h-4 w-4" />
               </button>
             </div>
-          ))}
-          {hasDrawing && candidates.length === 0 ? (
-            <span className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm text-amber-700">
-              Chua nhan dien duoc, thu ve lai nhe.
-            </span>
-          ) : null}
-          {!hasDrawing ? (
-            <span className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-600">
-              Chua co net ve.
-            </span>
-          ) : null}
-        </div>
+            <div className="absolute bottom-4 left-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-600">
+              So net da ve: {drawnStrokeCount}
+            </div>
+          </div>
+        </article>
 
-        <div className="mt-4 rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/80 p-3">
-          <p className="text-sm font-semibold text-slate-700">Meo ve</p>
-          <ul className="mt-1 space-y-1 text-sm text-slate-600">
-            <li>- Ve lon, nam giua khung</li>
-            <li>- Ve tung net ro rang, dung chong qua nhieu</li>
-            <li>- Neu sai, bam Xoa net va thu lai</li>
-            <li>- Ve du cac bo phan cua chu (vi du: 安 can du ca 宀 va 女)</li>
-          </ul>
+        <div className="space-y-4">
+          <article className="rounded-3xl bg-white/84 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
+            <h3 className="text-xl font-black tracking-tight text-slate-900">Goi y tu net ve</h3>
+            <p className="mt-1 text-sm text-slate-500">
+              Ve cang ro tung net, top 1 cang chinh xac.
+            </p>
+
+            {candidates.length > 0 ? (
+              <button
+                type="button"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1.5 text-sm font-semibold text-emerald-800 shadow-[0_8px_18px_rgba(16,185,129,0.22)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-200"
+                onClick={() => {
+                  const top = candidates[0];
+                  if (!top) {
+                    return;
+                  }
+                  learnByCandidate(top.char);
+                }}
+              >
+                <Sparkles className="h-4 w-4" />
+                Hoc Flashcard top 1
+              </button>
+            ) : null}
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              {candidates.map((candidate, index) => (
+                <div
+                  key={candidate.char}
+                  className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm font-semibold transition-all duration-300 ${
+                    index === 0
+                      ? "bg-emerald-100 text-emerald-800 shadow-[0_8px_18px_rgba(16,185,129,0.22)]"
+                      : "bg-sky-100 text-sky-700 shadow-[0_8px_16px_rgba(14,165,233,0.14)]"
+                  }`}
+                >
+                  <button type="button" onClick={() => searchByCandidate(candidate.char)}>
+                    {candidate.char}
+                    {index === 0 ? <span className="ml-1 text-xs">Top 1</span> : null}
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-full bg-white/85 px-2 text-[11px] font-bold text-slate-600"
+                    onClick={() => learnByCandidate(candidate.char)}
+                  >
+                    Flash
+                  </button>
+                </div>
+              ))}
+              {hasDrawing && candidates.length === 0 ? (
+                <span className="rounded-full bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-700 shadow-[0_8px_16px_rgba(245,158,11,0.2)]">
+                  Chua nhan dien duoc, thu ve lai.
+                </span>
+              ) : null}
+              {!hasDrawing ? (
+                <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600">
+                  Chua co net ve.
+                </span>
+              ) : null}
+            </div>
+          </article>
+
+          <article className="rounded-3xl bg-white/84 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
+            <p className="text-sm font-bold text-slate-700">Meo ve nhanh</p>
+            <ul className="mt-2 space-y-2 text-sm text-slate-600">
+              <li>- Ve lon, nam giua canvas de nhan dien on dinh.</li>
+              <li>- Ve net ngang/doi xung tach roi nhau neu la chu co nhieu tang.</li>
+              <li>- Neu sai, bam icon xoa va ve lai tung phan.</li>
+              <li>- Co the nhan icon wand de scan ngay khong can doi.</li>
+            </ul>
+          </article>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
+

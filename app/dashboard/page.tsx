@@ -1,11 +1,15 @@
-﻿import Link from "next/link";
-
-import { SectionCard } from "@/app/components/section-card";
+﻿import { DashboardBentoClient } from "@/app/components/dashboard-bento-client";
 import { loadAdminVocabLibrary } from "@/lib/admin-vocab-library";
 import { requireUser } from "@/lib/auth";
 import { toTokyoDateKey } from "@/lib/date";
 import { prisma } from "@/lib/prisma";
 import { loadUserPersonalState } from "@/lib/user-personal-data";
+
+type LearningStep = {
+  href: string;
+  title: string;
+  subtitle: string;
+};
 
 function getDateKeys(days: number): string[] {
   const keys: string[] = [];
@@ -26,6 +30,18 @@ function aggregateByDay(dates: Date[]): Map<string, number> {
   return map;
 }
 
+function initialsFromName(name: string): string {
+  const tokens = name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2);
+  if (tokens.length === 0) {
+    return "JP";
+  }
+  return tokens.map((token) => token[0]?.toUpperCase() ?? "").join("");
+}
+
 export default async function DashboardPage() {
   const user = await requireUser();
 
@@ -33,61 +49,52 @@ export default async function DashboardPage() {
   const last7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const last30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  const [
-    kanjiCount,
-    vocabCount,
-    adminLibrary,
-    personalState,
-    reviews7d,
-    reviews30d,
-    quizAttempts30d,
-    dueReviews,
-    wrongAnswers,
-  ] = await Promise.all([
-    prisma.kanji.count(),
-    prisma.vocab.count(),
-    loadAdminVocabLibrary(),
-    loadUserPersonalState(user.id),
-    prisma.review.findMany({
-      where: {
-        userId: user.id,
-        lastReviewedAt: { gte: last7 },
-      },
-      select: { lastReviewedAt: true },
-    }),
-    prisma.review.findMany({
-      where: {
-        userId: user.id,
-        lastReviewedAt: { gte: last30 },
-      },
-      select: { lastReviewedAt: true },
-    }),
-    prisma.quizAttempt.findMany({
-      where: {
-        userId: user.id,
-        createdAt: { gte: last30 },
-      },
-      select: {
-        createdAt: true,
-        score: true,
-        total: true,
-      },
-      orderBy: { createdAt: "desc" },
-      take: 100,
-    }),
-    prisma.review.count({
-      where: {
-        userId: user.id,
-        dueAt: { lte: now },
-      },
-    }),
-    prisma.quizAnswer.count({
-      where: {
-        attempt: { userId: user.id },
-        isCorrect: false,
-      },
-    }),
-  ]);
+  const [kanjiCount, vocabCount, adminLibrary, personalState, reviews7d, reviews30d, quizAttempts30d, dueReviews, wrongAnswers] =
+    await Promise.all([
+      prisma.kanji.count(),
+      prisma.vocab.count(),
+      loadAdminVocabLibrary(),
+      loadUserPersonalState(user.id),
+      prisma.review.findMany({
+        where: {
+          userId: user.id,
+          lastReviewedAt: { gte: last7 },
+        },
+        select: { lastReviewedAt: true },
+      }),
+      prisma.review.findMany({
+        where: {
+          userId: user.id,
+          lastReviewedAt: { gte: last30 },
+        },
+        select: { lastReviewedAt: true },
+      }),
+      prisma.quizAttempt.findMany({
+        where: {
+          userId: user.id,
+          createdAt: { gte: last30 },
+        },
+        select: {
+          createdAt: true,
+          score: true,
+          total: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: 100,
+      }),
+      prisma.review.count({
+        where: {
+          userId: user.id,
+          dueAt: { lte: now },
+        },
+      }),
+      prisma.quizAnswer.count({
+        where: {
+          attempt: { userId: user.id },
+          isCorrect: false,
+        },
+      }),
+    ]);
 
   const reviewDates7d = reviews7d
     .map((entry) => entry.lastReviewedAt)
@@ -105,111 +112,60 @@ export default async function DashboardPage() {
 
   const max7 = Math.max(1, ...chart7.map((item) => item.count));
 
-  const totalQuizCorrect = quizAttempts30d.reduce((sum, item) => sum + item.score, 0);
-  const totalQuizQuestions = quizAttempts30d.reduce((sum, item) => sum + item.total, 0);
-  const quizAccuracy =
-    totalQuizQuestions > 0 ? Math.round((totalQuizCorrect / totalQuizQuestions) * 100) : 0;
-
-  const adminVocabCount = adminLibrary.lessons.reduce(
-    (sum, lesson) => sum + lesson.items.length,
-    0
-  );
+  const adminVocabCount = adminLibrary.lessons.reduce((sum, lesson) => sum + lesson.items.length, 0);
   const totalVocabCount = vocabCount + adminVocabCount;
 
-  const plan = personalState.plan;
+  const quizTargetDays = 10;
+  const quizDone = Math.min(quizAttempts30d.length, quizTargetDays);
+  const quizGoalProgress = Math.round((quizDone / quizTargetDays) * 100);
+
+  const xpGoal = 30;
+  const xpProgress = Math.round(Math.min(100, (user.xp / xpGoal) * 100));
+
+  const reviewPlanCount = dueReviews > 0 ? dueReviews : 15;
+
+  const learningSteps: LearningStep[] = [
+    {
+      href: "/review",
+      title: `Ôn tập (${reviewPlanCount} từ)`,
+      subtitle: "Củng cố các thẻ đến hạn trong SRS",
+    },
+    {
+      href: "/focus",
+      title: "Sửa lỗi sai",
+      subtitle: `${wrongAnswers} câu cần luyện lại hôm nay`,
+    },
+    {
+      href: "/vocab",
+      title: "Học từ vựng mới",
+      subtitle: "Mở 1 chủ đề N5 để nạp từ mới",
+    },
+    {
+      href: "/quiz?level=N5",
+      title: "Kiểm tra N5",
+      subtitle: "Mini test để đo mức ghi nhớ hiện tại",
+    },
+  ];
 
   return (
-    <section className="space-y-6">
-      <div className="panel p-6">
-        <h1 className="text-2xl font-bold text-slate-900">Xin chao {user.name}, san sang hoc chua?</h1>
-        <p className="mt-1 text-slate-600">
-          Day la trung tam hoc cua ban. Moi ngay 20-30 phut la du de thay tien bo ro rang.
-        </p>
-
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-xl bg-emerald-50 p-4">
-            <p className="text-sm text-slate-600">XP hien tai</p>
-            <p className="mt-1 text-2xl font-bold text-emerald-700">{user.xp}</p>
-          </div>
-          <div className="rounded-xl bg-orange-50 p-4">
-            <p className="text-sm text-slate-600">Streak</p>
-            <p className="mt-1 text-2xl font-bold text-orange-700">{user.streak} ngay</p>
-          </div>
-          <div className="rounded-xl bg-sky-50 p-4">
-            <p className="text-sm text-slate-600">Tong Kanji</p>
-            <p className="mt-1 text-2xl font-bold text-sky-700">{kanjiCount}</p>
-          </div>
-          <div className="rounded-xl bg-violet-50 p-4">
-            <p className="text-sm text-slate-600">Tong Tu vung</p>
-            <p className="mt-1 text-2xl font-bold text-violet-700">{totalVocabCount}</p>
-            <p className="mt-1 text-xs text-slate-500">He thong: {vocabCount} - Admin: {adminVocabCount}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <SectionCard title="Bat dau hoc nhanh" subtitle="Tap trung vao 4 buoc de de duy tri nhip hoc">
-          <div className="grid gap-2">
-            <Link className="btn-soft justify-start" href="/review">
-              1. On the den han ({dueReviews})
-            </Link>
-            <Link className="btn-soft justify-start" href="/focus">
-              2. Dap lai cau sai ({wrongAnswers})
-            </Link>
-            <Link className="btn-soft justify-start" href="/vocab">
-              3. Hoc them tu vung theo chu de
-            </Link>
-            <Link className="btn-primary justify-start" href="/personal">
-              4. Mo lo trinh ca nhan
-            </Link>
-          </div>
-        </SectionCard>
-
-        <SectionCard title="Tong quan hoc tap">
-          <div className="space-y-2 text-sm text-slate-700">
-            <p>
-              Cap muc tieu: <strong>{plan?.goalLevel ?? user.level}</strong>
-            </p>
-            <p>
-              Quiz 30 ngay: <strong>{quizAccuracy}%</strong> ({totalQuizCorrect}/{totalQuizQuestions})
-            </p>
-            <p>
-              Luot on 30 ngay: <strong>{reviewDates30d.length}</strong>
-            </p>
-            <p>
-              Reminder: <strong>{personalState.reminders.enabled ? "Da bat" : "Dang tat"}</strong>
-            </p>
-          </div>
-        </SectionCard>
-      </div>
-
-      <div className="panel p-6">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg font-bold text-slate-800">Thong ke tuan gan nhat</h2>
-          <Link href="/placement" className="btn-soft text-sm">
-            Kiem tra dau vao
-          </Link>
-        </div>
-        <p className="mt-1 text-sm text-slate-600">So luot on SRS theo tung ngay (7 ngay).</p>
-        <div className="mt-4 grid grid-cols-7 gap-2">
-          {chart7.map((item) => {
-            const barHeight = Math.max(10, Math.round((item.count / max7) * 110));
-            return (
-              <div key={item.key} className="flex flex-col items-center gap-2">
-                <div className="flex h-[120px] w-full items-end rounded-lg border border-slate-200 bg-slate-50 px-1 py-1">
-                  <div
-                    className="w-full rounded-md bg-gradient-to-t from-emerald-500 to-emerald-300"
-                    style={{ height: `${barHeight}px` }}
-                    title={`${item.key}: ${item.count} luot`}
-                  />
-                </div>
-                <p className="text-[11px] font-semibold text-slate-500">{item.key.slice(5)}</p>
-                <p className="text-xs font-bold text-slate-700">{item.count}</p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
+    <DashboardBentoClient
+      userName={user.name}
+      initials={initialsFromName(user.name)}
+      level={user.level}
+      xp={user.xp}
+      xpPercent={xpProgress}
+      streak={user.streak}
+      kanjiCount={kanjiCount}
+      totalVocabCount={totalVocabCount}
+      steps={learningSteps}
+      quizGoalProgress={quizGoalProgress}
+      quizDone={quizDone}
+      quizTargetDays={quizTargetDays}
+      remindersEnabled={personalState.reminders.enabled}
+      dueReviews={dueReviews}
+      reviewCount30d={reviewDates30d.length}
+      chart7={chart7}
+      maxChartCount={max7}
+    />
   );
 }

@@ -49,6 +49,44 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+.font-kanji {
+  font-family: var(--font-jp), "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+}
+
+.font-kanji-art {
+  font-family:
+    var(--font-jp-serif),
+    "Noto Serif JP",
+    "Yu Mincho",
+    "Hiragino Mincho ProN",
+    serif;
+}
+
+.kanji-dot-grid {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(30, 64, 175, 0.12) 1px, transparent 1.5px),
+    linear-gradient(180deg, rgba(248, 252, 255, 0.95) 0%, rgba(241, 246, 255, 0.88) 100%);
+  background-size:
+    16px 16px,
+    auto;
+}
+
+.pulse-shadow {
+  animation: pulse-shadow 2.2s ease-in-out infinite;
+}
+
+@keyframes pulse-shadow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.34);
+  }
+  70% {
+    box-shadow: 0 0 0 13px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
 * {
   border-color: var(--border);
 }

@@ -13,7 +13,7 @@ import {
   type GrammarLevel,
 } from "@/lib/grammar-dataset";
 import { parseGrammarInput } from "@/lib/grammar-import";
-import { parseKanjiInput } from "@/lib/kanji-import";
+import { parseKanjiInput, type ImportedKanjiRow } from "@/lib/kanji-import";
 import { prisma } from "@/lib/prisma";
 
 export type AdminImportState = {
@@ -83,6 +83,23 @@ const importKanjiSchema = z.object({
   rawInput: z.string().min(1),
 });
 
+const syncKanjiFromUrlSchema = z.object({
+  sourceUrl: z.string().url(),
+  limit: z.preprocess((value) => {
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+      if (!trimmed) {
+        return undefined;
+      }
+      return Number(trimmed);
+    }
+    if (typeof value === "number") {
+      return value;
+    }
+    return undefined;
+  }, z.number().int().min(1).max(2000).optional()),
+});
+
 const uploadGrammarImageSchema = z.object({
   lessonId: z.string().min(1),
   title: z.preprocess(
@@ -114,7 +131,20 @@ function touchKanjiPaths() {
 }
 
 function normalizeLevel(value: string): GrammarLevel {
-  return value === "N4" ? "N4" : "N5";
+  const normalized = value.trim().toUpperCase();
+  if (normalized === "N1") {
+    return "N1";
+  }
+  if (normalized === "N2") {
+    return "N2";
+  }
+  if (normalized === "N3") {
+    return "N3";
+  }
+  if (normalized === "N4") {
+    return "N4";
+  }
+  return "N5";
 }
 
 function nextLessonNumber(lessons: GrammarLesson[], level: GrammarLevel): number {
@@ -136,6 +166,9 @@ function sortLessons(lessons: GrammarLesson[]): GrammarLesson[] {
   const levelRank = {
     N5: 0,
     N4: 1,
+    N3: 2,
+    N2: 3,
+    N1: 4,
   } as const;
 
   return [...lessons].sort((a, b) => {
@@ -399,30 +432,10 @@ export async function deleteAdminGrammarPointAction(formData: FormData) {
   touchGrammarPaths();
 }
 
-export async function importAdminKanjiAction(
-  _prevState: AdminImportState,
-  formData: FormData
-): Promise<AdminImportState> {
-  await requireAdmin();
-
-  const parsed = importKanjiSchema.safeParse({
-    rawInput: formData.get("rawInput"),
-  });
-  if (!parsed.success) {
-    return {
-      status: "error",
-      message: "Hay nhap du lieu Kanji hop le.",
-    };
-  }
-
-  const rows = parseKanjiInput(parsed.data.rawInput).slice(0, 1000);
-  if (rows.length === 0) {
-    return {
-      status: "error",
-      message: "Khong parse duoc du lieu Kanji. Hay thu JSON hoac JSON-lines.",
-    };
-  }
-
+async function upsertKanjiRows(rows: ImportedKanjiRow[]): Promise<{
+  createdCount: number;
+  updatedCount: number;
+}> {
   const uniqueCharacters = Array.from(new Set(rows.map((row) => row.character)));
   const existing = await prisma.kanji.findMany({
     where: {
@@ -472,11 +485,108 @@ export async function importAdminKanjiAction(
     }
   }
 
+  return { createdCount, updatedCount };
+}
+
+export async function importAdminKanjiAction(
+  _prevState: AdminImportState,
+  formData: FormData
+): Promise<AdminImportState> {
+  await requireAdmin();
+
+  const parsed = importKanjiSchema.safeParse({
+    rawInput: formData.get("rawInput"),
+  });
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "Hay nhap du lieu Kanji hop le.",
+    };
+  }
+
+  const rows = parseKanjiInput(parsed.data.rawInput).slice(0, 1000);
+  if (rows.length === 0) {
+    return {
+      status: "error",
+      message: "Khong parse duoc du lieu Kanji. Hay thu JSON hoac JSON-lines.",
+    };
+  }
+
+  const { createdCount, updatedCount } = await upsertKanjiRows(rows);
+
   touchKanjiPaths();
   return {
     status: "success",
     message: `Da xu ly ${rows.length} kanji (${createdCount} moi, ${updatedCount} cap nhat).`, 
   };
+}
+
+export async function syncAdminKanjiFromUrlAction(
+  _prevState: AdminImportState,
+  formData: FormData
+): Promise<AdminImportState> {
+  await requireAdmin();
+
+  const parsed = syncKanjiFromUrlSchema.safeParse({
+    sourceUrl: formData.get("sourceUrl"),
+    limit: formData.get("limit"),
+  });
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "URL khong hop le. Vui long nhap URL API/JSON day du.",
+    };
+  }
+
+  const timeoutMs = 15000;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(parsed.data.sourceUrl, {
+      method: "GET",
+      cache: "no-store",
+      signal: controller.signal,
+      headers: {
+        Accept: "application/json,text/plain,*/*",
+      },
+    });
+
+    if (!response.ok) {
+      return {
+        status: "error",
+        message: `Khong tai duoc du lieu tu URL (HTTP ${response.status}).`,
+      };
+    }
+
+    const rawText = await response.text();
+    const limit = parsed.data.limit ?? 500;
+    const rows = parseKanjiInput(rawText).slice(0, limit);
+    if (rows.length === 0) {
+      return {
+        status: "error",
+        message: "URL co du lieu nhung khong parse duoc theo form Kanji.",
+      };
+    }
+
+    const { createdCount, updatedCount } = await upsertKanjiRows(rows);
+    touchKanjiPaths();
+    return {
+      status: "success",
+      message: `Da sync ${rows.length} kanji (${createdCount} moi, ${updatedCount} cap nhat).`,
+    };
+  } catch (error) {
+    const message =
+      error instanceof Error && error.name === "AbortError"
+        ? "Timeout khi goi URL. Thu lai hoac giam gioi han so dong."
+        : "Khong the ket noi toi URL nay. Kiem tra lai link va cho phep truy cap.";
+    return {
+      status: "error",
+      message,
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function deleteAdminKanjiAction(formData: FormData) {

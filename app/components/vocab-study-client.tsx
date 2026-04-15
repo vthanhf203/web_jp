@@ -27,6 +27,8 @@ type Props = {
   items: StudyItem[];
 };
 
+const HARD_ITEMS_PAGE_SIZE = 8;
+
 function hasJapaneseChars(value: string): boolean {
   return /[\u3040-\u30ff\u4e00-\u9fff]/.test(value);
 }
@@ -138,6 +140,10 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
   const [index, setIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
+  const [hardItemIds, setHardItemIds] = useState<string[]>([]);
+  const [isHardReview, setIsHardReview] = useState(false);
+  const [showHardPanel, setShowHardPanel] = useState(true);
+  const [hardPage, setHardPage] = useState(1);
 
   const [isFlipped, setIsFlipped] = useState(false);
   const [flashPromptMode, setFlashPromptMode] = useState<FlashcardPromptMode>("jp_to_vi");
@@ -165,7 +171,29 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
   });
   const flashcardAreaRef = useRef<HTMLDivElement | null>(null);
 
-  const current = items[order[index]];
+  const hardIdSet = useMemo(() => new Set(hardItemIds), [hardItemIds]);
+  const hardOrder = useMemo(
+    () =>
+      order.filter((orderIndex) => {
+        const target = items[orderIndex];
+        return target ? hardIdSet.has(target.id) : false;
+      }),
+    [hardIdSet, items, order]
+  );
+  const activeOrder = isHardReview && hardOrder.length > 0 ? hardOrder : order;
+  const activeCount = activeOrder.length;
+  const currentOrderIndex = activeOrder[index] ?? activeOrder[0] ?? 0;
+  const current = items[currentOrderIndex] ?? items[0];
+  const hardItems = useMemo(() => {
+    const map = new Map(items.map((item) => [item.id, item]));
+    return hardItemIds.map((id) => map.get(id)).filter((item): item is StudyItem => !!item);
+  }, [hardItemIds, items]);
+  const hardTotalPages = Math.max(1, Math.ceil(hardItems.length / HARD_ITEMS_PAGE_SIZE));
+  const hardPageSafe = Math.min(hardPage, hardTotalPages);
+  const hardPageItems = useMemo(() => {
+    const start = (hardPageSafe - 1) * HARD_ITEMS_PAGE_SIZE;
+    return hardItems.slice(start, start + HARD_ITEMS_PAGE_SIZE);
+  }, [hardItems, hardPageSafe]);
   const currentDisplayWord = displayJapanese(current);
   const quizOptions = useMemo(() => makeQuizOptions(items, current), [items, current]);
   const japaneseVoices = useMemo(
@@ -192,26 +220,60 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
     setRecallSuccess(false);
   }, []);
 
-  const progressPercent = ((index + 1) / items.length) * 100;
+  const progressPercent =
+    activeCount > 0 ? ((index + 1) / activeCount) * 100 : 0;
 
   const goNext = useCallback(() => {
-    setIndex((prev) => (prev + 1) % items.length);
+    setIndex((prev) => {
+      if (activeCount <= 0) {
+        return 0;
+      }
+      return (prev + 1) % activeCount;
+    });
     resetPerQuestionState();
-  }, [items.length, resetPerQuestionState]);
+  }, [activeCount, resetPerQuestionState]);
 
   const goPrev = useCallback(() => {
-    setIndex((prev) => (prev - 1 + items.length) % items.length);
+    setIndex((prev) => {
+      if (activeCount <= 0) {
+        return 0;
+      }
+      return (prev - 1 + activeCount) % activeCount;
+    });
     resetPerQuestionState();
-  }, [items.length, resetPerQuestionState]);
+  }, [activeCount, resetPerQuestionState]);
+
+  useEffect(() => {
+    setIndex((prev) => {
+      if (activeCount <= 0) {
+        return 0;
+      }
+      if (prev >= activeCount) {
+        return 0;
+      }
+      return prev;
+    });
+  }, [activeCount]);
+
+  useEffect(() => {
+    if (isHardReview && hardOrder.length === 0) {
+      setIsHardReview(false);
+    }
+  }, [hardOrder.length, isHardReview]);
+
+  useEffect(() => {
+    setHardPage((prev) => Math.max(1, Math.min(prev, hardTotalPages)));
+  }, [hardTotalPages]);
 
   const markFlashcard = useCallback((isCorrect: boolean) => {
     if (isCorrect) {
       setCorrectCount((prev) => prev + 1);
     } else {
       setWrongCount((prev) => prev + 1);
+      setHardItemIds((prev) => (prev.includes(current.id) ? prev : [...prev, current.id]));
     }
     goNext();
-  }, [goNext]);
+  }, [current.id, goNext]);
 
   const flipCard = useCallback(() => {
     setIsFlipped((prev) => !prev);
@@ -229,6 +291,26 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
     },
     [focusFlashcardArea]
   );
+
+  const toggleHardReview = useCallback(() => {
+    if (hardOrder.length === 0) {
+      return;
+    }
+    setIsHardReview((prev) => !prev);
+    setIndex(0);
+    resetPerQuestionState();
+    focusFlashcardArea();
+  }, [focusFlashcardArea, hardOrder.length, resetPerQuestionState]);
+
+  const removeHardItem = useCallback((itemId: string) => {
+    setHardItemIds((prev) => prev.filter((id) => id !== itemId));
+  }, []);
+
+  const clearHardItems = useCallback(() => {
+    setHardItemIds([]);
+    setIsHardReview(false);
+    setHardPage(1);
+  }, []);
 
   function toggleShuffle() {
     if (isShuffled) {
@@ -528,18 +610,18 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
   }, [autoPlay, index, mode, speakCurrentFlash]);
 
   return (
-    <section className="mx-auto w-full max-w-6xl rounded-3xl border border-[#41507c] bg-[#2f3c66] p-6 text-slate-100 shadow-[0_16px_35px_rgba(18,28,56,0.45)]">
-      <div className="mb-6 flex items-center justify-between">
+    <section className="mx-auto w-full max-w-5xl rounded-3xl border border-[#41507c] bg-[#2f3c66] p-4 text-slate-100 shadow-[0_16px_35px_rgba(18,28,56,0.45)] sm:p-5">
+      <div className="mb-4 flex items-center justify-between">
         <Link
           href="/vocab"
-          className="inline-flex items-center gap-2 text-lg text-slate-300 transition hover:text-white"
+          className="inline-flex items-center gap-2 text-base text-slate-300 transition hover:text-white"
         >
           <span>{"<"}</span>
           <span>Quay lai</span>
         </Link>
         <div className="text-center">
           <p className="text-sm uppercase tracking-widest text-slate-300">{lessonTitle}</p>
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-xl font-bold text-white">
             <ModeTitle mode={mode} />
           </h1>
         </div>
@@ -557,15 +639,15 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
       </div>
 
       {mode === "flashcard" ? (
-        <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl bg-[#32416d]">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-500/35 bg-[#3a4a75] px-4 py-2.5">
+        <div className="mx-auto max-w-[980px] overflow-hidden rounded-2xl bg-[#32416d]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-500/35 bg-[#3a4a75] px-3 py-2">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-200/90">
               Kieu luyen flashcard
             </p>
             <div className="inline-flex items-center rounded-full bg-slate-800/55 p-1 text-xs">
               <button
                 type="button"
-                className={`rounded-full px-3 py-1.5 font-semibold transition ${
+                className={`rounded-full px-2.5 py-1.5 font-semibold transition ${
                   flashPromptMode === "jp_to_vi"
                     ? "bg-blue-500 text-white"
                     : "text-slate-200 hover:bg-slate-700/70"
@@ -577,7 +659,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
               </button>
               <button
                 type="button"
-                className={`rounded-full px-3 py-1.5 font-semibold transition ${
+                className={`rounded-full px-2.5 py-1.5 font-semibold transition ${
                   flashPromptMode === "vi_to_jp"
                     ? "bg-emerald-500 text-white"
                     : "text-slate-200 hover:bg-slate-700/70"
@@ -589,7 +671,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
               </button>
               <button
                 type="button"
-                className={`rounded-full px-3 py-1.5 font-semibold transition ${
+                className={`rounded-full px-2.5 py-1.5 font-semibold transition ${
                   flashPromptMode === "kanji_to_answer"
                     ? "bg-fuchsia-500 text-white"
                     : "text-slate-200 hover:bg-slate-700/70"
@@ -605,7 +687,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
             role="button"
             ref={flashcardAreaRef}
             tabIndex={0}
-            className="relative min-h-[320px] cursor-pointer select-none p-5 outline-none sm:min-h-[380px]"
+            className="relative min-h-[250px] cursor-pointer select-none p-4 outline-none sm:min-h-[300px]"
             onClick={flipCard}
             onMouseDown={() => flashcardAreaRef.current?.focus()}
             onKeyDown={(event) => {
@@ -617,7 +699,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
           >
             <button
               type="button"
-              className="absolute left-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-slate-600/55 text-2xl text-slate-200"
+              className="absolute left-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-slate-600/55 text-xl text-slate-200"
               onMouseDown={(event) => event.preventDefault()}
               onClick={(event) => {
                 event.stopPropagation();
@@ -630,7 +712,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
             </button>
             <button
               type="button"
-              className="absolute right-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-slate-600/55 text-2xl text-slate-200"
+              className="absolute right-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-slate-600/55 text-xl text-slate-200"
               onMouseDown={(event) => event.preventDefault()}
               onClick={(event) => {
                 event.stopPropagation();
@@ -642,28 +724,28 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
               {">"}
             </button>
 
-            <div className="mx-auto flex min-h-[250px] max-w-3xl flex-col items-center justify-center text-center">
+            <div className="mx-auto flex min-h-[170px] max-w-3xl flex-col items-center justify-center text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300/85">
                 {flashMainLabel}
               </p>
               <p
                 className={`mt-2 font-semibold text-white ${
-                  flashMainText.length > 20 ? "text-3xl sm:text-4xl" : "text-5xl sm:text-6xl"
+                  flashMainText.length > 20 ? "text-2xl sm:text-3xl" : "text-4xl sm:text-5xl"
                 }`}
               >
                 {flashMainText}
               </p>
               {flashSubText ? (
                 <>
-                  <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300/75">
+                  <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-300/75">
                     {flashSubLabel}
                   </p>
-                  <p className="mt-1 text-2xl text-slate-300">{flashSubText}</p>
+                  <p className="mt-1 text-xl text-slate-300">{flashSubText}</p>
                 </>
               ) : null}
               <button
                 type="button"
-                className="mt-5 inline-flex items-center gap-2 rounded-full bg-slate-700/60 px-4 py-2 text-sm text-slate-100"
+                className="mt-4 inline-flex items-center gap-2 rounded-full bg-slate-700/60 px-3 py-1.5 text-xs text-slate-100"
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={(event) => {
                   event.stopPropagation();
@@ -678,38 +760,43 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
             </div>
           </div>
 
-          <div className="border-y border-slate-500/35 bg-[#44517a] px-4 py-2 text-sm text-slate-200">
-            Phim tat: Space lat, 1/2/3 doi kieu luyen, Z biet, X chua biet, R phat am, mui ten trai/phai de chuyen the
+          <div className="border-y border-slate-500/35 bg-[#44517a] px-3 py-1.5 text-xs text-slate-200">
+            Phim tat: Space lat, 1/2/3 doi kieu luyen, Z biet, X chua biet (them tu kho), R phat am, mui ten trai/phai de chuyen the
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-[#1f2848] px-4 py-4">
-            <div className="flex items-center gap-5">
+          <div className="flex flex-wrap items-center justify-between gap-2 bg-[#1f2848] px-3 py-3">
+            <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => markFlashcard(false)}
                 onMouseDown={(event) => event.preventDefault()}
-                className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-rose-500 text-2xl font-bold"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-rose-500 text-xl font-bold"
                 aria-label="Khong biet"
               >
                 x
               </button>
-              <span className="text-2xl font-semibold">
-                {index + 1} / {items.length}
+              <span className="text-xl font-semibold">
+                {index + 1} / {activeCount}
               </span>
+              {isHardReview ? (
+                <span className="rounded-full border border-rose-300 bg-rose-500/20 px-2 py-0.5 text-xs font-semibold text-rose-100">
+                  Tu kho
+                </span>
+              ) : null}
               <button
                 type="button"
                 onClick={() => markFlashcard(true)}
                 onMouseDown={(event) => event.preventDefault()}
-                className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-2xl font-bold"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-xl font-bold"
                 aria-label="Biet"
               >
                 v
               </button>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2">
               {japaneseVoices.length > 0 ? (
-                <label className="inline-flex items-center gap-2 rounded-full bg-slate-700 px-3 py-2 text-xs text-slate-100">
+                <label className="inline-flex items-center gap-2 rounded-full bg-slate-700 px-3 py-1.5 text-xs text-slate-100">
                   <span>Giong</span>
                   <select
                     value={effectiveJaVoiceName}
@@ -726,7 +813,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
               ) : null}
               <button
                 type="button"
-                className="rounded-full bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-100"
+                className="rounded-full bg-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-100"
                 onClick={() => setIsFlipped(false)}
                 onMouseDown={(event) => event.preventDefault()}
               >
@@ -734,7 +821,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
               </button>
               <button
                 type="button"
-                className="rounded-full bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-100"
+                className="rounded-full bg-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-100"
                 onClick={() => {
                   toggleShuffle();
                   focusFlashcardArea();
@@ -743,8 +830,129 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
               >
                 {isShuffled ? "Thu tu goc" : "Dao"}
               </button>
+              <button
+                type="button"
+                className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+                  hardItems.length === 0
+                    ? "cursor-not-allowed bg-slate-700/60 text-slate-400"
+                    : isHardReview
+                      ? "bg-rose-500/30 text-rose-100"
+                      : "bg-slate-700 text-slate-100"
+                }`}
+                onClick={toggleHardReview}
+                onMouseDown={(event) => event.preventDefault()}
+                disabled={hardItems.length === 0}
+              >
+                {isHardReview
+                  ? `Xem tat ca (${items.length})`
+                  : `On tu kho (${hardItems.length})`}
+              </button>
             </div>
           </div>
+        </div>
+      ) : null}
+
+      {mode === "flashcard" ? (
+        <div className="mt-4 rounded-2xl border border-slate-500/40 bg-[#25315a] p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-slate-100">
+                Danh sach tu chua thuoc ({hardItems.length})
+              </h3>
+              <p className="mt-1 text-xs text-slate-300">
+                Tu nao bam <span className="font-semibold text-rose-300">X</span> se vao day de on lai.
+                {hardItems.length > 0 ? ` Trang ${hardPageSafe}/${hardTotalPages}.` : ""}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="rounded-full border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
+                onClick={() => setShowHardPanel((prev) => !prev)}
+              >
+                {showHardPanel ? "An danh sach" : "Hien danh sach"}
+              </button>
+              <button
+                type="button"
+                className="rounded-full border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
+                onClick={toggleHardReview}
+                disabled={hardItems.length === 0}
+              >
+                {isHardReview ? "Dang on tu kho" : "On nhom tu kho"}
+              </button>
+              <button
+                type="button"
+                className="rounded-full border border-rose-300/70 px-3 py-1 text-xs font-semibold text-rose-100 hover:bg-rose-500/20"
+                onClick={clearHardItems}
+                disabled={hardItems.length === 0}
+              >
+                Xoa danh sach
+              </button>
+            </div>
+          </div>
+
+          {!showHardPanel ? (
+            <p className="mt-3 rounded-lg border border-slate-500/40 bg-[#1f2a4f] px-3 py-2 text-sm text-slate-300">
+              Danh sach dang duoc thu gon. Bam{" "}
+              <span className="font-semibold text-sky-300">Hien danh sach</span> de xem lai.
+            </p>
+          ) : hardItems.length === 0 ? (
+            <p className="mt-3 rounded-lg border border-slate-500/40 bg-[#243056] px-3 py-2 text-sm text-slate-300">
+              Chua co tu kho. Bam nut <span className="font-bold text-rose-300">X</span> de danh dau tu can on lai.
+            </p>
+          ) : (
+            <>
+              <div className="mt-3 grid gap-2 md:grid-cols-2">
+                {hardPageItems.map((item) => (
+                  <article
+                    key={item.id}
+                    className="flex items-center justify-between gap-3 rounded-lg border border-slate-400/50 bg-[#23305a] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-lg font-semibold text-white">
+                        {item.reading || item.word}
+                      </p>
+                      <p className="truncate text-sm text-slate-300">
+                        {item.kanji ? `${item.kanji} · ` : ""}
+                        {item.meaning}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="shrink-0 rounded-full border border-slate-300/80 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
+                      onClick={() => removeHardItem(item.id)}
+                    >
+                      Bo
+                    </button>
+                  </article>
+                ))}
+              </div>
+
+              {hardItems.length > HARD_ITEMS_PAGE_SIZE ? (
+                <div className="mt-3 flex items-center justify-between rounded-lg border border-slate-500/40 bg-[#1f2a4f] px-3 py-2 text-xs">
+                  <button
+                    type="button"
+                    className="rounded-full border border-slate-400 px-3 py-1 font-semibold text-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    onClick={() => setHardPage((prev) => Math.max(1, prev - 1))}
+                    disabled={hardPageSafe <= 1}
+                  >
+                    ← Trang truoc
+                  </button>
+                  <span className="font-semibold text-slate-200">
+                    Trang {hardPageSafe} / {hardTotalPages}
+                  </span>
+                  <button
+                    type="button"
+                    className="rounded-full border border-slate-400 px-3 py-1 font-semibold text-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    onClick={() => setHardPage((prev) => Math.min(hardTotalPages, prev + 1))}
+                    disabled={hardPageSafe >= hardTotalPages}
+                  >
+                    Trang sau →
+                  </button>
+                </div>
+              ) : null}
+            </>
+          )}
         </div>
       ) : null}
 
@@ -878,9 +1086,9 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
         </div>
       ) : null}
 
-      <div className="mt-6 flex items-center justify-between text-lg text-slate-300">
+      <div className="mt-5 flex items-center justify-between text-base text-slate-300">
         <span>
-          {index + 1} / {items.length}
+          {index + 1} / {activeCount}
         </span>
         <span>
           Dung {correctCount} | Sai {wrongCount}

@@ -16,7 +16,7 @@ export type GrammarPoint = {
   image?: string;
 };
 
-export const GRAMMAR_LEVELS = ["N5", "N4"] as const;
+export const GRAMMAR_LEVELS = ["N5", "N4", "N3", "N2", "N1"] as const;
 export type GrammarLevel = (typeof GRAMMAR_LEVELS)[number];
 
 export type GrammarLesson = {
@@ -51,6 +51,15 @@ function nowIso(): string {
 
 function normalizeLevel(value: unknown): GrammarLevel {
   const normalized = normalizeText(value).toUpperCase();
+  if (normalized === "N1") {
+    return "N1";
+  }
+  if (normalized === "N2") {
+    return "N2";
+  }
+  if (normalized === "N3") {
+    return "N3";
+  }
   if (normalized === "N4") {
     return "N4";
   }

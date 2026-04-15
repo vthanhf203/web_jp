@@ -8,6 +8,7 @@ import {
   renameVocabLessonAction,
   updateVocabItemAction,
 } from "@/app/actions/vocab-manager";
+import { VocabLibraryBento } from "@/app/components/vocab-library-bento";
 import { VocabImportForm } from "@/app/components/vocab-import-form";
 import { requireUser } from "@/lib/auth";
 import {
@@ -37,52 +38,28 @@ const levelMeta: Record<
   JlptLevel,
   {
     jpLabel: string;
-    colorBar: string;
-    buttonActive: string;
-    cardShell: string;
-    cardInner: string;
-    cardBottom: string;
+    dockHint: string;
   }
 > = {
   N5: {
     jpLabel: "日本語能力試験 N5",
-    colorBar: "bg-blue-500",
-    buttonActive: "border-blue-300 bg-blue-100 text-blue-800",
-    cardShell: "border-[#9ca3af] bg-[#facc15]",
-    cardInner: "bg-[#f5f0dc]",
-    cardBottom: "bg-emerald-600 text-white",
+    dockHint: "Co ban",
   },
   N4: {
     jpLabel: "日本語能力試験 N4",
-    colorBar: "bg-emerald-500",
-    buttonActive: "border-emerald-300 bg-emerald-100 text-emerald-800",
-    cardShell: "border-[#9ca3af] bg-[#9333ea]",
-    cardInner: "bg-[#e9ddf5]",
-    cardBottom: "bg-emerald-600 text-white",
+    dockHint: "So cap",
   },
   N3: {
     jpLabel: "日本語能力試験 N3",
-    colorBar: "bg-amber-500",
-    buttonActive: "border-amber-300 bg-amber-100 text-amber-800",
-    cardShell: "border-[#9ca3af] bg-[#f59e0b]",
-    cardInner: "bg-[#f8ead1]",
-    cardBottom: "bg-amber-700 text-white",
+    dockHint: "Trung cap",
   },
   N2: {
     jpLabel: "日本語能力試験 N2",
-    colorBar: "bg-orange-500",
-    buttonActive: "border-orange-300 bg-orange-100 text-orange-800",
-    cardShell: "border-[#9ca3af] bg-[#f97316]",
-    cardInner: "bg-[#ffe2cf]",
-    cardBottom: "bg-orange-700 text-white",
+    dockHint: "Trung cao",
   },
   N1: {
     jpLabel: "日本語能力試験 N1",
-    colorBar: "bg-rose-500",
-    buttonActive: "border-rose-300 bg-rose-100 text-rose-800",
-    cardShell: "border-[#9ca3af] bg-[#ef4444]",
-    cardInner: "bg-[#fde0e0]",
-    cardBottom: "bg-rose-700 text-white",
+    dockHint: "Nang cao",
   },
 };
 
@@ -178,23 +155,60 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
     return `/vocab?${query.toString()}`;
   }
 
-  function levelBadgeClass(level: JlptLevel, active: JlptLevel): string {
-    if (level !== active) {
-      return "border-slate-200 bg-white text-slate-700 hover:bg-slate-50";
-    }
-    return levelMeta[level].buttonActive;
-  }
-
   const studyLessonId =
     selectedLesson && selectedLesson.items.length > 0 ? selectedLesson.id : null;
 
+  const personalCountsByTitle = new Map<string, number>();
+  for (const lesson of lessons) {
+    const key = lesson.title.trim().toLowerCase();
+    const current = personalCountsByTitle.get(key) ?? 0;
+    personalCountsByTitle.set(key, Math.max(current, lesson.items.length));
+  }
+
+  const bentoLessons = filteredAdminLessons.map((lesson) => {
+    const key = lesson.title.trim().toLowerCase();
+    const personalCount = personalCountsByTitle.get(key) ?? 0;
+    const completionPercent =
+      lesson.items.length > 0
+        ? Math.min(100, Math.round((personalCount / lesson.items.length) * 100))
+        : 0;
+    return {
+      id: lesson.id,
+      title: lesson.title,
+      description: lesson.description || "Chu de tu vung",
+      wordCount: lesson.items.length,
+      href: topicHref(selectedLevel, lesson.id),
+      completionPercent,
+    };
+  });
+
+  const levelDockItems = totalByLevel.map((entry) => ({
+    level: entry.level,
+    jpLabel: levelMeta[entry.level].jpLabel,
+    hint: levelMeta[entry.level].dockHint,
+    lessonCount: entry.lessonCount,
+    vocabCount: entry.vocabCount,
+    href: levelHref(entry.level),
+    active: entry.level === selectedLevel,
+  }));
+
+  const pageShellClass =
+    activeMode === "library"
+      ? "space-y-7 rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm"
+      : "space-y-7 rounded-3xl border border-sky-100 bg-[#d8e5f7] p-7 shadow-[0_8px_28px_rgba(28,78,140,0.08)] [background-image:linear-gradient(rgba(255,255,255,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.3)_1px,transparent_1px)] [background-size:30px_30px]";
+
+  const modeCardClass =
+    activeMode === "library"
+      ? "rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+      : "rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm";
+
   return (
-    <section className="space-y-7 rounded-3xl border border-sky-100 bg-[#d8e5f7] p-7 shadow-[0_8px_28px_rgba(28,78,140,0.08)] [background-image:linear-gradient(rgba(255,255,255,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.3)_1px,transparent_1px)] [background-size:30px_30px]">
-      <div className="rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+    <section className={pageShellClass}>
+      <div className={modeCardClass}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-800">Trang Tu Vung</h1>
-            <p className="mt-1 text-sm text-slate-600">
+            <h1 className="text-3xl font-extrabold text-slate-900">Trang Tu Vung</h1>
+            <p className="mt-1 text-sm text-slate-500">
               Chon cach hoc ban muon: kham pha kho tu vung hoac tu hoc ca nhan.
             </p>
           </div>
@@ -204,12 +218,12 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
             href={levelHref(selectedLevel)}
             className={`rounded-2xl border px-4 py-4 transition ${
               activeMode === "library"
-                ? "border-blue-300 bg-blue-50 shadow-sm"
+                ? "border-sky-200 bg-sky-50 shadow-sm"
                 : "border-slate-200 bg-white hover:bg-slate-50"
             }`}
           >
-            <p className="text-lg font-bold text-slate-800">Kho tu vung admin</p>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="text-lg font-bold text-slate-900">Kho tu vung admin</p>
+            <p className="mt-1 text-sm text-slate-500">
               Xem cac chu de N5-N1 da duoc admin cap nhat.
             </p>
           </Link>
@@ -221,8 +235,8 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                 : "border-slate-200 bg-white hover:bg-slate-50"
             }`}
           >
-            <p className="text-lg font-bold text-slate-800">Tu hoc ca nhan</p>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="text-lg font-bold text-slate-900">Tu hoc ca nhan</p>
+            <p className="mt-1 text-sm text-slate-500">
               Tao bai rieng, nhap JSON va hoc theo 3 che do.
             </p>
           </Link>
@@ -338,125 +352,15 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
         <VocabImportForm lessonId={selectedLessonId} />
       </div>
 
-      <div
-        className={`relative overflow-hidden rounded-3xl border border-slate-200 bg-white/95 p-7 shadow-[0_14px_34px_rgba(15,23,42,0.08)] ${
-          activeMode === "library" ? "" : "hidden"
-        }`}
-      >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.16),transparent_46%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.12),transparent_40%)]" />
-        <div className="relative grid items-stretch gap-4 lg:grid-cols-[1.6fr_0.9fr]">
-          <div className="rounded-2xl border border-sky-100 bg-white/90 p-5 backdrop-blur">
-            <h2 className="inline rounded-lg bg-blue-500/90 px-3 py-1 text-[2.1rem] font-extrabold leading-tight text-white shadow-sm">
-              Hoc Ban Chat - Khong Hoc Vet
-            </h2>
-            <p className="mt-4 text-[1.2rem] text-slate-700">
-              Khong chi hoc nghia, ma hoc cach dung tu trong ngu canh thuc te.
-            </p>
-            <p className="mt-1 text-[1.2rem] text-slate-700">
-              Kham pha kho tu vung theo cap do, hoc nhanh, nho lau va dung dung.
-            </p>
-          </div>
-          <div className="relative hidden overflow-hidden rounded-2xl border border-slate-200 bg-white lg:block">
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: "url('/images/home-vocab.png')" }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/45 via-slate-900/20 to-transparent" />
-            <div className="relative flex h-full items-end p-4">
-              <p className="rounded-lg bg-white/90 px-3 py-1 text-sm font-semibold text-slate-700">
-                Vocab Journey
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="relative mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-          {totalByLevel.map((entry) => {
-            const active = entry.level === selectedLevel;
-            return (
-            <Link
-              key={entry.level}
-              href={levelHref(entry.level)}
-              className={`group relative overflow-hidden rounded-2xl border px-4 py-3 transition-all duration-300 ${
-                active
-                  ? `${levelBadgeClass(entry.level, selectedLevel)} shadow-[0_10px_22px_rgba(56,189,248,0.2)]`
-                  : "border-slate-200 bg-white/90 text-slate-700 hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-[0_8px_18px_rgba(15,23,42,0.08)]"
-              }`}
-            >
-              <span className="pointer-events-none absolute -right-8 -top-8 h-20 w-20 rounded-full bg-white/60 blur-2xl" />
-              <p className="relative text-lg font-bold">{entry.level}</p>
-              <p className="relative text-xs opacity-80">{levelMeta[entry.level].jpLabel}</p>
-              <p className="relative mt-1 text-xs font-semibold">
-                {entry.lessonCount} nhom · {entry.vocabCount} tu
-              </p>
-            </Link>
-            );
-          })}
-        </div>
-
-        <div className="mt-8 flex items-center gap-3">
-          <span className={`h-12 w-1 rounded-full ${levelMeta[selectedLevel].colorBar}`} />
-          <div>
-            <h3 className="text-5xl font-extrabold text-slate-900">{selectedLevel}</h3>
-            <p className="text-2xl text-slate-500">{levelMeta[selectedLevel].jpLabel}</p>
-          </div>
-        </div>
-        <p className="mt-2 text-sm text-slate-500">{filteredAdminLessons.length} chu de</p>
-
-        <div className="mt-3 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm">
-          <div className="flex items-center justify-between text-xl text-slate-700">
-            <p className="font-semibold">Tien do hoc</p>
-            <p>
-              {completedTopicCount}/{filteredAdminLessons.length} chu de
-            </p>
-          </div>
-          <div className="mt-2 h-3 rounded-full bg-slate-200">
-            <div
-              className="h-3 rounded-full bg-emerald-500 transition-all"
-              style={{ width: `${topicProgressPercent}%` }}
-            />
-          </div>
-          <p className="mt-2 text-right text-sm text-slate-500">{topicProgressPercent}% hoan thanh</p>
-        </div>
-
-        {filteredAdminLessons.length === 0 ? (
-          <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-            Chua co nhom tu vung nao cho {selectedLevel}. Admin co the them tai /admin/vocab.
-          </p>
-        ) : (
-          <div className="mt-4 space-y-3">
-            {filteredAdminLessons.map((lesson, index) => {
-              const topicCover =
-                index % 2 === 0 ? "/images/home-vocab.png" : "/images/home-grammar.png";
-              return (
-              <Link
-                key={lesson.id}
-                href={topicHref(selectedLevel, lesson.id)}
-                className="group relative isolate flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-slate-200 bg-white/90 px-5 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-[0_12px_26px_rgba(15,23,42,0.08)]"
-              >
-                <span className="absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b from-sky-400 to-emerald-400" />
-                <span className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/85 to-white/65" />
-                <span
-                  className="absolute -right-2 top-0 h-full w-44 bg-cover bg-center opacity-30 transition group-hover:opacity-40"
-                  style={{ backgroundImage: `url('${topicCover}')` }}
-                />
-                <div className="relative min-w-0 pl-2">
-                  <p className="truncate text-2xl font-bold text-slate-800 group-hover:text-sky-900">
-                    {lesson.title}
-                  </p>
-                  <p className="mt-1 truncate text-lg text-slate-600">
-                    {lesson.description || "Chu de tu vung"}{" "}
-                    <span className="text-slate-400">({lesson.items.length} tu)</span>
-                  </p>
-                </div>
-                <span className="relative grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-xl font-bold text-slate-500 transition group-hover:border-sky-200 group-hover:text-sky-700">
-                  {">"}
-                </span>
-              </Link>
-              );
-            })}
-          </div>
-        )}
+      <div className={activeMode === "library" ? "" : "hidden"}>
+        <VocabLibraryBento
+          selectedLevel={selectedLevel}
+          completionPercent={topicProgressPercent}
+          completedTopicCount={completedTopicCount}
+          totalTopicCount={filteredAdminLessons.length}
+          levels={levelDockItems}
+          lessons={bentoLessons}
+        />
       </div>
 
       <div

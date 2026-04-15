@@ -1,12 +1,10 @@
-﻿import Link from "next/link";
+import Link from "next/link";
+import { ArrowLeft, Layers3, Sparkles } from "lucide-react";
 
-import { toggleBookmarkAction } from "@/app/actions/personal";
-import {
-  addLibraryVocabToReviewAction,
-  removeLibraryVocabFromReviewAction,
-} from "@/app/actions/study";
-import { createVocabLessonAction } from "@/app/actions/vocab-manager";
-import { SpeakJpButton } from "@/app/components/speak-jp-button";
+import { ActionSection } from "@/app/components/action-section";
+import { DeckManagerHub } from "@/app/components/deck-manager-hub";
+import { VocabCard } from "@/app/components/vocab-card";
+import { VocabGridMotion } from "@/app/components/vocab-grid-motion";
 import { loadAdminVocabLibrary, normalizeJlptLevel } from "@/lib/admin-vocab-library";
 import { requireUser } from "@/lib/auth";
 import { loadUserPersonalState } from "@/lib/user-personal-data";
@@ -37,6 +35,42 @@ function parsePositivePage(value: string): number {
   return Math.floor(parsed);
 }
 
+function coveragePercent(hasValue: number, total: number): number {
+  if (total <= 0) {
+    return 0;
+  }
+  return Math.round((hasValue / total) * 100);
+}
+
+function ProgressRing({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: number;
+  color: string;
+}) {
+  const safe = Math.max(0, Math.min(100, value));
+  const sweep = `${safe * 3.6}deg`;
+
+  return (
+    <div className="flex items-center gap-3 rounded-2xl bg-white/60 px-3 py-2 shadow-sm ring-1 ring-slate-200/60">
+      <div
+        className="relative h-12 w-12 rounded-full p-[3px]"
+        style={{ background: `conic-gradient(${color} ${sweep}, rgba(203,213,225,0.75) ${sweep})` }}
+      >
+        <div className="grid h-full w-full place-items-center rounded-full bg-[#f8fafc] font-mono text-xs font-bold text-slate-700">
+          {safe}%
+        </div>
+      </div>
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+      </div>
+    </div>
+  );
+}
+
 export default async function VocabGroupDetailPage(props: {
   params: RouteParams;
   searchParams: SearchParams;
@@ -58,7 +92,7 @@ export default async function VocabGroupDetailPage(props: {
 
   if (!group) {
     return (
-      <section className="panel p-8">
+      <section className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200/70">
         <h1 className="text-2xl font-bold text-slate-800">Khong tim thay chu de</h1>
         <p className="mt-2 text-slate-600">Chu de co the da bi xoa hoac thay doi.</p>
         <Link href="/vocab" className="btn-primary mt-5">
@@ -74,36 +108,33 @@ export default async function VocabGroupDetailPage(props: {
   const withKanji = group.items.filter((item) => item.kanji.trim().length > 0).length;
   const withHanViet = group.items.filter((item) => item.hanviet.trim().length > 0).length;
   const withPos = group.items.filter((item) => item.partOfSpeech.trim().length > 0).length;
-  const bookmarkKeySet = new Set(
-    personalState.bookmarks.map((item) => `${item.type}:${item.refId}`)
-  );
+
+  const kanjiCoverage = coveragePercent(withKanji, totalWords);
+  const hanvietCoverage = coveragePercent(withHanViet, totalWords);
+  const posCoverage = coveragePercent(withPos, totalWords);
+
+  const bookmarkKeySet = new Set(personalState.bookmarks.map((item) => `${item.type}:${item.refId}`));
   const deckOptions = userStore.lessons.map((lesson) => ({
     id: `lesson:${lesson.id}`,
     label: lesson.title,
+    count: lesson.items.length,
   }));
+
   const selectedDeckId =
     deckFromQuery && deckOptions.some((deck) => deck.id === deckFromQuery)
       ? deckFromQuery
       : (deckOptions[0]?.id ?? "");
-  const selectedDeckLabel =
-    deckOptions.find((deck) => deck.id === selectedDeckId)?.label ?? "";
-  const selectedLessonId = selectedDeckId.startsWith("lesson:")
-    ? selectedDeckId.slice("lesson:".length)
-    : "";
-  const selectedLesson =
-    userStore.lessons.find((lesson) => lesson.id === selectedLessonId) ?? null;
+
+  const selectedDeckLabel = deckOptions.find((deck) => deck.id === selectedDeckId)?.label ?? "";
+  const selectedLessonId = selectedDeckId.startsWith("lesson:") ? selectedDeckId.slice("lesson:".length) : "";
+  const selectedLesson = userStore.lessons.find((lesson) => lesson.id === selectedLessonId) ?? null;
   const selectedLessonItems = selectedLesson ? [...selectedLesson.items] : [];
+
   const deckWordSetMap = new Map<string, Set<string>>();
   for (const lesson of userStore.lessons) {
-    deckWordSetMap.set(
-      `lesson:${lesson.id}`,
-      new Set(lesson.items.map((item) => item.word))
-    );
+    deckWordSetMap.set(`lesson:${lesson.id}`, new Set(lesson.items.map((item) => item.word)));
   }
-  const selectedDeckWordSet = selectedDeckId
-    ? (deckWordSetMap.get(selectedDeckId) ?? new Set<string>())
-    : new Set<string>();
-  const selectedLessonPreview = selectedLessonItems.slice(0, 12);
+  const selectedDeckWordSet = selectedDeckId ? (deckWordSetMap.get(selectedDeckId) ?? new Set<string>()) : new Set<string>();
 
   const PAGE_SIZE = 12;
   const totalPages = Math.max(1, Math.ceil(totalWords / PAGE_SIZE));
@@ -121,372 +152,146 @@ export default async function VocabGroupDetailPage(props: {
     return `/vocab/group/${groupId}?${query.toString()}`;
   }
 
+  function pageVocabHref(page: number, deckId: string = selectedDeckId): string {
+    return `${pageHref(page, deckId)}#vocab-list`;
+  }
+
+  const deckTabs = deckOptions.map((deck) => ({
+    id: deck.id,
+    label: deck.label,
+    count: deck.count,
+    href: `${pageHref(currentPage, deck.id)}#deck-hub`,
+    active: deck.id === selectedDeckId,
+  }));
+
+  const selectedLessonPreview = selectedLessonItems.map((item) => ({
+    id: item.id,
+    primary: item.reading || item.word,
+    secondary: item.kanji || "",
+    meaning: item.meaning,
+  }));
+
+  const topicFlashcardHref = `/vocab/learn?group=${groupId}&mode=flashcard`;
+  const topicQuizHref = `/vocab/learn?group=${groupId}&mode=quiz`;
+  const topicRecallHref = `/vocab/learn?group=${groupId}&mode=recall`;
+
   return (
-    <section className="space-y-6 rounded-3xl border border-sky-100 bg-[#d8e5f7] p-6 shadow-[0_8px_28px_rgba(28,78,140,0.08)] [background-image:linear-gradient(rgba(255,255,255,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.3)_1px,transparent_1px)] [background-size:30px_30px]">
-      <div className="relative overflow-hidden rounded-[28px] border border-slate-700/20 bg-[#1f3354] p-5 text-white shadow-[0_20px_50px_rgba(15,23,42,0.35)]">
-        <div className="pointer-events-none absolute -right-16 -top-14 h-48 w-48 rounded-full bg-cyan-300/20 blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-16 -left-10 h-44 w-44 rounded-full bg-blue-400/20 blur-2xl" />
+    <section className="space-y-8 rounded-3xl bg-[#f8fafc] p-3 sm:p-5">
+      <div className="relative overflow-hidden rounded-[1.8rem] bg-white/78 p-6 shadow-sm ring-1 ring-slate-200/70 backdrop-blur-md sm:p-7">
+        <div className="pointer-events-none absolute -left-10 top-2 h-32 w-36 rounded-full bg-sky-200/35 blur-3xl" />
+        <div className="pointer-events-none absolute -right-10 -top-6 h-36 w-40 rounded-full bg-indigo-200/30 blur-3xl" />
 
-        <div className="relative flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <Link
-              href={`/vocab?mode=library&level=${level}`}
-              className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold text-white/90 transition hover:bg-white/20"
-            >
-              {"<"} Quay lai danh sach chu de
-            </Link>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100/90">
-              {level} - Chu de admin
-            </p>
-            <h1 className="mt-2 text-3xl font-extrabold leading-tight text-white sm:text-4xl">
-              {group.title}
-            </h1>
-            <p className="mt-3 max-w-3xl text-base text-slate-200">
-              {group.description || "Nhom tu vung theo trinh do JLPT"}
-            </p>
-            <div className="mt-5 flex flex-wrap items-center gap-2">
-              <span className="rounded-full border border-white/35 bg-white/10 px-3 py-1 text-xs font-semibold text-cyan-100">
-                {totalWords} tu vung
-              </span>
-              <span className="rounded-full border border-white/35 bg-white/10 px-3 py-1 text-xs font-semibold text-cyan-100">
-                {withKanji} co kanji
-              </span>
-              <span className="rounded-full border border-white/35 bg-white/10 px-3 py-1 text-xs font-semibold text-cyan-100">
-                {withHanViet} co han viet
-              </span>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-white/30 bg-white/10 p-3 text-center backdrop-blur">
-            <p className="text-xs uppercase tracking-widest text-cyan-100/80">Trinh do</p>
-            <p className="mt-1 text-3xl font-black">{level}</p>
-            <p className="mt-1 text-xs text-cyan-100/80">{totalWords} tu</p>
-          </div>
-        </div>
-
-        <div className="relative mt-6 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-white/25 bg-white/10 px-4 py-3">
-            <p className="text-xs uppercase tracking-wide text-cyan-100/80">Do phu Kanji</p>
-            <p className="mt-1 text-xl font-bold text-white">
-              {totalWords === 0 ? 0 : Math.round((withKanji / totalWords) * 100)}%
-            </p>
-          </div>
-          <div className="rounded-xl border border-white/25 bg-white/10 px-4 py-3">
-            <p className="text-xs uppercase tracking-wide text-cyan-100/80">Do phu Han Viet</p>
-            <p className="mt-1 text-xl font-bold text-white">
-              {totalWords === 0 ? 0 : Math.round((withHanViet / totalWords) * 100)}%
-            </p>
-          </div>
-          <div className="rounded-xl border border-white/25 bg-white/10 px-4 py-3">
-            <p className="text-xs uppercase tracking-wide text-cyan-100/80">POS kha dung</p>
-            <p className="mt-1 text-xl font-bold text-white">{withPos}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-bold text-slate-800">Danh sach bo flashcard</h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Chon 1 bo de them/xoa tu truc tiep trong chu de nay.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {selectedDeckLabel ? (
-              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                Dang chon: {selectedDeckLabel}
-              </span>
-            ) : null}
-            <form action={createVocabLessonAction} className="flex items-center gap-2">
-              <input
-                name="title"
-                required
-                maxLength={64}
-                placeholder="Nhap ten flashcard..."
-                className="w-48 rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-700"
-              />
-              <input type="hidden" name="returnTo" value={pageHref(currentPage)} />
-              <button
-                type="submit"
-                className="rounded-full border border-blue-300 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 transition hover:bg-blue-100"
+        <div className="relative space-y-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <Link
+                href={`/vocab?mode=library&level=${level}`}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-slate-700 shadow-sm ring-1 ring-slate-200/70 transition hover:-translate-y-0.5 hover:bg-sky-50 hover:text-sky-700"
+                aria-label="Quay lai"
+                title="Quay lai"
               >
-                + Tao flashcard moi
-              </button>
-            </form>
-          </div>
-        </div>
-
-        {deckOptions.length > 0 ? (
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-            {deckOptions.map((deck) => {
-              const active = deck.id === selectedDeckId;
-              const lessonId = deck.id.slice("lesson:".length);
-              const lesson = userStore.lessons.find((entry) => entry.id === lessonId);
-              const vocabCount = lesson?.items.length ?? 0;
-              return (
-                <Link
-                  key={deck.id}
-                  href={pageHref(currentPage, deck.id)}
-                  className={`rounded-xl border px-3 py-2 text-left transition ${
-                    active
-                      ? "border-blue-300 bg-blue-100 text-blue-800 shadow-sm"
-                      : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-                  }`}
-                >
-                  <p className="text-sm font-semibold">{deck.label}</p>
-                  <p className="text-xs text-slate-500">{vocabCount} tu</p>
-                </Link>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="mt-4 space-y-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            <p>Ban chua co bo flashcard ca nhan. Bam nut ben duoi de tao ngay.</p>
-            <form action={createVocabLessonAction} className="flex flex-wrap items-center gap-2">
-              <input
-                name="title"
-                required
-                maxLength={64}
-                placeholder="Nhap ten flashcard..."
-                className="w-56 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs text-slate-700"
-              />
-              <input type="hidden" name="returnTo" value={pageHref(currentPage)} />
-              <button
-                type="submit"
-                className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100"
-              >
-                + Tao flashcard dau tien
-              </button>
-            </form>
-          </div>
-        )}
-      </div>
-
-      <div className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-bold text-slate-800">Chi tiet flashcard</h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Bam ten flashcard o tren de xem tu da them va bat dau hoc ngay.
-            </p>
-          </div>
-          {selectedLesson ? (
-            <Link
-              href={`/vocab?mode=self&lesson=${selectedLesson.id}`}
-              className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-            >
-              Quan ly flashcard nay
-            </Link>
-          ) : null}
-        </div>
-
-        {selectedLesson ? (
-          <>
-            <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4">
-              <p className="text-base font-bold text-blue-900">{selectedLesson.title}</p>
-              <p className="mt-1 text-sm text-blue-700">{selectedLessonItems.length} tu trong bo</p>
-              <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                <Link
-                  href={`/vocab/learn?lesson=${selectedLesson.id}&mode=flashcard`}
-                  className="rounded-lg border border-blue-300 bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-blue-700"
-                >
-                  Flashcard
-                </Link>
-                <Link
-                  href={`/vocab/learn?lesson=${selectedLesson.id}&mode=quiz`}
-                  className="rounded-lg border border-emerald-300 bg-emerald-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-emerald-700"
-                >
-                  Trac nghiem
-                </Link>
-                <Link
-                  href={`/vocab/learn?lesson=${selectedLesson.id}&mode=recall`}
-                  className="rounded-lg border border-orange-300 bg-orange-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-orange-700"
-                >
-                  Nhoi nhet
-                </Link>
-              </div>
-            </div>
-
-            {selectedLessonItems.length > 0 ? (
-              <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                {selectedLessonPreview.map((item) => (
-                  <div
-                    key={item.id}
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
-                  >
-                    <p className="text-sm font-semibold text-slate-800">
-                      {item.reading || item.word}
-                    </p>
-                    <p className="text-xs text-slate-500">{item.kanji || "-"}</p>
-                    <p className="mt-1 text-sm text-slate-700">{item.meaning}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-                Flashcard nay chua co tu nao. Bam "Them vao flashcard" o danh sach ben duoi.
+                <ArrowLeft className="h-4 w-4" />
+              </Link>
+              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{level} - Chu de admin</p>
+              <h1 className="mt-1 text-3xl font-black leading-tight tracking-tight text-slate-900 sm:text-5xl">
+                {group.title}
+              </h1>
+              <p className="mt-2 max-w-3xl text-sm text-slate-500 sm:text-base">
+                {group.description || "Nhom tu vung theo trinh do JLPT"}
               </p>
-            )}
-          </>
-        ) : (
-          <p className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
-            Chua chon flashcard nao. Hay tao moi hoac bam vao 1 ten flashcard de bat dau.
-          </p>
-        )}
+            </div>
+
+            <div className="rounded-2xl bg-white/80 px-4 py-3 text-center shadow-sm ring-1 ring-slate-200/70">
+              <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">Level</p>
+              <p className="font-mono text-3xl font-bold text-slate-900">{level}</p>
+              <p className="font-mono text-xs text-slate-500">{totalWords} tu</p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+              <Layers3 className="mr-1.5 h-3.5 w-3.5" />
+              {totalWords} tu vung
+            </span>
+            <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+              {withKanji} co kanji
+            </span>
+            <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+              {withHanViet} co han viet
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <ProgressRing label="Kanji" value={kanjiCoverage} color="#22d3ee" />
+            <ProgressRing label="Han Viet" value={hanvietCoverage} color="#a78bfa" />
+            <ProgressRing label="POS" value={posCoverage} color="#f59e0b" />
+          </div>
+        </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
+      <DeckManagerHub
+        deckTabs={deckTabs}
+        createReturnTo={pageHref(currentPage, selectedDeckId)}
+        selectedDeckLabel={selectedDeckLabel}
+        selectedLessonId={selectedLessonId}
+        selectedLessonItemsCount={selectedLessonItems.length}
+        selectedLessonPreview={selectedLessonPreview}
+        manageHref={selectedLesson ? `/vocab?mode=self&lesson=${selectedLesson.id}` : "/vocab?mode=self"}
+      />
+
+      <div id="vocab-list" className="scroll-mt-24 rounded-[1.8rem] bg-white p-6 shadow-sm ring-1 ring-slate-200/70 sm:p-7">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-xl font-bold text-slate-800">Danh sach tu vung</h2>
-            <p className="mt-1 text-[13px] text-slate-500">
-              Chon che do hoc sau khi xem nhanh cac tu ben duoi.
-            </p>
-            <p className="mt-1 text-[11px] text-slate-400">
-              Moi tu se duoc them vao bo dang chon o phia tren.
+            <h2 className="text-2xl font-black tracking-tight text-slate-900">Danh sach tu vung</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              The trang thai toi gian, khoang trang rong, tap trung vao noi dung hoc.
             </p>
           </div>
-          <p className="text-xs font-semibold text-slate-500">
-            Trang {currentPage}/{totalPages} - Hien {pagedItems.length}/{totalWords} tu
+          <p className="font-mono text-sm font-bold text-slate-600">
+            Trang {currentPage}/{totalPages} - Hien {pagedItems.length}/{totalWords}
           </p>
         </div>
 
-        <div className="mt-4 pr-1">
-          <div className="grid gap-2.5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-6">
+          <VocabGridMotion>
             {pagedItems.map((item, index) => {
               const bookmarked = bookmarkKeySet.has(`vocab:${item.id}`);
               const inSelectedDeck = selectedDeckWordSet.has(item.word);
               const itemOrder = startIndex + index + 1;
-
               return (
-                <article
+                <VocabCard
                   key={item.id}
-                  className="rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="text-[1.45rem] font-bold leading-tight text-slate-900">
-                        {item.reading || item.word || "-"}
-                      </p>
-                      <p className="mt-0.5 text-[13px] text-slate-500">
-                        {item.kanji || (item.reading ? item.word : "") || "-"}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end gap-1.5">
-                      <div className="flex items-center gap-2">
-                      <SpeakJpButton
-                        text={item.reading || item.kanji || item.word}
-                        title={`Phat am tu ${itemOrder}`}
-                      />
-                      <form action={toggleBookmarkAction}>
-                        <input type="hidden" name="type" value="vocab" />
-                        <input type="hidden" name="refId" value={item.id} />
-                        <input
-                          type="hidden"
-                          name="title"
-                          value={`${item.reading || item.word}${item.kanji ? ` (${item.kanji})` : ""}`}
-                        />
-                        <input type="hidden" name="subtitle" value={item.meaning} />
-                        <input type="hidden" name="returnTo" value={pageHref(currentPage)} />
-                        <button
-                          type="submit"
-                          className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-600 hover:bg-slate-50"
-                        >
-                          {bookmarked ? "Da luu" : "Luu"}
-                        </button>
-                      </form>
-                      <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs font-semibold text-slate-600">
-                        #{itemOrder}
-                      </span>
-                      </div>
-
-                      {selectedDeckId ? (
-                        inSelectedDeck ? (
-                          <form action={removeLibraryVocabFromReviewAction} className="flex items-center gap-1.5">
-                            <input type="hidden" name="word" value={item.word} />
-                            <input type="hidden" name="meaning" value={item.meaning} />
-                            <input type="hidden" name="sourceId" value={item.id} />
-                            <input type="hidden" name="targetDeck" value={selectedDeckId} />
-                            <input type="hidden" name="returnTo" value={pageHref(currentPage)} />
-                            <button
-                              type="submit"
-                              className="rounded-md border border-rose-200 bg-rose-50 px-2 py-1 text-[11px] font-semibold text-rose-700 transition hover:bg-rose-100"
-                            >
-                              Xoa flashcard
-                            </button>
-                          </form>
-                        ) : (
-                          <form action={addLibraryVocabToReviewAction} className="flex items-center gap-1.5">
-                            <input type="hidden" name="word" value={item.word} />
-                            <input type="hidden" name="reading" value={item.reading} />
-                            <input type="hidden" name="kanji" value={item.kanji} />
-                            <input type="hidden" name="hanviet" value={item.hanviet} />
-                            <input type="hidden" name="meaning" value={item.meaning} />
-                            <input type="hidden" name="jlptLevel" value={level} />
-                            <input
-                              type="hidden"
-                              name="partOfSpeech"
-                              value={item.partOfSpeech || "-"}
-                            />
-                            <input type="hidden" name="sourceId" value={item.id} />
-                            <input type="hidden" name="targetDeck" value={selectedDeckId} />
-                            <input type="hidden" name="returnTo" value={pageHref(currentPage)} />
-                            <button
-                              type="submit"
-                              className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-[11px] font-semibold text-blue-700 transition hover:bg-blue-100"
-                            >
-                              Them vao flashcard
-                            </button>
-                          </form>
-                        )
-                      ) : (
-                        <span className="rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-700">
-                          Tao bo flashcard truoc
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <p className="mt-2 text-[1.28rem] font-semibold leading-tight text-slate-800">
-                    {item.meaning}
-                  </p>
-
-                  <div className="mt-2.5 flex flex-wrap gap-1.5 text-[10px]">
-                    <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 font-semibold text-blue-700">
-                      Kanji: {item.kanji || "-"}
-                    </span>
-                    <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 font-semibold text-amber-700">
-                      Han Viet: {item.hanviet || "-"}
-                    </span>
-                    <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700">
-                      POS: {item.partOfSpeech || "-"}
-                    </span>
-                  </div>
-                </article>
+                  item={item}
+                  itemOrder={itemOrder}
+                  level={level}
+                  returnTo={pageHref(currentPage, selectedDeckId)}
+                  selectedDeckId={selectedDeckId}
+                  isBookmarked={bookmarked}
+                  inSelectedDeck={inSelectedDeck}
+                />
               );
             })}
-          </div>
+          </VocabGridMotion>
         </div>
 
         {totalPages > 1 ? (
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
             <Link
-              href={pageHref(Math.max(1, currentPage - 1))}
-              className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${
-                currentPage <= 1
-                  ? "pointer-events-none border-slate-200 bg-slate-100 text-slate-400"
-                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+              href={pageVocabHref(Math.max(1, currentPage - 1))}
+              aria-label="Trang truoc"
+              className={`inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-600 shadow-sm ring-1 ring-slate-200 ${
+                currentPage <= 1 ? "pointer-events-none opacity-45" : "hover:bg-slate-100"
               }`}
             >
-              {"<"} Truoc
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
             </Link>
+
             {Array.from({ length: totalPages }).map((_, index) => {
               const page = index + 1;
               const isActive = page === currentPage;
-              const shouldShow =
-                page === 1 ||
-                page === totalPages ||
-                Math.abs(page - currentPage) <= 1;
+              const shouldShow = page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1;
 
               if (!shouldShow) {
                 if (page === currentPage - 2 || page === currentPage + 2) {
@@ -502,55 +307,51 @@ export default async function VocabGroupDetailPage(props: {
               return (
                 <Link
                   key={page}
-                  href={pageHref(page)}
-                  className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${
-                    isActive
-                      ? "border-blue-300 bg-blue-100 text-blue-800"
-                      : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                  href={pageVocabHref(page)}
+                  className={`inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold shadow-sm ring-1 ring-slate-200 ${
+                    isActive ? "bg-sky-100 text-sky-700" : "bg-white text-slate-600 hover:bg-slate-100"
                   }`}
                 >
                   {page}
                 </Link>
               );
             })}
+
             <Link
-              href={pageHref(Math.min(totalPages, currentPage + 1))}
-              className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${
-                currentPage >= totalPages
-                  ? "pointer-events-none border-slate-200 bg-slate-100 text-slate-400"
-                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+              href={pageVocabHref(Math.min(totalPages, currentPage + 1))}
+              aria-label="Trang sau"
+              className={`inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-600 shadow-sm ring-1 ring-slate-200 ${
+                currentPage >= totalPages ? "pointer-events-none opacity-45" : "hover:bg-slate-100"
               }`}
             >
-              Sau {">"}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
             </Link>
           </div>
         ) : null}
-      </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
-        <h2 className="text-xl font-bold text-slate-800">Bat dau hoc chu de nay</h2>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <Link
-            href={`/vocab/learn?group=${groupId}&mode=flashcard`}
-            className="rounded-2xl border border-blue-300 bg-blue-600 px-4 py-3 text-center text-base font-semibold text-white transition hover:bg-blue-700"
-          >
-            Flashcard
-          </Link>
-          <Link
-            href={`/vocab/learn?group=${groupId}&mode=quiz`}
-            className="rounded-2xl border border-emerald-300 bg-emerald-600 px-4 py-3 text-center text-base font-semibold text-white transition hover:bg-emerald-700"
-          >
-            Trac nghiem
-          </Link>
-          <Link
-            href={`/vocab/learn?group=${groupId}&mode=recall`}
-            className="rounded-2xl border border-orange-300 bg-orange-600 px-4 py-3 text-center text-base font-semibold text-white transition hover:bg-orange-700"
-          >
-            Nhoi nhet
-          </Link>
+        <div className="mt-4 rounded-xl bg-violet-50/80 px-3 py-2 text-xs text-violet-700">
+          <Sparkles className="mr-1 inline h-3.5 w-3.5" />
+          Meo: Bam phan trang se tu nhay ve khu "Danh sach tu vung" de hoc lien tuc.
+        </div>
+
+        <div className="mt-5">
+          <ActionSection
+            title="Hoc nhanh chu de nay"
+            subtitle="Luon mo theo chu de dang xem"
+            flashcardHref={topicFlashcardHref}
+            quizHref={topicQuizHref}
+            recallHref={topicRecallHref}
+          />
         </div>
       </div>
     </section>
   );
 }
+
+
+
+
+
 

@@ -1,22 +1,37 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 
 import { logoutAction } from "@/app/actions/auth";
 import { DailyReminderClient } from "@/app/components/daily-reminder-client";
+import { DesktopSideNav } from "@/app/components/side-nav-client";
 import { isAdminEmail } from "@/lib/admin";
 import { getCurrentUser } from "@/lib/auth";
 import { loadUserPersonalState } from "@/lib/user-personal-data";
 
-const privateLinks = [
-  { href: "/dashboard", label: "Tong quan" },
-  { href: "/personal", label: "Lo trinh" },
-  { href: "/placement", label: "Test dau vao" },
-  { href: "/focus", label: "On sai" },
-  { href: "/search", label: "Search" },
-  { href: "/kanji", label: "Kanji" },
-  { href: "/kanji/roadmap", label: "Lo trinh Kanji" },
-  { href: "/vocab", label: "Tu vung" },
-  { href: "/grammar", label: "Ngu phap" },
+type NavLinkItem = {
+  href: string;
+  label: string;
+  iconPath: string;
+};
+
+function navIcon(path: string) {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+      <path d={path} stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+const privateLinks: NavLinkItem[] = [
+  { href: "/dashboard", label: "Tong quan", iconPath: "M3 12l9-8 9 8M5 10v10h14V10" },
+  { href: "/personal", label: "Lo trinh", iconPath: "M3 6h18M6 12h12M9 18h6" },
+  { href: "/placement", label: "Test dau vao", iconPath: "M8 12l3 3 5-6M4 5h16v14H4z" },
+  { href: "/focus", label: "On sai", iconPath: "M12 3l7 4v5c0 5-3 7-7 9-4-2-7-4-7-9V7l7-4z" },
+  { href: "/search", label: "Search", iconPath: "M11 4a7 7 0 105.3 11.6L20 19" },
+  { href: "/kanji", label: "Kanji", iconPath: "M5 6h14M5 12h14M5 18h14M12 6v12" },
+  { href: "/kanji/roadmap", label: "Lo trinh Kanji", iconPath: "M4 18l6-6 4 4 6-8" },
+  { href: "/vocab", label: "Tu vung", iconPath: "M5 4h10a3 3 0 013 3v13H8a3 3 0 01-3-3zM8 4v16" },
+  { href: "/grammar", label: "Ngu phap", iconPath: "M6 5h12M6 12h12M6 19h12" },
 ];
 
 export async function NavBar() {
@@ -24,7 +39,7 @@ export async function NavBar() {
   const personalState = user ? await loadUserPersonalState(user.id) : null;
   const links =
     user && isAdminEmail(user.email)
-      ? [...privateLinks, { href: "/admin", label: "Admin" }]
+      ? [...privateLinks, { href: "/admin", label: "Admin", iconPath: "M4 5h16v14H4zM9 3v4M15 3v4" }]
       : privateLinks;
 
   return (
@@ -84,17 +99,23 @@ export async function NavBar() {
           </div>
 
           {user ? (
-            <nav className="mt-3 flex items-center gap-1 overflow-x-auto border-t border-white/70 pt-3">
+            <nav className="mt-3 flex items-center gap-2 overflow-x-auto border-t border-white/70 pt-3 lg:hidden">
               {links.map((link) => (
-                <Link key={link.href} href={link.href} className="nav-link whitespace-nowrap">
-                  {link.label}
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="inline-flex items-center gap-2 whitespace-nowrap rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                >
+                  <span className="text-slate-500">{navIcon(link.iconPath)}</span>
+                  <span>{link.label}</span>
                 </Link>
               ))}
             </nav>
           ) : null}
         </div>
       </div>
+
+      {user ? <DesktopSideNav links={links} /> : null}
     </header>
   );
 }
-

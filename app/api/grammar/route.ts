@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { loadGrammarDataset } from "@/lib/grammar-dataset";
+import { GRAMMAR_LEVELS, loadGrammarDataset } from "@/lib/grammar-dataset";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const dataset = await loadGrammarDataset();
   let lessons = [...dataset.lessons];
 
-  if (level === "N5" || level === "N4") {
+  if (level && GRAMMAR_LEVELS.includes(level as (typeof GRAMMAR_LEVELS)[number])) {
     lessons = lessons.filter((item) => item.level === level);
   }
 

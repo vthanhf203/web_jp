@@ -2,7 +2,6 @@
 
 import { CardType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { requireUser } from "@/lib/auth";
@@ -44,17 +43,6 @@ const reviewSchema = z.object({
   reviewId: z.string().min(1),
   rating: z.enum(["again", "hard", "good", "easy"]),
 });
-
-function normalizeReturnTo(path: string | undefined): string | null {
-  const returnTo = path?.trim();
-  if (!returnTo) {
-    return null;
-  }
-  if (!returnTo.startsWith("/") || returnTo.startsWith("//")) {
-    return null;
-  }
-  return returnTo;
-}
 
 export async function addKanjiToReviewAction(formData: FormData) {
   const user = await requireUser();
@@ -143,12 +131,12 @@ export async function addLibraryVocabToReviewAction(formData: FormData) {
   });
 
   if (!parsed.success) {
-    return;
+    return { ok: false } as const;
   }
 
   const targetDeck = parsed.data.targetDeck.trim();
   if (!targetDeck.startsWith("lesson:")) {
-    return;
+    return { ok: false } as const;
   }
   const lessonId = targetDeck.slice("lesson:".length).trim();
   const store = await loadUserVocabStore(user.id);
@@ -176,11 +164,7 @@ export async function addLibraryVocabToReviewAction(formData: FormData) {
 
   revalidatePath("/vocab");
   revalidatePath("/dashboard");
-
-  const returnTo = normalizeReturnTo(parsed.data.returnTo);
-  if (returnTo) {
-    redirect(returnTo);
-  }
+  return { ok: true } as const;
 }
 
 export async function removeLibraryVocabFromReviewAction(formData: FormData) {
@@ -195,12 +179,12 @@ export async function removeLibraryVocabFromReviewAction(formData: FormData) {
   });
 
   if (!parsed.success) {
-    return;
+    return { ok: false } as const;
   }
 
   const targetDeck = parsed.data.targetDeck.trim();
   if (!targetDeck.startsWith("lesson:")) {
-    return;
+    return { ok: false } as const;
   }
   const lessonId = targetDeck.slice("lesson:".length).trim();
   const store = await loadUserVocabStore(user.id);
@@ -222,11 +206,7 @@ export async function removeLibraryVocabFromReviewAction(formData: FormData) {
 
   revalidatePath("/vocab");
   revalidatePath("/dashboard");
-
-  const returnTo = normalizeReturnTo(parsed.data.returnTo);
-  if (returnTo) {
-    redirect(returnTo);
-  }
+  return { ok: true } as const;
 }
 
 export async function submitReviewAction(formData: FormData) {

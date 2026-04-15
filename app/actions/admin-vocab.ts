@@ -52,6 +52,24 @@ const importItemsSchema = z.object({
   rawInput: z.string().min(1),
 });
 
+const syncItemsFromUrlSchema = z.object({
+  lessonId: z.string().min(1),
+  sourceUrl: z.string().url(),
+  limit: z.preprocess((value) => {
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+      if (!trimmed) {
+        return undefined;
+      }
+      return Number(trimmed);
+    }
+    if (typeof value === "number") {
+      return value;
+    }
+    return undefined;
+  }, z.number().int().min(1).max(2000).optional()),
+});
+
 const clearLessonSchema = z.object({
   lessonId: z.string().min(1),
 });
@@ -263,6 +281,104 @@ export async function importAdminVocabItemsAction(
         ? `Da them ${rows.length} tu vao kho admin. Luu y: ${noKanjiCount} tu chua co field kanji nen co the khong hien o muc lien quan tren trang Kanji.`
         : `Da them ${rows.length} tu vao kho admin.`,
   };
+}
+
+export async function syncAdminVocabFromUrlAction(
+  _prevState: AdminImportState,
+  formData: FormData
+): Promise<AdminImportState> {
+  await requireAdmin();
+
+  const parsed = syncItemsFromUrlSchema.safeParse({
+    lessonId: formData.get("lessonId"),
+    sourceUrl: formData.get("sourceUrl"),
+    limit: formData.get("limit"),
+  });
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "URL hoac lesson khong hop le.",
+    };
+  }
+
+  const library = await loadAdminVocabLibrary();
+  const lesson = findLesson(library.lessons, parsed.data.lessonId);
+  if (!lesson) {
+    return {
+      status: "error",
+      message: "Khong tim thay lesson admin.",
+    };
+  }
+
+  const timeoutMs = 15000;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(parsed.data.sourceUrl, {
+      method: "GET",
+      cache: "no-store",
+      signal: controller.signal,
+      headers: {
+        Accept: "application/json,text/plain,*/*",
+      },
+    });
+
+    if (!response.ok) {
+      return {
+        status: "error",
+        message: `Khong tai duoc du lieu tu URL (HTTP ${response.status}).`,
+      };
+    }
+
+    const rawText = await response.text();
+    const limit = parsed.data.limit ?? 500;
+    const rows = parseVocabInput(rawText).slice(0, limit);
+    if (rows.length === 0) {
+      return {
+        status: "error",
+        message: "URL co du lieu nhung khong parse duoc theo form tu vung.",
+      };
+    }
+
+    const noKanjiCount = rows.filter((row) => !row.kanji.trim()).length;
+    const now = nowIso();
+    lesson.items.push(
+      ...rows.map((row) => ({
+        id: crypto.randomUUID(),
+        word: row.word,
+        reading: row.reading,
+        kanji: row.kanji || "",
+        hanviet: row.hanviet || "",
+        partOfSpeech: row.partOfSpeech || "",
+        meaning: row.meaning,
+        createdAt: now,
+        updatedAt: now,
+      }))
+    );
+    lesson.updatedAt = now;
+
+    await saveAdminVocabLibrary(library);
+    touchSharedPaths();
+    return {
+      status: "success",
+      message:
+        noKanjiCount > 0
+          ? `Da sync ${rows.length} tu vao kho admin. Luu y: ${noKanjiCount} tu chua co field kanji.`
+          : `Da sync ${rows.length} tu vao kho admin.`,
+    };
+  } catch (error) {
+    const message =
+      error instanceof Error && error.name === "AbortError"
+        ? "Timeout khi goi URL. Thu lai hoac giam gioi han so dong."
+        : "Khong the ket noi toi URL nay. Kiem tra lai link va cho phep truy cap.";
+    return {
+      status: "error",
+      message,
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function clearAdminVocabLessonAction(formData: FormData) {
