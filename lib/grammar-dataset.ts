@@ -1,5 +1,8 @@
 import "server-only";
 
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
 import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
@@ -37,6 +40,12 @@ export type GrammarDataset = {
 };
 
 const APP_DATA_KEY = "grammar_dataset";
+const GRAMMAR_DATASET_FILE = path.join(
+  process.cwd(),
+  "data",
+  "grammar",
+  "minna-n4n5.json"
+);
 
 function normalizeText(value: unknown): string {
   if (typeof value !== "string") {
@@ -151,21 +160,66 @@ function normalizeDataset(input: unknown): GrammarDataset {
   };
 }
 
+async function loadGrammarDatasetFromFile(): Promise<GrammarDataset | null> {
+  try {
+    const raw = await readFile(GRAMMAR_DATASET_FILE, "utf8");
+    const parsed = JSON.parse(raw) as unknown;
+    const normalized = normalizeDataset(parsed);
+    if (normalized.lessons.length === 0) {
+      return null;
+    }
+    return normalized;
+  } catch {
+    return null;
+  }
+}
+
+function emptyGrammarDataset(): GrammarDataset {
+  return {
+    source: "",
+    importedAt: "",
+    lessonCount: 0,
+    lessons: [],
+  };
+}
+
 export async function loadGrammarDataset(): Promise<GrammarDataset> {
+  let dataset = emptyGrammarDataset();
+
   try {
     const record = await prisma.appData.findUnique({
       where: { key: APP_DATA_KEY },
       select: { value: true },
     });
-    return normalizeDataset(record?.value);
+    dataset = normalizeDataset(record?.value);
+    if (dataset.lessons.length > 0) {
+      return dataset;
+    }
   } catch {
-    return {
-      source: "",
-      importedAt: "",
-      lessonCount: 0,
-      lessons: [],
-    };
+    // ignore and fallback below
   }
+
+  const fallback = await loadGrammarDatasetFromFile();
+  if (!fallback) {
+    return dataset;
+  }
+
+  try {
+    await prisma.appData.upsert({
+      where: { key: APP_DATA_KEY },
+      create: {
+        key: APP_DATA_KEY,
+        value: fallback as unknown as Prisma.InputJsonValue,
+      },
+      update: {
+        value: fallback as unknown as Prisma.InputJsonValue,
+      },
+    });
+  } catch {
+    // ignore persist issue; still return parsed fallback dataset
+  }
+
+  return fallback;
 }
 
 export async function saveGrammarDataset(data: GrammarDataset): Promise<void> {

@@ -1,6 +1,36 @@
-import { PrismaClient, QuizOption } from "@prisma/client";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
+import { PrismaClient, QuizOption, type Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
+const GRAMMAR_APP_DATA_KEY = "grammar_dataset";
+const GRAMMAR_SEED_FILE = path.join(
+  process.cwd(),
+  "data",
+  "grammar",
+  "minna-n4n5.json"
+);
+
+function toInputJson(value: unknown): Prisma.InputJsonValue | null {
+  if (value === null) {
+    return null;
+  }
+  if (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value as Prisma.InputJsonValue;
+  }
+  if (typeof value === "object") {
+    return value as Prisma.InputJsonValue;
+  }
+  return null;
+}
 
 const kanjiSeed = [
   {
@@ -511,10 +541,38 @@ async function seedQuiz() {
   }
 }
 
+async function seedGrammarDataset() {
+  const existing = await prisma.appData.findUnique({
+    where: { key: GRAMMAR_APP_DATA_KEY },
+    select: { key: true },
+  });
+  if (existing) {
+    return;
+  }
+
+  try {
+    const raw = await readFile(GRAMMAR_SEED_FILE, "utf8");
+    const parsed = JSON.parse(raw) as unknown;
+    const payload = toInputJson(parsed);
+    if (payload === null) {
+      return;
+    }
+    await prisma.appData.create({
+      data: {
+        key: GRAMMAR_APP_DATA_KEY,
+        value: payload,
+      },
+    });
+  } catch {
+    // Skip grammar seed when local file is missing or invalid JSON.
+  }
+}
+
 async function main() {
   await seedKanji();
   await seedVocab();
   await seedQuiz();
+  await seedGrammarDataset();
 }
 
 main()
