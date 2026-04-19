@@ -1,0 +1,163 @@
+.wrapper {
+  width: min(720px, 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.07);
+  padding: 1.4rem;
+}
+
+.header {
+  margin-bottom: 1rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.subtitle {
+  margin-top: 0.45rem;
+  margin-bottom: 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 1rem;
+}
+
+.tabButton {
+  padding: 0.65rem 0.25rem;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tabButton:hover {
+  color: #4338ca;
+}
+
+.tabButtonActive {
+  color: #4f46e5;
+  border-bottom-color: #6366f1;
+}
+
+.panel {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.label {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.input {
+  height: 44px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  padding: 0 0.9rem;
+  color: #0f172a;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14);
+}
+
+.submitButton {
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.submitButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.25);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dropZone {
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  padding: 2rem;
+  display: grid;
+  gap: 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dropZone:hover,
+.dropZoneDragging {
+  border-color: #6366f1;
+  background: #f5f3ff;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.dropTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.dropHint {
+  font-size: 0.84rem;
+  color: #64748b;
+}
+
+.fileName {
+  display: inline-flex;
+  justify-self: center;
+  margin-top: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.loading {
+  margin-top: 0.8rem;
+  color: #334155;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.error {
+  margin-top: 0.55rem;
+  color: #dc2626;
+  font-size: 0.88rem;
+  font-weight: 600;
+}

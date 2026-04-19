@@ -1,7 +1,12 @@
-﻿import Image from "next/image";
-import Link from "next/link";
+﻿import Link from "next/link";
+import GrammarRoadmap, {
+  type GrammarRoadmapLesson,
+  type GrammarRoadmapLevelTab,
+} from "@/app/grammar/grammar-roadmap";
+import GrammarPointCards from "@/app/grammar/grammar-point-cards";
+import GrammarDetail from "@/components/GrammarDetail";
+import SearchBar from "@/components/SearchBar";
 
-import { toggleBookmarkAction } from "@/app/actions/personal";
 import { requireUser } from "@/lib/auth";
 import {
   GRAMMAR_LEVELS,
@@ -9,7 +14,11 @@ import {
   type GrammarLevel,
   type GrammarPoint,
 } from "@/lib/grammar-dataset";
-import { loadUserPersonalState } from "@/lib/user-personal-data";
+import {
+  loadUserPersonalState,
+  markGrammarPointLearned,
+  saveUserPersonalState,
+} from "@/lib/user-personal-data";
 
 type SearchParams = Promise<{
   level?: string | string[];
@@ -84,6 +93,16 @@ function displayTopic(topic?: string): string | null {
   if (!value) {
     return null;
   }
+  const normalized = value.toLowerCase();
+  if (
+    normalized === "ok" ||
+    normalized === "-" ||
+    normalized === "..." ||
+    normalized === "n/a" ||
+    normalized === "none"
+  ) {
+    return null;
+  }
   if (value.length > 90) {
     return null;
   }
@@ -101,7 +120,7 @@ function extractLessonNumberFromTitle(title?: string): number | null {
     return null;
   }
   const normalized = title.trim().toLowerCase();
-  const match = normalized.match(/^bai\s*(\d+)$/);
+  const match = normalized.match(/^b[àa]i\s*(\d+)$/);
   if (!match) {
     return null;
   }
@@ -115,7 +134,7 @@ function extractLessonNumberFromTitle(title?: string): number | null {
 function lessonDisplayTitle(lessonNumber: number, title?: string): string {
   const parsedTitleNumber = extractLessonNumberFromTitle(title);
   if (!title?.trim() || parsedTitleNumber !== null) {
-    return `Bai ${lessonNumber}`;
+    return `Bài ${lessonNumber}`;
   }
   return title.trim();
 }
@@ -147,10 +166,11 @@ function shouldHideGrammarNote(line: string): boolean {
 
 export default async function GrammarPage(props: { searchParams: SearchParams }) {
   const user = await requireUser();
-  const [dataset, personalState] = await Promise.all([
+  const [dataset, loadedPersonalState] = await Promise.all([
     loadGrammarDataset(),
     loadUserPersonalState(user.id),
   ]);
+  let personalState = loadedPersonalState;
   const params = await props.searchParams;
 
   const requestedLevel = pickSingle(params.level);
@@ -177,6 +197,13 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
   const selectedPoint = requestedPointId
     ? filteredPoints.find((point) => point.id === requestedPointId) ?? null
     : null;
+  if (selectedPoint) {
+    const nextLearned = markGrammarPointLearned(personalState, selectedPoint.id);
+    if (nextLearned.added) {
+      personalState = nextLearned.state;
+      await saveUserPersonalState(user.id, personalState);
+    }
+  }
   const selectedPointIndex = selectedPoint
     ? filteredPoints.findIndex((point) => point.id === selectedPoint.id)
     : -1;
@@ -194,74 +221,148 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
   const selectedTopic = selectedTopicRaw;
   const levelBookTitle =
     level === "N5"
-      ? "Minna no Nihongo I (第1〜25課)"
+      ? "Minna no Nihongo I (Bài 1~25)"
       : level === "N4"
-        ? "Minna no Nihongo II (第26〜50課)"
-        : `Ngu phap JLPT ${level}`;
-  const levelTotalPoints = lessonsByLevel.reduce((sum, lesson) => sum + lesson.pointCount, 0);
-  const bookmarkKeySet = new Set(
-    personalState.bookmarks.map((item) => `${item.type}:${item.refId}`)
-  );
+        ? "Minna no Nihongo II (Bài 26~50)"
+        : `Ngữ pháp JLPT ${level}`;
+  const bookmarkKeySet = new Set(personalState.bookmarks.map((item) => `${item.type}:${item.refId}`));
+  const learnedPointIdSet = new Set([
+    ...personalState.grammarProgress.learnedPointIds,
+    ...personalState.bookmarks
+      .filter((item) => item.type === "grammar")
+      .map((item) => item.refId),
+  ]);
   const selectedPointBookmarked = selectedPoint
     ? bookmarkKeySet.has(`grammar:${selectedPoint.id}`)
     : false;
+  const lessonPointLearnedCount = new Map(
+    lessonsByLevel.map((lesson) => [
+      lesson.id,
+      lesson.points.filter((point) => learnedPointIdSet.has(point.id)).length,
+    ])
+  );
+  const focusLesson =
+    lessonsByLevel.find(
+      (lesson) => (lessonPointLearnedCount.get(lesson.id) ?? 0) < lesson.points.length
+    ) ?? lessonsByLevel[0] ?? null;
+  const totalPointCount = lessonsByLevel.reduce((sum, lesson) => sum + lesson.pointCount, 0);
+  const learnedPointCount = lessonsByLevel.reduce(
+    (sum, lesson) => sum + (lessonPointLearnedCount.get(lesson.id) ?? 0),
+    0
+  );
+  const overallProgress = totalPointCount
+    ? Math.round((learnedPointCount / totalPointCount) * 100)
+    : 0;
+  const heroLesson = focusLesson;
+  const levelTabs: GrammarRoadmapLevelTab[] = GRAMMAR_LEVELS.map((entry) => ({
+    level: entry,
+    href: buildGrammarHref({ level: entry }),
+    lessonCount: dataset.lessons.filter((lesson) => lesson.level === entry).length,
+    active: entry === level,
+  }));
+  const roadmapLessons: GrammarRoadmapLesson[] = lessonsByLevel.map((lesson) => {
+    const learnedCount = lessonPointLearnedCount.get(lesson.id) ?? 0;
+    const progress = lesson.pointCount
+      ? Math.round((learnedCount / Math.max(lesson.pointCount, 1)) * 100)
+      : 0;
+    const isDone = lesson.pointCount > 0 && learnedCount >= lesson.pointCount;
+    const isLearning = learnedCount > 0 || (heroLesson ? lesson.id === heroLesson.id : false);
+    const status: GrammarRoadmapLesson["status"] = isDone
+      ? "done"
+      : isLearning
+        ? "current"
+        : "todo";
+
+    return {
+      id: lesson.id,
+      href: buildGrammarHref({ level, lessonId: lesson.id }),
+      lessonNumber: lesson.lessonNumber,
+      title: lessonDisplayTitle(lesson.lessonNumber, lesson.title),
+      topic: displayTopic(lesson.topic),
+      pointCount: lesson.pointCount,
+      learnedCount,
+      progress,
+      status,
+    };
+  });
 
   return (
-    <section className="grammar-shell space-y-6 p-5 sm:p-6">
-      <div className="rounded-2xl border border-slate-200/90 bg-white/90 p-5 shadow-[0_12px_32px_rgba(26,49,91,0.1)] backdrop-blur-[2px] sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+    <section className="space-y-8 rounded-[2rem] bg-[#F8FAFC] p-5 sm:p-6">
+      <div className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-white/55 p-5 shadow-[0_22px_48px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-6">
+        <div className="pointer-events-none absolute -right-14 -top-16 h-52 w-52 rounded-full bg-[radial-gradient(circle_at_center,rgba(167,139,250,0.2)_0%,rgba(125,211,252,0.12)_44%,rgba(255,255,255,0)_72%)]" />
+        <div className="relative flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800">Ngu phap JLPT N5 - N1</h1>
-            <p className="mt-1 text-sm text-slate-600">
-              Du lieu da import tu file PDF cua ban. Co {dataset.lessonCount} bai.
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
+              Minna no Nihongo Grammar
+            </p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              Ngữ pháp JLPT N5 - N1
+            </h1>
+            <p className="mt-1.5 text-sm font-medium text-slate-500">
+              Dữ liệu đã import từ file PDF của bạn. Có {dataset.lessonCount} bài.
             </p>
           </div>
 
-          <div className="inline-flex rounded-xl border border-slate-200 bg-slate-100 p-1">
-            {GRAMMAR_LEVELS.map((entry) => (
-              <Link
-                key={entry}
-                href={buildGrammarHref({ level: entry })}
-                className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-                  level === entry
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-700 hover:bg-slate-200"
-                }`}
-              >
-                {entry}
-              </Link>
-            ))}
+          {selectedLesson ? (
+            <div className="inline-flex rounded-full border border-white/80 bg-white/80 p-1 shadow-[0_10px_20px_rgba(15,23,42,0.08)]">
+              {GRAMMAR_LEVELS.map((entry) => (
+                <Link
+                  key={entry}
+                  href={buildGrammarHref({ level: entry })}
+                  className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+                    level === entry
+                      ? "bg-slate-900 text-white shadow-[0_10px_20px_rgba(15,23,42,0.22)]"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+                  }`}
+                >
+                  {entry}
+                </Link>
+              ))}
+            </div>
+          ) : null}
+        </div>
+
+        <div className="relative mt-4 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
+          <div className="h-2.5 rounded-full bg-slate-200/80">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-sky-400 to-violet-400 transition-all duration-500"
+              style={{ width: `${Math.max(6, overallProgress)}%` }}
+            />
           </div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+            {overallProgress}% bài học hoàn thành
+          </p>
         </div>
       </div>
 
       {!hasLessons ? (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-amber-800">
-          Chua co du lieu ngu phap. Hay chay script import PDF de nap du lieu.
+          Chưa có dữ liệu ngữ pháp. Hãy chạy script import PDF để nạp dữ liệu.
         </div>
       ) : selectedLesson ? (
-        <div className="grid gap-5 lg:grid-cols-[0.85fr_2.15fr]">
-          <aside className="rounded-2xl border border-slate-200/90 bg-white/92 p-4 shadow-[0_10px_24px_rgba(15,23,42,0.08)] backdrop-blur-[2px]">
-            <h2 className="text-xl font-bold text-slate-800">Danh sach bai {level}</h2>
-            <div className="mt-3 max-h-[66vh] space-y-1.5 overflow-y-auto pr-1">
+        <div className="grid gap-8 lg:grid-cols-[320px_minmax(0,1fr)]">
+          <aside className="self-start rounded-2xl bg-white/90 p-5 shadow-[0_12px_34px_rgba(15,23,42,0.08)] backdrop-blur-xl lg:ml-8">
+            <h2 className="text-xl font-bold text-slate-900">Danh sách bài {level}</h2>
+            <div className="mt-4 max-h-[66vh] space-y-2 overflow-y-auto pr-1">
               {lessonsByLevel.map((lesson) => {
                 const active = lesson.id === selectedLesson.id;
+                const learnedInLesson = lessonPointLearnedCount.get(lesson.id) ?? 0;
                 return (
                   <Link
                     key={lesson.id}
                     href={buildGrammarHref({ level, lessonId: lesson.id })}
-                    className={`block rounded-lg border px-3 py-2 transition ${
+                    className={`group block rounded-full px-4 py-3 transition ${
                       active
-                        ? "border-blue-300 bg-blue-50"
-                        : "border-slate-200 bg-slate-50 hover:border-slate-300"
+                        ? "bg-indigo-50 ring-1 ring-indigo-200 shadow-[0_10px_24px_rgba(99,102,241,0.16)]"
+                        : "bg-slate-50/90 hover:bg-white hover:shadow-[0_8px_18px_rgba(15,23,42,0.08)]"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <p className="line-clamp-1 text-sm font-semibold text-slate-800">
                         {lessonDisplayTitle(lesson.lessonNumber, lesson.title)}
                       </p>
-                      <span className="shrink-0 rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
-                        {lesson.pointCount}
+                      <span className="shrink-0 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-slate-600 shadow-sm">
+                        {learnedInLesson}/{lesson.pointCount}
                       </span>
                     </div>
                   </Link>
@@ -270,40 +371,43 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
             </div>
           </aside>
 
-          <div className="rounded-2xl border border-slate-200/90 bg-white/92 p-5 shadow-[0_10px_24px_rgba(15,23,42,0.08)] backdrop-blur-[2px]">
-            <div className="mb-4">
+          <div className="rounded-2xl bg-white/92 p-6 shadow-[0_14px_36px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+            <div className="mb-5">
               <Link href={buildGrammarHref({ level })} className="btn-soft text-sm">
-                ← Quay lai danh sach bai
+                &larr; Quay lại danh sách bài
               </Link>
             </div>
-            <div className="flex flex-wrap items-end justify-between gap-3">
+            <div className="flex flex-wrap items-end justify-between gap-5">
               <div>
-                <p className="text-sm font-semibold text-slate-500">{selectedLesson.level}</p>
-                <h2 className="text-2xl font-bold text-slate-800">{selectedLessonTitle}</h2>
-                {selectedTopic ? <p className="mt-1 text-sm text-slate-600">Chu de: {selectedTopic}</p> : null}
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  {selectedLesson.level}
+                </p>
+                <h2 className="mt-1 text-3xl font-extrabold tracking-tight text-slate-900">
+                  {selectedLessonTitle}
+                </h2>
+                {selectedTopic ? (
+                  <p className="mt-1.5 text-sm text-slate-500">Chủ đề: {selectedTopic}</p>
+                ) : null}
               </div>
 
-              <form className="flex w-full max-w-xl items-center gap-2">
+              <form className="w-full sm:w-[280px] lg:w-[340px]">
                 <input type="hidden" name="level" value={level} />
                 <input type="hidden" name="lesson" value={selectedLesson.id} />
-                <input
+                <SearchBar
                   name="q"
                   defaultValue={rawQuery}
-                  placeholder="Tim theo y nghia, mau cau, vi du..."
-                  className="input-base"
+                  placeholder="Tìm theo ý nghĩa, mẫu câu, ví dụ..."
                 />
-                <button type="submit" className="btn-primary shrink-0">
-                  Tim
-                </button>
+                <button type="submit" className="sr-only">Tìm</button>
               </form>
             </div>
 
             {filteredPoints.length === 0 ? (
               <p className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                Khong co mau nao khop tu khoa tim kiem.
+                Không có mẫu nào khớp từ khóa tìm kiếm.
               </p>
             ) : selectedPoint ? (
-              <div className="mt-6 space-y-4">
+              <div className="mt-7 space-y-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <Link
                     href={buildGrammarHref({
@@ -313,124 +417,41 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
                     })}
                     className="btn-soft text-sm"
                   >
-                    ← Quay lai danh sach mau
+                    &larr; Quay lại danh sách mẫu
                   </Link>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm text-slate-500">
-                      Mau {selectedPoint.order}/{filteredPoints.length}
-                    </p>
-                    <form action={toggleBookmarkAction}>
-                      <input type="hidden" name="type" value="grammar" />
-                      <input type="hidden" name="refId" value={selectedPoint.id} />
-                      <input
-                        type="hidden"
-                        name="title"
-                        value={selectedPoint.title || `Mau ${selectedPoint.order}`}
-                      />
-                      <input type="hidden" name="subtitle" value={selectedPoint.meaning || ""} />
-                      <input type="hidden" name="returnTo" value="/grammar" />
-                      <button type="submit" className="btn-soft text-xs">
-                        {selectedPointBookmarked ? "Bo bookmark" : "Bookmark"}
-                      </button>
-                    </form>
-                  </div>
+                  <p className="text-sm text-slate-500">
+                    Mẫu {selectedPoint.order}/{filteredPoints.length}
+                  </p>
                 </div>
 
-                <article className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                  <div className="flex items-center gap-2 text-xl font-semibold text-slate-800">
-                    <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-blue-100 px-2 text-sm text-blue-700">
-                      {selectedPoint.order}
-                    </span>
-                    {selectedPoint.title || `Mau ${selectedPoint.order}`}
-                  </div>
-
-                  {selectedPoint.image ? (
-                    <div className="mt-3 overflow-hidden rounded-lg border border-slate-200 bg-white">
-                      <Image
-                        src={selectedPoint.image}
-                        alt={selectedPoint.title || `Mau ${selectedPoint.order}`}
-                        width={1200}
-                        height={700}
-                        className="h-auto w-full object-contain"
-                        unoptimized
-                      />
-                    </div>
-                  ) : null}
-
-                  {selectedPoint.meaning ? (
-                    <p className="mt-3 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-900">
-                      <span className="font-semibold">Y nghia:</span> {selectedPoint.meaning}
-                    </p>
-                  ) : null}
-
-                  {selectedPoint.usage.length > 0 ? (
-                    <div className="mt-3 space-y-1">
-                      <p className="text-sm font-semibold text-slate-700">Cach dung</p>
-                      {selectedPoint.usage.map((line, index) => (
-                        <p
-                          key={`${selectedPoint.id}-usage-${index}`}
-                          className="break-words text-sm leading-relaxed text-slate-700"
-                        >
-                          - {line}
-                        </p>
-                      ))}
-                    </div>
-                  ) : null}
-
-                  {selectedPoint.examples.length > 0 ? (
-                    <div className="mt-3 space-y-2">
-                      <p className="text-sm font-semibold text-slate-700">Vi du</p>
-                      {selectedPoint.examples.map((line, index) => {
-                        const example = splitExampleLine(line);
-                        if (!example.jp && !example.vi) {
-                          return null;
-                        }
-                        return (
-                          <div
-                            key={`${selectedPoint.id}-example-${index}`}
-                            className="space-y-1 rounded-lg bg-white px-3 py-2"
-                          >
-                            {example.jp ? (
-                              <p className="break-words text-sm leading-relaxed text-slate-800">
-                                {example.jp}
-                              </p>
-                            ) : null}
-                            {example.vi ? (
-                              <p className="break-words text-sm leading-relaxed text-slate-600">
-                                {example.vi}
-                              </p>
-                            ) : null}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : null}
-
-                  {selectedPoint.notes.filter((line) => !shouldHideGrammarNote(line)).length > 0 ? (
-                    <div className="mt-3 space-y-1">
-                      <p className="text-sm font-semibold text-slate-700">Chu y</p>
-                      {selectedPoint.notes
-                        .filter((line) => !shouldHideGrammarNote(line))
-                        .map((line, index) => (
-                        <p
-                          key={`${selectedPoint.id}-note-${index}`}
-                          className="break-words text-sm leading-relaxed text-slate-700"
-                        >
-                          - {line}
-                        </p>
-                        ))}
-                    </div>
-                  ) : null}
-
-                  {!selectedPoint.meaning &&
-                  selectedPoint.usage.length === 0 &&
-                  selectedPoint.examples.length === 0 &&
-                  selectedPoint.notes.length === 0 ? (
-                    <pre className="mt-3 whitespace-pre-wrap rounded-lg bg-white p-3 text-xs text-slate-600">
-                      {selectedPoint.content}
-                    </pre>
-                  ) : null}
-                </article>
+                <GrammarDetail
+                  order={selectedPoint.order}
+                  title={selectedPoint.title || `Mẫu ${selectedPoint.order}`}
+                  meaning={selectedPoint.meaning || "Chưa có ý nghĩa ngắn."}
+                  usage={
+                    selectedPoint.usage.length > 0
+                      ? selectedPoint.usage
+                      : selectedPoint.content
+                          .split("\n")
+                          .map((line) => line.trim())
+                          .filter(Boolean)
+                  }
+                  examples={selectedPoint.examples
+                    .map((line) => splitExampleLine(line))
+                    .filter((example) => Boolean(example.jp || example.vi))
+                    .map((example) => ({
+                      japanese: example.jp,
+                      translation: example.vi,
+                    }))}
+                  notes={selectedPoint.notes.filter((line) => !shouldHideGrammarNote(line))}
+                  initialBookmarked={selectedPointBookmarked}
+                  quizHref={buildGrammarHref({
+                    level,
+                    lessonId: selectedLesson.id,
+                    pointId: selectedPoint.id,
+                    rawQuery,
+                  })}
+                />
 
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   {prevPoint ? (
@@ -443,11 +464,11 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
                       })}
                       className="btn-soft text-sm"
                     >
-                      ← Mau truoc
+                      &larr; Mẫu trước
                     </Link>
                   ) : (
-                    <span className="rounded-xl border border-slate-200 bg-slate-100 px-4 py-2 text-sm text-slate-400">
-                      ← Mau truoc
+                    <span className="rounded-xl bg-slate-100 px-4 py-2 text-sm text-slate-400">
+                      &larr; Mẫu trước
                     </span>
                   )}
 
@@ -461,84 +482,50 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
                       })}
                       className="btn-primary text-sm"
                     >
-                      Mau tiep →
+                      Mẫu tiếp &rarr;
                     </Link>
                   ) : (
-                    <span className="rounded-xl border border-slate-200 bg-slate-100 px-4 py-2 text-sm text-slate-400">
-                      Mau tiep →
+                    <span className="rounded-xl bg-slate-100 px-4 py-2 text-sm text-slate-400">
+                      Mẫu tiếp &rarr;
                     </span>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="mt-6 space-y-3">
-                <p className="text-sm text-slate-600">
-                  Chon mot mau ngu phap ben duoi de xem chi tiet.
+              <div className="mt-7 space-y-4">
+                <p className="text-sm text-slate-500">
+                  Chọn một mẫu ngữ pháp bên dưới để xem chi tiết.
                 </p>
-                <div className="grid gap-3 md:grid-cols-2">
-                  {filteredPoints.map((point) => (
-                    <Link
-                      key={point.id}
-                      href={buildGrammarHref({
-                        level,
-                        lessonId: selectedLesson.id,
-                        pointId: point.id,
-                        rawQuery,
-                      })}
-                      className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-sky-300 hover:bg-sky-50"
-                    >
-                      <p className="text-xs font-semibold text-slate-500">Mau {point.order}</p>
-                      <p className="mt-1 text-xl font-semibold text-slate-800">
-                        {point.title || `Mau ${point.order}`}
-                      </p>
-                      {point.meaning ? (
-                        <p className="mt-1 line-clamp-2 text-sm text-slate-600">{point.meaning}</p>
-                      ) : null}
-                    </Link>
-                  ))}
-                </div>
+                <GrammarPointCards
+                  items={filteredPoints.map((point) => ({
+                    id: point.id,
+                    href: buildGrammarHref({
+                      level,
+                      lessonId: selectedLesson.id,
+                      pointId: point.id,
+                      rawQuery,
+                    }),
+                    order: point.order,
+                    title: point.title || `Mẫu ${point.order}`,
+                    meaning: point.meaning,
+                  }))}
+                />
               </div>
             )}
           </div>
         </div>
       ) : (
-        <div className="space-y-4 rounded-2xl border border-slate-200/90 bg-white/92 p-4 shadow-[0_10px_24px_rgba(15,23,42,0.08)] backdrop-blur-[2px] sm:p-5">
-          <div>
-            <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
-              {level}
-            </span>
-            <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-[2rem]">
-              {levelBookTitle}
-            </h2>
-            <p className="mt-1 text-sm text-slate-600">
-              {lessonsByLevel.length} bai hoc · {levelTotalPoints} mau ngu phap
-            </p>
-          </div>
-
-          <div className="grid gap-2.5 md:grid-cols-2">
-            {lessonsByLevel.map((lesson) => (
-              <Link
-                key={lesson.id}
-                href={buildGrammarHref({ level, lessonId: lesson.id })}
-                className="group rounded-xl border border-slate-200 bg-white/95 px-3 py-2.5 shadow-[0_6px_16px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-[0_10px_22px_rgba(14,116,144,0.12)]"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="text-[1.05rem] font-bold text-slate-900">Bai {lesson.lessonNumber}</p>
-                    <p className="mt-0.5 line-clamp-1 text-[0.82rem] text-slate-600">
-                      {displayTopic(lesson.topic) ??
-                        lessonDisplayTitle(lesson.lessonNumber, lesson.title)}
-                    </p>
-                  </div>
-                  <span className="text-xl text-slate-300 transition group-hover:text-sky-500">›</span>
-                </div>
-                <p className="mt-1.5 text-xs font-medium text-slate-500">{lesson.pointCount} mau cau</p>
-              </Link>
-            ))}
-          </div>
-        </div>
+        <GrammarRoadmap
+          bookTitle={levelBookTitle}
+          overallProgress={overallProgress}
+          levelTabs={levelTabs}
+          lessons={roadmapLessons}
+        />
       )}
     </section>
   );
 }
+
+
+
 

@@ -1,0 +1,228 @@
+.card {
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.titleWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.order {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #e0e7ff;
+  color: #3730a3;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: inline-grid;
+  place-items: center;
+}
+
+.title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.bookmarkButton {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  border-radius: 999px;
+  height: 36px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.bookmarkButton:hover {
+  border-color: #818cf8;
+  color: #4338ca;
+}
+
+.bookmarkIcon {
+  width: 17px;
+  height: 17px;
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 2;
+  transition:
+    fill 220ms ease,
+    transform 220ms ease;
+}
+
+.bookmarkActive {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
+  color: #4338ca;
+}
+
+.bookmarkActive .bookmarkIcon {
+  fill: rgba(99, 102, 241, 0.28);
+  transform: scale(1.06);
+}
+
+.block {
+  border-radius: 14px;
+  border: 1px solid #eef2ff;
+  background: #f8fafc;
+  padding: 14px;
+}
+
+.blockTitle {
+  font-size: 0.86rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.meaning {
+  font-size: 1rem;
+  color: #1e293b;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.usageList {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 6px;
+}
+
+.usageList li {
+  color: #334155;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.examples {
+  display: grid;
+  gap: 12px;
+}
+
+.exampleCard {
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 12px;
+}
+
+.exampleTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.jpText {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.jpText ruby {
+  ruby-position: over;
+}
+
+.jpText rt {
+  font-size: 0.62em;
+  color: #64748b;
+}
+
+.speakButton {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background-color 160ms ease;
+}
+
+.speakButton:hover {
+  border-color: #6366f1;
+  color: #4338ca;
+  background: rgba(99, 102, 241, 0.07);
+}
+
+.viText {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.notesList {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 6px;
+}
+
+.notesList li {
+  color: #475569;
+  line-height: 1.55;
+  font-size: 0.92rem;
+}
+
+.quizButton {
+  align-self: flex-start;
+  height: 40px;
+  border: 1px solid #6366f1;
+  color: #4338ca;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 0 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.quizButton:hover {
+  background: #6366f1;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+}
+
+.quizButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}

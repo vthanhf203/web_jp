@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -132,7 +132,15 @@ export function DesktopSideNav({ links }: Props) {
               disabled={!canScrollUp}
               aria-label="Cuon len"
             >
-              ↑
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
+                <path
+                  d="M6 14l6-6 6 6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
             <button
               type="button"
@@ -141,7 +149,15 @@ export function DesktopSideNav({ links }: Props) {
               disabled={!canScrollDown}
               aria-label="Cuon xuong"
             >
-              ↓
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
+                <path
+                  d="M6 10l6 6 6-6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
           </div>
         </div>

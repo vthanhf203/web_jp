@@ -3,6 +3,7 @@ import Link from "next/link";
 import { KanjiStudyClient } from "@/app/components/kanji-study-client";
 import { normalizeJlptLevel } from "@/lib/admin-vocab-library";
 import { requireUser } from "@/lib/auth";
+import { sortKanjiByLearningOrder } from "@/lib/kanji-compound";
 import { prisma } from "@/lib/prisma";
 
 type SearchParams = Promise<{
@@ -46,7 +47,7 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
         jlptLevel: level,
       }
     : {};
-  const kanjiList = selectedIds.length > 0
+  const queriedKanji = selectedIds.length > 0
     ? await prisma.kanji.findMany({
         where: {
           ...baseWhere,
@@ -57,13 +58,12 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
       })
     : await prisma.kanji.findMany({
         where: baseWhere,
-        orderBy: [{ jlptLevel: "asc" }, { character: "asc" }],
       });
 
   const sortedBySelectedIds =
     selectedIds.length > 0
-      ? [...kanjiList].sort((a, b) => selectedIds.indexOf(a.id) - selectedIds.indexOf(b.id))
-      : kanjiList;
+      ? [...queriedKanji].sort((a, b) => selectedIds.indexOf(a.id) - selectedIds.indexOf(b.id))
+      : sortKanjiByLearningOrder(queriedKanji);
 
   const filteredKanji = query
     ? sortedBySelectedIds.filter((kanji) => {

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/admin";
+import { normalizeJlptLevel } from "@/lib/admin-vocab-library";
 import {
   GRAMMAR_LEVELS,
   loadGrammarDataset,
@@ -14,6 +15,11 @@ import {
 } from "@/lib/grammar-dataset";
 import { parseGrammarInput } from "@/lib/grammar-import";
 import { parseKanjiInput, type ImportedKanjiRow } from "@/lib/kanji-import";
+import {
+  getKanjiMetadataMap,
+  loadAdminKanjiMetadata,
+  saveAdminKanjiMetadata,
+} from "@/lib/kanji-metadata";
 import { prisma } from "@/lib/prisma";
 
 export type AdminImportState = {
@@ -114,6 +120,13 @@ const uploadGrammarImageSchema = z.object({
 
 const deleteKanjiSchema = z.object({
   kanjiId: z.string().min(1),
+});
+
+const deleteAllKanjiByLevelSchema = z.object({
+  level: z.preprocess(
+    (value) => (typeof value === "string" ? value : undefined),
+    z.string().trim().min(1)
+  ),
 });
 
 function touchGrammarPaths() {
@@ -436,6 +449,8 @@ async function upsertKanjiRows(rows: ImportedKanjiRow[]): Promise<{
   createdCount: number;
   updatedCount: number;
 }> {
+  const metadataStore = await loadAdminKanjiMetadata();
+  const metadataMap = getKanjiMetadataMap(metadataStore);
   const uniqueCharacters = Array.from(new Set(rows.map((row) => row.character)));
   const existing = await prisma.kanji.findMany({
     where: {
@@ -451,6 +466,7 @@ async function upsertKanjiRows(rows: ImportedKanjiRow[]): Promise<{
 
   let createdCount = 0;
   let updatedCount = 0;
+  let metadataChanged = false;
 
   for (const row of rows) {
     if (existingSet.has(row.character)) {
@@ -483,6 +499,48 @@ async function upsertKanjiRows(rows: ImportedKanjiRow[]): Promise<{
       existingSet.add(row.character);
       createdCount += 1;
     }
+
+    if (row.metadataProvided || row.relatedWordsProvided) {
+      const existingMeta = metadataMap.get(row.character);
+      const nowIso = new Date().toISOString();
+      metadataMap.set(row.character, {
+        id: row.id || existingMeta?.id || `kanji-${row.character}`,
+        character: row.character,
+        order: row.order ?? existingMeta?.order ?? null,
+        category: row.category || existingMeta?.category || "",
+        tags: row.tags.length > 0 ? row.tags : existingMeta?.tags ?? [],
+        createdAt: row.createdAt || existingMeta?.createdAt || nowIso,
+        updatedAt: row.updatedAt || nowIso,
+        relatedWords: row.relatedWordsProvided
+          ? row.relatedWords.map((item) => ({
+              id: item.id || crypto.randomUUID(),
+              word: item.word || item.kanji,
+              reading: item.reading,
+              kanji: item.kanji,
+              hanviet: item.hanviet,
+              meaning: item.meaning,
+              type: item.type,
+              jlptLevel: normalizeJlptLevel(item.jlptLevel || row.jlptLevel || "N5"),
+              exampleSentence: item.exampleSentence,
+              exampleMeaning: item.exampleMeaning,
+              note: item.note,
+              sourceLabel: item.sourceLabel || "Kanji JSON",
+              createdAt: nowIso,
+              updatedAt: nowIso,
+            }))
+          : existingMeta?.relatedWords ?? [],
+      });
+      metadataChanged = true;
+    }
+  }
+
+  if (metadataChanged) {
+    await saveAdminKanjiMetadata({
+      updatedAt: new Date().toISOString(),
+      entries: Array.from(metadataMap.values()).sort((a, b) =>
+        a.character.localeCompare(b.character, "ja")
+      ),
+    });
   }
 
   return { createdCount, updatedCount };
@@ -600,6 +658,10 @@ export async function deleteAdminKanjiAction(formData: FormData) {
   }
 
   const kanjiId = parsed.data.kanjiId;
+  const kanji = await prisma.kanji.findUnique({
+    where: { id: kanjiId },
+    select: { character: true },
+  });
 
   // Delete dependent review rows first to avoid FK differences across environments.
   await prisma.$transaction([
@@ -610,6 +672,74 @@ export async function deleteAdminKanjiAction(formData: FormData) {
       where: { id: kanjiId },
     }),
   ]);
+
+  if (kanji?.character) {
+    const metadataStore = await loadAdminKanjiMetadata();
+    const nextEntries = metadataStore.entries.filter((entry) => entry.character !== kanji.character);
+    if (nextEntries.length !== metadataStore.entries.length) {
+      await saveAdminKanjiMetadata({
+        ...metadataStore,
+        entries: nextEntries,
+      });
+    }
+  }
+
+  touchKanjiPaths();
+}
+
+export async function deleteAllAdminKanjiByLevelAction(formData: FormData) {
+  await requireAdmin();
+
+  const parsed = deleteAllKanjiByLevelSchema.safeParse({
+    level: formData.get("level"),
+  });
+  if (!parsed.success) {
+    return;
+  }
+
+  const level = normalizeJlptLevel(parsed.data.level);
+  const kanjiRows = await prisma.kanji.findMany({
+    where: { jlptLevel: level },
+    select: {
+      id: true,
+      character: true,
+    },
+  });
+
+  if (kanjiRows.length === 0) {
+    touchKanjiPaths();
+    return;
+  }
+
+  const kanjiIds = kanjiRows.map((item) => item.id);
+  const characterSet = new Set(kanjiRows.map((item) => item.character));
+
+  // Delete dependent review rows first to avoid FK differences across environments.
+  await prisma.$transaction([
+    prisma.review.deleteMany({
+      where: {
+        kanjiId: {
+          in: kanjiIds,
+        },
+      },
+    }),
+    prisma.kanji.deleteMany({
+      where: {
+        id: {
+          in: kanjiIds,
+        },
+      },
+    }),
+  ]);
+
+  const metadataStore = await loadAdminKanjiMetadata();
+  const nextEntries = metadataStore.entries.filter((entry) => !characterSet.has(entry.character));
+  if (nextEntries.length !== metadataStore.entries.length) {
+    await saveAdminKanjiMetadata({
+      ...metadataStore,
+      entries: nextEntries,
+    });
+  }
 
   touchKanjiPaths();
 }

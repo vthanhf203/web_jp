@@ -1,0 +1,31 @@
+.banner {
+  width: 100%;
+  border-top: 1px solid rgba(251, 191, 36, 0.22);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.16);
+  background:
+    linear-gradient(
+      90deg,
+      rgba(254, 243, 199, 0.85) 0%,
+      rgba(255, 237, 213, 0.82) 52%,
+      rgba(254, 249, 195, 0.82) 100%
+    );
+  backdrop-filter: blur(4px);
+}
+
+.inner {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1240px;
+  padding: 7px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy {
+  margin: 0;
+  color: #7c2d12;
+  font-size: 0.87rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}

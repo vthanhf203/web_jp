@@ -9,12 +9,14 @@ type KanjiLibraryItem = {
   meaning: string;
   jlptLevel: string;
   href: string;
+  togglePickHref: string;
   active: boolean;
   picked: boolean;
 };
 
 type Props = {
   items: KanjiLibraryItem[];
+  selectionEnabled: boolean;
 };
 
 type LevelTheme = {
@@ -59,7 +61,7 @@ function getLevelTheme(level: string): LevelTheme {
   };
 }
 
-export function KanjiLibraryGrid({ items }: Props) {
+export function KanjiLibraryGrid({ items, selectionEnabled }: Props) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
       {items.map((item, index) => {
@@ -76,6 +78,21 @@ export function KanjiLibraryGrid({ items }: Props) {
             whileHover={{ y: -4, scale: 1.1 }}
             className="group relative aspect-square"
           >
+            {selectionEnabled ? (
+              <Link
+                href={item.togglePickHref}
+                scroll={false}
+                className={`absolute right-3 top-3 z-20 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] transition-all duration-300 ${
+                  item.picked
+                    ? "bg-emerald-500 text-white shadow-[0_10px_18px_rgba(16,185,129,0.28)] hover:bg-emerald-400"
+                    : "bg-white/95 text-slate-600 shadow-[0_8px_16px_rgba(15,23,42,0.12)] hover:bg-slate-100"
+                }`}
+                aria-label={item.picked ? `Bo chon ${item.character}` : `Chon ${item.character} de hoc flashcard`}
+              >
+                {item.picked ? "Da chon" : "Flash"}
+              </Link>
+            ) : null}
+
             <div
               className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${theme.glow} ${theme.hoverFill} transition-all duration-300`}
             />
@@ -96,9 +113,9 @@ export function KanjiLibraryGrid({ items }: Props) {
                 <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.13em] ${theme.badge}`}>
                   {item.jlptLevel}
                 </span>
-                {item.picked ? (
+                {selectionEnabled && item.picked ? (
                   <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
-                    Pick
+                    Picked
                   </span>
                 ) : null}
               </div>

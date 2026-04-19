@@ -47,10 +47,16 @@ export type PlacementResult = {
   createdAt: string;
 };
 
+export type GrammarProgress = {
+  learnedPointIds: string[];
+  updatedAt: string;
+};
+
 export type UserPersonalState = {
   plan: LearningPlan | null;
   reminders: ReminderSettings;
   placement: PlacementResult | null;
+  grammarProgress: GrammarProgress;
   bookmarks: PersonalBookmark[];
 };
 
@@ -178,12 +184,38 @@ function normalizePlacementResult(input: unknown): PlacementResult | null {
   };
 }
 
+function normalizeGrammarProgress(input: unknown): GrammarProgress {
+  if (!input || typeof input !== "object") {
+    return {
+      learnedPointIds: [],
+      updatedAt: nowIso(),
+    };
+  }
+
+  const raw = input as Partial<GrammarProgress>;
+  const learnedPointIds = Array.isArray(raw.learnedPointIds)
+    ? Array.from(
+        new Set(
+          raw.learnedPointIds
+            .map((entry) => (typeof entry === "string" ? entry.trim() : ""))
+            .filter(Boolean)
+        )
+      ).slice(0, 5000)
+    : [];
+
+  return {
+    learnedPointIds,
+    updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : nowIso(),
+  };
+}
+
 function normalizeState(input: unknown): UserPersonalState {
   if (!input || typeof input !== "object") {
     return {
       plan: null,
       reminders: normalizeReminder(null),
       placement: null,
+      grammarProgress: normalizeGrammarProgress(null),
       bookmarks: [],
     };
   }
@@ -200,6 +232,7 @@ function normalizeState(input: unknown): UserPersonalState {
     plan: normalizePlan(raw.plan),
     reminders: normalizeReminder(raw.reminders),
     placement: normalizePlacementResult(raw.placement),
+    grammarProgress: normalizeGrammarProgress(raw.grammarProgress),
     bookmarks,
   };
 }
@@ -296,5 +329,29 @@ export function saveBookmarkNote(
     ...state,
     bookmarks: nextBookmarks,
   };
+}
+
+export function markGrammarPointLearned(
+  state: UserPersonalState,
+  pointId: string
+): { state: UserPersonalState; added: boolean } {
+  const normalizedPointId = pointId.trim();
+  if (!normalizedPointId) {
+    return { state, added: false };
+  }
+
+  if (state.grammarProgress.learnedPointIds.includes(normalizedPointId)) {
+    return { state, added: false };
+  }
+
+  const nextState: UserPersonalState = {
+    ...state,
+    grammarProgress: {
+      learnedPointIds: [...state.grammarProgress.learnedPointIds, normalizedPointId].slice(-5000),
+      updatedAt: nowIso(),
+    },
+  };
+
+  return { state: nextState, added: true };
 }
 

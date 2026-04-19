@@ -1,0 +1,141 @@
+:global(:root) {
+  --color-done: #10b981;
+  --color-learning: #6366f1;
+  --color-locked: #94a3b8;
+  --color-card-bg: #ffffff;
+  --color-card-border: #e2e8f0;
+  --card-hover-shadow: 0 4px 16px rgba(99, 102, 241, 0.12);
+  --border-radius-card: 16px;
+}
+
+.card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--border-radius-card);
+  padding: 1.2rem 1.15rem;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  min-height: 178px;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--card-hover-shadow);
+  border-color: rgba(99, 102, 241, 0.32);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.subtitle {
+  margin-top: 0.35rem;
+  font-size: 0.96rem;
+  color: #6b7280;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 10px;
+  padding: 0.22rem 0.56rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  border: 1px solid transparent;
+}
+
+.badgeDone {
+  color: var(--color-done);
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.badgeLearning {
+  color: var(--color-learning);
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+.badgeLocked {
+  color: #64748b;
+  background: rgba(148, 163, 184, 0.15);
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+.footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.progressCopy {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.ringWrap {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+}
+
+.ringSvg {
+  width: 46px;
+  height: 46px;
+  transform: rotate(-90deg);
+}
+
+.ringTrack {
+  fill: none;
+  stroke: #e2e8f0;
+  stroke-width: 4;
+}
+
+.ringProgress {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 280ms ease;
+}
+
+.ringProgressDone {
+  stroke: var(--color-done);
+}
+
+.ringProgressLearning {
+  stroke: var(--color-learning);
+}
+
+.ringProgressLocked {
+  stroke: var(--color-locked);
+}
+
+.ringPercent {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #334155;
+}

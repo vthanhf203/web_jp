@@ -28,6 +28,7 @@ const privateLinks: NavLinkItem[] = [
   { href: "/placement", label: "Test dau vao", iconPath: "M8 12l3 3 5-6M4 5h16v14H4z" },
   { href: "/focus", label: "On sai", iconPath: "M12 3l7 4v5c0 5-3 7-7 9-4-2-7-4-7-9V7l7-4z" },
   { href: "/search", label: "Search", iconPath: "M11 4a7 7 0 105.3 11.6L20 19" },
+  { href: "/shadowing", label: "Shadowing", iconPath: "M4 12a8 8 0 0116 0v5a2 2 0 01-2 2h-2v-6h4M4 12v5a2 2 0 002 2h2v-6H4" },
   { href: "/kanji", label: "Kanji", iconPath: "M5 6h14M5 12h14M5 18h14M12 6v12" },
   { href: "/kanji/roadmap", label: "Lo trinh Kanji", iconPath: "M4 18l6-6 4 4 6-8" },
   { href: "/vocab", label: "Tu vung", iconPath: "M5 4h10a3 3 0 013 3v13H8a3 3 0 01-3-3zM8 4v16" },

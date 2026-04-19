@@ -22,7 +22,7 @@ export function AdminKanjiImportForm() {
         ref={textareaRef}
         name="rawInput"
         className="min-h-48 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-sky-400 focus:ring-3 focus:ring-sky-100"
-        placeholder='Ho tro JSON array / JSON-lines / text. Field chuan: character, meaning, onReading, kunReading, strokeCount, jlptLevel, exampleWord, exampleMeaning.'
+        placeholder='Ho tro JSON array / JSON object / JSON-lines / text. Field moi: id, character, meaning, onReading[], kunReading[], strokeCount, jlptLevel, order, category, tags[], relatedVocabularies[].'
         disabled={pending}
         required
       />
@@ -55,7 +55,7 @@ export function AdminKanjiImportForm() {
               return;
             }
             textareaRef.current.value =
-              '[\n  {"character":"日","meaning":"Mat troi, ngay","onReading":"NICHI, JITSU","kunReading":"ひ, び, か","strokeCount":4,"jlptLevel":"N5","exampleWord":"日本","exampleMeaning":"Nhat Ban"},\n  {"character":"月","meaning":"Mat trang, thang","onReading":"GETSU, GATSU","kunReading":"つき","strokeCount":4,"jlptLevel":"N5","exampleWord":"月曜日","exampleMeaning":"Thu hai"}\n]';
+              '[\n  {\n    "id": "n5-001",\n    "character": "生",\n    "meaning": "Sinh, song",\n    "onReading": ["セイ", "ショウ"],\n    "kunReading": ["いきる", "うまれる", "なま"],\n    "strokeCount": 5,\n    "jlptLevel": "N5",\n    "order": 12,\n    "category": "life",\n    "tags": ["life", "existence"],\n    "relatedVocabularies": [\n      {\n        "id": "v-001",\n        "word": "学生",\n        "reading": "がくせい",\n        "meaning": "Hoc sinh",\n        "type": "noun",\n        "jlptLevel": "N5",\n        "exampleSentence": "私は学生です。",\n        "exampleMeaning": "Toi la hoc sinh"\n      },\n      {\n        "id": "v-002",\n        "word": "先生",\n        "reading": "せんせい",\n        "meaning": "Giao vien",\n        "type": "noun",\n        "jlptLevel": "N5",\n        "exampleSentence": "先生に聞きます。",\n        "exampleMeaning": "Toi hoi giao vien"\n      }\n    ],\n    "createdAt": "2026-04-18",\n    "updatedAt": "2026-04-18"\n  }\n]';
           }}
           disabled={pending}
         >

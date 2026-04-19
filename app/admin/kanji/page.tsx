@@ -1,11 +1,17 @@
 ﻿import Link from "next/link";
 
-import { deleteAdminKanjiAction } from "@/app/actions/admin-content";
+import {
+  deleteAdminKanjiAction,
+  deleteAllAdminKanjiByLevelAction,
+} from "@/app/actions/admin-content";
 import { AdminKanjiImportForm } from "@/app/components/admin-kanji-import-form";
 import { AdminKanjiSyncForm } from "@/app/components/admin-kanji-sync-form";
 import { AdminNav } from "@/app/components/admin-nav";
+import { ConfirmSubmitButton } from "@/app/components/confirm-submit-button";
 import { requireAdmin } from "@/lib/admin";
 import { JLPT_LEVELS, normalizeJlptLevel, type JlptLevel } from "@/lib/admin-vocab-library";
+import { loadAdminKanjiMetadata } from "@/lib/kanji-metadata";
+import { sortKanjiByLearningOrder } from "@/lib/kanji-compound";
 import { prisma } from "@/lib/prisma";
 
 type SearchParams = Promise<{
@@ -53,12 +59,11 @@ export default async function AdminKanjiPage(props: { searchParams: SearchParams
   const params = await props.searchParams;
   const selectedLevel = normalizeJlptLevel(pickSingle(params.level));
 
-  const [kanjiList, levelCounts] = await Promise.all([
+  const [kanjiRaw, levelCounts, kanjiMetadata] = await Promise.all([
     prisma.kanji.findMany({
       where: {
         jlptLevel: selectedLevel,
       },
-      orderBy: [{ jlptLevel: "asc" }, { character: "asc" }],
     }),
     Promise.all(
       JLPT_LEVELS.map(async (level) => [
@@ -68,7 +73,17 @@ export default async function AdminKanjiPage(props: { searchParams: SearchParams
         }),
       ])
     ),
+    loadAdminKanjiMetadata(),
   ]);
+  const metadataByCharacter = new Map(
+    kanjiMetadata.entries.map((entry) => [entry.character, entry])
+  );
+  const kanjiList = sortKanjiByLearningOrder(kanjiRaw, {
+    getOrder: (item) => metadataByCharacter.get(item.character)?.order,
+  });
+  const relatedCountByCharacter = new Map(
+    kanjiMetadata.entries.map((entry) => [entry.character, entry.relatedWords.length])
+  );
 
   const countByLevel = Object.fromEntries(levelCounts) as Record<JlptLevel, number>;
 
@@ -96,8 +111,8 @@ export default async function AdminKanjiPage(props: { searchParams: SearchParams
       <div className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
         <h2 className="text-xl font-bold text-slate-800">Import du lieu Kanji</h2>
         <p className="mt-1 text-sm text-slate-600">
-          Moi object ho tro: character, meaning, onReading, kunReading, strokeCount,
-          jlptLevel, exampleWord, exampleMeaning.
+          Ho tro form moi: id, character, meaning, onReading[]/kunReading[], strokeCount,
+          jlptLevel, order, category, tags[], relatedVocabularies[], createdAt, updatedAt.
         </p>
         <div className="mt-3">
           <AdminKanjiImportForm />
@@ -118,6 +133,15 @@ export default async function AdminKanjiPage(props: { searchParams: SearchParams
           <h2 className="text-xl font-bold text-slate-800">
             Danh sach Kanji {selectedLevel} ({kanjiList.length})
           </h2>
+          <form action={deleteAllAdminKanjiByLevelAction}>
+            <input type="hidden" name="level" value={selectedLevel} />
+            <ConfirmSubmitButton
+              label={`Xoa tat ca ${selectedLevel}`}
+              confirmMessage={`Ban chac chan muon xoa toan bo Kanji ${selectedLevel}?`}
+              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={kanjiList.length === 0}
+            />
+          </form>
         </div>
 
         {kanjiList.length === 0 ? (
@@ -150,7 +174,23 @@ export default async function AdminKanjiPage(props: { searchParams: SearchParams
                       <span className="font-semibold text-slate-800">Net:</span> {kanji.strokeCount}
                     </p>
                     <p>
+                      <span className="font-semibold text-slate-800">Thu tu hoc:</span>{" "}
+                      {metadataByCharacter.get(kanji.character)?.order ?? "-"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-800">Category:</span>{" "}
+                      {metadataByCharacter.get(kanji.character)?.category || "-"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-800">Tags:</span>{" "}
+                      {(metadataByCharacter.get(kanji.character)?.tags ?? []).join(", ") || "-"}
+                    </p>
+                    <p>
                       <span className="font-semibold text-slate-800">Vi du:</span> {kanji.exampleWord} - {kanji.exampleMeaning}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-800">Tu lien quan:</span>{" "}
+                      {relatedCountByCharacter.get(kanji.character) ?? 0}
                     </p>
                   </div>
                   <div className="flex items-start justify-end">

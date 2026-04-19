@@ -1,0 +1,192 @@
+﻿.panel {
+  --primary: #6366f1;
+  --primary-light: #eef2ff;
+  --text-jp: #1e293b;
+  --text-time: #64748b;
+  --border: #e2e8f0;
+  --bg-active: #eef2ff;
+
+  border-radius: 12px;
+  background: #ffffff;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.switchRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.switchLabel {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.switchWrap {
+  position: relative;
+  width: 46px;
+  height: 26px;
+}
+
+.switchInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
+  z-index: 2;
+}
+
+.switchSlider {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #dbe4ef;
+  transition: all 0.15s ease;
+}
+
+.switchSlider::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 3px;
+  left: 3px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.22);
+  transition: transform 0.15s ease;
+}
+
+.switchInput:checked + .switchSlider {
+  background: var(--primary);
+}
+
+.switchInput:checked + .switchSlider::before {
+  transform: translateX(20px);
+}
+
+.speedGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.22rem;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+}
+
+.speedButton {
+  height: 30px;
+  min-width: 52px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.speedButton:hover {
+  color: #1e293b;
+  border-color: #cbd5e1;
+}
+
+.speedButtonActive {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.shadowingBox {
+  border: 1px solid #dbeafe;
+  background: #f8faff;
+  border-radius: 12px;
+  padding: 0.8rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.shadowingTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #ea580c;
+}
+
+.shadowingMeta {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: #334155;
+  word-break: break-word;
+}
+
+.navRow {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.navButton,
+.navButtonPrimary {
+  height: 36px;
+  border-radius: 8px;
+  padding: 0 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.navButton {
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: #334155;
+}
+
+.navButton:hover:not(:disabled) {
+  border-color: #a5b4fc;
+  color: #4338ca;
+}
+
+.navButtonPrimary {
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.navButtonPrimary:hover {
+  filter: brightness(0.96);
+}
+
+.navButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.loopToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.loopToggle input {
+  width: 16px;
+  height: 16px;
+}
