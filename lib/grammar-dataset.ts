@@ -183,6 +183,31 @@ function emptyGrammarDataset(): GrammarDataset {
   };
 }
 
+function levelSet(dataset: GrammarDataset): Set<string> {
+  return new Set(dataset.lessons.map((lesson) => lesson.level));
+}
+
+function shouldReplaceWithFallback(current: GrammarDataset, fallback: GrammarDataset): boolean {
+  if (fallback.lessons.length === 0) {
+    return false;
+  }
+  if (current.lessons.length === 0) {
+    return true;
+  }
+  if (fallback.lessons.length > current.lessons.length) {
+    return true;
+  }
+
+  const currentLevels = levelSet(current);
+  const fallbackLevels = levelSet(fallback);
+  for (const level of fallbackLevels) {
+    if (!currentLevels.has(level)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export async function loadGrammarDataset(): Promise<GrammarDataset> {
   let dataset = emptyGrammarDataset();
 
@@ -192,15 +217,12 @@ export async function loadGrammarDataset(): Promise<GrammarDataset> {
       select: { value: true },
     });
     dataset = normalizeDataset(record?.value);
-    if (dataset.lessons.length > 0) {
-      return dataset;
-    }
   } catch {
     // ignore and fallback below
   }
 
   const fallback = await loadGrammarDatasetFromFile();
-  if (!fallback) {
+  if (!fallback || !shouldReplaceWithFallback(dataset, fallback)) {
     return dataset;
   }
 
