@@ -63,7 +63,8 @@ export async function registerAction(
       },
       select: { id: true, name: true },
     });
-  } catch {
+  } catch (error) {
+    console.error("[auth/registerAction] database error", error);
     return { error: "Không kết nối được cơ sở dữ liệu. Vui lòng thử lại sau." };
   }
 
@@ -96,7 +97,8 @@ export async function loginAction(
         passwordHash: true,
       },
     });
-  } catch {
+  } catch (error) {
+    console.error("[auth/loginAction] database error", error);
     return { error: "Không kết nối được cơ sở dữ liệu. Vui lòng thử lại sau." };
   }
 

@@ -86,7 +86,8 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
     });
 
     return user;
-  } catch {
+  } catch (error) {
+    console.error("[auth/getCurrentUser] database error", error);
     // If the database is temporarily unavailable, do not crash every page render.
     // Treat the request as unauthenticated so public routes (/, /login, /register) still work.
     return null;
