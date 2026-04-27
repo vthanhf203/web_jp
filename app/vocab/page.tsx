@@ -17,6 +17,7 @@ import {
   normalizeJlptLevel,
   type JlptLevel,
 } from "@/lib/admin-vocab-library";
+import { formatVocabLabel } from "@/lib/vietnamese-labels";
 import { loadUserVocabStore } from "@/lib/vocab-store";
 
 type SearchParams = Promise<{
@@ -43,15 +44,15 @@ const levelMeta: Record<
 > = {
   N5: {
     jpLabel: "日本語能力試験 N5",
-    dockHint: "Co ban",
+    dockHint: "Cơ bản",
   },
   N4: {
     jpLabel: "日本語能力試験 N4",
-    dockHint: "So cap",
+    dockHint: "Sơ cấp",
   },
   N3: {
     jpLabel: "日本語能力試験 N3",
-    dockHint: "Trung cap",
+    dockHint: "Trung cấp",
   },
   N2: {
     jpLabel: "日本語能力試験 N2",
@@ -59,7 +60,7 @@ const levelMeta: Record<
   },
   N1: {
     jpLabel: "日本語能力試験 N1",
-    dockHint: "Nang cao",
+    dockHint: "Nâng cao",
   },
 };
 
@@ -174,8 +175,8 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
         : 0;
     return {
       id: lesson.id,
-      title: lesson.title,
-      description: lesson.description || "Chu de tu vung",
+      title: formatVocabLabel(lesson.title),
+      description: lesson.description || "Chủ đề từ vựng",
       wordCount: lesson.items.length,
       href: topicHref(selectedLevel, lesson.id),
       completionPercent,
@@ -207,13 +208,13 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
       <div className={modeCardClass}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900">Trang Tu Vung</h1>
+            <h1 className="text-3xl font-extrabold text-slate-900">Trang Từ Vựng</h1>
             <p className="mt-1 text-sm text-slate-500">
-              Chon cach hoc ban muon: kham pha kho tu vung hoac tu hoc ca nhan.
+              Chọn cách học bạn muốn: khám phá kho từ vựng hoặc tự học cá nhân.
             </p>
           </div>
         </div>
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
           <Link
             href={levelHref(selectedLevel)}
             className={`rounded-2xl border px-4 py-4 transition ${
@@ -222,9 +223,9 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                 : "border-slate-200 bg-white hover:bg-slate-50"
             }`}
           >
-            <p className="text-lg font-bold text-slate-900">Kho tu vung admin</p>
+            <p className="text-lg font-bold text-slate-900">Kho từ vựng admin</p>
             <p className="mt-1 text-sm text-slate-500">
-              Xem cac chu de N5-N1 da duoc admin cap nhat.
+              Xem các chủ đề N5-N1 đã được admin cập nhật.
             </p>
           </Link>
           <Link
@@ -235,9 +236,18 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                 : "border-slate-200 bg-white hover:bg-slate-50"
             }`}
           >
-            <p className="text-lg font-bold text-slate-900">Tu hoc ca nhan</p>
+            <p className="text-lg font-bold text-slate-900">Tự học cá nhân</p>
             <p className="mt-1 text-sm text-slate-500">
-              Tao bai rieng, nhap JSON va hoc theo 3 che do.
+              Tạo bài riêng, nhập JSON và học theo 3 chế độ.
+            </p>
+          </Link>
+          <Link
+            href="/self-study"
+            className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-4 transition hover:bg-indigo-100"
+          >
+            <p className="text-lg font-bold text-slate-900">Tự học chủ động</p>
+            <p className="mt-1 text-sm text-slate-500">
+              Gom import Kanji + Từ vựng trên một trang riêng.
             </p>
           </Link>
         </div>
@@ -249,22 +259,22 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
         }`}
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-[2rem] font-bold text-slate-800">Danh sach bai</h1>
+          <h1 className="text-[2rem] font-bold text-slate-800">Danh sách bài</h1>
           <form action={createVocabLessonAction}>
             <button
               type="submit"
               className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-lg font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               <span className="text-2xl leading-none">+</span>
-              <span>Tao bai moi</span>
+              <span>Tạo bài mới</span>
             </button>
           </form>
         </div>
 
         {lessons.length === 0 ? (
           <p className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-            Chua co bai hoc nao. Bam &quot;Tao bai moi&quot; de bat dau nhap tu
-            vung.
+            Chưa có bài học nào. Bấm &quot;Tạo bài mới&quot; để bắt đầu nhập từ
+            vựng.
           </p>
         ) : (
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -295,21 +305,21 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                           type="submit"
                           className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700"
                         >
-                          Luu ten
+                          Lưu tên
                         </button>
                         <Link
                           href={selfHref({ lessonId: lesson.id })}
                           className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-500"
                         >
-                          Huy
+                          Hủy
                         </Link>
                       </div>
                     </form>
                   ) : (
                     <Link href={selfHref({ lessonId: lesson.id })} className="block">
-                      <p className="text-2xl font-bold text-slate-800">{lesson.title}</p>
+                      <p className="text-2xl font-bold text-slate-800">{formatVocabLabel(lesson.title)}</p>
                       <p className="mt-2 text-base font-semibold text-blue-500">
-                        {lesson.items.length} tu vung
+                        {lesson.items.length} từ vựng
                       </p>
                     </Link>
                   )}
@@ -319,7 +329,7 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                       href={selfHref({ lessonId: lesson.id, editLessonId: lesson.id })}
                       className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
                     >
-                      Sua ten
+                      Sửa tên
                     </Link>
                     <form action={deleteVocabLessonAction}>
                       <input type="hidden" name="lessonId" value={lesson.id} />
@@ -327,7 +337,7 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                         type="submit"
                         className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-100"
                       >
-                        Xoa bai
+                        Xóa bài
                       </button>
                     </form>
                   </div>
@@ -344,7 +354,7 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
         }`}
       >
         <div className="mb-4 flex items-center gap-2">
-          <h2 className="text-[2rem] font-bold text-slate-800">Nhap tu vung (JSON)</h2>
+          <h2 className="text-[2rem] font-bold text-slate-800">Nhập từ vựng (JSON)</h2>
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 text-sm text-slate-400">
             ?
           </span>
@@ -370,7 +380,7 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
       >
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-[2rem] font-bold text-slate-800">
-            Danh sach tu vung ({items.length})
+            Danh sách từ vựng ({items.length})
           </h2>
           {selectedLessonId ? (
             <form action={clearVocabLessonAction}>
@@ -380,7 +390,7 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                 className="inline-flex items-center gap-2 text-xl font-semibold text-rose-500 transition hover:text-rose-600"
               >
                 <span>🗑</span>
-                <span>Xoa tat ca</span>
+                <span>Xóa tất cả</span>
               </button>
             </form>
           ) : null}
@@ -388,11 +398,11 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
 
         {selectedLessonId === null ? (
           <p className="mt-5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            Chon hoac tao mot bai hoc de nhap du lieu.
+            Chọn hoặc tạo một bài học để nhập dữ liệu.
           </p>
         ) : items.length === 0 ? (
           <p className="mt-5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            Bai nay chua co tu vung nao.
+            Bài này chưa có từ vựng nào.
           </p>
         ) : (
           <div className="mt-5 max-h-[380px] overflow-x-auto overflow-y-auto pr-1">
@@ -401,7 +411,7 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                 <span>Word</span>
                 <span>Reading</span>
                 <span>Kanji</span>
-                <span>Han Viet</span>
+                <span>Hán Việt</span>
                 <span className="text-center">POS</span>
                 <span>Meaning</span>
                 <span className="text-right">Action</span>
@@ -430,7 +440,6 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                           name="reading"
                           defaultValue={item.reading}
                           className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
-                          required
                         />
                         <input
                           name="kanji"
@@ -458,13 +467,13 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                             type="submit"
                             className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700"
                           >
-                            Luu
+                            Lưu
                           </button>
                           <Link
                             href={selfHref({ lessonId: selectedLessonId })}
                             className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-500"
                           >
-                            Huy
+                            Hủy
                           </Link>
                         </div>
                       </form>
@@ -514,13 +523,13 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
           activeMode === "self" ? "" : "hidden"
         }`}
       >
-        <h2 className="text-[2rem] font-bold text-slate-800">Chon che do hoc</h2>
+        <h2 className="text-[2rem] font-bold text-slate-800">Chọn chế độ học</h2>
         <div className="mt-5 grid gap-4 lg:grid-cols-3">
           <article className="rounded-2xl border border-blue-200 bg-blue-50/80 p-6">
             <p className="text-4xl">📚</p>
             <h3 className="mt-3 text-3xl font-bold text-blue-700">Flashcard</h3>
             <p className="mt-3 text-xl leading-relaxed text-blue-700/90">
-              Lat the de xem dap an. Phu hop de lam quen voi tu vung moi.
+              Lật thẻ để xem đáp án. Phù hợp để làm quen với từ vựng mới.
             </p>
             <Link
               href={
@@ -534,15 +543,15 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                   : "pointer-events-none cursor-not-allowed bg-slate-300"
               }`}
             >
-              Bat dau Flashcard
+              Bắt đầu Flashcard
             </Link>
           </article>
 
           <article className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-6">
             <p className="text-4xl">🎯</p>
-            <h3 className="mt-3 text-3xl font-bold text-emerald-700">Trac nghiem</h3>
+            <h3 className="mt-3 text-3xl font-bold text-emerald-700">Trắc nghiệm</h3>
             <p className="mt-3 text-xl leading-relaxed text-emerald-700/90">
-              Xem tu vung, chon cach doc. Kiem tra nhanh kien thuc.
+              Xem từ vựng, chọn cách đọc. Kiểm tra nhanh kiến thức.
             </p>
             <Link
               href={
@@ -556,15 +565,15 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                   : "pointer-events-none cursor-not-allowed bg-slate-300"
               }`}
             >
-              Bat dau Trac nghiem
+              Bắt đầu Trắc nghiệm
             </Link>
           </article>
 
           <article className="rounded-2xl border border-orange-200 bg-orange-50/80 p-6">
             <p className="text-4xl">⚡</p>
-            <h3 className="mt-3 text-3xl font-bold text-orange-700">Nhoi nhet</h3>
+            <h3 className="mt-3 text-3xl font-bold text-orange-700">Nhồi nhét</h3>
             <p className="mt-3 text-xl leading-relaxed text-orange-700/90">
-              Go dap an de ghi nho sau hon. Danh cho nguoi muon thu thach.
+              Gõ đáp án để ghi nhớ sâu hơn. Dành cho người muốn thử thách.
             </p>
             <Link
               href={
@@ -578,14 +587,14 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                   : "pointer-events-none cursor-not-allowed bg-slate-300"
               }`}
             >
-              Bat dau Nhoi nhet
+              Bắt đầu Nhồi nhét
             </Link>
           </article>
         </div>
 
         {!studyLessonId ? (
           <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-            Hay chon mot bai ca nhan co du lieu truoc khi hoc.
+            Hãy chọn một bài cá nhân có dữ liệu trước khi học.
           </p>
         ) : null}
       </div>

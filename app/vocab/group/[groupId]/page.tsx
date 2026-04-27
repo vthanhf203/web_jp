@@ -93,10 +93,10 @@ export default async function VocabGroupDetailPage(props: {
   if (!group) {
     return (
       <section className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200/70">
-        <h1 className="text-2xl font-bold text-slate-800">Khong tim thay chu de</h1>
-        <p className="mt-2 text-slate-600">Chu de co the da bi xoa hoac thay doi.</p>
+        <h1 className="text-2xl font-bold text-slate-800">Không tìm thấy chủ đề</h1>
+        <p className="mt-2 text-slate-600">Chủ đề có thể đã bị xóa hoặc thay đổi.</p>
         <Link href="/vocab" className="btn-primary mt-5">
-          Quay lai /vocab
+          Quay lại /vocab
         </Link>
       </section>
     );
@@ -187,43 +187,43 @@ export default async function VocabGroupDetailPage(props: {
               <Link
                 href={`/vocab?mode=library&level=${level}`}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-slate-700 shadow-sm ring-1 ring-slate-200/70 transition hover:-translate-y-0.5 hover:bg-sky-50 hover:text-sky-700"
-                aria-label="Quay lai"
-                title="Quay lai"
+                aria-label="Quay lại"
+                title="Quay lại"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Link>
-              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{level} - Chu de admin</p>
+              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{level} - Chủ đề admin</p>
               <h1 className="mt-1 text-3xl font-black leading-tight tracking-tight text-slate-900 sm:text-5xl">
                 {group.title}
               </h1>
               <p className="mt-2 max-w-3xl text-sm text-slate-500 sm:text-base">
-                {group.description || "Nhom tu vung theo trinh do JLPT"}
+                {group.description || "Nhóm từ vựng theo trình độ JLPT"}
               </p>
             </div>
 
             <div className="rounded-2xl bg-white/80 px-4 py-3 text-center shadow-sm ring-1 ring-slate-200/70">
               <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">Level</p>
               <p className="font-mono text-3xl font-bold text-slate-900">{level}</p>
-              <p className="font-mono text-xs text-slate-500">{totalWords} tu</p>
+              <p className="font-mono text-xs text-slate-500">{totalWords} từ</p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
               <Layers3 className="mr-1.5 h-3.5 w-3.5" />
-              {totalWords} tu vung
+              {totalWords} từ vựng
             </span>
             <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-              {withKanji} co kanji
+              {withKanji} có kanji
             </span>
             <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-              {withHanViet} co han viet
+              {withHanViet} có hán việt
             </span>
           </div>
 
           <div className="flex flex-wrap gap-3">
             <ProgressRing label="Kanji" value={kanjiCoverage} color="#22d3ee" />
-            <ProgressRing label="Han Viet" value={hanvietCoverage} color="#a78bfa" />
+            <ProgressRing label="Hán Việt" value={hanvietCoverage} color="#a78bfa" />
             <ProgressRing label="POS" value={posCoverage} color="#f59e0b" />
           </div>
         </div>
@@ -242,13 +242,13 @@ export default async function VocabGroupDetailPage(props: {
       <div id="vocab-list" className="scroll-mt-24 rounded-[1.8rem] bg-white p-6 shadow-sm ring-1 ring-slate-200/70 sm:p-7">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-2xl font-black tracking-tight text-slate-900">Danh sach tu vung</h2>
+            <h2 className="text-2xl font-black tracking-tight text-slate-900">Danh sách từ vựng</h2>
             <p className="mt-1 text-sm text-slate-500">
-              The trang thai toi gian, khoang trang rong, tap trung vao noi dung hoc.
+              Thẻ trạng thái tối giản, khoảng trắng rộng, tập trung vào nội dung học.
             </p>
           </div>
           <p className="font-mono text-sm font-bold text-slate-600">
-            Trang {currentPage}/{totalPages} - Hien {pagedItems.length}/{totalWords}
+            Trang {currentPage}/{totalPages} - Hiện {pagedItems.length}/{totalWords}
           </p>
         </div>
 
@@ -278,7 +278,7 @@ export default async function VocabGroupDetailPage(props: {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
             <Link
               href={pageVocabHref(Math.max(1, currentPage - 1))}
-              aria-label="Trang truoc"
+              aria-label="Trang trước"
               className={`inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-600 shadow-sm ring-1 ring-slate-200 ${
                 currentPage <= 1 ? "pointer-events-none opacity-45" : "hover:bg-slate-100"
               }`}
@@ -333,13 +333,13 @@ export default async function VocabGroupDetailPage(props: {
 
         <div className="mt-4 rounded-xl bg-violet-50/80 px-3 py-2 text-xs text-violet-700">
           <Sparkles className="mr-1 inline h-3.5 w-3.5" />
-          Meo: Bam phan trang se tu nhay ve khu "Danh sach tu vung" de hoc lien tuc.
+          Mẹo: Bấm phân trang sẽ tự nhảy về khu "Danh sách từ vựng" để học liên tục.
         </div>
 
         <div className="mt-5">
           <ActionSection
-            title="Hoc nhanh chu de nay"
-            subtitle="Luon mo theo chu de dang xem"
+            title="Học nhanh chủ đề này"
+            subtitle="Luôn mở theo chủ đề đang xem"
             flashcardHref={topicFlashcardHref}
             quizHref={topicQuizHref}
             recallHref={topicRecallHref}

@@ -71,7 +71,7 @@ export function QuizSessionForm({ questions, examMode, examMinutes }: Props) {
       {examMode ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm font-semibold text-amber-900">Che do thi thu dang chay</p>
+            <p className="text-sm font-semibold text-amber-900">Chế độ thi thử đang chạy</p>
             <p className="text-lg font-bold text-amber-700">{formatTime(Math.max(0, remainingSeconds))}</p>
           </div>
           <div className="mt-2 h-2 rounded-full bg-amber-100">
@@ -89,7 +89,7 @@ export function QuizSessionForm({ questions, examMode, examMinutes }: Props) {
           <div className="mb-3">
             <span className="chip">{question.level}</span>
             <p className="mt-2 text-base font-semibold text-slate-800">
-              Cau {index + 1}. {question.prompt}
+              Câu {index + 1}. {question.prompt}
             </p>
           </div>
 
@@ -117,7 +117,7 @@ export function QuizSessionForm({ questions, examMode, examMinutes }: Props) {
       ))}
 
       <button type="submit" className="btn-primary">
-        {examMode ? "Nop bai thi thu" : "Cham diem quiz"}
+        {examMode ? "Nộp bài thi thử" : "Chấm điểm quiz"}
       </button>
     </form>
   );

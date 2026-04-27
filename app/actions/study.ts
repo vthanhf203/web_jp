@@ -55,6 +55,18 @@ export async function addKanjiToReviewAction(formData: FormData) {
     return;
   }
 
+  const kanjiExists = await prisma.kanji.findUnique({
+    where: {
+      id: parsed.data.kanjiId,
+    },
+    select: {
+      id: true,
+    },
+  });
+  if (!kanjiExists) {
+    return;
+  }
+
   const existing = await prisma.review.findFirst({
     where: {
       userId: user.id,

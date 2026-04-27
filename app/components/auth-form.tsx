@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useActionState } from "react";
@@ -20,19 +20,19 @@ export function AuthForm({ mode }: Props) {
   return (
     <div className="panel max-w-md p-7">
       <h1 className="text-2xl font-bold text-slate-800">
-        {mode === "login" ? "Dang nhap" : "Tao tai khoan moi"}
+        {mode === "login" ? "Đăng nhập" : "Tạo tài khoản mới"}
       </h1>
       <p className="mt-1 text-sm text-slate-600">
         {mode === "login"
-          ? "Tiep tuc lo trinh hoc Kanji, tu vung va ngu phap cua ban."
-          : "Bat dau website hoc tieng Nhat ca nhan cua rieng ban."}
+          ? "Tiếp tục lộ trình học Kanji, từ vựng và ngữ pháp của bạn."
+          : "Bắt đầu website học tiếng Nhật cá nhân của riêng bạn."}
       </p>
 
       <form action={formAction} className="mt-5 space-y-4">
         {mode === "register" ? (
           <label className="block">
             <span className="mb-1 block text-sm font-medium text-slate-700">Ten hien thi</span>
-            <input className="input-base" name="name" autoComplete="name" placeholder="Vi du: Thanh" required />
+            <input className="input-base" name="name" autoComplete="name" placeholder="Ví dụ: Thanh" required />
           </label>
         ) : null}
 
@@ -49,13 +49,13 @@ export function AuthForm({ mode }: Props) {
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">Mat khau</span>
+          <span className="mb-1 block text-sm font-medium text-slate-700">Mật khẩu</span>
           <input
             className="input-base"
             type="password"
             name="password"
             autoComplete={mode === "login" ? "current-password" : "new-password"}
-            placeholder="Toi thieu 8 ky tu"
+            placeholder="Tối thiểu 8 ký tự"
             required
           />
         </label>
@@ -65,17 +65,17 @@ export function AuthForm({ mode }: Props) {
         ) : null}
 
         <button type="submit" className="btn-primary w-full" disabled={pending}>
-          {pending ? "Dang xu ly..." : mode === "login" ? "Vao hoc ngay" : "Tao tai khoan"}
+          {pending ? "Đang xử lý..." : mode === "login" ? "Vào học ngay" : "Tạo tài khoản"}
         </button>
       </form>
 
       <p className="mt-4 text-sm text-slate-600">
-        {mode === "login" ? "Chua co tai khoan?" : "Da co tai khoan?"}{" "}
+        {mode === "login" ? "Chưa có tài khoản?" : "Đã có tài khoản?"}{" "}
         <Link
           href={mode === "login" ? "/register" : "/login"}
           className="font-semibold text-emerald-700 underline decoration-emerald-400 decoration-2 underline-offset-2"
         >
-          {mode === "login" ? "Dang ky ngay" : "Dang nhap"}
+          {mode === "login" ? "Đăng ký ngay" : "Đăng nhập"}
         </Link>
       </p>
     </div>

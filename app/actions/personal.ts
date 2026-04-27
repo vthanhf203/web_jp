@@ -15,6 +15,17 @@ import {
   upsertBookmark,
   type PlacementBreakdown,
 } from "@/lib/user-personal-data";
+import { parseKanjiInput } from "@/lib/kanji-import";
+import {
+  loadUserKanjiStore,
+  saveUserKanjiStore,
+  upsertUserKanjiRows,
+} from "@/lib/user-kanji-store";
+
+export type PersonalKanjiImportState = {
+  status: "idle" | "success" | "error";
+  message: string;
+};
 
 const learningPlanSchema = z.object({
   goalLevel: z.string().transform((value) => normalizeJlptLevel(value)),
@@ -51,6 +62,14 @@ function isQuizOption(value: string): value is QuizOption {
 
 const applyLevelSchema = z.object({
   level: z.string().transform((value) => normalizeJlptLevel(value)),
+});
+
+const importPersonalKanjiSchema = z.object({
+  rawInput: z.string().min(1),
+});
+
+const deletePersonalKanjiSchema = z.object({
+  id: z.string().trim().min(1),
 });
 
 function parsePlacementAnswers(formData: FormData): Array<{ questionId: string; selected: QuizOption }> {
@@ -281,5 +300,78 @@ export async function applyPlacementLevelAction(formData: FormData) {
   revalidatePath("/personal");
   revalidatePath("/placement");
   redirect("/dashboard");
+}
+
+export async function importPersonalKanjiAction(
+  _prevState: PersonalKanjiImportState,
+  formData: FormData
+): Promise<PersonalKanjiImportState> {
+  const user = await requireUser();
+  const parsed = importPersonalKanjiSchema.safeParse({
+    rawInput: formData.get("rawInput"),
+  });
+
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "Hãy nhập JSON Kanji hợp lệ.",
+    };
+  }
+
+  const rows = parseKanjiInput(parsed.data.rawInput).slice(0, 1000);
+  if (rows.length === 0) {
+    return {
+      status: "error",
+      message: "Không parse được JSON Kanji. Hãy thử JSON array hoặc JSON-lines.",
+    };
+  }
+
+  const { createdCount, updatedCount } = await upsertUserKanjiRows(user.id, rows);
+
+  touchPersonalKanjiPaths();
+
+  return {
+    status: "success",
+    message: `Đã lưu ${rows.length} Kanji cá nhân (${createdCount} mới, ${updatedCount} cập nhật).`,
+  };
+}
+
+function touchPersonalKanjiPaths() {
+  revalidatePath("/self-study");
+  revalidatePath("/kanji");
+  revalidatePath("/kanji/worksheet");
+  revalidatePath("/kanji/learn");
+  revalidatePath("/kanji/words/learn");
+}
+
+export async function deletePersonalKanjiAction(formData: FormData) {
+  const user = await requireUser();
+  const parsed = deletePersonalKanjiSchema.safeParse({
+    id: formData.get("id"),
+  });
+  if (!parsed.success) {
+    return;
+  }
+
+  const store = await loadUserKanjiStore(user.id);
+  const nextItems = store.items.filter((item) => item.id !== parsed.data.id);
+  if (nextItems.length === store.items.length) {
+    return;
+  }
+
+  await saveUserKanjiStore(user.id, {
+    updatedAt: new Date().toISOString(),
+    items: nextItems,
+  });
+  touchPersonalKanjiPaths();
+}
+
+export async function clearPersonalKanjiAction() {
+  const user = await requireUser();
+  await saveUserKanjiStore(user.id, {
+    updatedAt: new Date().toISOString(),
+    items: [],
+  });
+  touchPersonalKanjiPaths();
 }
 

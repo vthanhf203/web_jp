@@ -128,7 +128,7 @@ export default function TranscriptPanel({ onSeek }: TranscriptPanelProps) {
 
         const data = (await res.json()) as TranslateResponse;
         if (!res.ok) {
-          throw new Error(data?.message || "Khong dich duoc");
+          throw new Error(data?.message || "Không dịch được");
         }
 
         const value = (data.translation ?? "").trim();
@@ -198,31 +198,38 @@ export default function TranscriptPanel({ onSeek }: TranscriptPanelProps) {
     }
   }, []);
 
+  const centerCurrentSegment = useCallback(
+    (behavior: ScrollBehavior = "auto") => {
+      const container = scrollAreaRef.current;
+      const current = itemRefs.current[currentIndex];
+      if (!container || !current) {
+        return;
+      }
+
+      const targetTop = Math.max(
+        0,
+        current.offsetTop - (container.clientHeight - current.offsetHeight) / 2
+      );
+      const maxTop = Math.max(0, container.scrollHeight - container.clientHeight);
+      const safeTop = Math.min(maxTop, targetTop);
+
+      if (Math.abs(container.scrollTop - safeTop) < 2) {
+        return;
+      }
+      container.scrollTo({ top: safeTop, behavior });
+    },
+    [currentIndex]
+  );
+
   useEffect(() => {
-    const container = scrollAreaRef.current;
-    const current = itemRefs.current[currentIndex];
-    if (!container || !current) {
-      return;
-    }
-
-    const margin = 16;
-    const itemTop = current.offsetTop;
-    const itemBottom = itemTop + current.offsetHeight;
-    const viewTop = container.scrollTop;
-    const viewBottom = viewTop + container.clientHeight;
-
-    if (itemTop < viewTop + margin) {
-      container.scrollTo({ top: Math.max(0, itemTop - margin), behavior: "auto" });
-      return;
-    }
-
-    if (itemBottom > viewBottom - margin) {
-      container.scrollTo({
-        top: Math.max(0, itemBottom - container.clientHeight + margin),
-        behavior: "auto",
-      });
-    }
-  }, [currentIndex]);
+    centerCurrentSegment("auto");
+    const rafId = requestAnimationFrame(() => {
+      centerCurrentSegment("auto");
+    });
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
+  }, [centerCurrentSegment]);
 
   useEffect(() => {
     if (segments.length === 0) {
@@ -245,15 +252,15 @@ export default function TranscriptPanel({ onSeek }: TranscriptPanelProps) {
     <section className={styles.panel}>
       <header className={styles.header}>
         <h2 className={styles.title}>Transcript</h2>
-        <p className={styles.count}>{segments.length} cau</p>
+        <p className={styles.count}>{segments.length} câu</p>
       </header>
 
       {translateError ? (
-        <p className={styles.notice}>Dich nghia tam thoi chua san sang: {translateError}</p>
+        <p className={styles.notice}>Dịch nghĩa tạm thời chưa sẵn sàng: {translateError}</p>
       ) : null}
 
       <div ref={scrollAreaRef} className={styles.scrollArea}>
-        {segments.length === 0 ? <p className={styles.empty}>Chua co subtitle.</p> : null}
+        {segments.length === 0 ? <p className={styles.empty}>Chưa có subtitle.</p> : null}
 
         {segments.map((segment, index) => {
           const active = index === currentIndex;
@@ -293,7 +300,7 @@ export default function TranscriptPanel({ onSeek }: TranscriptPanelProps) {
                     event.stopPropagation();
                     onSeek(segment.start, index);
                   }}
-                  aria-label="Phat lai cau nay"
+                  aria-label="Phát lại câu này"
                 >
                   Replay
                 </button>
@@ -301,10 +308,10 @@ export default function TranscriptPanel({ onSeek }: TranscriptPanelProps) {
 
               <p className={styles.text}>{renderSegmentText(segment, furiganaWords)}</p>
               <p className={styles.translation}>
-                {isLoadingTranslation ? "Dang dich..." : translation || " "}
+                {isLoadingTranslation ? "Đang dịch..." : translation || " "}
               </p>
 
-              {active && isShadowingMode ? <span className={styles.shadowingBadge}>Nhai lai</span> : null}
+              {active && isShadowingMode ? <span className={styles.shadowingBadge}>Nhại lại</span> : null}
             </div>
           );
         })}

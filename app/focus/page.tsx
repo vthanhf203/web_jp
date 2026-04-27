@@ -77,16 +77,16 @@ export default async function FocusPage() {
   return (
     <section className="space-y-6">
       <div className="panel p-6">
-        <h1 className="text-2xl font-bold text-slate-900">On sai trong diem</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Ôn sai trọng điểm</h1>
         <p className="mt-1 text-sm text-slate-600">
-          He thong gom cac cau ban sai nhieu nhat thanh mot deck rieng de dap lai.
+          Hệ thống gom các câu bạn sai nhiều nhất thành một deck riêng để làm lại.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <Link href={quickQuizHref} className="btn-primary text-sm">
-            Lam lai bo sai ({topQuestionIds.length} cau)
+            Làm lại bộ sai ({topQuestionIds.length} câu)
           </Link>
           <Link href={examQuizHref} className="btn-soft text-sm">
-            Thi thu bo sai (20 phut)
+            Thi thử bộ sai (20 phút)
           </Link>
           <Link href="/placement" className="btn-soft text-sm">
             Test lai dau vao
@@ -97,12 +97,12 @@ export default async function FocusPage() {
       {buckets.length === 0 ? (
         <div className="panel p-6">
           <p className="text-slate-700">
-            Chua co du lieu cau sai. Ban lam mot bai quiz roi quay lai day de xem deck trong diem.
+            Chưa có dữ liệu câu sai. Bạn làm một bài quiz rồi quay lại đây để xem deck trọng điểm.
           </p>
         </div>
       ) : (
         <div className="panel p-6">
-          <h2 className="text-lg font-bold text-slate-800">Danh sach cau sai nhieu nhat</h2>
+          <h2 className="text-lg font-bold text-slate-800">Danh sách câu sai nhiều nhất</h2>
           <div className="mt-4 space-y-3">
             {buckets.slice(0, 30).map((item, index) => (
               <article key={item.questionId} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -110,14 +110,14 @@ export default async function FocusPage() {
                   <div className="flex items-center gap-2 text-xs">
                     <span className="chip">#{index + 1}</span>
                     <span className="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 font-semibold text-rose-700">
-                      Sai {item.count} lan
+                      Sai {item.count} lần
                     </span>
                     <span className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-slate-600">
                       {item.level} - {item.category}
                     </span>
                   </div>
                   <span className="text-xs text-slate-500">
-                    Lan sai gan nhat: {formatTokyoDateTime(item.lastWrongAt)}
+                    Lần sai gần nhất: {formatTokyoDateTime(item.lastWrongAt)}
                   </span>
                 </div>
                 <p className="mt-2 text-sm font-semibold text-slate-800">{item.prompt}</p>

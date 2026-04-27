@@ -17,8 +17,11 @@ type Props = {
   selectedLabel: string;
   filteredCount: number;
   roadmapHref: string;
+  worksheetHref: string;
   allFlashcardHref: string;
+  allQuizHref: string;
   pickedFlashcardHref: string;
+  pickedQuizHref: string;
   clearPickedHref?: string;
   pickedCount: number;
   pickedPreview?: string;
@@ -29,8 +32,11 @@ export function KanjiExplorerHeader({
   selectedLabel,
   filteredCount,
   roadmapHref,
+  worksheetHref,
   allFlashcardHref,
+  allQuizHref,
   pickedFlashcardHref,
+  pickedQuizHref,
   clearPickedHref,
   pickedCount,
   pickedPreview,
@@ -46,17 +52,17 @@ export function KanjiExplorerHeader({
         </div>
 
         <h1 className="mt-4 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-[2.1rem]">
-          Kham pha Kanji theo trinh do JLPT
+          Khám phá Kanji theo trình độ JLPT
         </h1>
         <p className="mt-2 inline-flex max-w-3xl items-center gap-2 text-sm font-medium text-slate-400 sm:text-[15px]">
           <SlidersHorizontal className="h-4 w-4 text-slate-500/70" />
-          Loc theo cap do, ve net de tim nhanh, va tao bo flashcard rieng de hoc ngay.
+          Lọc theo cấp độ, vẽ nét để tìm nhanh, và tạo bộ flashcard riêng để học ngay.
         </p>
       </div>
 
-      <div className="relative mt-5 grid gap-4 xl:grid-cols-[1fr_auto] xl:items-end">
+      <div className="relative mt-5 grid gap-4 2xl:grid-cols-[minmax(0,1fr)_auto] 2xl:items-end">
         <div>
-          <div className="grid grid-cols-2 gap-2 rounded-2xl bg-white/72 p-2 shadow-[0_12px_26px_rgba(15,23,42,0.08)] sm:grid-cols-3 lg:grid-cols-6">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(88px,1fr))] gap-2 rounded-2xl bg-white/72 p-2 shadow-[0_12px_26px_rgba(15,23,42,0.08)]">
             {tabs.map((tab) => (
               <div key={tab.key} className="relative">
                 {tab.active ? (
@@ -73,17 +79,19 @@ export function KanjiExplorerHeader({
                     tab.active ? "text-slate-900" : "text-slate-500 hover:text-slate-800"
                   }`}
                 >
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.26em]">{tab.label}</span>
+                  <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em]">
+                    {tab.label}
+                  </span>
                   <span className="mt-1 text-[10px] font-semibold tracking-wide text-slate-500">
-                    {tab.count} ky tu
+                    {tab.count} ký tự
                   </span>
                 </Link>
               </div>
             ))}
           </div>
           <p className="mt-3 text-sm font-medium text-slate-500">
-            Dang hien thi: <span className="font-semibold text-slate-700">{selectedLabel}</span> · {filteredCount} ky
-            tu phu hop
+            Đang hiển thị: <span className="font-semibold text-slate-700">{selectedLabel}</span> · {filteredCount} ký
+            tự phù hợp
           </p>
         </div>
 
@@ -92,13 +100,25 @@ export function KanjiExplorerHeader({
             href={roadmapHref}
             className="rounded-full bg-slate-100 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-200"
           >
-            Lo trinh
+            Lộ trình
+          </Link>
+          <Link
+            href={worksheetHref}
+            className="rounded-full bg-amber-100 px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-amber-800 transition-all duration-300 hover:-translate-y-0.5 hover:bg-amber-200"
+          >
+            In PDF
           </Link>
           <Link
             href={allFlashcardHref}
             className="pulse-shadow rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-500"
           >
             Flashcard
+          </Link>
+          <Link
+            href={allQuizHref}
+            className="rounded-full bg-sky-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-sky-500"
+          >
+            Trắc nghiệm
           </Link>
           <Link
             href={pickedFlashcardHref}
@@ -108,7 +128,17 @@ export function KanjiExplorerHeader({
                 : "pointer-events-none cursor-not-allowed bg-slate-100 text-slate-400"
             }`}
           >
-            Da chon ({pickedCount})
+            Đã chọn ({pickedCount})
+          </Link>
+          <Link
+            href={pickedQuizHref}
+            className={`rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 ${
+              pickedCount > 0
+                ? "bg-sky-100 text-sky-700 hover:-translate-y-0.5 hover:bg-sky-200"
+                : "pointer-events-none cursor-not-allowed bg-slate-100 text-slate-400"
+            }`}
+          >
+            Quiz đã chọn
           </Link>
           {pickedCount > 0 && clearPickedHref ? (
             <Link
@@ -116,7 +146,7 @@ export function KanjiExplorerHeader({
               scroll={false}
               className="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600 shadow-[0_8px_16px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-50"
             >
-              Bo chon
+              Bỏ chọn
             </Link>
           ) : null}
         </div>
@@ -128,4 +158,3 @@ export function KanjiExplorerHeader({
     </div>
   );
 }
-

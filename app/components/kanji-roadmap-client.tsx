@@ -261,7 +261,7 @@ function buildQuizQuestions(
     if (meaningToChar) {
       return {
         id: `${target.id}-m2c`,
-        prompt: `Chon kanji dung voi nghia: "${target.meaning}"`,
+        prompt: `Chọn kanji đúng với nghĩa: "${target.meaning}"`,
         subPrompt: `Nets: ${target.strokeCount} · ${target.jlptLevel}`,
         answerId: target.id,
         answerLabel: target.character,
@@ -274,7 +274,7 @@ function buildQuizQuestions(
 
     return {
       id: `${target.id}-c2m`,
-      prompt: `Y nghia cua kanji "${target.character}" la gi?`,
+      prompt: `Ý nghĩa của kanji "${target.character}" là gì?`,
       subPrompt: `On: ${target.onReading || "-"} · Kun: ${target.kunReading || "-"}`,
       answerId: target.id,
       answerLabel: target.meaning,
@@ -798,8 +798,8 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
       setCheckResult({
         passed: false,
         score: percent,
-        message: "Ban chua ve du net",
-        hint: "Ve lai to hon va bam Kiem tra.",
+        message: "Bạn chưa vẽ đủ nét",
+        hint: "Vẽ lại to hơn và bấm Kiểm tra.",
       });
       return;
     }
@@ -808,8 +808,8 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
       setCheckResult({
         passed: true,
         score: percent,
-        message: "Dinh kout!",
-        hint: `Do giong ${percent}% · Net da ve: ${strokeCount}`,
+        message: "Đỉnh kout!",
+        hint: `Độ giống ${percent}% · Nét đã vẽ: ${strokeCount}`,
       });
       markMastered(selectedWriteKanji.id);
       return;
@@ -818,8 +818,8 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
     setCheckResult({
       passed: false,
       score: percent,
-      message: "Gan dung roi, thu lai nhe",
-      hint: `Do giong ${percent}% · Hoi lech form, thu ve gon vao giua khung.`,
+      message: "Gần đúng rồi, thử lại nhé",
+      hint: `Độ giống ${percent}% · Hơi lệch form, thử vẽ gọn vào giữa khung.`,
     });
     touchActivity();
   }, [markMastered, selectedWriteKanji, strokeCount, touchActivity]);
@@ -886,34 +886,34 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
         <div className="absolute inset-x-0 top-0 h-44 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.24),transparent_64%),radial-gradient(circle_at_top_left,rgba(16,185,129,0.2),transparent_56%)]" />
         <div className="relative">
           <div className="text-center">
-            <h1 className="text-4xl font-extrabold text-slate-900">Lo trinh hoc Kanji</h1>
+            <h1 className="text-4xl font-extrabold text-slate-900">Lộ trình học Kanji</h1>
             <p className="mt-1 text-lg text-slate-600">
-              {safeDailyTarget} chu moi ngay · Tong cong {Math.max(1, Math.ceil(items.length / safeDailyTarget))} ngay
+              {safeDailyTarget} chữ mỗi ngày · Tổng cộng {Math.max(1, Math.ceil(items.length / safeDailyTarget))} ngày
             </p>
           </div>
 
           <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             <article className="rounded-2xl border border-sky-100 bg-white/95 p-4 shadow-sm">
-              <p className="text-sm font-semibold text-sky-600">Da hoc</p>
+              <p className="text-sm font-semibold text-sky-600">Đã học</p>
               <p className="mt-2 text-4xl font-extrabold text-slate-900">
                 {completedDaySet.size}/{totalDays}
               </p>
-              <p className="text-sm text-slate-500">ngay</p>
+              <p className="text-sm text-slate-500">ngày</p>
             </article>
             <article className="rounded-2xl border border-emerald-100 bg-white/95 p-4 shadow-sm">
               <p className="text-sm font-semibold text-emerald-600">Kanji</p>
               <p className="mt-2 text-4xl font-extrabold text-slate-900">{learnedCount}</p>
-              <p className="text-sm text-slate-500">chu da nho</p>
+              <p className="text-sm text-slate-500">chữ đã nhớ</p>
             </article>
             <article className="rounded-2xl border border-orange-100 bg-white/95 p-4 shadow-sm">
               <p className="text-sm font-semibold text-orange-500">Streak</p>
               <p className="mt-2 text-4xl font-extrabold text-slate-900">{streak}</p>
-              <p className="text-sm text-slate-500">ngay lien tiep</p>
+              <p className="text-sm text-slate-500">ngày liên tiếp</p>
             </article>
             <article className="rounded-2xl border border-violet-100 bg-white/95 p-4 shadow-sm">
-              <p className="text-sm font-semibold text-violet-600">Tien do</p>
+              <p className="text-sm font-semibold text-violet-600">Tiến độ</p>
               <p className="mt-2 text-4xl font-extrabold text-slate-900">{progressPercent}%</p>
-              <p className="text-sm text-slate-500">hoan thanh level</p>
+              <p className="text-sm text-slate-500">hoàn thành level</p>
             </article>
           </div>
         </div>
@@ -937,7 +937,7 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
                 onClick={() => setActiveLevel(level)}
               >
                 <p className="text-3xl font-extrabold">{level}</p>
-                <p className="text-xs opacity-80">{total} chu · {days} ngay</p>
+                <p className="text-xs opacity-80">{total} chữ · {days} ngày</p>
               </button>
             );
           })}
@@ -957,7 +957,7 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
               <span className={`rounded-full border px-3 py-1 text-sm font-semibold ${levelStyleMap[activeLevel]}`}>
                 {activeLevel}
               </span>
-              <p className="text-3xl font-extrabold text-slate-900">Ngay {currentDayIndex + 1}</p>
+                <p className="text-3xl font-extrabold text-slate-900">Ngày {currentDayIndex + 1}</p>
             </div>
             <button
               type="button"
@@ -970,7 +970,7 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
           </div>
 
           <div className="mt-4 flex items-center gap-3 text-sm text-slate-600">
-            <span>Ngay 1</span>
+            <span>Ngày 1</span>
             <input
               type="range"
               min={0}
@@ -980,28 +980,28 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
               className="h-2 flex-1 accent-blue-500"
             />
             <span>
-              Ngay {totalDays} ({activeLevel})
+              Ngày {totalDays} ({activeLevel})
             </span>
           </div>
         </div>
 
         <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xl font-bold text-slate-900">Kanji ngay {currentDayIndex + 1}</p>
+            <p className="text-xl font-bold text-slate-900">Kanji ngày {currentDayIndex + 1}</p>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm text-slate-500">{totalDayKanjiCount} chu</span>
+              <span className="text-sm text-slate-500">{totalDayKanjiCount} chữ</span>
               <Link href={flashcardHref} className="btn-primary text-sm">
-                Hoc bang Flashcard
+                Học bằng Flashcard
               </Link>
               <button type="button" className="btn-soft text-sm" onClick={markCurrentDayCompleted}>
-                Danh dau da hoc
+                Đánh dấu đã học
               </button>
             </div>
           </div>
 
           {currentDayItems.length === 0 ? (
             <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-              Chua co du lieu Kanji cho level {activeLevel}.
+              Chưa có dữ liệu Kanji cho level {activeLevel}.
             </p>
           ) : (
             <div className="mt-3 grid gap-2 sm:grid-cols-5 lg:grid-cols-10">
@@ -1035,7 +1035,7 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap gap-2 rounded-full border border-slate-200/80 bg-white/80 p-1.5 shadow-sm">
             <Link href={flashcardHref} className="btn-tab text-sm">
-              Hoc bang Flashcard
+              Học bằng Flashcard
             </Link>
             <button
               type="button"
@@ -1046,7 +1046,7 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
               }`}
               onClick={() => setMode("write")}
             >
-              Luyen viet
+              Luyện viết
             </button>
             <button
               type="button"
@@ -1057,11 +1057,11 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
               }`}
               onClick={() => setMode("quiz")}
             >
-              Kiem tra nhanh
+              Kiểm tra nhanh
             </button>
           </div>
           <p className="text-sm text-slate-500">
-            Con {remainingToday} chu chua mastered hom nay
+            Còn {remainingToday} chữ chưa mastered hôm nay
           </p>
         </div>
 
@@ -1074,17 +1074,17 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
                     {selectedWriteKanji?.character ?? "-"}
                   </p>
                   <p className="mt-1 text-2xl font-bold text-blue-600">
-                    {selectedWriteKanji?.meaning ?? "Chon kanji"}
+                    {selectedWriteKanji?.meaning ?? "Chọn kanji"}
                   </p>
                   <p className="text-sm text-slate-500">
-                    Net {strokeCount} · Mau net: {selectedWriteKanji?.strokeCount ?? 0}
+                    Nét {strokeCount} · Mẫu nét: {selectedWriteKanji?.strokeCount ?? 0}
                   </p>
                 </div>
                 {selectedWriteKanji ? (
                   <SpeakJpButton
                     text={selectedWriteKanji.character}
                     className="h-10 w-10 text-lg"
-                    title="Phat am chu nay"
+                    title="Phát âm chữ này"
                   />
                 ) : null}
               </div>
@@ -1114,7 +1114,7 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
 
               <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
                 <button type="button" className="btn-tab text-sm" onClick={drawBoard}>
-                  Viet lai
+                  Viết lại
                 </button>
                 <button
                   type="button"
@@ -1124,19 +1124,19 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
                     drawBoard();
                   }}
                 >
-                  {showGuide ? "Tu viet" : "Hien guide"}
+                  {showGuide ? "Tự viết" : "Hiện guide"}
                 </button>
                 <button type="button" className="btn-primary text-sm" onClick={checkWriting}>
-                  Kiem tra
+                  Kiểm tra
                 </button>
                 <button type="button" className="btn-tab text-sm" onClick={moveToNextKanji}>
-                  Chu tiep theo
+                  Chữ tiếp theo
                 </button>
               </div>
             </article>
 
             <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h3 className="text-lg font-bold text-slate-900">Thong tin nhanh</h3>
+              <h3 className="text-lg font-bold text-slate-900">Thông tin nhanh</h3>
               {selectedWriteKanji ? (
                 <div className="mt-3 space-y-2 text-sm text-slate-700">
                   <p>
@@ -1146,30 +1146,30 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
                     <span className="font-semibold text-slate-900">Kun:</span> {selectedWriteKanji.kunReading || "-"}
                   </p>
                   <p>
-                    <span className="font-semibold text-slate-900">So net:</span> {selectedWriteKanji.strokeCount}
+                    <span className="font-semibold text-slate-900">Số nét:</span> {selectedWriteKanji.strokeCount}
                   </p>
                   <p>
-                    <span className="font-semibold text-slate-900">Vi du:</span>{" "}
+                    <span className="font-semibold text-slate-900">Ví dụ:</span>{" "}
                     {selectedWriteKanji.exampleWord || selectedWriteKanji.character}
                     {" · "}
                     {selectedWriteKanji.exampleMeaning || selectedWriteKanji.meaning}
                   </p>
                 </div>
               ) : (
-                <p className="mt-3 text-sm text-slate-500">Chon 1 chu de bat dau luyen viet.</p>
+                <p className="mt-3 text-sm text-slate-500">Chọn 1 chữ để bắt đầu luyện viết.</p>
               )}
 
               <div className="mt-4 rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-emerald-50 p-4">
-                <p className="text-sm font-bold text-slate-900">Mau ve huong dan</p>
+                <p className="text-sm font-bold text-slate-900">Mẫu vẽ hướng dẫn</p>
                 <p className="mt-1 text-sm text-slate-600">
-                  Ban khong can upload de su dung huong dan co ban. He thong dang tu tao mau mo tu ky tu hien tai.
+                  Bạn không cần upload để sử dụng hướng dẫn cơ bản. Hệ thống đang tự tạo mẫu mờ từ ký tự hiện tại.
                 </p>
                 <div className="mt-2 flex flex-wrap gap-2 text-xs">
                   <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 font-semibold text-emerald-700">
-                    Co san: guide mo theo ky tu
+                    Có sẵn: guide mờ theo ký tự
                   </span>
                   <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-1 font-semibold text-amber-700">
-                    Nang cao: thu tu net can du lieu SVG/JSON
+                    Nâng cao: thứ tự nét cần dữ liệu SVG/JSON
                   </span>
                 </div>
               </div>
@@ -1188,7 +1188,7 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
                 </div>
               ) : (
                 <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center text-slate-500">
-                  <p className="text-sm">Bam "Kiem tra" de cham do giong voi mau.</p>
+                  <p className="text-sm">Bấm "Kiểm tra" để chấm độ giống với mẫu.</p>
                 </div>
               )}
             </article>
@@ -1197,23 +1197,23 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
           <article className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             {quizQuestions.length === 0 ? (
               <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                Khong co du lieu quiz cho ngay nay.
+                Không có dữ liệu quiz cho ngày này.
               </p>
             ) : quizFinished ? (
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center">
-                <p className="text-sm font-semibold text-slate-500">Ket qua</p>
+                <p className="text-sm font-semibold text-slate-500">Kết quả</p>
                 <p className="mt-2 text-5xl font-extrabold text-slate-900">
                   {quizCorrectCount}/{quizQuestions.length}
                 </p>
                 <p className={`mt-2 text-lg font-bold ${quizPassed ? "text-emerald-700" : "text-orange-600"}`}>
-                  {quizPassed ? "Dat muc tieu ngay hom nay!" : "Chua dat 80%, thu lai 1 lan nua nhe"}
+                  {quizPassed ? "Đạt mục tiêu ngày hôm nay!" : "Chưa đạt 80%, thử lại 1 lần nữa nhé"}
                 </p>
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   <button type="button" className="btn-primary text-sm" onClick={restartQuiz}>
-                    Lam lai quiz
+                    Làm lại quiz
                   </button>
                   <button type="button" className="btn-soft text-sm" onClick={markCurrentDayCompleted}>
-                    Danh dau da hoc ngay nay
+                    Đánh dấu đã học ngày này
                   </button>
                 </div>
               </div>
@@ -1221,10 +1221,10 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
               <div>
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-sm font-semibold text-slate-500">
-                    Cau {quizIndex + 1}/{quizQuestions.length}
+                    Câu {quizIndex + 1}/{quizQuestions.length}
                   </p>
                   <p className="text-sm font-semibold text-emerald-700">
-                    Dung: {quizCorrectCount}
+                    Đúng: {quizCorrectCount}
                   </p>
                 </div>
                 <h3 className="mt-2 text-2xl font-bold text-slate-900">{activeQuestion.prompt}</h3>
@@ -1261,7 +1261,7 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
                 {quizChecked ? (
                   <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
                     <p>
-                      Dap an dung:{" "}
+                      Đáp án đúng:{" "}
                       <strong className="text-slate-900">{activeQuestion.answerLabel}</strong>
                     </p>
                   </div>
@@ -1274,7 +1274,7 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
                     onClick={handleQuizCheck}
                     disabled={!quizSelected || quizChecked}
                   >
-                    Kiem tra dap an
+                    Kiểm tra đáp án
                   </button>
                   <button
                     type="button"
@@ -1282,10 +1282,10 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
                     onClick={handleQuizNext}
                     disabled={!quizChecked}
                   >
-                    {quizIndex >= quizQuestions.length - 1 ? "Xem ket qua" : "Cau tiep theo"}
+                    {quizIndex >= quizQuestions.length - 1 ? "Xem kết quả" : "Câu tiếp theo"}
                   </button>
                   <button type="button" className="btn-soft text-sm" onClick={restartQuiz}>
-                    Lam lai tu dau
+                    Làm lại từ đầu
                   </button>
                 </div>
               </div>

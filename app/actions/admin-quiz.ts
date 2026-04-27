@@ -58,7 +58,7 @@ export async function importAdminQuizQuestionsAction(
   if (!parsed.success) {
     return {
       status: "error",
-      message: "Hay nhap du lieu bai tap hop le.",
+      message: "Hãy nhập dữ liệu bài tập hợp lệ.",
     };
   }
 
@@ -66,7 +66,7 @@ export async function importAdminQuizQuestionsAction(
   if (rows.length === 0) {
     return {
       status: "error",
-      message: "Khong parse duoc du lieu. Hay thu JSON, JSON-lines hoac CSV.",
+      message: "Không parse được dữ liệu. Hãy thử JSON, JSON-lines hoặc CSV.",
     };
   }
 
@@ -139,7 +139,7 @@ export async function importAdminQuizQuestionsAction(
   touchQuizPaths();
   return {
     status: "success",
-    message: `Da xu ly ${dedupedRows.length} bai tap (${createdCount} moi, ${updatedCount} cap nhat).`,
+    message: `Đã xử lý ${dedupedRows.length} bài tập (${createdCount} mới, ${updatedCount} cập nhật).`,
   };
 }
 
@@ -181,4 +181,3 @@ export async function deleteAdminQuizQuestionAction(formData: FormData) {
   touchQuizPaths();
   redirect(`/admin/quiz?level=${parsed.data.level}`);
 }
-

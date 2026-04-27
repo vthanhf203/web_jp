@@ -1,6 +1,6 @@
 .page {
-  min-height: calc(100vh - 140px);
-  padding: 1rem;
+  min-height: calc(100vh - 132px);
+  padding: 1rem 1rem 1.25rem;
   display: grid;
   place-items: start center;
 }
@@ -13,122 +13,161 @@
 }
 
 .phoneShell {
-  width: min(1120px, 100%);
-  border-radius: 1.7rem;
-  border: 1px solid #d6d9cf;
-  background: linear-gradient(180deg, #f5f4eb 0%, #f3f2e9 100%);
-  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.15);
-  padding: 0.9rem;
+  width: min(1160px, 100%);
+  border-radius: 1.9rem;
+  border: 1px solid #d8d2c7;
+  background: linear-gradient(180deg, #f8f5ef 0%, #f5f1ea 100%);
+  box-shadow:
+    0 16px 34px rgba(27, 33, 62, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.66);
+  padding: 1rem;
   display: grid;
-  gap: 0.85rem;
+  gap: 0.95rem;
 }
 
 .contentGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.46fr) minmax(390px, 1.06fr);
   align-items: start;
-  gap: 0.85rem;
+  gap: 0.95rem;
 }
 
 .mainColumn {
   display: grid;
-  gap: 0.85rem;
+  gap: 0.82rem;
 }
 
 .topBar {
   display: grid;
-  grid-template-columns: 36px 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.7rem;
 }
 
 .backButton {
-  width: 36px;
-  height: 36px;
+  height: 34px;
   border-radius: 999px;
-  border: 1px solid #d3d6cd;
-  background: #f8f8f4;
-  color: #111827;
-  font-size: 1rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #8a7b67;
+  font-size: 1.02rem;
   font-weight: 800;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  padding: 0 0.25rem;
+  justify-self: start;
+  transition: all 0.16s ease;
 }
 
 .backButton:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
+  color: #5f503e;
+  transform: translateX(-1px);
+}
+
+.headerMeta {
+  min-width: 0;
+  display: grid;
+  gap: 0.08rem;
 }
 
 .videoTitle {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.02rem;
   font-weight: 800;
-  color: #111827;
+  color: #1a243f;
   line-height: 1.25;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
+}
+
+.headerHint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #877d70;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .progressText {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #4b5563;
+  color: #9a7c54;
   white-space: nowrap;
+  border: 1px solid #e5cfaf;
+  background: linear-gradient(180deg, #fffaf1 0%, #f8eddd 100%);
+  border-radius: 999px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 0.72rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 .videoCard {
-  border-radius: 0.95rem;
+  border-radius: 1rem;
   overflow: hidden;
-  border: 1px solid #d5d8cf;
-  background: #111827;
+  border: 1px solid #1f2b58;
+  background: linear-gradient(145deg, #10193c 0%, #1a2351 100%);
+  box-shadow: 0 10px 22px rgba(24, 35, 75, 0.34);
+}
+
+.videoProgress {
+  height: 4px;
+  border-radius: 999px;
+  background: #ded6ca;
+  overflow: hidden;
+}
+
+.videoProgressFill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #cc995d 0%, #d5a977 100%);
 }
 
 .lessonMeta {
   display: grid;
-  gap: 0.2rem;
+  gap: 0.16rem;
 }
 
 .lessonLine {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1f2937;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1f283d;
 }
 
 .lessonHint {
   margin: 0;
-  font-size: 0.86rem;
-  color: #6b7280;
+  font-size: 0.83rem;
+  color: #6e6a63;
 }
 
 .currentCard {
-  border-radius: 0.95rem;
-  border: 1px solid #d6d8ce;
-  background: #fbfbf8;
-  padding: 0.8rem;
+  border-radius: 1rem;
+  border: 1px solid #ddd5c7;
+  background: linear-gradient(180deg, #fcfbf7 0%, #f9f6ef 100%);
+  padding: 0.95rem;
   display: grid;
-  gap: 0.35rem;
+  gap: 0.32rem;
+  box-shadow: 0 8px 16px rgba(24, 29, 49, 0.08);
 }
 
 .currentLabel {
   margin: 0;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  font-size: 0.79rem;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
-  font-weight: 700;
-  color: #6b7280;
+  font-weight: 800;
+  color: #ba8e56;
 }
 
 .currentText {
   margin: 0;
-  font-size: 1.35rem;
-  line-height: 1.45;
+  font-size: clamp(1.55rem, 1.45vw + 1.15rem, 2.2rem);
+  line-height: 1.34;
   font-weight: 800;
   color: #111827;
   word-break: break-word;
@@ -137,26 +176,26 @@
 .currentHint {
   margin: 0;
   font-size: 0.84rem;
-  color: #475569;
+  color: #6b7280;
 }
 
 .controlsCard,
 .transcriptCard {
-  border-radius: 0.95rem;
-  border: 1px solid #d6d9cf;
-  background: #fff;
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
+  border-radius: 1rem;
+  border: 1px solid #d8d0c3;
+  background: linear-gradient(180deg, #fff 0%, #fefcf8 100%);
+  box-shadow: 0 10px 20px rgba(22, 30, 56, 0.08);
 }
 
 .controlsCard {
-  padding: 0.65rem;
+  padding: 0.72rem;
 }
 
 .transcriptCard {
-  padding: 0.2rem;
-  height: min(760px, calc(100vh - 180px));
-  min-height: 520px;
-  max-height: 760px;
+  padding: 0.25rem;
+  height: min(840px, calc(100vh - 160px));
+  min-height: 560px;
+  max-height: 840px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -168,9 +207,9 @@
   }
 
   .transcriptCard {
-    height: min(560px, calc(100vh - 210px));
-    min-height: 420px;
-    max-height: 560px;
+    height: min(640px, calc(100vh - 192px));
+    min-height: 470px;
+    max-height: 640px;
   }
 }
 
@@ -181,10 +220,20 @@
 
   .phoneShell {
     width: 100%;
-    border-radius: 1.15rem;
+    border-radius: 1.25rem;
+    padding: 0.75rem;
+  }
+
+  .topBar {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .progressText {
+    justify-self: start;
   }
 
   .currentText {
-    font-size: 1.2rem;
+    font-size: clamp(1.45rem, 2.7vw + 0.8rem, 1.9rem);
   }
 }

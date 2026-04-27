@@ -99,7 +99,7 @@ export default function BottomBar({
             }}
           >
             <span>💡</span>
-            <small>Giai</small>
+            <small>Giải</small>
           </button>
 
           <button
@@ -108,7 +108,7 @@ export default function BottomBar({
             onClick={onToggleLoop}
           >
             <span>🔁</span>
-            <small>Lap</small>
+            <small>Lặp</small>
           </button>
 
           <button type="button" className={`${styles.iconBtn} ${styles.speedBtn}`} onClick={handleCycleRate}>
@@ -119,7 +119,7 @@ export default function BottomBar({
 
         <div className={styles.centerButtons}>
           <button type="button" className={styles.navBtn} onClick={onPrevSegment}>
-            ← Cau truoc
+            ← Câu trước
           </button>
 
           <button
@@ -127,11 +127,11 @@ export default function BottomBar({
             className={`${styles.shadowBtn} ${isShadowingMode ? styles.shadowBtnActive : ""}`}
             onClick={onToggleShadowing}
           >
-            {isShadowingMode ? "🎤 Dang nhai" : "Shadowing"}
+            {isShadowingMode ? "🎤 Đang nhại" : "Shadowing"}
           </button>
 
           <button type="button" className={styles.navBtn} onClick={onNextSegment}>
-            Cau tiep →
+            Câu tiếp →
           </button>
         </div>
       </div>

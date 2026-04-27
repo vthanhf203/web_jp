@@ -58,18 +58,18 @@ export function AudioSettingsClient() {
 
   return (
     <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <h3 className="text-base font-bold text-slate-800">Audio tuy chinh</h3>
-      <p className="text-xs text-slate-600">Dat giong, toc do, va auto-play cho flashcard.</p>
+      <h3 className="text-base font-bold text-slate-800">Audio tùy chỉnh</h3>
+      <p className="text-xs text-slate-600">Đặt giọng, tốc độ, và auto-play cho flashcard.</p>
 
       <div className="grid gap-3 md:grid-cols-2">
         <label className="space-y-1 text-sm">
-          <span className="font-semibold text-slate-700">Giong tieng Nhat</span>
+          <span className="font-semibold text-slate-700">Giọng tiếng Nhật</span>
           <select
             value={voiceName}
             onChange={(event) => setVoiceName(event.target.value)}
             className="input-base"
           >
-            <option value="">Tu dong (goi y gioi tinh nu/tu nhien)</option>
+            <option value="">Tự động (gợi ý giọng nữ/tự nhiên)</option>
             {jpVoices.map((voice) => (
               <option key={voice.name} value={voice.name}>
                 {voice.name}
@@ -80,7 +80,7 @@ export function AudioSettingsClient() {
 
         <label className="space-y-1 text-sm">
           <span className="font-semibold text-slate-700">
-            Toc do ({rate.toFixed(2)}x)
+            Tốc độ ({rate.toFixed(2)}x)
           </span>
           <input
             type="range"

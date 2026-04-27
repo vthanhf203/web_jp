@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import styles from "@/components/StreakBanner.module.css";
 
 type StudyStreakStore = {
@@ -16,15 +16,11 @@ type StreakBannerState = {
   xp: number;
 };
 
+const DEFAULT_STATE: StreakBannerState = { streakDays: 0, xp: 0 };
+const snapshotCache = new Map<string, { raw: string | null; snapshot: StreakBannerState }>();
+
 export interface StreakBannerProps {
   storageKey?: string;
-}
-
-function toDateKey(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
 }
 
 function isObjectRecord(value: unknown): value is Record<string, unknown> {
@@ -55,55 +51,72 @@ function numberOrZero(value: unknown): number {
   return Math.max(0, Math.round(num));
 }
 
+function toSnapshot(parsed: StudyStreakStore): StreakBannerState {
+  return {
+    streakDays: numberOrZero(parsed.streakDays ?? parsed.streak),
+    xp: numberOrZero(parsed.xp),
+  };
+}
+
+function getSnapshot(storageKey: string): StreakBannerState {
+  if (typeof window === "undefined") {
+    return DEFAULT_STATE;
+  }
+
+  const raw = window.localStorage.getItem(storageKey);
+  const cached = snapshotCache.get(storageKey);
+  if (cached && cached.raw === raw) {
+    return cached.snapshot;
+  }
+
+  const snapshot = toSnapshot(parseStore(raw));
+  snapshotCache.set(storageKey, { raw, snapshot });
+  return snapshot;
+}
+
 export default function StreakBanner({ storageKey = "study_streak" }: StreakBannerProps) {
-  const [state, setState] = useState<StreakBannerState>({ streakDays: 0, xp: 0 });
+  const state = useSyncExternalStore(
+    (onStoreChange) => {
+      if (typeof window === "undefined") {
+        return () => {};
+      }
 
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const parsed = parseStore(window.localStorage.getItem(storageKey));
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-
-    const todayKey = toDateKey(today);
-    const yesterdayKey = toDateKey(yesterday);
-    const lastStudyDate =
-      typeof parsed.lastStudyDate === "string"
-        ? parsed.lastStudyDate
-        : typeof parsed.lastDate === "string"
-          ? parsed.lastDate
-          : "";
-
-    let streakDays = numberOrZero(parsed.streakDays ?? parsed.streak);
-    const xp = numberOrZero(parsed.xp);
-
-    if (lastStudyDate === yesterdayKey) {
-      streakDays = Math.max(1, streakDays + 1);
-      const nextStore: StudyStreakStore = {
-        ...parsed,
-        streakDays,
-        streak: streakDays,
-        xp,
-        lastStudyDate: todayKey,
+      const refresh = () => {
+        snapshotCache.delete(storageKey);
+        onStoreChange();
       };
-      window.localStorage.setItem(storageKey, JSON.stringify(nextStore));
-    }
 
-    setState({ streakDays, xp });
-  }, [storageKey]);
+      const handleStorage = (event: StorageEvent) => {
+        if (!event.key || event.key === storageKey) {
+          refresh();
+        }
+      };
+      const handleFocus = () => refresh();
+      window.addEventListener("storage", handleStorage);
+      window.addEventListener("focus", handleFocus);
+      return () => {
+        window.removeEventListener("storage", handleStorage);
+        window.removeEventListener("focus", handleFocus);
+      };
+    },
+    () => getSnapshot(storageKey),
+    () => DEFAULT_STATE
+  );
 
   const copy = useMemo(
-    () => `🔥 ${state.streakDays} ngay lien tiep | ⭐ ${state.xp} XP`,
+    () => `${state.streakDays} ngày liên tiếp | ⭐ ${state.xp} XP`,
     [state.streakDays, state.xp]
   );
 
   return (
     <div className={styles.banner} role="status" aria-live="polite">
       <div className={styles.inner}>
-        <p className={styles.copy}>{copy}</p>
+        <p className={styles.copy}>
+          <span className={styles.flame} aria-hidden>
+            🔥
+          </span>
+          <span>{copy}</span>
+        </p>
       </div>
     </div>
   );

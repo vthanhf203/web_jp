@@ -31,10 +31,14 @@ export function AdminVocabImportForm({ lessonId }: Props) {
         ref={textareaRef}
         name="rawInput"
         className="min-h-52 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-sky-400 focus:ring-3 focus:ring-sky-100"
-        placeholder="Ho tro JSON array / JSON-lines / text. Field chuan: word, reading, kanji, hanviet, partOfSpeech, meaning."
+        placeholder="Form này chỉ nhập vào lesson đang chọn. Hỗ trợ JSON array / JSON-lines / text. Field chuẩn: word, reading, kanji, hanviet, partOfSpeech, meaning."
         disabled={!hasLesson || pending}
         required
       />
+      <p className="text-xs text-slate-500">
+        Mẹo: JSON theo nhóm chủ đề để tự tạo/gộp lesson dùng ở khung{" "}
+        <span className="font-semibold">Import JSON tự tạo lesson</span> phía trên.
+      </p>
 
       {state.message ? (
         <p
@@ -54,7 +58,7 @@ export function AdminVocabImportForm({ lessonId }: Props) {
           className="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
           disabled={!hasLesson || pending}
         >
-          {pending ? "Dang nhap..." : "Nhap vao kho admin"}
+          {pending ? "Đang nhập..." : "Nhập vào kho admin"}
         </button>
         <button
           type="button"
@@ -64,11 +68,11 @@ export function AdminVocabImportForm({ lessonId }: Props) {
               return;
             }
             textareaRef.current.value =
-              '[\n  {"word":"べんきょう","reading":"べんきょう","kanji":"勉強","hanviet":"Mien Cuong","partOfSpeech":"noun","meaning":"Hoc tap"},\n  {"word":"でんしゃ","reading":"でんしゃ","kanji":"電車","hanviet":"Dien Xa","partOfSpeech":"noun","meaning":"Tau dien"},\n  {"word":"ありがとう","reading":"ありがとう","kanji":"","hanviet":"","partOfSpeech":"expression","meaning":"Cam on"}\n]';
+              '[\n  {"word":"べんきょう","reading":"べんきょう","kanji":"勉強","hanviet":"Miễn Cường","partOfSpeech":"noun","meaning":"Học tập"},\n  {"word":"でんしゃ","reading":"でんしゃ","kanji":"電車","hanviet":"Điện Xa","partOfSpeech":"noun","meaning":"Tàu điện"},\n  {"word":"ありがとう","reading":"ありがとう","kanji":"","hanviet":"","partOfSpeech":"expression","meaning":"Cảm ơn"}\n]';
           }}
           disabled={!hasLesson || pending}
         >
-          Mau JSON
+          Mẫu JSON 1 lesson
         </button>
         <button
           type="button"
@@ -80,7 +84,7 @@ export function AdminVocabImportForm({ lessonId }: Props) {
           }}
           disabled={pending}
         >
-          Xoa nhap
+          Xóa nhập
         </button>
       </div>
     </form>

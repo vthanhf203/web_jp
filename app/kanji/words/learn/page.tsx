@@ -7,12 +7,14 @@ import { requireUser } from "@/lib/auth";
 import { buildKanjiCompoundWords } from "@/lib/kanji-compound";
 import { loadAdminKanjiMetadata } from "@/lib/kanji-metadata";
 import { prisma } from "@/lib/prisma";
+import { loadUserKanjiStore } from "@/lib/user-kanji-store";
 
 type SearchParams = Promise<{
   level?: string | string[];
   mode?: string | string[];
   char?: string | string[];
   source?: string | string[];
+  scope?: string | string[];
 }>;
 
 type RelatedStudyWord = {
@@ -39,10 +41,13 @@ function isMode(value: string): value is StudyMode {
   return value === "flashcard" || value === "quiz" || value === "recall";
 }
 
-function buildBackHref(level: JlptLevel, char: string): string {
+function buildBackHref(level: JlptLevel, char: string, scope: "all" | "personal"): string {
   const backParams = new URLSearchParams();
   if (level && JLPT_LEVELS.includes(level)) {
     backParams.set("level", level);
+  }
+  if (scope === "personal") {
+    backParams.set("scope", "personal");
   }
   if (char) {
     backParams.set("selected", char);
@@ -69,19 +74,21 @@ function dedupeRelatedStudyWords(items: RelatedStudyWord[]): RelatedStudyWord[] 
 }
 
 export default async function KanjiWordLearnPage(props: { searchParams: SearchParams }) {
-  await requireUser();
+  const user = await requireUser();
   const params = await props.searchParams;
   const levelRaw = pickSingle(params.level).trim();
   const modeRaw = pickSingle(params.mode).trim().toLowerCase();
   const char = pickSingle(params.char).trim();
   const sourceRaw = pickSingle(params.source).trim().toLowerCase();
+  const scopeRaw = pickSingle(params.scope).trim().toLowerCase();
+  const scope: "all" | "personal" = scopeRaw === "personal" ? "personal" : "all";
 
   const level = normalizeJlptLevel(levelRaw || "N5");
   const mode: StudyMode = isMode(modeRaw) ? modeRaw : "flashcard";
   const source: "compound" | "related" = sourceRaw === "related" ? "related" : "compound";
 
   if (source === "related") {
-    const [vocabList, adminLibrary, kanjiMetadata] = await Promise.all([
+    const [vocabList, adminLibrary, kanjiMetadata, userKanjiStore] = await Promise.all([
       prisma.vocab.findMany({
         orderBy: [{ jlptLevel: "asc" }, { word: "asc" }],
         select: {
@@ -93,10 +100,30 @@ export default async function KanjiWordLearnPage(props: { searchParams: SearchPa
       }),
       loadAdminVocabLibrary(),
       loadAdminKanjiMetadata(),
+      loadUserKanjiStore(user.id),
     ]);
 
     const merged: RelatedStudyWord[] = [];
     if (char) {
+      const personalEntry = userKanjiStore.items.find((entry) => entry.character === char);
+      for (const item of personalEntry?.relatedWords ?? []) {
+        const displayWord = (item.word || item.kanji || "").trim();
+        const displayKanji = (item.kanji || item.word || "").trim();
+        const meaning = (item.meaning || "").trim();
+        if (!displayWord || !meaning) {
+          continue;
+        }
+        merged.push({
+          id: `user-${char}-${item.id}`,
+          word: displayWord,
+          reading: (item.reading || "").trim(),
+          kanji: displayKanji,
+          hanviet: (item.hanviet || "").trim(),
+          meaning,
+          sourceRank: 0,
+        });
+      }
+
       const metadataEntry = kanjiMetadata.entries.find((entry) => entry.character === char);
       for (const item of metadataEntry?.relatedWords ?? []) {
         const displayWord = (item.word || item.kanji || "").trim();
@@ -112,7 +139,7 @@ export default async function KanjiWordLearnPage(props: { searchParams: SearchPa
           kanji: displayKanji,
           hanviet: (item.hanviet || "").trim(),
           meaning,
-          sourceRank: 0,
+          sourceRank: 1,
         });
       }
 
@@ -135,7 +162,7 @@ export default async function KanjiWordLearnPage(props: { searchParams: SearchPa
             kanji: displayKanji,
             hanviet: (item.hanviet || "").trim(),
             meaning,
-            sourceRank: 1,
+            sourceRank: 2,
           });
         }
       }
@@ -156,34 +183,34 @@ export default async function KanjiWordLearnPage(props: { searchParams: SearchPa
           kanji: displayWord,
           hanviet: "",
           meaning,
-          sourceRank: 2,
+          sourceRank: 3,
         });
       }
     }
 
     const relatedWords = dedupeRelatedStudyWords(merged);
-    const backHref = buildBackHref(level, char);
+    const backHref = buildBackHref(level, char, scope);
 
     if (relatedWords.length === 0) {
       return (
         <section className="panel p-8">
-          <h1 className="text-2xl font-bold text-slate-800">Chua co tu vung lien quan de hoc</h1>
+          <h1 className="text-2xl font-bold text-slate-800">Chưa có từ vựng liên quan để học</h1>
           <p className="mt-2 text-slate-600">
             {char
-              ? `Chua tim thay tu nao chua chu \"${char}\" tu JSON Kanji, admin upload, hoac CSDL he thong.`
-              : "Ban chua chon chu Kanji de hoc tu lien quan."}
+              ? `Chưa tìm thấy từ nào chứa chữ \"${char}\" từ JSON Kanji, admin upload, hoặc CSDL hệ thống.`
+              : "Bạn chưa chọn chữ Kanji để học từ liên quan."}
           </p>
           <Link href={backHref} className="btn-primary mt-5">
-            Quay lai /kanji
+            Quay lại /kanji
           </Link>
         </section>
       );
     }
 
     const titleParts = [
-      "Tu lien quan Kanji",
-      char ? `Chu: ${char}` : "",
-      `${relatedWords.length} tu`,
+      "Từ liên quan Kanji",
+      char ? `Chữ: ${char}` : "",
+      `${relatedWords.length} từ`,
     ].filter(Boolean);
 
     return (
@@ -202,7 +229,7 @@ export default async function KanjiWordLearnPage(props: { searchParams: SearchPa
     );
   }
 
-  const [kanjiList, vocabList, adminLibrary, kanjiMetadata] = await Promise.all([
+  const [kanjiList, vocabList, adminLibrary, kanjiMetadata, userKanjiStore] = await Promise.all([
     prisma.kanji.findMany({
       where: { jlptLevel: level },
       select: {
@@ -224,45 +251,63 @@ export default async function KanjiWordLearnPage(props: { searchParams: SearchPa
     }),
     loadAdminVocabLibrary(),
     loadAdminKanjiMetadata(),
+    loadUserKanjiStore(user.id),
   ]);
 
+  const mergedKanjiByCharacter = new Map(
+    scope === "personal" ? [] : kanjiList.map((item) => [item.character, item] as const)
+  );
+  for (const item of userKanjiStore.items) {
+    if (item.jlptLevel !== level) {
+      continue;
+    }
+    mergedKanjiByCharacter.set(item.character, {
+      character: item.character,
+      jlptLevel: item.jlptLevel,
+    });
+  }
+  const mergedKanjiList = Array.from(mergedKanjiByCharacter.values());
+
   const metadataWords = kanjiMetadata.entries
-    .filter((entry) => kanjiList.some((kanji) => kanji.character === entry.character))
+    .filter((entry) => mergedKanjiList.some((kanji) => kanji.character === entry.character))
+    .flatMap((entry) => entry.relatedWords);
+  const personalWords = userKanjiStore.items
+    .filter((entry) => mergedKanjiList.some((kanji) => kanji.character === entry.character))
     .flatMap((entry) => entry.relatedWords);
 
   const allCompoundWords = buildKanjiCompoundWords({
     targetLevel: level,
-    kanjiList,
+    kanjiList: mergedKanjiList,
     vocabList,
     adminLibrary,
-    extraWords: metadataWords,
+    extraWords: [...personalWords, ...metadataWords],
   });
 
   const compounds = char
     ? allCompoundWords.filter((item) => `${item.kanji} ${item.word}`.includes(char))
     : allCompoundWords;
 
-  const backHref = buildBackHref(level, char);
+  const backHref = buildBackHref(level, char, scope);
 
   if (compounds.length === 0) {
     return (
-      <section className="panel p-8">
-        <h1 className="text-2xl font-bold text-slate-800">Chua co tu ghep de hoc</h1>
-        <p className="mt-2 text-slate-600">
-          Chua tim thay tu ghep dung theo bo Kanji {level}
-          {char ? ` va chu \"${char}\"` : ""}. Hay bo sung them du lieu tu vung.
-        </p>
+        <section className="panel p-8">
+          <h1 className="text-2xl font-bold text-slate-800">Chưa có từ ghép để học</h1>
+          <p className="mt-2 text-slate-600">
+          Chưa tìm thấy từ ghép đúng theo bộ Kanji {level}
+          {char ? ` và chữ \"${char}\"` : ""}. Hãy bổ sung thêm dữ liệu từ vựng.
+          </p>
         <Link href={backHref} className="btn-primary mt-5">
-          Quay lai /kanji
+          Quay lại /kanji
         </Link>
       </section>
     );
   }
 
   const titleParts = [
-    `${level} | Tu ghep Kanji`,
-    char ? `Chu: ${char}` : "",
-    `${compounds.length} tu`,
+    `${level} | Từ ghép Kanji`,
+    char ? `Chữ: ${char}` : "",
+    `${compounds.length} từ`,
   ].filter(Boolean);
 
   return (

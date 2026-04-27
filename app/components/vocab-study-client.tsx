@@ -11,6 +11,7 @@ import {
 
 export type StudyMode = "flashcard" | "quiz" | "recall";
 type FlashcardPromptMode = "jp_to_vi" | "vi_to_jp" | "kanji_to_answer";
+type RecallKanaMode = "hiragana" | "katakana";
 
 type StudyItem = {
   id: string;
@@ -96,6 +97,289 @@ function normalizeInput(value: string): string {
   return value.toLowerCase().trim().replace(/\s+/g, "");
 }
 
+const ROMAJI_TO_HIRAGANA_MAP: Record<string, string> = {
+  kya: "きゃ",
+  kyu: "きゅ",
+  kyo: "きょ",
+  gya: "ぎゃ",
+  gyu: "ぎゅ",
+  gyo: "ぎょ",
+  sha: "しゃ",
+  shu: "しゅ",
+  sho: "しょ",
+  sya: "しゃ",
+  syu: "しゅ",
+  syo: "しょ",
+  ja: "じゃ",
+  ju: "じゅ",
+  jo: "じょ",
+  jya: "じゃ",
+  jyu: "じゅ",
+  jyo: "じょ",
+  cha: "ちゃ",
+  chu: "ちゅ",
+  cho: "ちょ",
+  cya: "ちゃ",
+  cyu: "ちゅ",
+  cyo: "ちょ",
+  nya: "にゃ",
+  nyu: "にゅ",
+  nyo: "にょ",
+  hya: "ひゃ",
+  hyu: "ひゅ",
+  hyo: "ひょ",
+  bya: "びゃ",
+  byu: "びゅ",
+  byo: "びょ",
+  pya: "ぴゃ",
+  pyu: "ぴゅ",
+  pyo: "ぴょ",
+  mya: "みゃ",
+  myu: "みゅ",
+  myo: "みょ",
+  rya: "りゃ",
+  ryu: "りゅ",
+  ryo: "りょ",
+  dya: "ぢゃ",
+  dyu: "ぢゅ",
+  dyo: "ぢょ",
+  tsa: "つぁ",
+  tsi: "つぃ",
+  tse: "つぇ",
+  tso: "つぉ",
+  she: "しぇ",
+  je: "じぇ",
+  che: "ちぇ",
+  fa: "ふぁ",
+  fi: "ふぃ",
+  fe: "ふぇ",
+  fo: "ふぉ",
+  va: "ゔぁ",
+  vi: "ゔぃ",
+  vu: "ゔ",
+  ve: "ゔぇ",
+  vo: "ゔぉ",
+  ti: "てぃ",
+  tu: "とぅ",
+  di: "でぃ",
+  du: "どぅ",
+  wi: "うぃ",
+  we: "うぇ",
+  kwa: "くぁ",
+  kwi: "くぃ",
+  kwe: "くぇ",
+  kwo: "くぉ",
+  gwa: "ぐぁ",
+  gwi: "ぐぃ",
+  gwe: "ぐぇ",
+  gwo: "ぐぉ",
+  xya: "ゃ",
+  xyu: "ゅ",
+  xyo: "ょ",
+  lya: "ゃ",
+  lyu: "ゅ",
+  lyo: "ょ",
+  ka: "か",
+  ki: "き",
+  ku: "く",
+  ke: "け",
+  ko: "こ",
+  ga: "が",
+  gi: "ぎ",
+  gu: "ぐ",
+  ge: "げ",
+  go: "ご",
+  sa: "さ",
+  si: "し",
+  su: "す",
+  se: "せ",
+  so: "そ",
+  za: "ざ",
+  zi: "じ",
+  zu: "ず",
+  ze: "ぜ",
+  zo: "ぞ",
+  ta: "た",
+  tii: "てぃ",
+  tuu: "とぅ",
+  te: "て",
+  to: "と",
+  da: "だ",
+  de: "で",
+  do: "ど",
+  dii: "でぃ",
+  duu: "どぅ",
+  na: "な",
+  ni: "に",
+  nu: "ぬ",
+  ne: "ね",
+  no: "の",
+  ha: "は",
+  hi: "ひ",
+  fu: "ふ",
+  he: "へ",
+  ho: "ほ",
+  ba: "ば",
+  bi: "び",
+  bu: "ぶ",
+  be: "べ",
+  bo: "ぼ",
+  pa: "ぱ",
+  pi: "ぴ",
+  pu: "ぷ",
+  pe: "ぺ",
+  po: "ぽ",
+  ma: "ま",
+  mi: "み",
+  mu: "む",
+  me: "め",
+  mo: "も",
+  ya: "や",
+  yu: "ゆ",
+  yo: "よ",
+  ra: "ら",
+  ri: "り",
+  ru: "る",
+  re: "れ",
+  ro: "ろ",
+  wa: "わ",
+  wo: "を",
+  qa: "くぁ",
+  qi: "くぃ",
+  qe: "くぇ",
+  qo: "くぉ",
+  la: "ぁ",
+  li: "ぃ",
+  lu: "ぅ",
+  le: "ぇ",
+  lo: "ぉ",
+  xa: "ぁ",
+  xi: "ぃ",
+  xu: "ぅ",
+  xe: "ぇ",
+  xo: "ぉ",
+  xtu: "っ",
+  ltu: "っ",
+  nn: "ん",
+  ji: "じ",
+  chi: "ち",
+  tsu: "つ",
+  a: "あ",
+  i: "い",
+  u: "う",
+  e: "え",
+  o: "お",
+};
+
+function katakanaToHiragana(value: string): string {
+  return value.replace(/[\u30a1-\u30f6]/g, (char) =>
+    String.fromCharCode(char.charCodeAt(0) - 0x60)
+  );
+}
+
+function hiraganaToKatakana(value: string): string {
+  return value.replace(/[\u3041-\u3096]/g, (char) =>
+    String.fromCharCode(char.charCodeAt(0) + 0x60)
+  );
+}
+
+function hasKatakanaChars(value: string): boolean {
+  return /[\u30a1-\u30ff]/.test(value);
+}
+
+function convertRomajiTokenToHiragana(token: string): string {
+  const source = token.toLowerCase();
+  let index = 0;
+  let result = "";
+
+  while (index < source.length) {
+    const char = source[index];
+    const next = source[index + 1];
+
+    if (!char) {
+      break;
+    }
+
+    if (!/[a-z']/i.test(char)) {
+      result += char;
+      index += 1;
+      continue;
+    }
+
+    if (
+      next &&
+      char === next &&
+      /[bcdfghjklmpqrstvwxyz]/.test(char) &&
+      char !== "n"
+    ) {
+      result += "っ";
+      index += 1;
+      continue;
+    }
+
+    if (char === "n") {
+      if (next === "'") {
+        result += "ん";
+        index += 2;
+        continue;
+      }
+      if (!next) {
+        result += "ん";
+        index += 1;
+        continue;
+      }
+      if (next === "n") {
+        result += "ん";
+        index += 1;
+        continue;
+      }
+      if (!/[aiueoy]/.test(next)) {
+        result += "ん";
+        index += 1;
+        continue;
+      }
+    }
+
+    const four = source.slice(index, index + 4);
+    if (ROMAJI_TO_HIRAGANA_MAP[four]) {
+      result += ROMAJI_TO_HIRAGANA_MAP[four];
+      index += 4;
+      continue;
+    }
+
+    const three = source.slice(index, index + 3);
+    if (ROMAJI_TO_HIRAGANA_MAP[three]) {
+      result += ROMAJI_TO_HIRAGANA_MAP[three];
+      index += 3;
+      continue;
+    }
+
+    const two = source.slice(index, index + 2);
+    if (ROMAJI_TO_HIRAGANA_MAP[two]) {
+      result += ROMAJI_TO_HIRAGANA_MAP[two];
+      index += 2;
+      continue;
+    }
+
+    if (ROMAJI_TO_HIRAGANA_MAP[char]) {
+      result += ROMAJI_TO_HIRAGANA_MAP[char];
+      index += 1;
+      continue;
+    }
+
+    result += char;
+    index += 1;
+  }
+
+  return result;
+}
+
+function convertRomajiToHiraganaInput(value: string): string {
+  return value.replace(/[A-Za-z']+/g, (token) =>
+    convertRomajiTokenToHiragana(token)
+  );
+}
+
 function displayJapanese(item: StudyItem): string {
   return item.kanji || item.word;
 }
@@ -129,9 +413,9 @@ function ModeTitle({ mode }: { mode: StudyMode }) {
     return <span>Flashcard</span>;
   }
   if (mode === "quiz") {
-    return <span>Trac nghiem</span>;
+    return <span>Trắc nghiệm</span>;
   }
-  return <span>Nhoi nhet</span>;
+  return <span>Nhồi nhét</span>;
 }
 
 export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
@@ -153,6 +437,8 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
   const [quizCorrect, setQuizCorrect] = useState(false);
 
   const [recallInput, setRecallInput] = useState("");
+  const [isComposingRomaji, setIsComposingRomaji] = useState(false);
+  const [recallKanaMode, setRecallKanaMode] = useState<RecallKanaMode>("hiragana");
   const [hintCount, setHintCount] = useState(0);
   const [recallMessage, setRecallMessage] = useState("");
   const [recallSuccess, setRecallSuccess] = useState(false);
@@ -170,6 +456,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
     return window.localStorage.getItem(AUDIO_AUTOPLAY_KEY) === "1";
   });
   const flashcardAreaRef = useRef<HTMLDivElement | null>(null);
+  const recallInputRef = useRef<HTMLInputElement | null>(null);
 
   const hardIdSet = useMemo(() => new Set(hardItemIds), [hardItemIds]);
   const hardOrder = useMemo(
@@ -195,6 +482,10 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
     return hardItems.slice(start, start + HARD_ITEMS_PAGE_SIZE);
   }, [hardItems, hardPageSafe]);
   const currentDisplayWord = displayJapanese(current);
+  const recallSupportsKatakana = useMemo(
+    () => hasKatakanaChars(`${current.reading} ${current.word} ${current.kanji}`),
+    [current.kanji, current.reading, current.word]
+  );
   const quizOptions = useMemo(() => makeQuizOptions(items, current), [items, current]);
   const japaneseVoices = useMemo(
     () => speechVoices.filter((voice) => voice.lang.toLowerCase().startsWith("ja")),
@@ -264,6 +555,20 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
   useEffect(() => {
     setHardPage((prev) => Math.max(1, Math.min(prev, hardTotalPages)));
   }, [hardTotalPages]);
+
+  useEffect(() => {
+    if (mode !== "recall") {
+      return;
+    }
+    recallInputRef.current?.focus({ preventScroll: true });
+  }, [index, mode]);
+
+  useEffect(() => {
+    if (mode !== "recall") {
+      return;
+    }
+    setRecallKanaMode(recallSupportsKatakana ? "katakana" : "hiragana");
+  }, [current.id, mode, recallSupportsKatakana]);
 
   const markFlashcard = useCallback((isCorrect: boolean) => {
     if (isCorrect) {
@@ -343,22 +648,25 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
   }
 
   function submitRecall() {
-    const candidate = normalizeInput(recallInput);
-    const word = normalizeInput(current.word);
-    const reading = normalizeInput(current.reading);
-    const kanji = normalizeInput(current.kanji);
+    const normalizeRecall = (value: string) =>
+      normalizeInput(katakanaToHiragana(convertRomajiToHiraganaInput(value)));
+
+    const candidate = normalizeRecall(recallInput);
+    const word = normalizeRecall(current.word);
+    const reading = normalizeRecall(current.reading);
+    const kanji = normalizeRecall(current.kanji);
 
     const isCorrect =
       candidate.length > 0 &&
       (candidate === word || candidate === reading || (kanji && candidate === kanji));
     if (isCorrect) {
-      setRecallMessage("Dung roi!");
+      setRecallMessage("Đúng rồi!");
       setRecallSuccess(true);
       setCorrectCount((prev) => prev + 1);
       return;
     }
 
-    setRecallMessage("Chua dung, thu lai nhe.");
+    setRecallMessage("Chưa đúng, thử lại nhé.");
     setRecallSuccess(false);
     setWrongCount((prev) => prev + 1);
   }
@@ -376,10 +684,10 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
 
   const hintText =
     hintCount === 0
-      ? "Goi y (0/2)"
+      ? "Gợi ý (0/2)"
       : hintCount === 1
-        ? `Goi y: bat dau bang "${currentDisplayWord.slice(0, 1)}" (1/2)`
-        : `Goi y: cach doc la "${current.reading}" (2/2)`;
+        ? `Gợi ý: bắt đầu bằng "${currentDisplayWord.slice(0, 1)}" (1/2)`
+        : `Gợi ý: cách đọc là "${current.reading}" (2/2)`;
 
   const japaneseMain = (current.reading || current.word || currentDisplayWord).trim();
   const japaneseSub = currentDisplayWord && currentDisplayWord !== japaneseMain ? currentDisplayWord : "";
@@ -392,40 +700,40 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
   let flashFrontMain = japaneseMain;
   let flashFrontSub = japaneseSub;
   let flashFrontLabel = "Hiragana";
-  let flashFrontSubLabel = "Chu han";
+  let flashFrontSubLabel = "Chữ Hán";
 
   let flashBackMain = meaningMain;
   let flashBackSub = hanvietMain;
-  let flashBackLabel = "Nghia";
-  let flashBackSubLabel = "Han viet";
+  let flashBackLabel = "Nghĩa";
+  let flashBackSubLabel = "Hán Việt";
 
   if (flashPromptMode === "vi_to_jp") {
     flashFrontMain = meaningMain;
     flashFrontSub = hanvietMain;
-    flashFrontLabel = "Nghia";
-    flashFrontSubLabel = "Han viet";
+    flashFrontLabel = "Nghĩa";
+    flashFrontSubLabel = "Hán Việt";
 
     flashBackMain = japaneseMain;
     flashBackSub = japaneseSub;
     flashBackLabel = "Hiragana";
-    flashBackSubLabel = "Chu han";
+    flashBackSubLabel = "Chữ Hán";
   }
 
   if (flashPromptMode === "kanji_to_answer") {
     flashFrontMain = kanjiMain;
     flashFrontSub = "";
-    flashFrontLabel = hasRealKanji ? "Chu han" : "Tu vung";
+    flashFrontLabel = hasRealKanji ? "Chữ Hán" : "Từ vựng";
     flashFrontSubLabel = "";
 
     flashBackMain = japaneseMain;
     flashBackSub = hanvietMain
-      ? `${meaningMain} · Han viet: ${hanvietMain}`
+      ? `${meaningMain} · Hán Việt: ${hanvietMain}`
       : meaningMain;
     if (!kanjiHint || kanjiHint === kanjiMain) {
       flashBackMain = japaneseMain || kanjiMain;
     }
     flashBackLabel = "Hiragana";
-    flashBackSubLabel = "Nghia";
+    flashBackSubLabel = "Nghĩa";
   }
 
   const flashMainText = isFlipped ? flashBackMain : flashFrontMain;
@@ -617,7 +925,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
           className="inline-flex items-center gap-2 text-base text-slate-300 transition hover:text-white"
         >
           <span>{"<"}</span>
-          <span>Quay lai</span>
+          <span>Quay lại</span>
         </Link>
         <div className="text-center">
           <p className="text-sm uppercase tracking-widest text-slate-300">{lessonTitle}</p>
@@ -633,7 +941,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
             className="rounded-full border border-slate-500 px-3 py-1 text-sm text-slate-200 hover:bg-slate-700"
             onClick={toggleShuffle}
           >
-            {isShuffled ? "Thu tu goc" : "Dao thu tu"}
+            {isShuffled ? "Thứ tự gốc" : "Đảo thứ tự"}
           </button>
         )}
       </div>
@@ -642,7 +950,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
         <div className="mx-auto max-w-[980px] overflow-hidden rounded-2xl bg-[#32416d]">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-500/35 bg-[#3a4a75] px-3 py-2">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-200/90">
-              Kieu luyen flashcard
+              Kiểu luyện flashcard
             </p>
             <div className="inline-flex items-center rounded-full bg-slate-800/55 p-1 text-xs">
               <button
@@ -679,7 +987,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={() => changeFlashPromptMode("kanji_to_answer")}
               >
-                3. Kanji -{">"} Doc/Nghia
+                3. Kanji -{">"} Đọc/Nghĩa
               </button>
             </div>
           </div>
@@ -706,7 +1014,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                 goPrev();
                 focusFlashcardArea();
               }}
-              aria-label="The truoc"
+              aria-label="Thẻ trước"
             >
               {"<"}
             </button>
@@ -719,7 +1027,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                 goNext();
                 focusFlashcardArea();
               }}
-              aria-label="The sau"
+              aria-label="Thẻ sau"
             >
               {">"}
             </button>
@@ -752,16 +1060,16 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                   speakCurrentFlash();
                   focusFlashcardArea();
                 }}
-                aria-label="Phat am"
+                aria-label="Phát âm"
               >
                 <span>🔊</span>
-                <span>Phat am</span>
+                <span>Phát âm</span>
               </button>
             </div>
           </div>
 
           <div className="border-y border-slate-500/35 bg-[#44517a] px-3 py-1.5 text-xs text-slate-200">
-            Phim tat: Space lat, 1/2/3 doi kieu luyen, Z biet, X chua biet (them tu kho), R phat am, mui ten trai/phai de chuyen the
+            Phím tắt: Space lật, 1/2/3 đổi kiểu luyện, Z biết, X chưa biết (thêm từ khó), R phát âm, mũi tên trái/phải để chuyển thẻ
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-2 bg-[#1f2848] px-3 py-3">
@@ -771,7 +1079,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                 onClick={() => markFlashcard(false)}
                 onMouseDown={(event) => event.preventDefault()}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-rose-500 text-xl font-bold"
-                aria-label="Khong biet"
+                aria-label="Không biết"
               >
                 x
               </button>
@@ -780,7 +1088,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
               </span>
               {isHardReview ? (
                 <span className="rounded-full border border-rose-300 bg-rose-500/20 px-2 py-0.5 text-xs font-semibold text-rose-100">
-                  Tu kho
+                  Từ khó
                 </span>
               ) : null}
               <button
@@ -788,7 +1096,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                 onClick={() => markFlashcard(true)}
                 onMouseDown={(event) => event.preventDefault()}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-xl font-bold"
-                aria-label="Biet"
+                aria-label="Biết"
               >
                 v
               </button>
@@ -797,7 +1105,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
             <div className="flex flex-wrap items-center justify-end gap-2">
               {japaneseVoices.length > 0 ? (
                 <label className="inline-flex items-center gap-2 rounded-full bg-slate-700 px-3 py-1.5 text-xs text-slate-100">
-                  <span>Giong</span>
+                  <span>Giọng</span>
                   <select
                     value={effectiveJaVoiceName}
                     onChange={(event) => changeJaVoice(event.target.value)}
@@ -817,7 +1125,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                 onClick={() => setIsFlipped(false)}
                 onMouseDown={(event) => event.preventDefault()}
               >
-                Lat lai
+                Lật lại
               </button>
               <button
                 type="button"
@@ -828,7 +1136,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                 }}
                 onMouseDown={(event) => event.preventDefault()}
               >
-                {isShuffled ? "Thu tu goc" : "Dao"}
+                {isShuffled ? "Thứ tự gốc" : "Đảo"}
               </button>
               <button
                 type="button"
@@ -844,8 +1152,8 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                 disabled={hardItems.length === 0}
               >
                 {isHardReview
-                  ? `Xem tat ca (${items.length})`
-                  : `On tu kho (${hardItems.length})`}
+                  ? `Xem tất cả (${items.length})`
+                  : `Ôn từ khó (${hardItems.length})`}
               </button>
             </div>
           </div>
@@ -857,10 +1165,10 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-slate-100">
-                Danh sach tu chua thuoc ({hardItems.length})
+                Danh sách từ chưa thuộc ({hardItems.length})
               </h3>
               <p className="mt-1 text-xs text-slate-300">
-                Tu nao bam <span className="font-semibold text-rose-300">X</span> se vao day de on lai.
+                Từ nào bấm <span className="font-semibold text-rose-300">X</span> sẽ vào đây để ôn lại.
                 {hardItems.length > 0 ? ` Trang ${hardPageSafe}/${hardTotalPages}.` : ""}
               </p>
             </div>
@@ -870,7 +1178,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                 className="rounded-full border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
                 onClick={() => setShowHardPanel((prev) => !prev)}
               >
-                {showHardPanel ? "An danh sach" : "Hien danh sach"}
+                {showHardPanel ? "Ẩn danh sách" : "Hiện danh sách"}
               </button>
               <button
                 type="button"
@@ -878,7 +1186,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                 onClick={toggleHardReview}
                 disabled={hardItems.length === 0}
               >
-                {isHardReview ? "Dang on tu kho" : "On nhom tu kho"}
+                {isHardReview ? "Đang ôn từ khó" : "Ôn nhóm từ khó"}
               </button>
               <button
                 type="button"
@@ -886,19 +1194,19 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                 onClick={clearHardItems}
                 disabled={hardItems.length === 0}
               >
-                Xoa danh sach
+                Xóa danh sách
               </button>
             </div>
           </div>
 
           {!showHardPanel ? (
             <p className="mt-3 rounded-lg border border-slate-500/40 bg-[#1f2a4f] px-3 py-2 text-sm text-slate-300">
-              Danh sach dang duoc thu gon. Bam{" "}
-              <span className="font-semibold text-sky-300">Hien danh sach</span> de xem lai.
+              Danh sách đang được thu gọn. Bấm{" "}
+              <span className="font-semibold text-sky-300">Hiện danh sách</span> để xem lại.
             </p>
           ) : hardItems.length === 0 ? (
             <p className="mt-3 rounded-lg border border-slate-500/40 bg-[#243056] px-3 py-2 text-sm text-slate-300">
-              Chua co tu kho. Bam nut <span className="font-bold text-rose-300">X</span> de danh dau tu can on lai.
+              Chưa có từ khó. Bấm nút <span className="font-bold text-rose-300">X</span> để đánh dấu từ cần ôn lại.
             </p>
           ) : (
             <>
@@ -922,7 +1230,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                       className="shrink-0 rounded-full border border-slate-300/80 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
                       onClick={() => removeHardItem(item.id)}
                     >
-                      Bo
+                      Bỏ
                     </button>
                   </article>
                 ))}
@@ -936,7 +1244,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                     onClick={() => setHardPage((prev) => Math.max(1, prev - 1))}
                     disabled={hardPageSafe <= 1}
                   >
-                    ← Trang truoc
+                    ← Trang trước
                   </button>
                   <span className="font-semibold text-slate-200">
                     Trang {hardPageSafe} / {hardTotalPages}
@@ -961,10 +1269,10 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
           <div className="mb-8 flex justify-end">
             <div className="inline-flex rounded-xl bg-slate-700 p-1 text-sm">
               <span className="rounded-lg bg-emerald-500 px-3 py-1 font-semibold text-white">
-                Cach doc
+                Cách đọc
               </span>
               <span className="px-3 py-1 text-slate-200">Kanji</span>
-              <span className="px-3 py-1 text-slate-200">Y nghia</span>
+              <span className="px-3 py-1 text-slate-200">Ý nghĩa</span>
             </div>
           </div>
 
@@ -1014,7 +1322,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                 onClick={checkQuiz}
                 disabled={!selectedOptionId}
               >
-                Kiem tra
+                Kiểm tra
               </button>
             ) : (
               <button
@@ -1022,7 +1330,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                 className="rounded-xl bg-emerald-500 px-8 py-3 text-xl font-semibold text-white"
                 onClick={goNext}
               >
-                {quizCorrect ? "Dung! Tiep tuc" : "Xem cau tiep"}
+                {quizCorrect ? "Đúng! Tiếp tục" : "Xem câu tiếp"}
               </button>
             )}
           </div>
@@ -1030,15 +1338,69 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
       ) : null}
 
       {mode === "recall" ? (
-        <div className="rounded-2xl bg-[#32416d] p-8">
-          <h2 className="mb-6 text-center text-6xl font-semibold text-white">{current.meaning}</h2>
+        <div className="rounded-2xl bg-[#32416d] p-6">
+          <div className="mb-3 flex min-h-[96px] items-center justify-center">
+            <h2 className="text-center text-5xl font-semibold leading-tight text-white">
+              {current.meaning}
+            </h2>
+          </div>
 
-          <div className="mb-4 rounded-xl border-2 border-slate-300 bg-[#33425f] p-2">
+          <div className="mb-3 flex items-center justify-start gap-2">
+            <button
+              type="button"
+              onClick={() => setRecallKanaMode("hiragana")}
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                recallKanaMode === "hiragana"
+                  ? "bg-sky-400 text-slate-900"
+                  : "bg-slate-700 text-slate-200 hover:bg-slate-600"
+              }`}
+            >
+              ひらがな
+            </button>
+            <button
+              type="button"
+              onClick={() => setRecallKanaMode("katakana")}
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                recallKanaMode === "katakana"
+                  ? "bg-orange-400 text-slate-900"
+                  : "bg-slate-700 text-slate-200 hover:bg-slate-600"
+              }`}
+            >
+              カタカナ
+            </button>
+          </div>
+
+          <div className="mb-3 rounded-xl border-2 border-slate-300 bg-[#33425f] p-2">
             <input
-              className="w-full rounded-lg bg-transparent px-4 py-3 text-2xl text-white outline-none placeholder:text-slate-400"
-              placeholder="Go cach doc, tu goc hoac romaji"
+              ref={recallInputRef}
+              className="w-full rounded-lg bg-transparent px-4 py-2.5 text-xl text-white outline-none placeholder:text-slate-400"
+              placeholder={
+                recallKanaMode === "katakana"
+                  ? "Gõ cách đọc, từ gốc hoặc romaji (ra katakana)"
+                  : "Gõ cách đọc, từ gốc hoặc romaji (ra hiragana)"
+              }
               value={recallInput}
-              onChange={(event) => setRecallInput(event.target.value)}
+              onCompositionStart={() => setIsComposingRomaji(true)}
+              onCompositionEnd={(event) => {
+                setIsComposingRomaji(false);
+                const convertedHiragana = convertRomajiToHiraganaInput(event.currentTarget.value);
+                setRecallInput(
+                  recallKanaMode === "katakana"
+                    ? hiraganaToKatakana(convertedHiragana)
+                    : convertedHiragana
+                );
+              }}
+              onChange={(event) => {
+                const rawValue = event.target.value;
+                const convertedHiragana = convertRomajiToHiraganaInput(rawValue);
+                setRecallInput(
+                  isComposingRomaji
+                    ? rawValue
+                    : recallKanaMode === "katakana"
+                      ? hiraganaToKatakana(convertedHiragana)
+                      : convertedHiragana
+                );
+              }}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   event.preventDefault();
@@ -1051,19 +1413,25 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
               }}
             />
           </div>
+          <p className="mb-3 text-center text-xs text-slate-300">
+            {recallKanaMode === "katakana"
+              ? "Gõ romaji sẽ tự chuyển sang katakana."
+              : "Gõ romaji sẽ tự chuyển sang hiragana."}
+          </p>
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-2.5 md:grid-cols-2">
             <button
               type="button"
-              className="rounded-xl bg-slate-200 px-5 py-3 text-xl font-semibold text-slate-500 disabled:opacity-60"
+              className="rounded-xl bg-slate-200 px-4 py-2.5 text-lg font-semibold text-slate-500 disabled:opacity-60"
               onClick={useHint}
               disabled={hintCount >= 2}
+              onMouseDown={(event) => event.preventDefault()}
             >
               {hintText}
             </button>
             <button
               type="button"
-              className="rounded-xl bg-orange-500 px-5 py-3 text-xl font-semibold text-white"
+              className="rounded-xl bg-orange-500 px-4 py-2.5 text-lg font-semibold text-white"
               onClick={() => {
                 if (recallSuccess) {
                   goNext();
@@ -1071,18 +1439,42 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                   submitRecall();
                 }
               }}
+              onMouseDown={(event) => event.preventDefault()}
             >
-              {recallSuccess ? "Cau tiep theo" : "Kiem tra"}
+              {recallSuccess ? "Câu tiếp theo" : "Kiểm tra"}
             </button>
           </div>
 
           <p
-            className={`mt-4 text-center text-lg ${
+            className={`mt-3 min-h-[28px] text-center text-base ${
               recallSuccess ? "text-emerald-300" : "text-slate-300"
             }`}
           >
-            {recallMessage || "Nhan Enter de kiem tra nhanh"}
+            {recallMessage || "Nhấn Enter để kiểm tra nhanh"}
           </p>
+
+          <div className="mt-3 flex items-center justify-center gap-2.5">
+            <button
+              type="button"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-300/70 bg-slate-700/45 text-lg font-semibold text-slate-100 transition hover:bg-slate-600/55"
+              onClick={goPrev}
+              aria-label="Từ trước"
+              title="Từ trước"
+              onMouseDown={(event) => event.preventDefault()}
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-300/70 bg-slate-700/45 text-lg font-semibold text-slate-100 transition hover:bg-slate-600/55"
+              onClick={goNext}
+              aria-label="Từ sau"
+              title="Từ sau"
+              onMouseDown={(event) => event.preventDefault()}
+            >
+              →
+            </button>
+          </div>
         </div>
       ) : null}
 
@@ -1091,7 +1483,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
           {index + 1} / {activeCount}
         </span>
         <span>
-          Dung {correctCount} | Sai {wrongCount}
+          Đúng {correctCount} | Sai {wrongCount}
         </span>
       </div>
       <div className="mt-2 h-2 rounded-full bg-slate-600/70">

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -87,9 +87,9 @@ export function KanjiLibraryGrid({ items, selectionEnabled }: Props) {
                     ? "bg-emerald-500 text-white shadow-[0_10px_18px_rgba(16,185,129,0.28)] hover:bg-emerald-400"
                     : "bg-white/95 text-slate-600 shadow-[0_8px_16px_rgba(15,23,42,0.12)] hover:bg-slate-100"
                 }`}
-                aria-label={item.picked ? `Bo chon ${item.character}` : `Chon ${item.character} de hoc flashcard`}
+                aria-label={item.picked ? `Bỏ chọn ${item.character}` : `Chọn ${item.character} để học flashcard`}
               >
-                {item.picked ? "Da chon" : "Flash"}
+                {item.picked ? "Đã chọn" : "Flash"}
               </Link>
             ) : null}
 
@@ -106,7 +106,6 @@ export function KanjiLibraryGrid({ items, selectionEnabled }: Props) {
 
             <Link
               href={item.href}
-              scroll={false}
               className="relative flex h-full flex-col justify-between rounded-3xl p-3"
             >
               <div className="flex items-center justify-between">

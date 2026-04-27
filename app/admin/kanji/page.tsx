@@ -91,7 +91,7 @@ export default async function AdminKanjiPage(props: { searchParams: SearchParams
     <section className="space-y-6 rounded-3xl border border-sky-100 bg-[#d8e5f7] p-6 shadow-[0_8px_28px_rgba(28,78,140,0.08)] [background-image:linear-gradient(rgba(255,255,255,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.3)_1px,transparent_1px)] [background-size:30px_30px]">
       <div className="rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
         <h1 className="text-3xl font-bold text-slate-800">Admin Kanji</h1>
-        <p className="mt-1 text-sm text-slate-600">Import va quan ly kho Kanji dung chung cho toan bo he thong.</p>
+        <p className="mt-1 text-sm text-slate-600">Import và quản lý kho Kanji dùng chung cho toàn bộ hệ thống.</p>
         <div className="mt-4">
           <AdminNav active="kanji" />
         </div>
@@ -109,18 +109,32 @@ export default async function AdminKanjiPage(props: { searchParams: SearchParams
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
-        <h2 className="text-xl font-bold text-slate-800">Import du lieu Kanji</h2>
+        <h2 className="text-xl font-bold text-slate-800">Import dữ liệu Kanji</h2>
         <p className="mt-1 text-sm text-slate-600">
-          Ho tro form moi: id, character, meaning, onReading[]/kunReading[], strokeCount,
+          Hỗ trợ form mới: id, character, meaning, onReading[]/kunReading[], strokeCount,
           jlptLevel, order, category, tags[], relatedVocabularies[], createdAt, updatedAt.
         </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <a
+            href={`/api/admin/kanji-export?level=${selectedLevel}&download=1`}
+            className="rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100"
+          >
+            Tải JSON {selectedLevel}
+          </a>
+          <a
+            href="/api/admin/kanji-export?level=ALL&download=1"
+            className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
+          >
+            Tải JSON tất cả
+          </a>
+        </div>
         <div className="mt-3">
-          <AdminKanjiImportForm />
+          <AdminKanjiImportForm selectedLevel={selectedLevel} />
         </div>
         <div className="mt-4">
-          <p className="text-sm font-semibold text-slate-700">Sync tu URL/API</p>
+          <p className="text-sm font-semibold text-slate-700">Sync từ URL/API</p>
           <p className="mt-1 text-xs text-slate-500">
-            Dan URL JSON, he thong se parse va cap nhat kho Kanji.
+            Dán URL JSON, hệ thống sẽ parse và cập nhật kho Kanji.
           </p>
           <div className="mt-2">
             <AdminKanjiSyncForm />
@@ -131,13 +145,13 @@ export default async function AdminKanjiPage(props: { searchParams: SearchParams
       <div className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-xl font-bold text-slate-800">
-            Danh sach Kanji {selectedLevel} ({kanjiList.length})
+            Danh sách Kanji {selectedLevel} ({kanjiList.length})
           </h2>
           <form action={deleteAllAdminKanjiByLevelAction}>
             <input type="hidden" name="level" value={selectedLevel} />
             <ConfirmSubmitButton
-              label={`Xoa tat ca ${selectedLevel}`}
-              confirmMessage={`Ban chac chan muon xoa toan bo Kanji ${selectedLevel}?`}
+              label={`Xóa tất cả ${selectedLevel}`}
+              confirmMessage={`Bạn chắc chắn muốn xóa toàn bộ Kanji ${selectedLevel}?`}
               className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
               disabled={kanjiList.length === 0}
             />
@@ -146,7 +160,7 @@ export default async function AdminKanjiPage(props: { searchParams: SearchParams
 
         {kanjiList.length === 0 ? (
           <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
-            Chua co du lieu Kanji cho {selectedLevel}.
+            Chưa có dữ liệu Kanji cho {selectedLevel}.
           </p>
         ) : (
           <div className="mt-3 max-h-[60vh] overflow-auto pr-1">
@@ -200,7 +214,7 @@ export default async function AdminKanjiPage(props: { searchParams: SearchParams
                         type="submit"
                         className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100"
                       >
-                        Xoa
+                        Xóa
                       </button>
                     </form>
                   </div>

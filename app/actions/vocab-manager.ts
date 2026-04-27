@@ -69,7 +69,10 @@ const updateItemSchema = z.object({
   lessonId: z.string().min(1),
   itemId: z.string().min(1),
   word: z.string().trim().min(1),
-  reading: z.string().trim().min(1),
+  reading: z.preprocess(
+    (value) => (typeof value === "string" ? value : undefined),
+    z.string().trim().max(120).optional()
+  ),
   kanji: z.string().trim().max(120).optional(),
   hanviet: z.string().trim().max(120).optional(),
   partOfSpeech: z.string().trim().max(40).optional(),
@@ -134,6 +137,27 @@ export async function createVocabLessonAction(formData: FormData) {
   redirect(`/vocab?lesson=${lesson.id}`);
 }
 
+export async function createSelfStudyVocabLessonAction() {
+  const user = await requireUser();
+  const store = await loadUserVocabStore(user.id);
+  const now = nowIso();
+
+  const lesson: Lesson = {
+    id: crypto.randomUUID(),
+    title: `Bai ${store.lessons.length + 1}`,
+    createdAt: now,
+    updatedAt: now,
+    items: [],
+  };
+
+  store.lessons.push(lesson);
+  await saveUserVocabStore(user.id, store);
+
+  revalidatePath("/vocab");
+  revalidatePath("/self-study");
+  redirect(`/self-study?lesson=${lesson.id}`);
+}
+
 export async function importVocabAction(
   _prevState: VocabImportState,
   formData: FormData
@@ -148,7 +172,7 @@ export async function importVocabAction(
   if (!parsed.success) {
     return {
       status: "error",
-      message: "Vui long chon bai va nhap du lieu tu vung.",
+      message: "Vui lòng chọn bài và nhập dữ liệu từ vựng.",
     };
   }
 
@@ -157,7 +181,7 @@ export async function importVocabAction(
   if (!lesson) {
     return {
       status: "error",
-      message: "Khong tim thay bai hoc phu hop.",
+      message: "Không tìm thấy bài học phù hợp.",
     };
   }
 
@@ -165,7 +189,7 @@ export async function importVocabAction(
   if (rows.length === 0) {
     return {
       status: "error",
-      message: "Khong parse duoc du lieu. Hay thu JSON hoac moi dong 1 tu.",
+      message: "Không parse được dữ liệu. Hãy thử JSON hoặc mỗi dòng 1 từ.",
     };
   }
 
@@ -190,7 +214,7 @@ export async function importVocabAction(
   revalidatePath("/vocab");
   return {
     status: "success",
-    message: `Da nhap ${rows.length} tu vung vao bai.`,
+    message: `Đã nhập ${rows.length} từ vựng vào bài.`,
   };
 }
 
@@ -340,7 +364,7 @@ export async function updateVocabItemAction(formData: FormData) {
   }
 
   item.word = parsed.data.word;
-  item.reading = parsed.data.reading;
+  item.reading = parsed.data.reading || "";
   item.kanji = parsed.data.kanji || "";
   item.hanviet = parsed.data.hanviet || "";
   item.partOfSpeech = parsed.data.partOfSpeech || "";
@@ -350,6 +374,7 @@ export async function updateVocabItemAction(formData: FormData) {
 
   await saveUserVocabStore(user.id, store);
   revalidatePath("/vocab");
+  redirect(`/vocab?mode=self&lesson=${lesson.id}`);
 }
 
 export async function importAdminLessonToUserAction(formData: FormData) {

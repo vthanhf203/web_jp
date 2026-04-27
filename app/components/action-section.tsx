@@ -10,8 +10,8 @@ type ActionSectionProps = {
 };
 
 export function ActionSection({
-  title = "Bat dau hoc chu de nay",
-  subtitle = "Action Hub - chon nhanh 1 che do hoc.",
+  title = "Bắt đầu học chủ đề này",
+  subtitle = "Action Hub - chọn nhanh 1 chế độ học.",
   flashcardHref,
   quizHref,
   recallHref,
@@ -42,14 +42,14 @@ export function ActionSection({
             className="group inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-200/60 bg-gradient-to-r from-emerald-400/25 to-cyan-500/20 px-4 py-3 text-sm font-bold text-slate-800 shadow-[0_6px_16px_rgba(16,185,129,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_20px_rgba(16,185,129,0.3)]"
           >
             <Brain className="h-4 w-4 text-emerald-700 transition group-hover:scale-110" />
-            Trac nghiem
+            Trắc nghiệm
           </Link>
           <Link
             href={recallHref}
             className="group inline-flex items-center justify-center gap-2 rounded-xl border border-amber-200/60 bg-gradient-to-r from-amber-400/25 to-orange-500/20 px-4 py-3 text-sm font-bold text-slate-800 shadow-[0_6px_16px_rgba(249,115,22,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_20px_rgba(249,115,22,0.3)]"
           >
             <Flame className="h-4 w-4 text-orange-700 transition group-hover:scale-110" />
-            Nhoi nhet
+            Nhồi nhét
           </Link>
         </div>
       </div>

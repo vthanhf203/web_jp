@@ -54,15 +54,15 @@ export default function GrammarPointCards({ items }: GrammarPointCardsProps) {
             className="group block rounded-2xl bg-white px-5 py-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:translate-x-2 hover:shadow-[0_16px_36px_rgb(99,102,241,0.12)]"
           >
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Mau {point.order}
+              Mẫu {point.order}
             </p>
             <p className="mt-2 text-xl font-bold text-slate-800">
-              {point.title || `Mau ${point.order}`}
+              {point.title || `Mẫu ${point.order}`}
             </p>
             {point.meaning ? (
               <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-500">{point.meaning}</p>
             ) : (
-              <p className="mt-2 text-sm leading-relaxed text-slate-400">Chua co mo ta ngan.</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-400">Chưa có mô tả ngắn.</p>
             )}
           </Link>
         </motion.div>
@@ -70,4 +70,3 @@ export default function GrammarPointCards({ items }: GrammarPointCardsProps) {
     </motion.div>
   );
 }
-

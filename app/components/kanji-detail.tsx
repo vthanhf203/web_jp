@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+﻿import Image from "next/image";
+import Link from "next/link";
 import {
   ArrowLeft,
   BookMarked,
@@ -19,6 +20,8 @@ type KanjiDetailItem = {
   meaning: string;
   onReading: string;
   kunReading: string;
+  strokeHint?: string;
+  strokeImage?: string;
   jlptLevel: string;
   strokeCount: number;
   exampleWord: string;
@@ -139,7 +142,10 @@ export function KanjiDetail({
   coreRelatedWords,
 }: Props) {
   return (
-    <section className="grid gap-5 lg:grid-cols-[1.5fr_0.9fr]" id={`kanji-${selectedKanji.id}`}>
+    <section
+      className="grid gap-5 scroll-mt-28 lg:scroll-mt-36 lg:grid-cols-[1.5fr_0.9fr]"
+      id={`kanji-${selectedKanji.id}`}
+    >
       <article className="relative overflow-hidden rounded-3xl bg-white/84 p-5 shadow-[0_20px_50px_rgba(15,23,42,0.08)] backdrop-blur-md sm:p-6">
         <div className="pointer-events-none absolute -left-12 top-0 h-40 w-40 rounded-full bg-cyan-200/35 blur-3xl" />
         <div className="pointer-events-none absolute -right-8 bottom-0 h-36 w-36 rounded-full bg-indigo-200/35 blur-3xl" />
@@ -149,7 +155,7 @@ export function KanjiDetail({
             href={returnToHref}
             scroll={false}
             className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-[0_8px_20px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:text-slate-900"
-            aria-label="Quay lai"
+            aria-label="Quay lại"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -166,7 +172,7 @@ export function KanjiDetail({
               }`}
             >
               <Plus className="h-3.5 w-3.5" />
-              {selectedKanjiPicked ? "Da them" : "Flashcard"}
+              {selectedKanjiPicked ? "Đã thêm" : "Flashcard"}
             </Link>
 
             <form action={toggleBookmarkAction}>
@@ -180,7 +186,7 @@ export function KanjiDetail({
               <input
                 type="hidden"
                 name="subtitle"
-                value={`${selectedKanji.jlptLevel} - ${selectedKanji.strokeCount} net`}
+                value={`${selectedKanji.jlptLevel} - ${selectedKanji.strokeCount} nét`}
               />
               <input type="hidden" name="returnTo" value={returnToHref} />
               <button
@@ -190,7 +196,7 @@ export function KanjiDetail({
                 {selectedKanjiBookmarked ? (
                   <>
                     <BookMarked className="h-3.5 w-3.5 text-amber-600" />
-                    Bo bookmark
+                    Bỏ bookmark
                   </>
                 ) : (
                   <>
@@ -221,7 +227,7 @@ export function KanjiDetail({
 
             <div className="relative mt-5 rounded-2xl bg-white/80 p-4 shadow-[0_10px_22px_rgba(15,23,42,0.08)]">
               <h3 className="text-[12px] font-semibold uppercase tracking-[0.32em] text-slate-400">
-                Am On / Kun
+                Âm On / Kun
               </h3>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl bg-sky-50/90 p-3">
@@ -236,6 +242,28 @@ export function KanjiDetail({
                 </div>
               </div>
             </div>
+
+            <div className="relative mt-4 rounded-2xl bg-white/80 p-4 shadow-[0_10px_22px_rgba(15,23,42,0.08)]">
+              <h3 className="text-[12px] font-semibold uppercase tracking-[0.32em] text-slate-400">
+                Hướng dẫn nét viết
+              </h3>
+              {selectedKanji.strokeImage?.trim() ? (
+                <Image
+                  src={selectedKanji.strokeImage}
+                  alt={`Hướng dẫn nét cho ${selectedKanji.character}`}
+                  width={1200}
+                  height={900}
+                  className="mt-2 w-full rounded-xl border border-slate-200 bg-white object-contain"
+                />
+              ) : null}
+              {selectedKanji.strokeHint?.trim() ? (
+                <p className="mt-2 text-sm leading-6 text-slate-700">{selectedKanji.strokeHint}</p>
+              ) : (
+                <p className="mt-2 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-700">
+                  Chưa có dữ liệu hướng dẫn nét (strokeHint) trong JSON cho chữ này.
+                </p>
+              )}
+            </div>
           </article>
 
           <div className="flex flex-col gap-4">
@@ -244,7 +272,7 @@ export function KanjiDetail({
               <div className="mt-4 rounded-2xl bg-white/85 p-4 shadow-[0_10px_20px_rgba(15,23,42,0.06)]">
                 <p className="inline-flex items-center gap-1 text-sm font-bold text-orange-500">
                   <Sparkles className="h-4 w-4" />
-                  Goi y hoc nhanh
+                  Gợi ý học nhanh
                 </p>
                 <p className="mt-2 text-sm text-slate-700">
                   <strong>{selectedKanji.exampleWord}</strong> - {selectedKanji.exampleMeaning}
@@ -258,7 +286,7 @@ export function KanjiDetail({
       <aside>
         <article className="relative overflow-hidden rounded-3xl bg-white/84 p-5 shadow-[0_18px_44px_rgba(15,23,42,0.08)] backdrop-blur-md">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-xl font-black text-orange-500">Tu vung lien quan</h3>
+            <h3 className="text-xl font-black text-orange-500">Từ vựng liên quan</h3>
             <Link href={relatedFlashcardHref} className="text-sm font-bold text-sky-600 hover:text-sky-700">
               Flashcard -&gt;
             </Link>
@@ -267,12 +295,12 @@ export function KanjiDetail({
           <div className="mt-3 rounded-2xl bg-slate-50/80 p-3">
             <p className="mb-2 inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               <Layers3 className="h-3.5 w-3.5" />
-              Tu JSON Kanji
+              Từ JSON Kanji
             </p>
             <div className="max-h-[200px] space-y-2 overflow-y-auto pr-1">
               {jsonRelatedWords.length === 0 ? (
                 <p className="rounded-xl bg-slate-100 px-3 py-2 text-sm text-slate-600">
-                  Chua co tu nao tu truong relatedVocabularies cho chu {selectedKanji.character}.
+                  Chưa có từ nào từ trường relatedVocabularies cho chữ {selectedKanji.character}.
                 </p>
               ) : (
                 jsonRelatedWords.slice(0, 20).map((entry) => relatedWordRow(entry, selectedKanji.character))
@@ -283,12 +311,12 @@ export function KanjiDetail({
           <div className="mt-3 rounded-2xl bg-slate-50/80 p-3">
             <p className="mb-2 inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               <Layers3 className="h-3.5 w-3.5" />
-              Nguon admin upload
+              Nguồn admin upload
             </p>
             <div className="max-h-[230px] space-y-2 overflow-y-auto pr-1">
               {adminRelatedWords.length === 0 ? (
                 <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-700">
-                  Chua co tu nao trong thu vien admin co chu {selectedKanji.character}.
+                  Chưa có từ nào trong thư viện admin có chữ {selectedKanji.character}.
                 </p>
               ) : (
                 adminRelatedWords.slice(0, 20).map((entry) =>
@@ -301,12 +329,12 @@ export function KanjiDetail({
           <div className="mt-3 rounded-2xl bg-slate-50/80 p-3">
             <p className="mb-2 inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               <CircleDashed className="h-3.5 w-3.5" />
-              Tu vung he thong
+              Từ vựng hệ thống
             </p>
             <div className="max-h-[180px] space-y-2 overflow-y-auto pr-1">
               {coreRelatedWords.length === 0 ? (
                 <p className="rounded-xl bg-slate-100 px-3 py-2 text-sm text-slate-600">
-                  Chua co muc nao trong CSDL vocab he thong.
+                  Chưa có mục nào trong CSDL vocab hệ thống.
                 </p>
               ) : (
                 coreRelatedWords.slice(0, 12).map((entry) =>
@@ -318,11 +346,13 @@ export function KanjiDetail({
 
           <div className="mt-3 inline-flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1.5 text-xs font-semibold text-violet-700">
             <Wand2 className="h-3.5 w-3.5" />
-            Nhan de nghe va hoc nhanh
+            Nhấn để nghe và học nhanh
           </div>
         </article>
       </aside>
     </section>
   );
 }
+
+
 

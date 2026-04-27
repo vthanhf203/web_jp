@@ -106,9 +106,9 @@ export default async function AdminQuizPage(props: { searchParams: SearchParams 
       <div className="rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800">Admin bai tap</h1>
+            <h1 className="text-3xl font-bold text-slate-800">Admin bài tập</h1>
             <p className="mt-1 text-sm text-slate-600">
-              Upload va quan ly bo cau hoi quiz de hoc vien luyen tap va thi thu.
+              Upload và quản lý bộ câu hỏi quiz để học viên luyện tập và thi thử.
             </p>
           </div>
           <Link href="/quiz" className="btn-soft">
@@ -142,7 +142,7 @@ export default async function AdminQuizPage(props: { searchParams: SearchParams 
                   : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
               }`}
             >
-              Tat ca
+              Tất cả
             </Link>
             {categories.map((entry) => (
               <Link
@@ -162,9 +162,9 @@ export default async function AdminQuizPage(props: { searchParams: SearchParams 
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
-        <h2 className="text-xl font-bold text-slate-800">Upload bai tap quiz</h2>
+        <h2 className="text-xl font-bold text-slate-800">Upload bài tập quiz</h2>
         <p className="mt-1 text-sm text-slate-600">
-          Moi dong ho tro: level, category, prompt, optionA, optionB, optionC, optionD, correctOption, explanation.
+          Mỗi dòng hỗ trợ: level, category, prompt, optionA, optionB, optionC, optionD, correctOption, explanation.
         </p>
         <div className="mt-3">
           <AdminQuizImportForm />
@@ -174,7 +174,7 @@ export default async function AdminQuizPage(props: { searchParams: SearchParams 
       <div className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-bold text-slate-800">
-            Danh sach cau hoi {selectedLevel}
+            Danh sách câu hỏi {selectedLevel}
             {selectedCategory ? ` - ${selectedCategory}` : ""} ({questionList.length})
           </h2>
           <form action={clearAdminQuizQuestionsAction}>
@@ -184,14 +184,14 @@ export default async function AdminQuizPage(props: { searchParams: SearchParams 
               type="submit"
               className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-sm font-semibold text-rose-700 hover:bg-rose-100"
             >
-              Xoa danh sach dang loc
+              Xóa danh sách đang lọc
             </button>
           </form>
         </div>
 
         {questionList.length === 0 ? (
           <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
-            Chua co bai tap nao trong bo loc nay.
+            Chưa có bài tập nào trong bộ lọc này.
           </p>
         ) : (
           <div className="mt-3 max-h-[60vh] space-y-2 overflow-y-auto pr-1">
@@ -205,21 +205,21 @@ export default async function AdminQuizPage(props: { searchParams: SearchParams 
                     <p className="mt-1 text-sm font-semibold text-slate-900">{item.prompt}</p>
                     <div className="mt-2 grid gap-1 text-sm text-slate-700 md:grid-cols-2">
                       <p>
-                        A. {item.optionA} {item.correctOption === "A" ? <strong className="text-emerald-700">(Dung)</strong> : null}
+                        A. {item.optionA} {item.correctOption === "A" ? <strong className="text-emerald-700">(Đúng)</strong> : null}
                       </p>
                       <p>
-                        B. {item.optionB} {item.correctOption === "B" ? <strong className="text-emerald-700">(Dung)</strong> : null}
+                        B. {item.optionB} {item.correctOption === "B" ? <strong className="text-emerald-700">(Đúng)</strong> : null}
                       </p>
                       <p>
-                        C. {item.optionC} {item.correctOption === "C" ? <strong className="text-emerald-700">(Dung)</strong> : null}
+                        C. {item.optionC} {item.correctOption === "C" ? <strong className="text-emerald-700">(Đúng)</strong> : null}
                       </p>
                       <p>
-                        D. {item.optionD} {item.correctOption === "D" ? <strong className="text-emerald-700">(Dung)</strong> : null}
+                        D. {item.optionD} {item.correctOption === "D" ? <strong className="text-emerald-700">(Đúng)</strong> : null}
                       </p>
                     </div>
                     {item.explanation ? (
                       <p className="mt-2 rounded-lg bg-white px-3 py-2 text-xs text-slate-600">
-                        Giai thich: {item.explanation}
+                        Giải thích: {item.explanation}
                       </p>
                     ) : null}
                   </div>
@@ -230,7 +230,7 @@ export default async function AdminQuizPage(props: { searchParams: SearchParams 
                       type="submit"
                       className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100"
                     >
-                      Xoa
+                      Xóa
                     </button>
                   </form>
                 </div>
@@ -242,4 +242,3 @@ export default async function AdminQuizPage(props: { searchParams: SearchParams 
     </section>
   );
 }
-

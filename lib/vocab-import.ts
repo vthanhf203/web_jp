@@ -1,4 +1,4 @@
-﻿export type ImportedVocabRow = {
+export type ImportedVocabRow = {
   word: string;
   reading: string;
   kanji: string;
@@ -6,6 +6,18 @@
   partOfSpeech: string;
   meaning: string;
 };
+
+export type ImportedVocabLessonBundle = {
+  lessons: Array<{
+    key: string;
+    title: string;
+    jlptLevel?: string;
+    rows: ImportedVocabRow[];
+  }>;
+  groups: string[];
+};
+
+import { formatVocabLabel } from "@/lib/vietnamese-labels";
 
 function normalizeText(value: unknown): string {
   if (typeof value !== "string") {
@@ -59,30 +71,12 @@ function looksLikePartOfSpeech(value: string): boolean {
 }
 
 function rowFromObject(source: Record<string, unknown>): ImportedVocabRow | null {
-  const word = pickString(source, [
-    "word",
-    "japanese",
-    "jp",
-    "term",
-    "text",
-    "kana",
-  ]);
-  const kanji = pickString(source, [
-    "kanji",
-    "surface",
-    "hantu",
-    "hanTu",
-    "hanzi",
-  ]);
+  const word = pickString(source, ["word", "japanese", "jp", "term", "text", "kana"]);
+  const kanji = pickString(source, ["kanji", "surface", "hantu", "hanTu", "hanzi"]);
   const reading = pickString(source, ["reading", "hiragana", "yomi", "furigana"]);
   const hanviet = pickString(source, ["hanviet", "han_viet", "hanViet", "sinoVietnamese"]);
   const meaning = pickString(source, ["meaning", "translation", "vi", "vn", "nghia"]);
-  const partOfSpeech = pickString(source, [
-    "partOfSpeech",
-    "type",
-    "pos",
-    "grammarType",
-  ]);
+  const partOfSpeech = pickString(source, ["partOfSpeech", "type", "pos", "grammarType"]);
 
   const resolvedWord = word || kanji;
   if (!resolvedWord || !meaning) {
@@ -211,6 +205,283 @@ function parseJsonInput(rawInput: string): ImportedVocabRow[] {
   }
 
   return [];
+}
+
+function normalizeBundleTitle(rawKey: string): string {
+  const key = rawKey.trim();
+  if (!key) {
+    return "Lesson";
+  }
+  return formatVocabLabel(key);
+}
+
+function lessonRowsFromUnknown(input: unknown): ImportedVocabRow[] {
+  if (Array.isArray(input)) {
+    return input
+      .map((item) =>
+        item && typeof item === "object"
+          ? rowFromObject(item as Record<string, unknown>)
+          : null
+      )
+      .filter((item): item is ImportedVocabRow => !!item);
+  }
+
+  if (input && typeof input === "object") {
+    const source = input as Record<string, unknown>;
+    const listCandidate = source.items ?? source.vocab ?? source.words ?? source.data ?? [];
+    if (Array.isArray(listCandidate)) {
+      return listCandidate
+        .map((item) =>
+          item && typeof item === "object"
+            ? rowFromObject(item as Record<string, unknown>)
+            : null
+        )
+        .filter((item): item is ImportedVocabRow => !!item);
+    }
+  }
+
+  return [];
+}
+
+function parseLessonTokens(rawLesson: unknown): string[] {
+  if (typeof rawLesson !== "string") {
+    return [];
+  }
+
+  return rawLesson
+    .split(/[,\|;/]+/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+}
+
+function normalizeLessonKey(rawKey: string): string {
+  return rawKey
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_");
+}
+
+export function parseVocabLessonBundleInput(rawInput: string): ImportedVocabLessonBundle {
+  const text = rawInput.trim();
+  if (!text) {
+    return { lessons: [], groups: [] };
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text) as unknown;
+  } catch {
+    return { lessons: [], groups: [] };
+  }
+
+  if (!parsed || typeof parsed !== "object") {
+    return { lessons: [], groups: [] };
+  }
+
+  if (Array.isArray(parsed)) {
+    const lessons: ImportedVocabLessonBundle["lessons"] = [];
+    const groups: string[] = [];
+    const lessonBuckets = new Map<
+      string,
+      { key: string; title: string; jlptLevel?: string; rows: ImportedVocabRow[] }
+    >();
+
+    for (let index = 0; index < parsed.length; index += 1) {
+      const node = parsed[index];
+      if (!node || typeof node !== "object") {
+        continue;
+      }
+
+      const source = node as Record<string, unknown>;
+      const rows = lessonRowsFromUnknown(source);
+      if (rows.length === 0) {
+        continue;
+      }
+
+      const groupKey =
+        normalizeText(source.categoryKey) ||
+        normalizeText(source.groupKey) ||
+        normalizeText(source.key) ||
+        normalizeText(source.id);
+      const groupTitle =
+        normalizeText(source.categoryName) ||
+        normalizeText(source.title) ||
+        normalizeText(source.lessonTitle) ||
+        normalizeText(source.name);
+      const fallbackKey = groupKey || groupTitle || `lesson_${index + 1}`;
+      const bucketKey = normalizeLessonKey(fallbackKey);
+      const title = normalizeBundleTitle(groupTitle || fallbackKey);
+      const jlptLevel = normalizeText(source.jlptLevel) || normalizeText(source.level);
+
+      if (groupKey) {
+        groups.push(groupKey);
+      }
+
+      const existing = lessonBuckets.get(bucketKey);
+      if (existing) {
+        existing.rows.push(...rows.map((row) => ({ ...row })));
+        if (!existing.jlptLevel && jlptLevel) {
+          existing.jlptLevel = jlptLevel;
+        }
+        continue;
+      }
+
+      lessonBuckets.set(bucketKey, {
+        key: bucketKey,
+        title,
+        jlptLevel: jlptLevel || undefined,
+        rows: rows.map((row) => ({ ...row })),
+      });
+    }
+
+    lessons.push(...Array.from(lessonBuckets.values()));
+    return { lessons, groups };
+  }
+
+  const root = parsed as Record<string, unknown>;
+  const groups = Array.isArray(root.groups)
+    ? root.groups.filter(
+        (item): item is string => typeof item === "string" && item.trim().length > 0
+      )
+    : [];
+
+  const lessons: ImportedVocabLessonBundle["lessons"] = [];
+  const lessonsNode = root.lessons;
+
+  if (lessonsNode && typeof lessonsNode === "object" && !Array.isArray(lessonsNode)) {
+    const lessonRecord = lessonsNode as Record<string, unknown>;
+    for (const [lessonKey, lessonValue] of Object.entries(lessonRecord)) {
+      const rows = lessonRowsFromUnknown(lessonValue);
+      if (rows.length === 0) {
+        continue;
+      }
+
+      let jlptLevel = "";
+      if (lessonValue && typeof lessonValue === "object" && !Array.isArray(lessonValue)) {
+        const valueObj = lessonValue as Record<string, unknown>;
+        jlptLevel =
+          normalizeText(valueObj.jlptLevel) ||
+          normalizeText(valueObj.level) ||
+          normalizeText(root.jlptLevel) ||
+          normalizeText(root.level);
+      } else {
+        jlptLevel = normalizeText(root.jlptLevel) || normalizeText(root.level);
+      }
+
+      lessons.push({
+        key: lessonKey,
+        title: normalizeBundleTitle(lessonKey),
+        jlptLevel: jlptLevel || undefined,
+        rows,
+      });
+    }
+  } else if (Array.isArray(lessonsNode)) {
+    for (let index = 0; index < lessonsNode.length; index += 1) {
+      const lessonNode = lessonsNode[index];
+      if (!lessonNode || typeof lessonNode !== "object") {
+        continue;
+      }
+
+      const lessonObj = lessonNode as Record<string, unknown>;
+      const rows = lessonRowsFromUnknown(lessonObj);
+      if (rows.length === 0) {
+        continue;
+      }
+
+      const rawTitle =
+        normalizeText(lessonObj.title) ||
+        normalizeText(lessonObj.lessonTitle) ||
+        normalizeText(lessonObj.name) ||
+        normalizeText(lessonObj.id) ||
+        `Lesson ${index + 1}`;
+
+      const jlptLevel =
+        normalizeText(lessonObj.jlptLevel) ||
+        normalizeText(lessonObj.level) ||
+        normalizeText(root.jlptLevel) ||
+        normalizeText(root.level);
+
+      lessons.push({
+        key: `lesson_${index + 1}`,
+        title: normalizeBundleTitle(rawTitle),
+        jlptLevel: jlptLevel || undefined,
+        rows,
+      });
+    }
+  } else {
+    // Support structure grouped by category:
+    // { "xung_ho_chao_hoi": [ {..., lesson: "bai_1"} ], ... }
+    const groupedEntries = Object.entries(root).filter(
+      ([key, value]) => key !== "groups" && Array.isArray(value)
+    );
+    if (groupedEntries.length > 0) {
+      const lessonBuckets = new Map<
+        string,
+        { key: string; title: string; jlptLevel?: string; rows: ImportedVocabRow[] }
+      >();
+
+      for (const [groupKey, groupValue] of groupedEntries) {
+        const groupRows = Array.isArray(groupValue) ? groupValue : [];
+        for (const entry of groupRows) {
+          if (!entry || typeof entry !== "object") {
+            continue;
+          }
+
+          const source = entry as Record<string, unknown>;
+          const row = rowFromObject(source);
+          if (!row) {
+            continue;
+          }
+
+          const jlptLevel =
+            normalizeText(source.jlptLevel) ||
+            normalizeText(source.level) ||
+            normalizeText(root.jlptLevel) ||
+            normalizeText(root.level);
+
+          const lessonTokens = parseLessonTokens(
+            source.lesson ?? source.lessonId ?? source.bai ?? source.deck
+          );
+          const targetLessonTokens = lessonTokens.length > 0 ? lessonTokens : [groupKey];
+
+          for (const token of targetLessonTokens) {
+            const bucketKey = normalizeLessonKey(token);
+            const existing = lessonBuckets.get(bucketKey);
+            if (existing) {
+              existing.rows.push({ ...row });
+              if (!existing.jlptLevel && jlptLevel) {
+                existing.jlptLevel = jlptLevel;
+              }
+              continue;
+            }
+
+            lessonBuckets.set(bucketKey, {
+              key: bucketKey,
+              title: normalizeBundleTitle(token),
+              jlptLevel: jlptLevel || undefined,
+              rows: [{ ...row }],
+            });
+          }
+        }
+      }
+
+      lessons.push(...Array.from(lessonBuckets.values()));
+    }
+  }
+
+  if (lessons.length === 0) {
+    const directRows = lessonRowsFromUnknown(root);
+    if (directRows.length > 0) {
+      lessons.push({
+        key: "lesson_1",
+        title: "Lesson 1",
+        jlptLevel: normalizeText(root.jlptLevel) || normalizeText(root.level) || undefined,
+        rows: directRows,
+      });
+    }
+  }
+
+  return { lessons, groups };
 }
 
 function parseJsonLinesInput(rawInput: string): ImportedVocabRow[] {

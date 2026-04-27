@@ -1,0 +1,126 @@
+.pageWrap {
+  min-height: calc(100vh - 160px);
+  padding-bottom: 2rem;
+}
+
+.toolbar {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.paper {
+  margin: 0 auto;
+  width: min(297mm, 100%);
+  border: 1px solid #d7dde8;
+  border-radius: 1rem;
+  background: #fff;
+  padding: 10mm;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid #cfd8e6;
+  padding-bottom: 0.55rem;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #1e293b;
+}
+
+.meta {
+  font-size: 0.74rem;
+  color: #64748b;
+}
+
+.tableWrap {
+  margin-top: 0.75rem;
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+  color: #1e293b;
+}
+
+.table th,
+.table td {
+  border: 1px solid #d7dde8;
+  padding: 0.28rem 0.34rem;
+  vertical-align: top;
+  line-height: 1.35;
+}
+
+.table th {
+  background: #eef3fb;
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #334155;
+  text-align: left;
+}
+
+.table th:first-child,
+.table td:first-child {
+  width: 2.2rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.table tbody tr:nth-child(even) {
+  background: #f8fbff;
+}
+
+@media print {
+  :global(body) {
+    background: #fff !important;
+  }
+
+  :global(header),
+  :global(aside),
+  :global([role="status"][aria-live="polite"]) {
+    display: none !important;
+  }
+
+  :global(main) {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .toolbar {
+    display: none !important;
+  }
+
+  .paper {
+    width: 100%;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .pageWrap {
+    padding: 0;
+    min-height: auto;
+  }
+}
+
+@page {
+  size: A4 landscape;
+  margin: 10mm;
+}

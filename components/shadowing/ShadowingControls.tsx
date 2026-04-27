@@ -52,7 +52,7 @@ export default function ShadowingControls({
     <section className={styles.panel}>
       <div className={styles.topRow}>
         <label className={styles.switchRow}>
-          <span className={styles.switchLabel}>Che do shadowing</span>
+          <span className={styles.switchLabel}>Chế độ shadowing</span>
           <span className={styles.switchWrap}>
             <input
               type="checkbox"
@@ -80,20 +80,20 @@ export default function ShadowingControls({
 
       {isShadowingMode ? (
         <div className={styles.shadowingBox}>
-          <p className={styles.shadowingTitle}>Nhai lai cau nay ^</p>
+          <p className={styles.shadowingTitle}>Nhại lại câu này ^</p>
           <p className={styles.shadowingMeta}>
-            {currentSegment ? `${currentIndex + 1}/${segments.length}: ${currentSegment.text}` : "Chua co cau hien tai."}
+            {currentSegment ? `${currentIndex + 1}/${segments.length}: ${currentSegment.text}` : "Chưa có câu hiện tại."}
           </p>
 
           <div className={styles.navRow}>
             <button type="button" className={styles.navButton} disabled={!canPrev} onClick={onPrev}>
-              {"<-"} Cau truoc
+              {"<-"} Câu trước
             </button>
             <button type="button" className={styles.navButtonPrimary} onClick={onReplay}>
-              Phat lai
+              Phát lại
             </button>
             <button type="button" className={styles.navButton} disabled={!canNext} onClick={onNext}>
-              Cau tiep {"->"}
+              Câu tiếp {"->"}
             </button>
           </div>
         </div>
@@ -101,7 +101,7 @@ export default function ShadowingControls({
 
       <label className={styles.loopToggle}>
         <input type="checkbox" checked={isLooping} onChange={onToggleLoop} />
-        <span>Lap cau hien tai (A/B)</span>
+        <span>Lặp câu hiện tại (A/B)</span>
       </label>
     </section>
   );

@@ -97,16 +97,34 @@ const itemVariants = {
 
 function detectAccent(title: string, description: string, index: number): Accent {
   const source = `${title} ${description}`.toLowerCase();
-  if (source.includes("dong tu") || source.includes("verb")) {
+  if (source.includes("động từ") || source.includes("dong tu") || source.includes("verb")) {
     return "sky";
   }
-  if (source.includes("tinh tu") || source.includes("adjective")) {
+  if (source.includes("tính từ") || source.includes("tinh tu") || source.includes("adjective")) {
     return "violet";
   }
-  if (source.includes("so dem") || source.includes("ngay") || source.includes("gio") || source.includes("thoi tiet")) {
+  if (
+    source.includes("số đếm") ||
+    source.includes("so dem") ||
+    source.includes("ngày") ||
+    source.includes("ngay") ||
+    source.includes("giờ") ||
+    source.includes("gio") ||
+    source.includes("thời tiết") ||
+    source.includes("thoi tiet")
+  ) {
     return "amber";
   }
-  if (source.includes("gia dinh") || source.includes("con nguoi") || source.includes("suc khoe") || source.includes("doi song")) {
+  if (
+    source.includes("gia đình") ||
+    source.includes("gia dinh") ||
+    source.includes("con người") ||
+    source.includes("con nguoi") ||
+    source.includes("sức khỏe") ||
+    source.includes("suc khoe") ||
+    source.includes("đời sống") ||
+    source.includes("doi song")
+  ) {
     return "lime";
   }
   const cycle: Accent[] = ["sky", "violet", "amber", "lime"];
@@ -165,6 +183,8 @@ export function VocabLibraryBento({
               >
                 <p className="text-sm font-bold">{item.level}</p>
                 <p className="text-[10px] uppercase tracking-wide opacity-80">{item.hint}</p>
+                <p className="mt-0.5 text-[11px] font-semibold">{item.vocabCount} từ</p>
+                <p className="text-[10px] opacity-70">{item.lessonCount} bài</p>
               </Link>
             ))}
           </div>
@@ -177,12 +197,12 @@ export function VocabLibraryBento({
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Fresh Bento Vocabulary</p>
           <h2 className="mt-1 text-4xl font-black leading-tight text-slate-900 sm:text-6xl">JLPT {selectedLevel}</h2>
           <p className="mt-3 max-w-3xl text-sm text-slate-600 sm:text-base">
-            Bo cuc Bento card-based sang, thoang va de theo doi tien do hoc tung chu de.
+            Bố cục Bento card-based sáng, thoáng và dễ theo dõi tiến độ học từng chủ đề.
           </p>
 
           <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
             <div className="mb-2 flex items-center justify-between text-xs text-slate-600 sm:text-sm">
-              <span>Da hoan thanh: {completedTopicCount}/{totalTopicCount || 0} chu de</span>
+              <span>Đã hoàn thành: {completedTopicCount}/{totalTopicCount || 0} chủ đề</span>
               <span>{clampedCompletion}%</span>
             </div>
             <div className="h-3 overflow-hidden rounded-full bg-slate-200">
@@ -199,7 +219,7 @@ export function VocabLibraryBento({
 
       {lessons.length === 0 ? (
         <div className="rounded-3xl border border-amber-200 bg-amber-50 p-6 text-amber-700">
-          Chua co chu de nao trong cap do nay. Ban co the them du lieu tai /admin/vocab.
+          Chưa có chủ đề nào trong cấp độ này. Bạn có thể thêm dữ liệu tại /admin/vocab.
         </div>
       ) : (
         <motion.div
@@ -225,7 +245,7 @@ export function VocabLibraryBento({
               >
                 <div className={`pointer-events-none absolute inset-0 opacity-75 ${accentStyle.glowClass}`} />
                 <div className="pointer-events-none absolute inset-0 rounded-3xl border border-transparent opacity-0 shadow-[0_0_0_1px_rgba(186,230,253,0.9),0_12px_28px_rgba(148,163,184,0.18)] transition group-hover:opacity-100" />
-                <Link href={lesson.href} className="absolute inset-0 z-10" aria-label={`Mo chu de ${lesson.title}`} />
+                <Link href={lesson.href} className="absolute inset-0 z-10" aria-label={`Mở chủ đề ${lesson.title}`} />
 
                 <div className="relative z-0 flex h-full flex-col justify-between">
                   <div className="flex items-start justify-between gap-3">
@@ -245,9 +265,9 @@ export function VocabLibraryBento({
                   </div>
 
                   <div className="mt-5 flex items-center justify-between">
-                    <p className="text-lg font-bold text-slate-700">{lesson.wordCount} tu vung</p>
+                    <p className="text-lg font-bold text-slate-700">{lesson.wordCount} từ vựng</p>
                     <span className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-600">
-                      Mo chu de
+                      Mở chủ đề
                     </span>
                   </div>
                 </div>

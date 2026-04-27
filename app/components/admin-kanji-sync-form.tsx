@@ -58,9 +58,8 @@ export function AdminKanjiSyncForm() {
         className="rounded-xl border border-sky-300 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 transition hover:bg-sky-100 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={pending}
       >
-        {pending ? "Dang sync..." : "Sync Kanji tu URL/API"}
+        {pending ? "Đang sync..." : "Sync Kanji từ URL/API"}
       </button>
     </form>
   );
 }
-

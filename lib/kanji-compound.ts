@@ -162,7 +162,7 @@ export function buildKanjiCompoundWords(options: {
       kanji: displayKanji,
       hanviet: "",
       meaning: item.meaning,
-      sourceLabel: "CSDL he thong",
+      sourceLabel: "CSDL hệ thống",
       sourceType: "core",
       jlptLevel: options.targetLevel,
     });

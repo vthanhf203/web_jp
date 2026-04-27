@@ -68,13 +68,13 @@ export default function UploadOrLink() {
       if (tab === "youtube") {
         const url = youtubeUrl.trim();
         if (!isYoutubeLink(url)) {
-          throw new Error("Link YouTube khong hop le.");
+          throw new Error("Link YouTube không hợp lệ.");
         }
         body.set("type", "youtube");
         body.set("url", url);
       } else {
         if (!selectedFile) {
-          throw new Error("Ban chua chon file.");
+          throw new Error("Bạn chưa chọn file.");
         }
         body.set("type", "mp4");
         body.set("file", selectedFile);
@@ -87,14 +87,14 @@ export default function UploadOrLink() {
       };
 
       if (!response.ok) {
-        const serverMessage = payload?.message ?? "Khong the transcribe.";
+        const serverMessage = payload?.message ?? "Không thể transcribe.";
         const serverDetail = typeof payload?.detail === "string" ? payload.detail.trim() : "";
         throw new Error(serverDetail ? `${serverMessage} (${serverDetail})` : serverMessage);
       }
 
       const parsedSegments = normalizeSegments(payload?.segments);
       if (parsedSegments.length === 0) {
-        throw new Error("Khong nhan duoc subtitle nao.");
+        throw new Error("Không nhận được subtitle nào.");
       }
 
       setSegments(parsedSegments);
@@ -109,7 +109,7 @@ export default function UploadOrLink() {
       const fallbackTitle = tab === "youtube" ? "YouTube Shadowing" : selectedFile?.name ?? "Uploaded Clip";
       setVideoTitle(typeof payload?.title === "string" && payload.title.trim() ? payload.title.trim() : fallbackTitle);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Da co loi xay ra.";
+      const message = error instanceof Error ? error.message : "Đã có lỗi xảy ra.";
       setErrorMessage(message);
     } finally {
       setLoading(false);
@@ -136,7 +136,7 @@ export default function UploadOrLink() {
     <section className={styles.wrapper}>
       <header className={styles.header}>
         <h1 className={styles.title}>Shadowing Lab</h1>
-        <p className={styles.subtitle}>Dan YouTube hoac tai video len de tao subtitle tieng Nhat dong bo.</p>
+        <p className={styles.subtitle}>Dán YouTube hoặc tải video lên để tạo subtitle tiếng Nhật đồng bộ.</p>
       </header>
 
       <div className={styles.tabs}>
@@ -152,14 +152,14 @@ export default function UploadOrLink() {
           onClick={() => setTab("upload")}
           className={`${styles.tabButton} ${tab === "upload" ? styles.tabButtonActive : ""}`}
         >
-          Tai video len
+          Tải video lên
         </button>
       </div>
 
       {tab === "youtube" ? (
         <div className={styles.panel}>
           <label className={styles.label} htmlFor="youtube-url">
-            Dan link YouTube vao day...
+            Dán link YouTube vào đây...
           </label>
           <input
             id="youtube-url"
@@ -170,7 +170,7 @@ export default function UploadOrLink() {
             placeholder="https://www.youtube.com/watch?v=..."
           />
           <button type="button" className={styles.submitButton} onClick={runTranscribe} disabled={!canSubmit}>
-            Bat dau hoc
+            Bắt đầu học
           </button>
         </div>
       ) : (
@@ -185,18 +185,18 @@ export default function UploadOrLink() {
             onDrop={onDrop}
           >
             <input className={styles.hiddenInput} type="file" accept={ALLOWED_ACCEPT} onChange={onFileSelect} />
-            <span className={styles.dropTitle}>Keo tha file vao day</span>
-            <span className={styles.dropHint}>Hoac bam de chon file .mp4 / .mov / .m4a / .mp3</span>
+            <span className={styles.dropTitle}>Kéo thả file vào đây</span>
+            <span className={styles.dropHint}>Hoặc bấm để chọn file .mp4 / .mov / .m4a / .mp3</span>
             {selectedFile ? <span className={styles.fileName}>{selectedFile.name}</span> : null}
           </label>
 
           <button type="button" className={styles.submitButton} onClick={runTranscribe} disabled={!canSubmit}>
-            Tai len va hoc
+            Tải lên và học
           </button>
         </div>
       )}
 
-      {isLoading ? <p className={styles.loading}>Dang xu ly audio...</p> : null}
+      {isLoading ? <p className={styles.loading}>Đang xử lý audio...</p> : null}
       {errorMessage ? <p className={styles.error}>{errorMessage}</p> : null}
     </section>
   );

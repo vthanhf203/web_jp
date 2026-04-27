@@ -201,7 +201,7 @@ async function convertToMp3(inputPath: string, outputPath: string): Promise<void
     } catch (cliError) {
       const fluentMessage = fluentError instanceof Error ? fluentError.message : String(fluentError);
       const cliMessage = cliError instanceof Error ? cliError.message : String(cliError);
-      throw new Error(`Khong convert duoc audio. Fluent: ${fluentMessage}. CLI: ${cliMessage}`);
+      throw new Error(`Không convert được audio. Fluent: ${fluentMessage}. CLI: ${cliMessage}`);
     }
   }
 }
@@ -467,7 +467,7 @@ async function downloadYoutubeAudio(url: string, sourcePath: string): Promise<{ 
     }
   }
 
-  throw lastError ?? new Error("Khong tai duoc audio tu YouTube");
+  throw lastError ?? new Error("Không tải được audio từ YouTube");
 }
 
 function mapSegments(raw: unknown, fallbackText: string): Segment[] {
@@ -508,7 +508,7 @@ export async function POST(request: Request) {
     if (!groqApiKey) {
       return NextResponse.json(
         {
-          message: "Chua cai dat GROQ_API_KEY (hay GROQ_API_Key) trong .env.local",
+          message: "Chưa cài đặt GROQ_API_KEY (hay GROQ_API_Key) trong .env.local",
         },
         { status: 500 }
       );
@@ -519,7 +519,7 @@ export async function POST(request: Request) {
     const type = rawType === "youtube" || rawType === "mp4" ? rawType : null;
 
     if (!type) {
-      return NextResponse.json({ message: "Type khong hop le" }, { status: 400 });
+      return NextResponse.json({ message: "Type không hợp lệ" }, { status: 400 });
     }
     sourceType = type;
 
@@ -531,7 +531,7 @@ export async function POST(request: Request) {
       const url = normalizeYoutubeUrl(typeof rawUrl === "string" ? rawUrl.trim() : "");
 
       if (!url || !isYoutubeUrl(url) || !ytdl.validateURL(url)) {
-        return NextResponse.json({ message: "Link YouTube khong hop le" }, { status: 400 });
+        return NextResponse.json({ message: "Link YouTube không hợp lệ" }, { status: 400 });
       }
 
       try {
@@ -568,11 +568,11 @@ export async function POST(request: Request) {
     } else {
       const rawFile = formData.get("file");
       if (!(rawFile instanceof File)) {
-        return NextResponse.json({ message: "Ban chua tai file" }, { status: 400 });
+        return NextResponse.json({ message: "Bạn chưa tải file" }, { status: 400 });
       }
 
       if (rawFile.size > MAX_FILE_BYTES) {
-        return NextResponse.json({ message: "File qua lon, toi da 25MB" }, { status: 400 });
+        return NextResponse.json({ message: "File quá lớn, tối đa 25MB" }, { status: 400 });
       }
 
       const ext = (rawFile.name.split(".").pop() ?? "mp4").toLowerCase();
@@ -617,14 +617,14 @@ export async function POST(request: Request) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     if (message.toLowerCase().includes("25mb") || message.toLowerCase().includes("file qua lon")) {
-      return NextResponse.json({ message: "File qua lon, toi da 25MB" }, { status: 400 });
+      return NextResponse.json({ message: "File quá lớn, tối đa 25MB" }, { status: 400 });
     }
 
     if (sourceType === "youtube" && phase === "youtube-download" && isStatusCodeError(error, 403)) {
       return NextResponse.json(
         {
           message:
-            "YouTube dang chan tai audio video nay (403), va video nay cung khong co transcript public de fallback. Thu video public khac hoac dung tab 'Tai video len'.",
+            "YouTube đang chặn tải audio video này (403), và video này cũng không có transcript public để fallback. Thử video public khác hoặc dùng tab 'Tải video lên'.",
           detail: message,
         },
         { status: 400 }
@@ -634,14 +634,14 @@ export async function POST(request: Request) {
     if (phase === "groq-transcribe" && isStatusCodeError(error, 403)) {
       return NextResponse.json(
         {
-          message: "Groq tu choi yeu cau (403). Kiem tra lai key/quyen model Whisper trong console Groq.",
+          message: "Groq từ chối yêu cầu (403). Kiểm tra lại key/quyền model Whisper trong console Groq.",
           detail: message,
         },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ message: "Transcribe that bai, thu lai", detail: message }, { status: 500 });
+    return NextResponse.json({ message: "Transcribe thất bại, thử lại", detail: message }, { status: 500 });
   } finally {
     await Promise.all(tempPaths.map((item) => removeTempFile(item)));
   }

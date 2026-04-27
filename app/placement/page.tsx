@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 import {
   applyPlacementLevelAction,
@@ -101,47 +101,47 @@ export default async function PlacementPage(props: { searchParams: SearchParams 
       <div className="panel p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Kiem tra dau vao nhanh</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Kiểm tra đầu vào nhanh</h1>
             <p className="mt-1 text-sm text-slate-600">
-              Lam 20 cau, he thong se goi y ban dang o muc nao va de xuat bai phu hop.
+              Làm 20 câu, hệ thống sẽ gợi ý bạn đang ở mức nào và đề xuất bài phù hợp.
             </p>
           </div>
           <Link href="/personal" className="btn-soft text-sm">
-            Quay lai lo trinh
+            Quay lại lộ trình
           </Link>
         </div>
       </div>
 
       {status === "empty" ? (
         <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-          Ban chua chon dap an nao.
+          Bạn chưa chọn đáp án nào.
         </p>
       ) : null}
 
       {total > 0 ? (
         <div className="panel p-5">
-          <p className="text-sm text-slate-600">Ket qua gan nhat</p>
+          <p className="text-sm text-slate-600">Kết quả gần nhất</p>
           <p className="mt-1 text-2xl font-bold text-slate-900">
-            {score}/{total} - Goi y trinh do: {level}
+            {score}/{total} - Gợi ý trình độ: {level}
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <form action={applyPlacementLevelAction}>
               <input type="hidden" name="level" value={level} />
-              <button type="submit" className="btn-primary text-sm">
-                Ap dung level {level} vao tai khoan
-              </button>
-            </form>
-            <p className="text-xs text-slate-500">
-              Level hien tai: {user.level}
-              {personalState.placement ? ` - Lan test: ${personalState.placement.createdAt.slice(0, 10)}` : ""}
-            </p>
+                <button type="submit" className="btn-primary text-sm">
+                Áp dụng level {level} vào tài khoản
+                </button>
+              </form>
+              <p className="text-xs text-slate-500">
+              Level hiện tại: {user.level}
+              {personalState.placement ? ` - Lần test: ${personalState.placement.createdAt.slice(0, 10)}` : ""}
+              </p>
           </div>
         </div>
       ) : null}
 
       {testQuestions.length === 0 ? (
         <div className="panel p-6 text-sm text-slate-600">
-          Chua co du lieu quiz de tao bai test dau vao.
+          Chưa có dữ liệu quiz để tạo bài test đầu vào.
         </div>
       ) : (
         <form action={submitPlacementTestAction} className="space-y-4">
@@ -180,7 +180,7 @@ export default async function PlacementPage(props: { searchParams: SearchParams 
             </article>
           ))}
           <button type="submit" className="btn-primary">
-            Cham bai va goi y level
+            Chấm bài và gợi ý level
           </button>
         </form>
       )}

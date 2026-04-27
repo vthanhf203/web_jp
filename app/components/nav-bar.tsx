@@ -30,9 +30,12 @@ const privateLinks: NavLinkItem[] = [
   { href: "/search", label: "Search", iconPath: "M11 4a7 7 0 105.3 11.6L20 19" },
   { href: "/shadowing", label: "Shadowing", iconPath: "M4 12a8 8 0 0116 0v5a2 2 0 01-2 2h-2v-6h4M4 12v5a2 2 0 002 2h2v-6H4" },
   { href: "/kanji", label: "Kanji", iconPath: "M5 6h14M5 12h14M5 18h14M12 6v12" },
+  { href: "/kanji/worksheet", label: "In PDF Kanji", iconPath: "M7 4h10v4H7zM6 10h12a2 2 0 012 2v5H4v-5a2 2 0 012-2zm2 8h8v2H8z" },
+  { href: "/self-study", label: "Tu hoc chu dong", iconPath: "M4 19h16M6 5h8l4 4v10H6zM10 11h4M10 15h4" },
   { href: "/kanji/roadmap", label: "Lo trinh Kanji", iconPath: "M4 18l6-6 4 4 6-8" },
   { href: "/vocab", label: "Tu vung", iconPath: "M5 4h10a3 3 0 013 3v13H8a3 3 0 01-3-3zM8 4v16" },
   { href: "/grammar", label: "Ngu phap", iconPath: "M6 5h12M6 12h12M6 19h12" },
+  { href: "/conjugation", label: "Chia the", iconPath: "M5 5h14M5 12h14M5 19h8M16 16l3 3 3-3" },
 ];
 
 export async function NavBar() {

@@ -8,11 +8,15 @@ import { requireAdmin } from "@/lib/admin";
 import {
   JLPT_LEVELS,
   loadAdminVocabLibrary,
+  loadAdminVocabImportHistory,
   normalizeJlptLevel,
+  saveAdminVocabImportHistory,
   saveAdminVocabLibrary,
   type AdminVocabLesson,
+  type AdminVocabImportHistoryEntry,
+  type AdminVocabImportLessonChange,
 } from "@/lib/admin-vocab-library";
-import { parseVocabInput } from "@/lib/vocab-import";
+import { parseVocabInput, parseVocabLessonBundleInput } from "@/lib/vocab-import";
 
 export type AdminImportState = {
   status: "idle" | "success" | "error";
@@ -50,6 +54,22 @@ const deleteLessonSchema = z.object({
 const importItemsSchema = z.object({
   lessonId: z.string().min(1),
   rawInput: z.string().min(1),
+});
+
+const importLessonBundleSchema = z.object({
+  rawInput: z.string().min(1),
+  defaultJlptLevel: z.preprocess(
+    (value) => normalizeJlptLevel(value),
+    z.enum(JLPT_LEVELS).default("N5")
+  ),
+});
+
+const rollbackImportSchema = z.object({
+  entryId: z.string().min(1),
+});
+
+const deleteImportHistorySchema = z.object({
+  entryId: z.string().min(1),
 });
 
 const syncItemsFromUrlSchema = z.object({
@@ -106,6 +126,19 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+function normalizeLessonIdentity(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .replace(/_+/g, "_");
+}
+
 function findLesson(lessons: AdminVocabLesson[], lessonId: string): AdminVocabLesson | null {
   return lessons.find((lesson) => lesson.id === lessonId) ?? null;
 }
@@ -114,6 +147,19 @@ function touchSharedPaths() {
   revalidatePath("/admin/vocab");
   revalidatePath("/vocab");
   revalidatePath("/api/vocab-library");
+}
+
+async function appendImportHistoryEntry(
+  entry: Omit<AdminVocabImportHistoryEntry, "id" | "createdAt">
+) {
+  const history = await loadAdminVocabImportHistory();
+  const payload: AdminVocabImportHistoryEntry = {
+    ...entry,
+    id: crypto.randomUUID(),
+    createdAt: nowIso(),
+  };
+  history.unshift(payload);
+  await saveAdminVocabImportHistory(history);
 }
 
 export async function createAdminVocabLessonAction(formData: FormData) {
@@ -233,7 +279,7 @@ export async function importAdminVocabItemsAction(
   if (!parsed.success) {
     return {
       status: "error",
-      message: "Hay chon lesson va nhap du lieu hop le.",
+      message: "Hãy chọn lesson và nhập dữ liệu hợp lệ.",
     };
   }
 
@@ -242,7 +288,7 @@ export async function importAdminVocabItemsAction(
   if (!lesson) {
     return {
       status: "error",
-      message: "Khong tim thay lesson admin.",
+      message: "Không tìm thấy lesson admin.",
     };
   }
 
@@ -250,14 +296,128 @@ export async function importAdminVocabItemsAction(
   if (rows.length === 0) {
     return {
       status: "error",
-      message: "Khong parse duoc du lieu. Thu lai voi JSON hoac moi dong 1 tu.",
+      message: "Không parse được dữ liệu. Thử lại với JSON hoặc mỗi dòng 1 từ.",
     };
   }
   const noKanjiCount = rows.filter((row) => !row.kanji.trim()).length;
 
   const now = nowIso();
-  lesson.items.push(
-    ...rows.map((row) => ({
+  const mappedRows = rows.map((row) => ({
+    id: crypto.randomUUID(),
+    word: row.word,
+    reading: row.reading,
+    kanji: row.kanji || "",
+    hanviet: row.hanviet || "",
+    partOfSpeech: row.partOfSpeech || "",
+    meaning: row.meaning,
+    createdAt: now,
+    updatedAt: now,
+  }));
+
+  lesson.items.push(...mappedRows);
+  lesson.updatedAt = now;
+
+  await saveAdminVocabLibrary(library);
+  await appendImportHistoryEntry({
+    source: "single_lesson",
+    importedRows: mappedRows.length,
+    noKanjiCount,
+    createdLessonIds: [],
+    lessonChanges: [
+      {
+        lessonId: lesson.id,
+        lessonTitle: lesson.title,
+        jlptLevel: lesson.jlptLevel,
+        itemIds: mappedRows.map((row) => row.id),
+      },
+    ],
+  });
+  touchSharedPaths();
+
+  return {
+    status: "success",
+    message:
+      noKanjiCount > 0
+        ? `Đã thêm ${rows.length} từ vào kho admin. Lưu ý: ${noKanjiCount} từ chưa có field kanji nên có thể không hiện ở mục liên quan trên trang Kanji.`
+        : `Đã thêm ${rows.length} từ vào kho admin.`,
+  };
+}
+
+export async function importAdminVocabLessonBundleAction(
+  _prevState: AdminImportState,
+  formData: FormData
+): Promise<AdminImportState> {
+  await requireAdmin();
+
+  const parsed = importLessonBundleSchema.safeParse({
+    rawInput: formData.get("rawInput"),
+    defaultJlptLevel: formData.get("defaultJlptLevel"),
+  });
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "Dữ liệu JSON không hợp lệ.",
+    };
+  }
+
+  const bundle = parseVocabLessonBundleInput(parsed.data.rawInput);
+  if (bundle.lessons.length === 0) {
+    return {
+      status: "error",
+      message:
+        "Không tìm thấy cấu trúc JSON hợp lệ. Hỗ trợ 3 dạng: { lessons: { bai_1: [...] } }, { xung_ho_chao_hoi: [{..., lesson:'bai_1'}], ... } hoặc [{ categoryKey, categoryName, items:[...] }, ...].",
+    };
+  }
+
+  const hardRowLimit = 5000;
+  let remainingRows = hardRowLimit;
+  let importedRows = 0;
+  let createdLessons = 0;
+  let updatedLessons = 0;
+  let noKanjiCount = 0;
+
+  const library = await loadAdminVocabLibrary();
+  const now = nowIso();
+  const lessonChangeMap = new Map<string, AdminVocabImportLessonChange>();
+  const createdLessonIds: string[] = [];
+
+  for (const lessonInput of bundle.lessons) {
+    if (remainingRows <= 0) {
+      break;
+    }
+
+    const rows = lessonInput.rows.slice(0, remainingRows);
+    if (rows.length === 0) {
+      continue;
+    }
+    remainingRows -= rows.length;
+    importedRows += rows.length;
+    noKanjiCount += rows.filter((row) => !row.kanji.trim()).length;
+
+    const lessonLevel = normalizeJlptLevel(
+      lessonInput.jlptLevel || parsed.data.defaultJlptLevel
+    );
+    const lessonTitle = lessonInput.title.trim() || `Admin lesson ${library.lessons.length + 1}`;
+    const normalizedTitle = lessonTitle.toLowerCase();
+    const candidateKeys = new Set<string>([
+      normalizeLessonIdentity(lessonTitle),
+      normalizeLessonIdentity(lessonInput.key || lessonTitle),
+    ]);
+
+    const existingLesson = library.lessons.find((lesson) => {
+      if (lesson.jlptLevel !== lessonLevel) {
+        return false;
+      }
+
+      if (lesson.title.trim().toLowerCase() === normalizedTitle) {
+        return true;
+      }
+
+      const lessonIdentity = normalizeLessonIdentity(lesson.title);
+      return lessonIdentity.length > 0 && candidateKeys.has(lessonIdentity);
+    });
+
+    const mappedRows = rows.map((row) => ({
       id: crypto.randomUUID(),
       word: row.word,
       reading: row.reading,
@@ -267,19 +427,76 @@ export async function importAdminVocabItemsAction(
       meaning: row.meaning,
       createdAt: now,
       updatedAt: now,
-    }))
-  );
-  lesson.updatedAt = now;
+    }));
+
+    if (existingLesson) {
+      existingLesson.items.push(...mappedRows);
+      existingLesson.updatedAt = now;
+      const existingChange = lessonChangeMap.get(existingLesson.id);
+      if (existingChange) {
+        existingChange.itemIds.push(...mappedRows.map((row) => row.id));
+      } else {
+        lessonChangeMap.set(existingLesson.id, {
+          lessonId: existingLesson.id,
+          lessonTitle: existingLesson.title,
+          jlptLevel: existingLesson.jlptLevel,
+          itemIds: mappedRows.map((row) => row.id),
+        });
+      }
+      updatedLessons += 1;
+      continue;
+    }
+
+    const newLesson: AdminVocabLesson = {
+      id: crypto.randomUUID(),
+      title: lessonTitle,
+      description: "",
+      jlptLevel: lessonLevel,
+      createdAt: now,
+      updatedAt: now,
+      items: mappedRows,
+    };
+    library.lessons.push(newLesson);
+    createdLessonIds.push(newLesson.id);
+    lessonChangeMap.set(newLesson.id, {
+      lessonId: newLesson.id,
+      lessonTitle: newLesson.title,
+      jlptLevel: newLesson.jlptLevel,
+      itemIds: mappedRows.map((row) => row.id),
+    });
+    createdLessons += 1;
+  }
+
+  if (importedRows === 0) {
+    return {
+      status: "error",
+      message: "JSON hợp lệ nhưng không có dòng từ vựng nào để import.",
+    };
+  }
 
   await saveAdminVocabLibrary(library);
+  await appendImportHistoryEntry({
+    source: "bundle",
+    importedRows,
+    noKanjiCount,
+    createdLessonIds,
+    lessonChanges: Array.from(lessonChangeMap.values()).map((change) => ({
+      ...change,
+      itemIds: Array.from(new Set(change.itemIds)),
+    })),
+  });
   touchSharedPaths();
+
+  const groupNote =
+    bundle.groups.length > 0 ? ` Nhận diện ${bundle.groups.length} group trong JSON.` : "";
+  const limitNote = remainingRows === 0 ? ` Đã đạt giới hạn ${hardRowLimit} dòng.` : "";
 
   return {
     status: "success",
     message:
       noKanjiCount > 0
-        ? `Da them ${rows.length} tu vao kho admin. Luu y: ${noKanjiCount} tu chua co field kanji nen co the khong hien o muc lien quan tren trang Kanji.`
-        : `Da them ${rows.length} tu vao kho admin.`,
+        ? `Đã xử lý ${createdLessons + updatedLessons} lesson (${createdLessons} mới, ${updatedLessons} cập nhật), tổng ${importedRows} từ. ${noKanjiCount} từ chưa có kanji.${groupNote}${limitNote}`
+        : `Đã xử lý ${createdLessons + updatedLessons} lesson (${createdLessons} mới, ${updatedLessons} cập nhật), tổng ${importedRows} từ.${groupNote}${limitNote}`,
   };
 }
 
@@ -297,7 +514,7 @@ export async function syncAdminVocabFromUrlAction(
   if (!parsed.success) {
     return {
       status: "error",
-      message: "URL hoac lesson khong hop le.",
+      message: "URL hoặc lesson không hợp lệ.",
     };
   }
 
@@ -306,7 +523,7 @@ export async function syncAdminVocabFromUrlAction(
   if (!lesson) {
     return {
       status: "error",
-      message: "Khong tim thay lesson admin.",
+      message: "Không tìm thấy lesson admin.",
     };
   }
 
@@ -327,7 +544,7 @@ export async function syncAdminVocabFromUrlAction(
     if (!response.ok) {
       return {
         status: "error",
-        message: `Khong tai duoc du lieu tu URL (HTTP ${response.status}).`,
+        message: `Không tải được dữ liệu từ URL (HTTP ${response.status}).`,
       };
     }
 
@@ -337,7 +554,7 @@ export async function syncAdminVocabFromUrlAction(
     if (rows.length === 0) {
       return {
         status: "error",
-        message: "URL co du lieu nhung khong parse duoc theo form tu vung.",
+        message: "URL có dữ liệu nhưng không parse được theo form từ vựng.",
       };
     }
 
@@ -364,14 +581,14 @@ export async function syncAdminVocabFromUrlAction(
       status: "success",
       message:
         noKanjiCount > 0
-          ? `Da sync ${rows.length} tu vao kho admin. Luu y: ${noKanjiCount} tu chua co field kanji.`
-          : `Da sync ${rows.length} tu vao kho admin.`,
+          ? `Đã sync ${rows.length} từ vào kho admin. Lưu ý: ${noKanjiCount} từ chưa có field kanji.`
+          : `Đã sync ${rows.length} từ vào kho admin.`,
     };
   } catch (error) {
     const message =
       error instanceof Error && error.name === "AbortError"
-        ? "Timeout khi goi URL. Thu lai hoac giam gioi han so dong."
-        : "Khong the ket noi toi URL nay. Kiem tra lai link va cho phep truy cap.";
+        ? "Timeout khi gọi URL. Thử lại hoặc giảm giới hạn số dòng."
+        : "Không thể kết nối tới URL này. Kiểm tra lại link và cho phép truy cập.";
     return {
       status: "error",
       message,
@@ -379,6 +596,87 @@ export async function syncAdminVocabFromUrlAction(
   } finally {
     clearTimeout(timeout);
   }
+}
+
+export async function rollbackAdminVocabImportAction(formData: FormData) {
+  await requireAdmin();
+
+  const parsed = rollbackImportSchema.safeParse({
+    entryId: formData.get("entryId"),
+  });
+  if (!parsed.success) {
+    return;
+  }
+
+  const [library, history] = await Promise.all([
+    loadAdminVocabLibrary(),
+    loadAdminVocabImportHistory(),
+  ]);
+  const target = history.find((entry) => entry.id === parsed.data.entryId);
+  if (!target || target.rolledBackAt) {
+    return;
+  }
+
+  const now = nowIso();
+  let libraryChanged = false;
+
+  for (const lessonChange of target.lessonChanges) {
+    if (lessonChange.itemIds.length === 0) {
+      continue;
+    }
+    const lesson = findLesson(library.lessons, lessonChange.lessonId);
+    if (!lesson) {
+      continue;
+    }
+
+    const removeIds = new Set(lessonChange.itemIds);
+    const beforeCount = lesson.items.length;
+    lesson.items = lesson.items.filter((item) => !removeIds.has(item.id));
+    if (lesson.items.length !== beforeCount) {
+      lesson.updatedAt = now;
+      libraryChanged = true;
+    }
+  }
+
+  if (target.createdLessonIds.length > 0) {
+    const createdIds = new Set(target.createdLessonIds);
+    const beforeCount = library.lessons.length;
+    library.lessons = library.lessons.filter(
+      (lesson) => !(createdIds.has(lesson.id) && lesson.items.length === 0)
+    );
+    if (library.lessons.length !== beforeCount) {
+      libraryChanged = true;
+    }
+  }
+
+  target.rolledBackAt = now;
+
+  const writes: Promise<unknown>[] = [saveAdminVocabImportHistory(history)];
+  if (libraryChanged) {
+    writes.unshift(saveAdminVocabLibrary(library));
+  }
+  await Promise.all(writes);
+  touchSharedPaths();
+}
+
+export async function deleteAdminVocabImportHistoryAction(formData: FormData) {
+  await requireAdmin();
+
+  const parsed = deleteImportHistorySchema.safeParse({
+    entryId: formData.get("entryId"),
+  });
+  if (!parsed.success) {
+    return;
+  }
+
+  const history = await loadAdminVocabImportHistory();
+  const nextHistory = history.filter((entry) => entry.id !== parsed.data.entryId);
+  if (nextHistory.length === history.length) {
+    return;
+  }
+
+  await saveAdminVocabImportHistory(nextHistory);
+  revalidatePath("/admin/vocab");
 }
 
 export async function clearAdminVocabLessonAction(formData: FormData) {
@@ -465,4 +763,5 @@ export async function updateAdminVocabItemAction(formData: FormData) {
 
   await saveAdminVocabLibrary(library);
   touchSharedPaths();
+  redirect(`/admin/vocab?level=${lesson.jlptLevel}&lesson=${lesson.id}`);
 }

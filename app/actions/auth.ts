@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { compare, hash } from "bcryptjs";
 import { revalidatePath } from "next/cache";
@@ -13,11 +13,7 @@ export type AuthActionState = {
 };
 
 const RegisterSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, "Tên cần ít nhất 2 ký tự.")
-    .max(48, "Tên quá dài."),
+  name: z.string().trim().min(2, "Tên cần ít nhất 2 ký tự.").max(48, "Tên quá dài."),
   email: z.email("Email không hợp lệ.").trim().toLowerCase(),
   password: z
     .string()
@@ -45,25 +41,31 @@ export async function registerAction(
     return { error: parsed.error.issues[0]?.message ?? "Dữ liệu không hợp lệ." };
   }
 
-  const existing = await prisma.user.findUnique({
-    where: { email: parsed.data.email },
-    select: { id: true },
-  });
+  let user: { id: string; name: string };
 
-  if (existing) {
-    return { error: "Email này đã đăng ký." };
+  try {
+    const existing = await prisma.user.findUnique({
+      where: { email: parsed.data.email },
+      select: { id: true },
+    });
+
+    if (existing) {
+      return { error: "Email này đã đăng ký." };
+    }
+
+    const passwordHash = await hash(parsed.data.password, 12);
+
+    user = await prisma.user.create({
+      data: {
+        name: parsed.data.name,
+        email: parsed.data.email,
+        passwordHash,
+      },
+      select: { id: true, name: true },
+    });
+  } catch {
+    return { error: "Không kết nối được cơ sở dữ liệu. Vui lòng thử lại sau." };
   }
-
-  const passwordHash = await hash(parsed.data.password, 12);
-
-  const user = await prisma.user.create({
-    data: {
-      name: parsed.data.name,
-      email: parsed.data.email,
-      passwordHash,
-    },
-    select: { id: true, name: true },
-  });
 
   await createSession(user);
   revalidatePath("/");
@@ -83,14 +85,20 @@ export async function loginAction(
     return { error: parsed.error.issues[0]?.message ?? "Dữ liệu không hợp lệ." };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: parsed.data.email },
-    select: {
-      id: true,
-      name: true,
-      passwordHash: true,
-    },
-  });
+  let user: { id: string; name: string; passwordHash: string } | null;
+
+  try {
+    user = await prisma.user.findUnique({
+      where: { email: parsed.data.email },
+      select: {
+        id: true,
+        name: true,
+        passwordHash: true,
+      },
+    });
+  } catch {
+    return { error: "Không kết nối được cơ sở dữ liệu. Vui lòng thử lại sau." };
+  }
 
   if (!user) {
     return { error: "Email hoặc mật khẩu chưa đúng." };

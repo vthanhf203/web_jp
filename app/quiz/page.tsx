@@ -80,33 +80,33 @@ export default async function QuizPage(props: { searchParams: SearchParams }) {
     <section className="space-y-5">
       <div className="panel p-6">
         <h1 className="text-2xl font-bold text-slate-900">
-          {examMode ? "Thi thu JLPT mini" : "Quiz JLPT mini"}
+          {examMode ? "Thi thử JLPT mini" : "Quiz JLPT mini"}
         </h1>
         <p className="mt-1 text-sm text-slate-600">
           {examMode
-            ? `Che do thi thu ${examMinutes} phut, het gio se tu dong nop bai.`
-            : "Moi cau dung nhan 2 XP. Lam nhanh de giu nhip moi ngay."}
+            ? `Chế độ thi thử ${examMinutes} phút, hết giờ sẽ tự động nộp bài.`
+            : "Mỗi câu đúng nhận 2 XP. Làm nhanh để giữ nhịp mỗi ngày."}
         </p>
         {source === "focus" ? (
-          <p className="mt-2 text-xs text-rose-600">Dang lam bo cau sai trong diem.</p>
+          <p className="mt-2 text-xs text-rose-600">Đang làm bộ câu sai trọng điểm.</p>
         ) : null}
       </div>
 
       {score && total ? (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          Ket qua vua roi: <strong>{score}</strong> / <strong>{total}</strong>
+          Kết quả vừa rồi: <strong>{score}</strong> / <strong>{total}</strong>
         </div>
       ) : null}
 
       {status === "empty" ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Ban chua chon dap an nao.
+          Bạn chưa chọn đáp án nào.
         </div>
       ) : null}
 
       {questions.length === 0 ? (
         <div className="panel p-6 text-sm text-slate-600">
-          Chua co du lieu quiz. Admin vao <Link href="/admin/quiz" className="font-semibold text-sky-700">/admin/quiz</Link> de upload bai tap.
+          Chưa có dữ liệu quiz. Admin vào <Link href="/admin/quiz" className="font-semibold text-sky-700">/admin/quiz</Link> để upload bài tập.
         </div>
       ) : (
         <QuizSessionForm questions={questions} examMode={examMode} examMinutes={examMinutes} />

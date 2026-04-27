@@ -176,7 +176,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(function Vid
     if (!youtubeId) {
       return (
         <div className="grid min-h-[320px] place-items-center rounded-xl bg-slate-100 p-4 text-center text-sm font-medium text-rose-600">
-          Link YouTube khong hop le.
+          Link YouTube không hợp lệ.
         </div>
       );
     }

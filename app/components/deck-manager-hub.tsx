@@ -68,22 +68,22 @@ export function DeckManagerHub({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Deck Manager</h2>
-          <p className="mt-1 text-sm text-slate-500">Chon bo, them tu, va hoc ngay trong mot command center.</p>
+          <p className="mt-1 text-sm text-slate-500">Chọn bộ, thêm từ, và học ngay trong một command center.</p>
         </div>
 
         <div className="flex items-center gap-2">
           {selectedDeckLabel ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
               <Sparkles className="h-3.5 w-3.5" />
-              Dang chon: {selectedDeckLabel}
+              Đang chọn: {selectedDeckLabel}
             </span>
           ) : null}
           <button
             type="button"
             onClick={() => setShowCreate((current) => !current)}
             className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-700 shadow-sm transition hover:scale-105 hover:bg-sky-100 hover:text-sky-700"
-            aria-label="Tao bo flashcard moi"
-            title="Tao bo flashcard moi"
+            aria-label="Tạo bộ flashcard mới"
+            title="Tạo bộ flashcard mới"
           >
             <Plus className="h-4 w-4" />
           </button>
@@ -96,7 +96,7 @@ export function DeckManagerHub({
             name="title"
             required
             maxLength={64}
-            placeholder="Nhap ten flashcard..."
+            placeholder="Nhập tên flashcard..."
             className="min-w-[200px] flex-1 rounded-xl bg-white px-3 py-2 text-sm text-slate-700 outline-none ring-1 ring-slate-200 focus:ring-sky-300"
           />
           <input type="hidden" name="returnTo" value={createReturnTo} />
@@ -104,7 +104,7 @@ export function DeckManagerHub({
             type="submit"
             className="rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(59,130,246,0.25)] transition hover:-translate-y-0.5"
           >
-            Tao bo moi
+            Tạo bộ mới
           </button>
         </form>
       ) : null}
@@ -117,7 +117,7 @@ export function DeckManagerHub({
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-sky-200 hover:text-sky-700"
           >
             {showDeckTabs ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            {showDeckTabs ? "An danh sach bo" : "Hien danh sach bo"}
+            {showDeckTabs ? "Ẩn danh sách bộ" : "Hiện danh sách bộ"}
           </button>
 
           {showDeckTabs ? (
@@ -134,7 +134,7 @@ export function DeckManagerHub({
                     }`}
                   >
                     <p className="truncate text-sm font-bold">{deck.label}</p>
-                    <p className="text-xs text-slate-500">{deck.count} tu</p>
+                    <p className="text-xs text-slate-500">{deck.count} từ</p>
                   </Link>
                 ))}
               </div>
@@ -143,7 +143,7 @@ export function DeckManagerHub({
         </div>
       ) : (
         <p className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
-          Chua co bo flashcard. Bam dau cong de tao bo dau tien.
+          Chưa có bộ flashcard. Bấm dấu cộng để tạo bộ đầu tiên.
         </p>
       )}
 
@@ -151,12 +151,12 @@ export function DeckManagerHub({
         <div className="mt-5 space-y-4">
           <div className="rounded-2xl bg-slate-50 px-4 py-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-slate-700">{selectedDeckLabel}</p>
-              <Link href={manageHref} className="rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100">
-                Quan ly bo nay
+                <p className="text-sm font-semibold text-slate-700">{selectedDeckLabel}</p>
+                <Link href={manageHref} className="rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100">
+                Quản lý bộ này
               </Link>
             </div>
-            <p className="mt-1 text-xs text-slate-500">{selectedLessonItemsCount} tu trong bo</p>
+            <p className="mt-1 text-xs text-slate-500">{selectedLessonItemsCount} từ trong bộ</p>
           </div>
 
           <button
@@ -165,7 +165,7 @@ export function DeckManagerHub({
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-sky-200 hover:text-sky-700"
           >
             {showDeckPreview ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            {showDeckPreview ? "An danh sach tu trong bo" : "Hien danh sach tu trong bo"}
+            {showDeckPreview ? "Ẩn danh sách từ trong bộ" : "Hiện danh sách từ trong bộ"}
           </button>
 
           {showDeckPreview ? (
@@ -180,8 +180,8 @@ export function DeckManagerHub({
                         <button
                           type="submit"
                           className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-slate-500 ring-1 ring-slate-200 transition hover:bg-rose-50 hover:text-rose-600 hover:ring-rose-200"
-                          title="Xoa tu nay khoi bo"
-                          aria-label="Xoa tu nay khoi bo"
+                          title="Xóa từ này khỏi bộ"
+                          aria-label="Xóa từ này khỏi bộ"
                         >
                           <X className="h-3.5 w-3.5" />
                         </button>
@@ -195,8 +195,8 @@ export function DeckManagerHub({
 
                 {previewTotalPages > 1 ? (
                   <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-50 px-3 py-2 ring-1 ring-slate-200/70">
-                    <p className="text-xs font-semibold text-slate-600">
-                      Trang {previewPage}/{previewTotalPages} · {selectedLessonPreview.length} tu
+                      <p className="text-xs font-semibold text-slate-600">
+                      Trang {previewPage}/{previewTotalPages} · {selectedLessonPreview.length} từ
                     </p>
                     <div className="flex items-center gap-2">
                       <button
@@ -205,7 +205,7 @@ export function DeckManagerHub({
                         onClick={() => setPreviewPage((current) => Math.max(1, current - 1))}
                         className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-45"
                       >
-                        Truoc
+                        Trước
                       </button>
                       <button
                         type="button"
@@ -223,7 +223,7 @@ export function DeckManagerHub({
               </div>
             ) : (
               <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
-                Bo nay chua co tu nao. Bam dau cong tren tung the de them nhanh.
+                Bộ này chưa có từ nào. Bấm dấu cộng trên từng thẻ để thêm nhanh.
               </p>
             )
           ) : null}

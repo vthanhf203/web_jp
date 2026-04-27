@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 import { toggleBookmarkAction } from "@/app/actions/personal";
 import { requireUser } from "@/lib/auth";
@@ -111,9 +111,9 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
   return (
     <section className="space-y-6">
       <div className="panel p-6">
-        <h1 className="text-2xl font-bold text-slate-900">Tim kiem toan cuc</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Tìm kiếm toàn cục</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Mot o tim duoc ca Kanji + Tu vung + Ngu phap trong kho du lieu.
+          Một ô tìm được cả Kanji + Từ vựng + Ngữ pháp trong kho dữ liệu.
         </p>
         <form className="mt-4 flex flex-wrap gap-2">
           <input
@@ -121,19 +121,19 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
             name="q"
             defaultValue={rawQuery}
             className="input-base max-w-2xl flex-1"
-            placeholder="Vi du: hoc, benkyou, N1 wa N2 desu, rai..."
+            placeholder="Ví dụ: học, benkyou, N1 wa N2 desu, rai..."
           />
           <button type="submit" className="btn-primary">
-            Tim
+            Tìm
           </button>
         </form>
       </div>
 
       {!rawQuery ? (
         <div className="panel p-6 text-sm text-slate-600">
-          Thu tim theo: <strong>kanji</strong>, <strong>hiragana/katakana</strong>,{" "}
-          <strong>han viet</strong>, <strong>nghia tieng Viet</strong>, hoac{" "}
-          <strong>mau ngu phap</strong>.
+          Thử tìm theo: <strong>kanji</strong>, <strong>hiragana/katakana</strong>,{" "}
+          <strong>hán việt</strong>, <strong>nghĩa tiếng Việt</strong>, hoặc{" "}
+          <strong>mẫu ngữ pháp</strong>.
         </div>
       ) : null}
 
@@ -143,7 +143,7 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
             <h2 className="text-lg font-bold text-slate-800">Kanji ({kanjiRows.length})</h2>
             <div className="mt-3 space-y-2">
               {kanjiRows.length === 0 ? (
-                <p className="text-sm text-slate-500">Khong co ket qua.</p>
+                <p className="text-sm text-slate-500">Không có kết quả.</p>
               ) : (
                 kanjiRows.map((kanji) => {
                   const refId = kanji.character;
@@ -158,10 +158,10 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
                           <input type="hidden" name="type" value="kanji" />
                           <input type="hidden" name="refId" value={refId} />
                           <input type="hidden" name="title" value={`${kanji.character} - ${kanji.meaning}`} />
-                          <input type="hidden" name="subtitle" value={`${kanji.jlptLevel} - ${kanji.strokeCount} net`} />
+                          <input type="hidden" name="subtitle" value={`${kanji.jlptLevel} - ${kanji.strokeCount} nét`} />
                           <input type="hidden" name="returnTo" value={`/search?q=${encodeURIComponent(rawQuery)}`} />
                           <button type="submit" className="btn-soft text-xs">
-                            {bookmarked ? "Bo bookmark" : "Bookmark"}
+                            {bookmarked ? "Bỏ bookmark" : "Bookmark"}
                           </button>
                         </form>
                       </div>
@@ -176,10 +176,10 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
           </div>
 
           <div className="panel p-5">
-            <h2 className="text-lg font-bold text-slate-800">Tu vung he thong ({vocabRows.length})</h2>
+            <h2 className="text-lg font-bold text-slate-800">Từ vựng hệ thống ({vocabRows.length})</h2>
             <div className="mt-3 space-y-2">
               {vocabRows.length === 0 ? (
-                <p className="text-sm text-slate-500">Khong co ket qua.</p>
+                <p className="text-sm text-slate-500">Không có kết quả.</p>
               ) : (
                 vocabRows.map((vocab) => {
                   const refId = vocab.id;
@@ -197,7 +197,7 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
                           <input type="hidden" name="subtitle" value={vocab.meaning} />
                           <input type="hidden" name="returnTo" value={`/search?q=${encodeURIComponent(rawQuery)}`} />
                           <button type="submit" className="btn-soft text-xs">
-                            {bookmarked ? "Bo bookmark" : "Bookmark"}
+                            {bookmarked ? "Bỏ bookmark" : "Bookmark"}
                           </button>
                         </form>
                       </div>
@@ -214,10 +214,10 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
       {rawQuery ? (
         <div className="grid gap-4 lg:grid-cols-2">
           <div className="panel p-5">
-            <h2 className="text-lg font-bold text-slate-800">Tu vung admin ({adminVocabRows.length})</h2>
+            <h2 className="text-lg font-bold text-slate-800">Từ vựng admin ({adminVocabRows.length})</h2>
             <div className="mt-3 space-y-2">
               {adminVocabRows.length === 0 ? (
-                <p className="text-sm text-slate-500">Khong co ket qua.</p>
+                <p className="text-sm text-slate-500">Không có kết quả.</p>
               ) : (
                 adminVocabRows.slice(0, 40).map((row) => (
                   <Link
@@ -240,10 +240,10 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
           </div>
 
           <div className="panel p-5">
-            <h2 className="text-lg font-bold text-slate-800">Ngu phap ({grammarRows.length})</h2>
+            <h2 className="text-lg font-bold text-slate-800">Ngữ pháp ({grammarRows.length})</h2>
             <div className="mt-3 space-y-2">
               {grammarRows.length === 0 ? (
-                <p className="text-sm text-slate-500">Khong co ket qua.</p>
+                <p className="text-sm text-slate-500">Không có kết quả.</p>
               ) : (
                 grammarRows.slice(0, 30).map((row) => {
                   const refId = row.point.id;
@@ -264,7 +264,7 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
                           <input type="hidden" name="subtitle" value={row.point.meaning} />
                           <input type="hidden" name="returnTo" value={`/search?q=${encodeURIComponent(rawQuery)}`} />
                           <button type="submit" className="btn-soft text-xs">
-                            {bookmarked ? "Bo bookmark" : "Bookmark"}
+                            {bookmarked ? "Bỏ bookmark" : "Bookmark"}
                           </button>
                         </form>
                       </div>

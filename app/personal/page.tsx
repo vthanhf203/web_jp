@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 import {
   saveBookmarkNoteAction,
@@ -31,8 +31,8 @@ function recommendationItems(params: {
 
   if (!params.hasPlan) {
     items.push({
-      title: "Dat muc tieu hoc (N5/N4...) de app tu goi y moi ngay",
-      time: "2 phut",
+      title: "Đặt mục tiêu học (N5/N4...) để app tự gợi ý mỗi ngày",
+      time: "2 phút",
       href: "#plan-form",
     });
   }
@@ -40,24 +40,24 @@ function recommendationItems(params: {
   items.push({
     title:
       params.dueReviews > 0
-        ? `On ${params.dueReviews} the den han trong SRS`
-        : "On nhanh 10 the de giu nhip SRS",
-    time: `${Math.max(8, Math.round(params.dailyMinutes * 0.35))} phut`,
+        ? `Ôn ${params.dueReviews} thẻ đến hạn trong SRS`
+        : "Ôn nhanh 10 thẻ để giữ nhịp SRS",
+    time: `${Math.max(8, Math.round(params.dailyMinutes * 0.35))} phút`,
     href: "/review",
   });
 
   items.push({
     title:
       params.wrongAnswers > 0
-        ? `Dap lai bo cau sai (${params.wrongAnswers} cau sai da luu)`
-        : "Lam mini test de tim diem yeu moi",
-    time: `${Math.max(7, Math.round(params.dailyMinutes * 0.3))} phut`,
+        ? `Đáp lại bộ câu sai (${params.wrongAnswers} câu sai đã lưu)`
+        : "Làm mini test để tìm điểm yếu mới",
+    time: `${Math.max(7, Math.round(params.dailyMinutes * 0.3))} phút`,
     href: "/focus",
   });
 
   items.push({
-    title: "Hoc 1 chu de tu vung moi",
-    time: `${Math.max(8, Math.round(params.dailyMinutes * 0.35))} phut`,
+    title: "Học 1 chủ đề từ vựng mới",
+    time: `${Math.max(8, Math.round(params.dailyMinutes * 0.35))} phút`,
     href: "/vocab",
   });
 
@@ -133,28 +133,28 @@ export default async function PersonalPage() {
   return (
     <section className="space-y-6">
       <div className="panel p-6">
-        <h1 className="text-2xl font-bold text-slate-900">Lo trinh hoc ca nhan</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Lộ trình học cá nhân</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Dat muc tieu, theo doi tien do, va de he thong tu goi y ban hoc gi moi ngay.
+          Đặt mục tiêu, theo dõi tiến độ, và để hệ thống tự gợi ý bạn học gì mỗi ngày.
         </p>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl bg-blue-50 p-4">
-            <p className="text-sm text-slate-600">Muc tieu</p>
+            <p className="text-sm text-slate-600">Mục tiêu</p>
             <p className="mt-1 text-2xl font-bold text-blue-700">{plan?.goalLevel ?? user.level}</p>
           </div>
           <div className="rounded-xl bg-violet-50 p-4">
-            <p className="text-sm text-slate-600">Han con lai</p>
+            <p className="text-sm text-slate-600">Hạn còn lại</p>
             <p className="mt-1 text-2xl font-bold text-violet-700">
-              {plan ? `${targetInDays} ngay` : "Chua dat"}
+              {plan ? `${targetInDays} ngày` : "Chưa đặt"}
             </p>
           </div>
           <div className="rounded-xl bg-emerald-50 p-4">
-            <p className="text-sm text-slate-600">Do chinh xac 30 ngay</p>
+            <p className="text-sm text-slate-600">Độ chính xác 30 ngày</p>
             <p className="mt-1 text-2xl font-bold text-emerald-700">{accuracyPercent}%</p>
           </div>
           <div className="rounded-xl bg-amber-50 p-4">
-            <p className="text-sm text-slate-600">The da on 7 ngay</p>
+            <p className="text-sm text-slate-600">Thẻ đã ôn 7 ngày</p>
             <p className="mt-1 text-2xl font-bold text-amber-700">{review7d}</p>
           </div>
         </div>
@@ -163,15 +163,15 @@ export default async function PersonalPage() {
       <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
         <div className="panel p-6" id="plan-form">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="text-lg font-bold text-slate-800">Muc tieu + goi y hom nay</h2>
+            <h2 className="text-lg font-bold text-slate-800">Mục tiêu + gợi ý hôm nay</h2>
             <Link href="/placement" className="btn-soft text-sm">
-              Test dau vao
+              Test đầu vào
             </Link>
           </div>
 
           <form action={saveLearningPlanAction} className="mt-4 grid gap-3 md:grid-cols-3">
             <label className="space-y-1 text-sm">
-              <span className="font-semibold text-slate-700">Muc tieu</span>
+              <span className="font-semibold text-slate-700">Mục tiêu</span>
               <select name="goalLevel" defaultValue={plan?.goalLevel ?? user.level} className="input-base">
                 <option value="N5">N5</option>
                 <option value="N4">N4</option>
@@ -182,7 +182,7 @@ export default async function PersonalPage() {
             </label>
 
             <label className="space-y-1 text-sm">
-              <span className="font-semibold text-slate-700">Han dat muc tieu</span>
+              <span className="font-semibold text-slate-700">Hạn đạt mục tiêu</span>
               <input
                 type="date"
                 name="targetDate"
@@ -193,7 +193,7 @@ export default async function PersonalPage() {
             </label>
 
             <label className="space-y-1 text-sm">
-              <span className="font-semibold text-slate-700">Moi ngay (phut)</span>
+              <span className="font-semibold text-slate-700">Mỗi ngày (phút)</span>
               <input
                 type="number"
                 name="dailyMinutes"
@@ -206,7 +206,7 @@ export default async function PersonalPage() {
             </label>
 
             <button type="submit" className="btn-primary md:col-span-3">
-              Luu lo trinh
+              Lưu lộ trình
             </button>
           </form>
 
@@ -228,7 +228,7 @@ export default async function PersonalPage() {
 
         <div className="space-y-4">
           <div className="panel p-6">
-            <h2 className="text-lg font-bold text-slate-800">Nhac hoc hang ngay</h2>
+            <h2 className="text-lg font-bold text-slate-800">Nhắc học hằng ngày</h2>
             <form action={saveReminderSettingsAction} className="mt-4 space-y-3">
               <label className="inline-flex items-center gap-2 text-sm text-slate-700">
                 <input
@@ -236,11 +236,11 @@ export default async function PersonalPage() {
                   name="enabled"
                   defaultChecked={personalState.reminders.enabled}
                 />
-                Bat nhac hoc bang thong bao trinh duyet
+                Bật nhắc học bằng thông báo trình duyệt
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <label className="space-y-1 text-sm">
-                  <span className="font-semibold text-slate-700">Gio</span>
+                  <span className="font-semibold text-slate-700">Giờ</span>
                   <input
                     type="number"
                     name="hour"
@@ -251,7 +251,7 @@ export default async function PersonalPage() {
                   />
                 </label>
                 <label className="space-y-1 text-sm">
-                  <span className="font-semibold text-slate-700">Phut</span>
+                  <span className="font-semibold text-slate-700">Phút</span>
                   <input
                     type="number"
                     name="minute"
@@ -264,11 +264,11 @@ export default async function PersonalPage() {
               </div>
               <input type="hidden" name="timezone" value={personalState.reminders.timezone || "Asia/Tokyo"} />
               <button type="submit" className="btn-soft w-full">
-                Luu nhac hoc
+                Lưu nhắc học
               </button>
             </form>
             <p className="mt-2 text-xs text-slate-500">
-              Ban nho cap quyen Notification cho trinh duyet de nhac hoat dong.
+              Bạn nhớ cấp quyền Notification cho trình duyệt để nhắc hoạt động.
             </p>
           </div>
 
@@ -278,13 +278,13 @@ export default async function PersonalPage() {
 
       <div className="panel p-6">
         <div className="flex items-center justify-between gap-2">
-          <h2 className="text-lg font-bold text-slate-800">Bookmark + note ca nhan</h2>
-          <span className="chip">{personalState.bookmarks.length} muc</span>
+            <h2 className="text-lg font-bold text-slate-800">Bookmark + note cá nhân</h2>
+            <span className="chip">{personalState.bookmarks.length} mục</span>
         </div>
 
         {personalState.bookmarks.length === 0 ? (
           <p className="mt-3 text-sm text-slate-600">
-            Chua co muc nao. Bam &quot;Bookmark&quot; trong trang Kanji/Grammar/Search de luu.
+            Chưa có mục nào. Bấm &quot;Bookmark&quot; trong trang Kanji/Grammar/Search để lưu.
           </p>
         ) : (
           <div className="mt-4 space-y-3">
@@ -302,7 +302,7 @@ export default async function PersonalPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Link href={bookmarkHref(bookmark.type, bookmark.refId, bookmark.title)} className="btn-soft text-sm">
-                      Mo lai
+                      Mở lại
                     </Link>
                     <form action={toggleBookmarkAction}>
                       <input type="hidden" name="type" value={bookmark.type} />
@@ -311,7 +311,7 @@ export default async function PersonalPage() {
                       <input type="hidden" name="subtitle" value={bookmark.subtitle} />
                       <input type="hidden" name="returnTo" value="/personal" />
                       <button type="submit" className="btn-danger text-xs">
-                        Bo danh dau
+                        Bỏ đánh dấu
                       </button>
                     </form>
                   </div>
@@ -323,11 +323,11 @@ export default async function PersonalPage() {
                   <textarea
                     name="note"
                     defaultValue={bookmark.note}
-                    placeholder="Them meo nho rieng cho muc nay..."
+                    placeholder="Thêm mẹo nhớ riêng cho mục này..."
                     className="input-base min-h-20 resize-y text-sm"
                   />
                   <button type="submit" className="btn-primary text-sm">
-                    Luu note
+                    Lưu note
                   </button>
                 </form>
               </article>

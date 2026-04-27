@@ -4,6 +4,8 @@ type ParsedKanjiInput = {
   meaning: string;
   onReading: string;
   kunReading: string;
+  strokeHint: string;
+  strokeImage: string;
   strokeCount: number;
   jlptLevel: string;
   order: number | null;
@@ -379,6 +381,19 @@ function rowFromObject(source: Record<string, unknown>): ParsedKanjiInput | null
     Object.prototype.hasOwnProperty.call(source, "order") ||
     Object.prototype.hasOwnProperty.call(source, "sequence") ||
     Object.prototype.hasOwnProperty.call(source, "sortOrder") ||
+    Object.prototype.hasOwnProperty.call(source, "strokeHint") ||
+    Object.prototype.hasOwnProperty.call(source, "strokeGuide") ||
+    Object.prototype.hasOwnProperty.call(source, "strokeOrder") ||
+    Object.prototype.hasOwnProperty.call(source, "strokeOrderGuide") ||
+    Object.prototype.hasOwnProperty.call(source, "writingHint") ||
+    Object.prototype.hasOwnProperty.call(source, "writingGuide") ||
+    Object.prototype.hasOwnProperty.call(source, "strokeImage") ||
+    Object.prototype.hasOwnProperty.call(source, "strokeImageUrl") ||
+    Object.prototype.hasOwnProperty.call(source, "strokeGuideImage") ||
+    Object.prototype.hasOwnProperty.call(source, "strokeOrderImage") ||
+    Object.prototype.hasOwnProperty.call(source, "huongDanNet") ||
+    Object.prototype.hasOwnProperty.call(source, "huong_dan_net") ||
+    Object.prototype.hasOwnProperty.call(source, "huongDanViet") ||
     Object.prototype.hasOwnProperty.call(source, "category") ||
     Object.prototype.hasOwnProperty.call(source, "tags") ||
     Object.prototype.hasOwnProperty.call(source, "createdAt") ||
@@ -390,6 +405,24 @@ function rowFromObject(source: Record<string, unknown>): ParsedKanjiInput | null
     meaning,
     onReading: pickStringOrArray(source, ["onReading", "on", "onyomi"]),
     kunReading: pickStringOrArray(source, ["kunReading", "kun", "kunyomi"]),
+    strokeHint: pickStringOrArray(source, [
+      "strokeHint",
+      "strokeGuide",
+      "strokeOrder",
+      "strokeOrderGuide",
+      "writingHint",
+      "writingGuide",
+      "huongDanNet",
+      "huong_dan_net",
+      "huongDanViet",
+    ]),
+    strokeImage: pickString(source, [
+      "strokeImage",
+      "strokeImageUrl",
+      "strokeGuideImage",
+      "strokeOrderImage",
+      "image",
+    ]),
     strokeCount: parseNumber(source.strokeCount ?? source.strokes ?? source.net),
     jlptLevel,
     order,
@@ -411,10 +444,9 @@ function rowFromObject(source: Record<string, unknown>): ParsedKanjiInput | null
 function rowFromLine(line: string): ParsedKanjiInput | null {
   const parts = line
     .split("|")
-    .map((item) => item.trim())
-    .filter(Boolean);
+    .map((item) => item.trim());
 
-  if (parts.length < 2) {
+  if (parts.length < 2 || !parts[0] || !parts[1]) {
     return null;
   }
 
@@ -426,6 +458,8 @@ function rowFromLine(line: string): ParsedKanjiInput | null {
     meaning: parts[1],
     onReading: parts[2] ?? "",
     kunReading: parts[3] ?? "",
+    strokeHint: parts[9] ?? "",
+    strokeImage: parts[10] ?? "",
     strokeCount: parseNumber(parts[4] ?? 1),
     jlptLevel,
     order: null,
@@ -446,7 +480,7 @@ function rowFromLine(line: string): ParsedKanjiInput | null {
         .filter((item): item is ParsedKanjiLinkedWord => !!item);
     })(),
     relatedWordsProvided: Boolean(parts[8]),
-    metadataProvided: Boolean(parts[8]),
+    metadataProvided: Boolean(parts[8] || parts[9]),
   };
 }
 

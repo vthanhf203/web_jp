@@ -141,6 +141,11 @@ export default async function DashboardPage() {
       subtitle: "Mở 1 chủ đề N5 để nạp từ mới",
     },
     {
+      href: "/conjugation",
+      title: "Ôn chia thể",
+      subtitle: "Luyện các thể cơ bản theo lesson",
+    },
+    {
       href: "/quiz?level=N5",
       title: "Kiểm tra N5",
       subtitle: "Mini test để đo mức ghi nhớ hiện tại",

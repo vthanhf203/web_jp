@@ -72,20 +72,25 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
   if (!session) {
     return null;
   }
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        level: true,
+        xp: true,
+        streak: true,
+      },
+    });
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.userId },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      level: true,
-      xp: true,
-      streak: true,
-    },
-  });
-
-  return user;
+    return user;
+  } catch {
+    // If the database is temporarily unavailable, do not crash every page render.
+    // Treat the request as unauthenticated so public routes (/, /login, /register) still work.
+    return null;
+  }
 });
 
 export async function requireUser(): Promise<SessionUser> {

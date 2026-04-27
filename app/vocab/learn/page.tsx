@@ -3,6 +3,7 @@ import Link from "next/link";
 import { VocabStudyClient, type StudyMode } from "@/app/components/vocab-study-client";
 import { loadAdminVocabLibrary } from "@/lib/admin-vocab-library";
 import { requireUser } from "@/lib/auth";
+import { formatVocabLabel } from "@/lib/vietnamese-labels";
 import { loadUserVocabStore } from "@/lib/vocab-store";
 
 type SearchParams = Promise<{
@@ -36,10 +37,10 @@ export default async function VocabLearnPage(props: { searchParams: SearchParams
   if (!lessonId && !groupId) {
     return (
       <section className="panel p-8">
-        <h1 className="text-2xl font-bold text-slate-800">Chua chon bai hoc</h1>
-        <p className="mt-2 text-slate-600">Hay quay lai trang tu vung va chon mot bai.</p>
+        <h1 className="text-2xl font-bold text-slate-800">Chưa chọn bài học</h1>
+        <p className="mt-2 text-slate-600">Hãy quay lại trang từ vựng và chọn một bài.</p>
         <Link href="/vocab" className="btn-primary mt-5">
-          Quay lai /vocab
+          Quay lại /vocab
         </Link>
       </section>
     );
@@ -50,10 +51,10 @@ export default async function VocabLearnPage(props: { searchParams: SearchParams
     if (!group) {
       return (
         <section className="panel p-8">
-          <h1 className="text-2xl font-bold text-slate-800">Khong tim thay chu de admin</h1>
-          <p className="mt-2 text-slate-600">Chu de nay co the da bi xoa hoac thay doi.</p>
+          <h1 className="text-2xl font-bold text-slate-800">Không tìm thấy chủ đề admin</h1>
+          <p className="mt-2 text-slate-600">Chủ đề này có thể đã bị xóa hoặc thay đổi.</p>
           <Link href="/vocab" className="btn-primary mt-5">
-            Quay lai /vocab
+            Quay lại /vocab
           </Link>
         </section>
       );
@@ -62,10 +63,10 @@ export default async function VocabLearnPage(props: { searchParams: SearchParams
     if (group.items.length === 0) {
       return (
         <section className="panel p-8">
-          <h1 className="text-2xl font-bold text-slate-800">Chu de admin chua co tu vung</h1>
-          <p className="mt-2 text-slate-600">Admin can cap nhat du lieu truoc khi hoc.</p>
+          <h1 className="text-2xl font-bold text-slate-800">Chủ đề admin chưa có từ vựng</h1>
+          <p className="mt-2 text-slate-600">Admin cần cập nhật dữ liệu trước khi học.</p>
           <Link href="/vocab" className="btn-primary mt-5">
-            Quay lai /vocab
+            Quay lại /vocab
           </Link>
         </section>
       );
@@ -73,7 +74,7 @@ export default async function VocabLearnPage(props: { searchParams: SearchParams
 
     return (
       <VocabStudyClient
-        lessonTitle={`${group.jlptLevel} | ${group.title}`}
+        lessonTitle={`${group.jlptLevel} | ${formatVocabLabel(group.title)}`}
         mode={mode}
         items={group.items.map((item) => ({
           id: item.id,
@@ -91,10 +92,10 @@ export default async function VocabLearnPage(props: { searchParams: SearchParams
   if (!lesson) {
     return (
       <section className="panel p-8">
-        <h1 className="text-2xl font-bold text-slate-800">Khong tim thay bai hoc</h1>
-        <p className="mt-2 text-slate-600">Bai nay co the da bi xoa hoac khong thuoc tai khoan nay.</p>
+        <h1 className="text-2xl font-bold text-slate-800">Không tìm thấy bài học</h1>
+        <p className="mt-2 text-slate-600">Bài này có thể đã bị xóa hoặc không thuộc tài khoản này.</p>
         <Link href="/vocab" className="btn-primary mt-5">
-          Quay lai /vocab
+          Quay lại /vocab
         </Link>
       </section>
     );
@@ -103,10 +104,10 @@ export default async function VocabLearnPage(props: { searchParams: SearchParams
   if (lesson.items.length === 0) {
     return (
       <section className="panel p-8">
-        <h1 className="text-2xl font-bold text-slate-800">Bai hoc chua co tu vung</h1>
-        <p className="mt-2 text-slate-600">Hay nhap du lieu vao bai truoc khi hoc 3 che do.</p>
+        <h1 className="text-2xl font-bold text-slate-800">Bài học chưa có từ vựng</h1>
+        <p className="mt-2 text-slate-600">Hãy nhập dữ liệu vào bài trước khi học 3 chế độ.</p>
         <Link href={`/vocab?lesson=${lesson.id}`} className="btn-primary mt-5">
-          Ve bai hoc
+          Về bài học
         </Link>
       </section>
     );
@@ -114,7 +115,7 @@ export default async function VocabLearnPage(props: { searchParams: SearchParams
 
   return (
     <VocabStudyClient
-      lessonTitle={lesson.title}
+      lessonTitle={formatVocabLabel(lesson.title)}
       mode={mode}
       items={lesson.items.map((item) => ({
         id: item.id,

@@ -31,7 +31,7 @@ export function AdminGrammarImportForm({ lessonId }: Props) {
         ref={textareaRef}
         name="rawInput"
         className="min-h-48 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-sky-400 focus:ring-3 focus:ring-sky-100"
-        placeholder='Ho tro JSON array / JSON-lines. Field chuan: title (hoac pattern), meaning_vi (hoac meaning), meaning_simple, structure[], usage[], examples[] (string hoac {jp,kana,vi}), notes[], image. Khong can tags/related.'
+        placeholder='Hỗ trợ JSON array / JSON-lines. Field chuẩn: title (hoặc pattern), meaning_vi (hoặc meaning), meaning_simple, structure[], usage[], examples[] (string hoặc {jp,kana,vi}), notes[], image. Không cần tags/related.'
         disabled={!hasLesson || pending}
         required
       />
@@ -54,7 +54,7 @@ export function AdminGrammarImportForm({ lessonId }: Props) {
           className="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
           disabled={!hasLesson || pending}
         >
-          {pending ? "Dang import..." : "Import vao bai"}
+          {pending ? "Đang import..." : "Import vào bài"}
         </button>
         <button
           type="button"
@@ -64,11 +64,11 @@ export function AdminGrammarImportForm({ lessonId }: Props) {
               return;
             }
             textareaRef.current.value =
-              '[\n  {\n    "title":"N1 は N2 です",\n    "pattern":"N1 は N2 です",\n    "meaning_vi":"N1 la N2",\n    "meaning_simple":"Dung de gioi thieu hoac dinh nghia N1.",\n    "structure":["N1 は N2 です"],\n    "usage":["Dung trong cau khang dinh lich su."],\n    "examples":[\n      {"jp":"わたしは がくせいです。","kana":"わたしは がくせいです。","vi":"Toi la sinh vien."},\n      {"jp":"たなかさんは せんせいです。","vi":"Anh Tanaka la giao vien."}\n    ],\n    "notes":["Tro tu は doc la wa."],\n    "image":"/grammar-images/n5/lesson-01/n1-ha-n2-desu.png"\n  }\n]';
+              '[\n  {\n    "title":"N1 は N2 です",\n    "pattern":"N1 は N2 です",\n    "meaning_vi":"N1 là N2",\n    "meaning_simple":"Dùng để giới thiệu hoặc định nghĩa N1.",\n    "structure":["N1 は N2 です"],\n    "usage":["Dùng trong câu khẳng định lịch sự."],\n    "examples":[\n      {"jp":"わたしは がくせいです。","kana":"わたしは がくせいです。","vi":"Tôi là sinh viên."},\n      {"jp":"たなかさんは せんせいです。","vi":"Anh Tanaka là giáo viên."}\n    ],\n    "notes":["Trợ từ は đọc là wa."],\n    "image":"/grammar-images/n5/lesson-01/n1-ha-n2-desu.png"\n  }\n]';
           }}
           disabled={!hasLesson || pending}
         >
-          Mau JSON
+          Mẫu JSON
         </button>
         <button
           type="button"
@@ -80,7 +80,7 @@ export function AdminGrammarImportForm({ lessonId }: Props) {
           }}
           disabled={pending}
         >
-          Xoa nhap
+          Xóa nhập
         </button>
       </div>
     </form>

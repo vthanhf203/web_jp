@@ -54,7 +54,7 @@ function normalizeStore(input: unknown): VocabStore {
       title:
         typeof lesson.title === "string" && lesson.title.trim()
           ? lesson.title
-          : "Bai chua dat ten",
+          : "Bài chưa đặt tên",
       createdAt: typeof lesson.createdAt === "string" ? lesson.createdAt : nowIso(),
       updatedAt: typeof lesson.updatedAt === "string" ? lesson.updatedAt : nowIso(),
       items: Array.isArray(lesson.items)

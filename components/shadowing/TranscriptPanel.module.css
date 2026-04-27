@@ -1,17 +1,19 @@
 .panel {
-  --primary: #6366f1;
-  --text-jp: #1e293b;
-  --text-time: #64748b;
-  --border: #e2e8f0;
-  --bg-active: #eef2ff;
+  --ink: #1a2237;
+  --ink-soft: #7a7368;
+  --muted: #a8a095;
+  --line: #dfd7c9;
+  --active-bg: #f8f2e9;
+  --active-line: #cca06f;
+  --button-border: #c8c2b8;
 
   width: 100%;
   height: 100%;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
-  padding: 0.95rem;
+  gap: 0.62rem;
+  padding: 0.78rem 0.78rem 0.8rem;
 }
 
 .header {
@@ -19,30 +21,35 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+  padding: 0 0.05rem 0.66rem;
+  border-bottom: 1px solid var(--line);
 }
 
 .title {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 1.58rem;
+  line-height: 1.08;
+  font-weight: 900;
+  color: var(--ink);
+  letter-spacing: -0.02em;
 }
 
 .count {
   margin: 0;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--text-time);
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #9b9489;
+  white-space: nowrap;
 }
 
 .notice {
   margin: 0;
-  border-radius: 10px;
-  border: 1px solid #fed7aa;
-  background: #fff7ed;
-  color: #9a3412;
-  padding: 0.45rem 0.6rem;
-  font-size: 0.78rem;
+  border-radius: 12px;
+  border: 1px solid #efd8bb;
+  background: #fff8ee;
+  color: #9f5f1e;
+  padding: 0.56rem 0.68rem;
+  font-size: 0.82rem;
   line-height: 1.45;
 }
 
@@ -50,131 +57,141 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding-right: 0.35rem;
+  padding-right: 0.22rem;
   display: grid;
-  gap: 0.6rem;
+  gap: 0.46rem;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #e2e8f0;
+  scrollbar-color: #bcb3a6 #ece6da;
 }
 
 .scrollArea::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 .scrollArea::-webkit-scrollbar-track {
-  background: #e2e8f0;
+  background: #ece6da;
   border-radius: 999px;
 }
 
 .scrollArea::-webkit-scrollbar-thumb {
-  background: #94a3b8;
+  background: #bcb3a6;
   border-radius: 999px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid #ece6da;
 }
 
 .scrollArea::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: #a89f93;
 }
 
 .empty {
   margin: 0;
-  color: var(--text-time);
+  color: var(--ink-soft);
   font-size: 0.9rem;
 }
 
 .segment {
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
   background: #ffffff;
-  padding: 0.75rem;
+  padding: 0.72rem 0.76rem 0.72rem;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    background-color 0.16s ease;
   display: grid;
-  gap: 0.22rem;
+  gap: 0.25rem;
+  box-shadow: 0 2px 0 rgba(255, 255, 255, 0.55);
 }
 
 .segment:hover {
   transform: translateY(-1px);
-  border-color: #c7d2fe;
+  border-color: #d2c8ba;
+  box-shadow: 0 10px 18px rgba(32, 39, 60, 0.08);
 }
 
 .segmentActive {
-  background: var(--bg-active);
-  border-left: 3px solid var(--primary);
-  padding-left: calc(0.75rem - 2px);
+  background: var(--active-bg);
+  border-color: #e6d4be;
+  box-shadow:
+    inset 4px 0 0 var(--active-line),
+    0 10px 16px rgba(32, 39, 60, 0.09);
+  padding-left: calc(0.76rem + 4px);
 }
 
 .segmentTop {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.65rem;
 }
 
 .timeBadge {
   display: inline-flex;
   align-items: center;
-  height: 20px;
-  border-radius: 4px;
-  padding: 2px 6px;
-  background: #f1f5f9;
-  color: var(--text-time);
-  font-size: 11px;
-  font-weight: 700;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
 }
 
 .replayButton {
-  border: 1px solid var(--border);
-  background: #ffffff;
-  color: #334155;
-  height: 24px;
-  min-width: 56px;
+  border: 1px solid var(--button-border);
+  background: linear-gradient(180deg, #fff 0%, #faf8f3 100%);
+  color: #1d2337;
+  height: 34px;
+  min-width: 100px;
   border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 0.84rem;
+  font-weight: 800;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.16s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .replayButton:hover {
-  border-color: #a5b4fc;
-  color: var(--primary);
+  transform: translateY(-1px);
+  border-color: #b9af9f;
+  background: linear-gradient(180deg, #fff 0%, #f6f2eb 100%);
 }
 
 .text {
-  margin: 0.45rem 0 0;
-  font-size: 20px;
-  line-height: 1.7;
-  color: var(--text-jp);
+  margin: 0.28rem 0 0;
+  font-size: clamp(1.18rem, 0.46vw + 1.01rem, 1.52rem);
+  line-height: 1.44;
+  color: var(--ink);
   word-break: break-word;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 2px;
+  gap: 0.08em;
 }
 
 .rubyChunk {
   display: inline;
+  letter-spacing: -0.01em;
 }
 
 .rubyWord {
   ruby-align: center;
+  letter-spacing: -0.01em;
 }
 
 .furigana {
-  font-size: 10px;
-  color: #6366f1;
+  font-size: 0.58rem;
+  color: #9a9388;
   letter-spacing: 0.03em;
 }
 
 .translation {
-  margin: 0.22rem 0 0;
-  font-size: 0.9rem;
-  line-height: 1.45;
-  color: #475569;
-  min-height: 2.6rem;
-  max-height: 2.6rem;
+  margin: 0.22rem 0 0.04rem;
+  font-size: 0.86rem;
+  line-height: 1.42;
+  color: #59544b;
+  min-height: 2.45rem;
+  max-height: 2.45rem;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -183,14 +200,14 @@
 
 .shadowingBadge {
   display: inline-flex;
-  margin-top: 0.36rem;
+  margin-top: 0.18rem;
   border-radius: 999px;
-  padding: 0.2rem 0.55rem;
-  background: #ffedd5;
-  color: #c2410c;
-  font-size: 11px;
+  padding: 0.23rem 0.62rem;
+  background: #f9e7cf;
+  color: #be6424;
+  font-size: 0.74rem;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   animation: pulseBlink 0.9s infinite alternate;
 }
 
@@ -200,5 +217,43 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+@media (max-width: 1100px) {
+  .title {
+    font-size: 1.42rem;
+  }
+
+  .text {
+    font-size: clamp(1.1rem, 0.82vw + 0.8rem, 1.38rem);
+  }
+
+  .translation {
+    font-size: 0.83rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .panel {
+    padding: 0.68rem;
+  }
+
+  .count {
+    font-size: 0.88rem;
+  }
+
+  .segment {
+    padding: 0.68rem 0.68rem 0.66rem;
+  }
+
+  .segmentActive {
+    padding-left: calc(0.68rem + 4px);
+  }
+
+  .replayButton {
+    min-width: 94px;
+    height: 32px;
+    font-size: 0.8rem;
   }
 }

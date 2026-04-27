@@ -75,7 +75,7 @@ export function AdminQuizImportForm() {
           className="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
           disabled={pending}
         >
-          {pending ? "Dang upload..." : "Upload bai tap"}
+          {pending ? "Đang upload..." : "Upload bài tập"}
         </button>
         <button
           type="button"
@@ -85,11 +85,11 @@ export function AdminQuizImportForm() {
               return;
             }
             textareaRef.current.value =
-              '{"level":"N5","category":"Ngu phap","prompt":"N1 wa N2 desu nghia la gi?","optionA":"N1 la N2","optionB":"N1 khong phai N2","optionC":"N1 va N2","optionD":"N1 se la N2","correctOption":"A","explanation":"Mau cau dinh nghia co ban."},\n{"level":"N5","category":"Tu vung","prompt":"Benkyou la gi?","optionA":"An com","optionB":"Hoc tap","optionC":"Di choi","optionD":"Ngu","correctOption":"B","explanation":"Benkyou = hoc tap."}';
+              '{"level":"N5","category":"Ngữ pháp","prompt":"N1 wa N2 desu nghĩa là gì?","optionA":"N1 là N2","optionB":"N1 không phải N2","optionC":"N1 và N2","optionD":"N1 sẽ là N2","correctOption":"A","explanation":"Mẫu câu định nghĩa cơ bản."},\n{"level":"N5","category":"Từ vựng","prompt":"Benkyou là gì?","optionA":"Ăn cơm","optionB":"Học tập","optionC":"Đi chơi","optionD":"Ngủ","correctOption":"B","explanation":"Benkyou = học tập."}';
           }}
           disabled={pending}
         >
-          Mau JSON
+          Mẫu JSON
         </button>
         <button
           type="button"
@@ -102,10 +102,9 @@ export function AdminQuizImportForm() {
           }}
           disabled={pending}
         >
-          Xoa nhap
+          Xóa nhập
         </button>
       </div>
     </form>
   );
 }
-

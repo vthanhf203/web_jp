@@ -146,7 +146,7 @@ function parseFileContent(fileName: string, content: string): { rows: ImportedVo
     return {
       rows: [],
       errors: [],
-      note: "Dang chua doc truc tiep .xlsx trong trinh duyet nay. Ban xuat sang CSV roi keo-tha lai nhe.",
+      note: "Đang chưa đọc trực tiếp .xlsx trong trình duyệt này. Bạn xuất sang CSV rồi kéo-thả lại nhé.",
     };
   }
 
@@ -175,8 +175,8 @@ export function VocabImportForm({ lessonId }: Props) {
     if (previewRows.length === 0 && previewErrors.length === 0 && !previewNote) {
       return "";
     }
-    const rowText = `${previewRows.length} dong hop le`;
-    const errText = previewErrors.length > 0 ? `, ${previewErrors.length} dong loi` : "";
+    const rowText = `${previewRows.length} dòng hợp lệ`;
+    const errText = previewErrors.length > 0 ? `, ${previewErrors.length} dòng lỗi` : "";
     return `${rowText}${errText}`;
   }, [previewErrors.length, previewRows.length, previewNote]);
 
@@ -223,8 +223,8 @@ export function VocabImportForm({ lessonId }: Props) {
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <p className="text-sm font-semibold text-slate-800">Keo-tha file vao day</p>
-            <p className="text-xs text-slate-600">Ho tro JSON / CSV / TSV. XLSX dang o che do huong dan chuyen CSV.</p>
+            <p className="text-sm font-semibold text-slate-800">Kéo-thả file vào đây</p>
+            <p className="text-xs text-slate-600">Hỗ trợ JSON / CSV / TSV. XLSX đang ở chế độ hướng dẫn chuyển CSV.</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -233,7 +233,7 @@ export function VocabImportForm({ lessonId }: Props) {
               disabled={!hasLesson || pending}
               onClick={() => fileInputRef.current?.click()}
             >
-              Chon file
+              Chọn file
             </button>
             <input
               ref={fileInputRef}
@@ -258,7 +258,7 @@ export function VocabImportForm({ lessonId }: Props) {
         ref={textareaRef}
         name="rawInput"
         className="min-h-58 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-sky-400 focus:ring-3 focus:ring-sky-100"
-        placeholder="Ho tro JSON array, JSON-lines, CSV/TSV. Field chuan: word, reading, kanji, hanviet, partOfSpeech, meaning."
+        placeholder="Hỗ trợ JSON array, JSON-lines, CSV/TSV. Field chuẩn: word, reading, kanji, hanviet, partOfSpeech, meaning."
         disabled={!hasLesson || pending}
         required
       />
@@ -272,10 +272,10 @@ export function VocabImportForm({ lessonId }: Props) {
 
       {previewErrors.length > 0 ? (
         <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
-          <p className="font-semibold">Loi du lieu (toi da 20 dong):</p>
+          <p className="font-semibold">Lỗi dữ liệu (tối đa 20 dòng):</p>
           <ul className="mt-1 list-disc pl-5">
             {previewErrors.map((error) => (
-              <li key={`${error.line}-${error.message}`}>Dong {error.line}: {error.message}</li>
+              <li key={`${error.line}-${error.message}`}>Dòng {error.line}: {error.message}</li>
             ))}
           </ul>
         </div>
@@ -289,7 +289,7 @@ export function VocabImportForm({ lessonId }: Props) {
                 <th className="px-2 py-2">Word</th>
                 <th className="px-2 py-2">Reading</th>
                 <th className="px-2 py-2">Kanji</th>
-                <th className="px-2 py-2">Han Viet</th>
+                <th className="px-2 py-2">Hán Việt</th>
                 <th className="px-2 py-2">Meaning</th>
               </tr>
             </thead>
@@ -326,7 +326,7 @@ export function VocabImportForm({ lessonId }: Props) {
           className="inline-flex items-center rounded-xl bg-sky-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-60"
           disabled={!hasLesson || pending}
         >
-          {pending ? "Dang nhap..." : "Nhap du lieu vao he thong"}
+          {pending ? "Đang nhập..." : "Nhập dữ liệu vào hệ thống"}
         </button>
         <button
           type="button"
@@ -336,23 +336,23 @@ export function VocabImportForm({ lessonId }: Props) {
               return;
             }
             textareaRef.current.value =
-              '{"word":"べんきょう","reading":"べんきょう","kanji":"勉強","hanviet":"Mien Cuong","partOfSpeech":"noun","meaning":"Hoc tap"}\n{"word":"でんしゃ","reading":"でんしゃ","kanji":"電車","hanviet":"Dien Xa","partOfSpeech":"noun","meaning":"Tau dien"}\n{"word":"ありがとう","reading":"ありがとう","kanji":"","hanviet":"","partOfSpeech":"expression","meaning":"Cam on"}';
+              '{"word":"べんきょう","reading":"べんきょう","kanji":"勉強","hanviet":"Miễn Cường","partOfSpeech":"noun","meaning":"Học tập"}\n{"word":"でんしゃ","reading":"でんしゃ","kanji":"電車","hanviet":"Điện Xa","partOfSpeech":"noun","meaning":"Tàu điện"}\n{"word":"ありがとう","reading":"ありがとう","kanji":"","hanviet":"","partOfSpeech":"expression","meaning":"Cảm ơn"}';
             setPreviewRows([
               {
                 word: "べんきょう",
                 reading: "べんきょう",
                 kanji: "勉強",
-                hanviet: "Mien Cuong",
+                hanviet: "Miễn Cường",
                 partOfSpeech: "noun",
-                meaning: "Hoc tap",
+                meaning: "Học tập",
               },
               {
                 word: "でんしゃ",
                 reading: "でんしゃ",
                 kanji: "電車",
-                hanviet: "Dien Xa",
+                hanviet: "Điện Xa",
                 partOfSpeech: "noun",
-                meaning: "Tau dien",
+                meaning: "Tàu điện",
               },
               {
                 word: "ありがとう",
@@ -360,7 +360,7 @@ export function VocabImportForm({ lessonId }: Props) {
                 kanji: "",
                 hanviet: "",
                 partOfSpeech: "expression",
-                meaning: "Cam on",
+                meaning: "Cảm ơn",
               },
             ]);
             setPreviewErrors([]);
@@ -368,7 +368,7 @@ export function VocabImportForm({ lessonId }: Props) {
           }}
           disabled={!hasLesson || pending}
         >
-          Mau JSON
+          Mẫu JSON
         </button>
         <button
           type="button"
@@ -383,7 +383,7 @@ export function VocabImportForm({ lessonId }: Props) {
           }}
           disabled={pending}
         >
-          Bo nhap
+          Bỏ nhập
         </button>
       </div>
     </form>

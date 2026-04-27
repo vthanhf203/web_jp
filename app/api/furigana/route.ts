@@ -62,7 +62,7 @@ function parseJsonFromModel(content: string): GroqJsonPayload {
 export async function POST(request: Request) {
   const apiKey = process.env.GROQ_API_KEY?.trim();
   if (!apiKey) {
-    return NextResponse.json({ message: "Chua cai dat GROQ_API_KEY" }, { status: 500 });
+    return NextResponse.json({ message: "Chưa cài đặt GROQ_API_KEY" }, { status: 500 });
   }
 
   try {
@@ -103,6 +103,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ words });
   } catch {
-    return NextResponse.json({ message: "Phan tich furigana that bai" }, { status: 500 });
+    return NextResponse.json({ message: "Phân tích furigana thất bại" }, { status: 500 });
   }
 }

@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 import { KanjiDetail } from "@/app/components/kanji-detail";
 import { KanjiDrawSearch } from "@/app/components/kanji-draw-search";
@@ -14,6 +14,7 @@ import { requireUser } from "@/lib/auth";
 import { buildKanjiCompoundWords, sortKanjiByLearningOrder } from "@/lib/kanji-compound";
 import { loadAdminKanjiMetadata } from "@/lib/kanji-metadata";
 import { prisma } from "@/lib/prisma";
+import { isUserKanjiId, loadUserKanjiStore } from "@/lib/user-kanji-store";
 import { loadUserPersonalState } from "@/lib/user-personal-data";
 
 type SearchParams = Promise<{
@@ -23,6 +24,7 @@ type SearchParams = Promise<{
   pickMode?: string | string[];
   selected?: string | string[];
   page?: string | string[];
+  scope?: string | string[];
 }>;
 
 type RelatedWord = {
@@ -35,6 +37,20 @@ type RelatedWord = {
   sourceLabel: string;
   sourceGroupId?: string;
   sourceType: "admin" | "core";
+};
+
+type KanjiListItem = {
+  id: string;
+  character: string;
+  meaning: string;
+  onReading: string;
+  kunReading: string;
+  strokeHint: string;
+  strokeImage: string;
+  strokeCount: number;
+  jlptLevel: JlptLevel;
+  exampleWord: string;
+  exampleMeaning: string;
 };
 
 type CompoundMode = "flashcard" | "quiz" | "recall";
@@ -89,6 +105,8 @@ function buildKanjiLearnHref(options: {
   rawQuery?: string;
   level: JlptLevel | null;
   pickedIds?: string[];
+  mode?: "flashcard" | "quiz";
+  scope?: "all" | "personal";
 }): string {
   const query = (options.rawQuery ?? "").trim();
   const params = new URLSearchParams();
@@ -98,9 +116,15 @@ function buildKanjiLearnHref(options: {
   if (options.level) {
     params.set("level", options.level);
   }
+  if (options.mode === "quiz") {
+    params.set("mode", "quiz");
+  }
   const picked = serializePickedIds(options.pickedIds ?? []);
   if (picked) {
     params.set("ids", picked);
+  }
+  if (options.scope === "personal") {
+    params.set("scope", "personal");
   }
   const queryString = params.toString();
   if (!queryString) {
@@ -114,6 +138,7 @@ function buildKanjiWordLearnHref(options: {
   mode: CompoundMode;
   selectedChar?: string;
   source?: WordLearnSource;
+  scope?: "all" | "personal";
 }): string {
   const params = new URLSearchParams();
   params.set("level", options.level);
@@ -121,11 +146,39 @@ function buildKanjiWordLearnHref(options: {
   if (options.source === "related") {
     params.set("source", "related");
   }
+  if (options.scope === "personal") {
+    params.set("scope", "personal");
+  }
   const selectedChar = (options.selectedChar ?? "").trim();
   if (selectedChar) {
     params.set("char", selectedChar);
   }
   return `/kanji/words/learn?${params.toString()}`;
+}
+
+function buildKanjiWorksheetHref(options: {
+  level: JlptLevel | null;
+  rawQuery?: string;
+  pickedIds?: string[];
+  scope?: "all" | "personal";
+}): string {
+  const params = new URLSearchParams();
+  const query = (options.rawQuery ?? "").trim();
+  if (query) {
+    params.set("q", query);
+  }
+  if (options.level) {
+    params.set("level", options.level);
+  }
+  const picked = serializePickedIds(options.pickedIds ?? []);
+  if (picked) {
+    params.set("pick", picked);
+  }
+  if (options.scope === "personal") {
+    params.set("scope", "personal");
+  }
+  const queryString = params.toString();
+  return queryString ? `/kanji/worksheet?${queryString}` : "/kanji/worksheet";
 }
 
 function buildKanjiPageHref(options: {
@@ -135,11 +188,15 @@ function buildKanjiPageHref(options: {
   selectedChar?: string;
   page?: number;
   pickMode?: boolean;
+  scope?: "all" | "personal";
 }): string {
   const query = (options.rawQuery ?? "").trim();
   const params = new URLSearchParams();
   if (options.level) {
     params.set("level", options.level);
+  }
+  if (options.scope === "personal") {
+    params.set("scope", "personal");
   }
   if (query) {
     params.set("q", query);
@@ -219,40 +276,76 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
   const rawQuery = pickSingle(params.q);
   const rawSelected = pickSingle(params.selected);
   const rawLevel = pickSingle(params.level).trim();
+  const rawScope = pickSingle(params.scope).trim().toLowerCase();
   const rawPick = pickSingle(params.pick).trim();
   const rawPickMode = pickSingle(params.pickMode).trim();
   const rawPage = pickSingle(params.page).trim();
+  const scope: "all" | "personal" = rawScope === "personal" ? "personal" : "all";
+  const isPersonalScope = scope === "personal";
   const pickedIds = parsePickedIds(rawPick);
   const selectedLevel = rawLevel ? normalizeJlptLevel(rawLevel) : null;
   const query = rawQuery.trim().toLowerCase();
 
-  const [kanjiRaw, reviewList, vocabList, adminLibrary, kanjiMetadata, personalState] =
+  const [kanjiRaw, reviewList, vocabList, adminLibrary, kanjiMetadata, personalState, userKanjiStore] =
     await Promise.all([
-    prisma.kanji.findMany(),
-    prisma.review.findMany({
-      where: {
-        userId: user.id,
-        kanjiId: { not: null },
-      },
-      select: {
-        kanjiId: true,
-        dueAt: true,
-      },
-    }),
-    prisma.vocab.findMany({
-      orderBy: [{ jlptLevel: "asc" }, { word: "asc" }],
-    }),
-    loadAdminVocabLibrary(),
-    loadAdminKanjiMetadata(),
-    loadUserPersonalState(user.id),
-  ]);
+      prisma.kanji.findMany(),
+      prisma.review.findMany({
+        where: {
+          userId: user.id,
+          kanjiId: { not: null },
+        },
+        select: {
+          kanjiId: true,
+          dueAt: true,
+        },
+      }),
+      prisma.vocab.findMany({
+        orderBy: [{ jlptLevel: "asc" }, { word: "asc" }],
+      }),
+      loadAdminVocabLibrary(),
+      loadAdminKanjiMetadata(),
+      loadUserPersonalState(user.id),
+      loadUserKanjiStore(user.id),
+    ]);
 
   const metadataEntryMap = new Map(
     kanjiMetadata.entries.map((entry) => [entry.character, entry])
   );
-  const kanjiList = sortKanjiByLearningOrder(kanjiRaw, {
+  const dbKanjiList: KanjiListItem[] = sortKanjiByLearningOrder(kanjiRaw, {
     getOrder: (item) => metadataEntryMap.get(item.character)?.order,
-  });
+  }).map((item) => ({
+    id: item.id,
+    character: item.character,
+    meaning: item.meaning,
+    onReading: item.onReading,
+    kunReading: item.kunReading,
+    strokeHint: metadataEntryMap.get(item.character)?.strokeHint || "",
+    strokeImage: metadataEntryMap.get(item.character)?.strokeImage || "",
+    strokeCount: item.strokeCount,
+    jlptLevel: normalizeJlptLevel(item.jlptLevel),
+    exampleWord: item.exampleWord,
+    exampleMeaning: item.exampleMeaning,
+  }));
+  const personalKanjiByCharacter = new Map(userKanjiStore.items.map((item) => [item.character, item]));
+  const personalKanjiList: KanjiListItem[] = sortKanjiByLearningOrder(
+    userKanjiStore.items.map((item) => ({
+      id: item.id,
+      character: item.character,
+      meaning: item.meaning,
+      onReading: item.onReading,
+      kunReading: item.kunReading,
+      strokeHint: item.strokeHint || metadataEntryMap.get(item.character)?.strokeHint || "",
+      strokeImage: item.strokeImage || metadataEntryMap.get(item.character)?.strokeImage || "",
+      strokeCount: item.strokeCount,
+      jlptLevel: item.jlptLevel,
+      exampleWord: item.exampleWord,
+      exampleMeaning: item.exampleMeaning,
+    })),
+    {
+      getOrder: (item) => personalKanjiByCharacter.get(item.character)?.order,
+    }
+  );
+  const kanjiList = isPersonalScope ? personalKanjiList : dbKanjiList;
   const reviewByKanjiId = new Map(
     reviewList
       .filter((review): review is { kanjiId: string; dueAt: Date } => !!review.kanjiId)
@@ -276,6 +369,8 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
           kanji.meaning,
           kanji.onReading,
           kanji.kunReading,
+          kanji.strokeHint,
+          kanji.strokeImage,
           kanji.jlptLevel,
           kanji.exampleWord,
           kanji.exampleMeaning,
@@ -283,6 +378,10 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
         return haystacks.some((value) => value.includes(query));
       })
     : levelFilteredKanji;
+  const flashcardScope: "all" | "personal" = isPersonalScope ? "personal" : "all";
+  const buildScopedKanjiPageHref = (
+    options: Omit<Parameters<typeof buildKanjiPageHref>[0], "scope">
+  ) => buildKanjiPageHref({ ...options, scope });
   const filteredIds = new Set(filteredKanji.map((item) => item.id));
   const activePickedIds = pickedIds.filter((id) => filteredIds.has(id));
   const pickedIdSet = new Set(activePickedIds);
@@ -304,19 +403,34 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
   const kanjiMetadataMap = new Map(
     kanjiMetadata.entries.map((entry) => [entry.character, entry.relatedWords])
   );
+  const personalRelatedWordsMap = new Map(
+    userKanjiStore.items.map((entry) => [entry.character, entry.relatedWords])
+  );
 
   const importedRelatedWords: RelatedWord[] = selectedKanji
     ? dedupeRelatedWords(
-        (kanjiMetadataMap.get(selectedKanji.character) ?? []).map((item) => ({
-          id: `meta-${selectedKanji.character}-${item.id}`,
-          word: item.word,
-          reading: item.reading,
-          kanji: item.kanji,
-          hanviet: item.hanviet,
-          meaning: item.meaning,
-          sourceLabel: item.sourceLabel || "Kanji JSON",
-          sourceType: "admin" as const,
-        }))
+        [
+          ...(personalRelatedWordsMap.get(selectedKanji.character) ?? []).map((item) => ({
+            id: `user-${selectedKanji.character}-${item.id}`,
+            word: item.word,
+            reading: item.reading,
+            kanji: item.kanji,
+            hanviet: item.hanviet,
+            meaning: item.meaning,
+            sourceLabel: item.sourceLabel || "JSON cá nhân",
+            sourceType: "admin" as const,
+          })),
+          ...(kanjiMetadataMap.get(selectedKanji.character) ?? []).map((item) => ({
+            id: `meta-${selectedKanji.character}-${item.id}`,
+            word: item.word,
+            reading: item.reading,
+            kanji: item.kanji,
+            hanviet: item.hanviet,
+            meaning: item.meaning,
+            sourceLabel: item.sourceLabel || "Kanji JSON",
+            sourceType: "admin" as const,
+          })),
+        ]
       )
     : [];
 
@@ -362,6 +476,31 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
       )
     : [];
 
+  const personalExtraWords = userKanjiStore.items.flatMap((entry) =>
+    entry.relatedWords.map((item) => ({
+      id: `user-${entry.character}-${item.id}`,
+      word: item.word,
+      reading: item.reading,
+      kanji: item.kanji,
+      hanviet: item.hanviet,
+      meaning: item.meaning,
+      jlptLevel: normalizeJlptLevel(item.jlptLevel || entry.jlptLevel),
+      sourceLabel: item.sourceLabel || "JSON cá nhân",
+    }))
+  );
+  const adminExtraWords = kanjiMetadata.entries.flatMap((entry) =>
+    entry.relatedWords.map((item) => ({
+      id: item.id,
+      word: item.word,
+      reading: item.reading,
+      kanji: item.kanji,
+      hanviet: item.hanviet,
+      meaning: item.meaning,
+      jlptLevel: item.jlptLevel,
+      sourceLabel: item.sourceLabel || "Kanji JSON",
+    }))
+  );
+
   const compoundLevel = selectedLevel ?? "N5";
   const compoundWords = buildKanjiCompoundWords({
     targetLevel: compoundLevel,
@@ -377,18 +516,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
       jlptLevel: item.jlptLevel,
     })),
     adminLibrary,
-    extraWords: kanjiMetadata.entries
-      .flatMap((entry) => entry.relatedWords)
-      .map((item) => ({
-        id: item.id,
-        word: item.word,
-        reading: item.reading,
-        kanji: item.kanji,
-        hanviet: item.hanviet,
-        meaning: item.meaning,
-        jlptLevel: item.jlptLevel,
-        sourceLabel: item.sourceLabel || "Kanji JSON",
-      })),
+    extraWords: [...personalExtraWords, ...adminExtraWords],
   });
   const selectedCharCompoundWords = selectedKanji
     ? compoundWords.filter((item) =>
@@ -400,14 +528,17 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
   const compoundFlashcardHref = buildKanjiWordLearnHref({
     level: compoundLevel,
     mode: "flashcard",
+    scope,
   });
   const compoundQuizHref = buildKanjiWordLearnHref({
     level: compoundLevel,
     mode: "quiz",
+    scope,
   });
   const compoundRecallHref = buildKanjiWordLearnHref({
     level: compoundLevel,
     mode: "recall",
+    scope,
   });
   const selectedCharCompoundFlashcardHref =
     selectedKanji && selectedCharCompoundWords.length > 0
@@ -415,6 +546,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
           level: compoundLevel,
           mode: "flashcard",
           selectedChar: selectedKanji.character,
+          scope,
         })
       : undefined;
 
@@ -424,27 +556,50 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
         mode: "flashcard",
         selectedChar: selectedKanji.character,
         source: "related",
+        scope,
       })
     : selectedCharCompoundFlashcardHref
       ? selectedCharCompoundFlashcardHref
       : buildKanjiWordLearnHref({
           level: compoundLevel,
           mode: "flashcard",
+          scope,
         });
   const selectedModeKanjiWordFlashcardHref = selectedKanji
     ? buildKanjiWordLearnHref({
         level: compoundLevel,
         mode: "flashcard",
         selectedChar: selectedKanji.character,
+        scope,
       })
     : undefined;
   const allFilteredFlashcardHref = buildKanjiLearnHref({
     rawQuery,
     level: selectedLevel,
+    scope: flashcardScope,
+  });
+  const allFilteredQuizHref = buildKanjiLearnHref({
+    rawQuery,
+    level: selectedLevel,
+    mode: "quiz",
+    scope: flashcardScope,
+  });
+  const worksheetHref = buildKanjiWorksheetHref({
+    level: selectedLevel,
+    rawQuery,
+    pickedIds: activePickedIds,
+    scope,
   });
   const pickedFlashcardHref = buildKanjiLearnHref({
     level: selectedLevel,
     pickedIds: activePickedIds,
+    scope: flashcardScope,
+  });
+  const pickedQuizHref = buildKanjiLearnHref({
+    level: selectedLevel,
+    pickedIds: activePickedIds,
+    mode: "quiz",
+    scope: flashcardScope,
   });
   const selectedIndex = selectedKanji
     ? filteredKanji.findIndex((kanji) => kanji.id === selectedKanji.id)
@@ -453,7 +608,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
   const totalPages = Math.max(1, Math.ceil(filteredKanji.length / KANJI_PAGE_SIZE));
   const currentPage = Math.min(totalPages, rawPage ? parsePage(rawPage) : derivedPage);
   const pageStart = (currentPage - 1) * KANJI_PAGE_SIZE;
-  const returnToHref = buildKanjiPageHref({
+  const returnToHref = buildScopedKanjiPageHref({
     level: selectedLevel,
     rawQuery,
     pickedIds: activePickedIds,
@@ -461,14 +616,14 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     page: currentPage,
     pickMode: isPickMode,
   });
-  const clearPickedHref = buildKanjiPageHref({
+  const clearPickedHref = buildScopedKanjiPageHref({
     level: selectedLevel,
     rawQuery,
     selectedChar: rawSelected,
     page: currentPage,
     pickMode: isPickMode,
   });
-  const enablePickModeHref = buildKanjiPageHref({
+  const enablePickModeHref = buildScopedKanjiPageHref({
     level: selectedLevel,
     rawQuery,
     pickedIds: activePickedIds,
@@ -476,18 +631,32 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     page: currentPage,
     pickMode: true,
   });
-  const disablePickModeHref = buildKanjiPageHref({
+  const disablePickModeHref = buildScopedKanjiPageHref({
     level: selectedLevel,
     rawQuery,
     selectedChar: rawSelected,
     page: currentPage,
   });
+  const systemScopeHref = buildKanjiPageHref({
+    level: selectedLevel,
+    rawQuery,
+    selectedChar: rawSelected,
+    scope: "all",
+    page: 1,
+  });
+  const personalScopeHref = buildKanjiPageHref({
+    level: selectedLevel,
+    rawQuery,
+    selectedChar: rawSelected,
+    scope: "personal",
+    page: 1,
+  });
   const headerTabs = [
     {
       key: "ALL",
-      label: "TAT CA",
+      label: "TẤT CẢ",
       count: kanjiList.length,
-      href: buildKanjiPageHref({
+      href: buildScopedKanjiPageHref({
         level: null,
         rawQuery,
         pickedIds: activePickedIds,
@@ -501,7 +670,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
       key: level,
       label: level,
       count: countByLevel[level],
-      href: buildKanjiPageHref({
+      href: buildScopedKanjiPageHref({
         level,
         rawQuery,
         pickedIds: activePickedIds,
@@ -514,7 +683,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
   ];
   const pickedPreview =
     selectedFlashcardKanji.length > 0
-      ? `Da chon: ${selectedFlashcardKanji
+      ? `Đã chọn: ${selectedFlashcardKanji
           .slice(0, 12)
           .map((item) => item.character)
           .join(" · ")}${selectedFlashcardKanji.length > 12 ? ` ... (+${selectedFlashcardKanji.length - 12})` : ""}`
@@ -525,15 +694,15 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     character: kanji.character,
     meaning: kanji.meaning,
     jlptLevel: kanji.jlptLevel,
-    href: buildKanjiPageHref({
+    href: `${buildScopedKanjiPageHref({
       level: selectedLevel,
       rawQuery,
       pickedIds: activePickedIds,
       selectedChar: kanji.character,
       page: currentPage,
       pickMode: isPickMode,
-    }),
-    togglePickHref: buildKanjiPageHref({
+    })}#kanji-${kanji.id}`,
+    togglePickHref: buildScopedKanjiPageHref({
       level: selectedLevel,
       rawQuery,
       pickedIds: togglePickedId(activePickedIds, kanji.id),
@@ -552,15 +721,48 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     <section className="space-y-6">
       <KanjiExplorerHeader
         tabs={headerTabs}
-        selectedLabel={selectedLevel ?? "Tat ca"}
+        selectedLabel={selectedLevel ?? "Tất cả"}
         filteredCount={filteredKanji.length}
         roadmapHref={selectedLevel ? `/kanji/roadmap?level=${selectedLevel}` : "/kanji/roadmap"}
+        worksheetHref={worksheetHref}
         allFlashcardHref={allFilteredFlashcardHref}
+        allQuizHref={allFilteredQuizHref}
         pickedFlashcardHref={pickedFlashcardHref}
+        pickedQuizHref={pickedQuizHref}
         clearPickedHref={activePickedIds.length > 0 ? clearPickedHref : undefined}
         pickedCount={activePickedIds.length}
         pickedPreview={pickedPreview}
       />
+
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white/75 p-3">
+        <Link
+          href={systemScopeHref}
+          scroll={false}
+          className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] transition ${
+            !isPersonalScope
+              ? "bg-sky-600 text-white"
+              : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+          }`}
+        >
+          Kho hệ thống
+        </Link>
+        <Link
+          href={personalScopeHref}
+          scroll={false}
+          className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] transition ${
+            isPersonalScope
+              ? "bg-emerald-600 text-white"
+              : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+          }`}
+        >
+          Kanji cá nhân ({userKanjiStore.items.length})
+        </Link>
+          <p className="text-xs text-slate-500">
+            {isPersonalScope
+              ? "Đang ở trang Kanji cá nhân bạn đã tự import."
+              : "Đang hiển thị kho Kanji hệ thống. Chuyển sang tab Kanji cá nhân để học dữ liệu bạn tự import."}
+          </p>
+      </div>
 
       <KanjiDrawSearch
         items={levelFilteredKanji.map((kanji) => ({
@@ -575,6 +777,28 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
         level={selectedLevel ?? undefined}
       />
 
+      <div className="rounded-3xl border border-slate-200 bg-white/85 p-5 shadow-[0_16px_40px_rgba(15,23,42,0.06)] backdrop-blur-md sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="inline-flex items-center rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-indigo-700">
+              Tự học chủ động
+            </p>
+            <h2 className="mt-2 text-xl font-extrabold text-slate-900">
+              Tự học Kanji + Từ vựng ở một nơi
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Bạn đang có {userKanjiStore.items.length} Kanji cá nhân. Mở trang tự học để import/quản lý dữ liệu gọn hơn.
+            </p>
+          </div>
+          <Link
+            href="/self-study"
+            className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-indigo-500"
+          >
+            Mở tự học chủ động
+          </Link>
+        </div>
+      </div>
+
       <div className="relative overflow-hidden rounded-3xl bg-white/85 p-5 shadow-[0_20px_50px_rgba(0,0,0,0.05)] backdrop-blur-md sm:p-6">
         <div className="pointer-events-none absolute -left-12 top-0 h-32 w-32 rounded-full bg-emerald-200/35 blur-3xl" />
         <div className="pointer-events-none absolute -right-14 bottom-0 h-36 w-36 rounded-full bg-cyan-200/30 blur-3xl" />
@@ -582,23 +806,23 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
         <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
-              Tu ghep Kanji
+              Từ ghép Kanji
             </p>
             <h2 className="mt-2 text-2xl font-extrabold text-slate-900">
               {selectedKanji
-                ? `Cum tu hoc nhanh cho chu ${selectedKanji.character} (${compoundLevel})`
-                : `Cum tu hoc nhanh tu Kanji ${compoundLevel}`}
+                ? `Cụm từ học nhanh cho chữ ${selectedKanji.character} (${compoundLevel})`
+                : `Cụm từ học nhanh từ Kanji ${compoundLevel}`}
             </h2>
             <p className="mt-1 text-sm text-slate-600">
               {selectedKanji
                 ? selectedCharCompoundWords.length > 0
-                  ? `${selectedCharCompoundWords.length} tu ghep dang lien quan truc tiep den chu "${selectedKanji.character}".`
-                  : `Chua tim thay tu ghep nao chua chu "${selectedKanji.character}" trong du lieu hien tai.`
-                : `${compoundWords.length} tu ghep duoc tao tu kho admin + vocab he thong, chi dung Kanji thuoc cap ${compoundLevel}.`}
+                  ? `${selectedCharCompoundWords.length} từ ghép đang liên quan trực tiếp đến chữ "${selectedKanji.character}".`
+                  : `Chưa tìm thấy từ ghép nào chứa chữ "${selectedKanji.character}" trong dữ liệu hiện tại.`
+                : `${compoundWords.length} từ ghép được tạo từ JSON cá nhân + kho admin + vocab hệ thống, chỉ dùng Kanji thuộc cấp ${compoundLevel}.`}
             </p>
             {selectedKanji && selectedCharCompoundWords.length > 0 ? (
               <p className="mt-1 text-xs font-medium text-slate-500">
-                Hien dang uu tien preview theo chu da chon de ban hoc nhanh hon.
+                Hiện đang ưu tiên preview theo chữ đã chọn để bạn học nhanh hơn.
               </p>
             ) : null}
           </div>
@@ -614,20 +838,20 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
               href={compoundQuizHref}
               className="rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-500"
             >
-              Trac nghiem
+              Trắc nghiệm
             </Link>
             <Link
               href={compoundRecallHref}
               className="rounded-full bg-orange-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-orange-500"
             >
-              Nhoi nhet
+              Nhồi nhét
             </Link>
             {selectedModeKanjiWordFlashcardHref ? (
               <Link
                 href={selectedModeKanjiWordFlashcardHref}
                 className="rounded-full bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-700 shadow-[0_8px_16px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-50"
               >
-                Flashcard chu nay
+                Flashcard chữ này
               </Link>
             ) : null}
           </div>
@@ -649,8 +873,8 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
         ) : (
           <p className="relative mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
             {selectedKanji
-              ? `Chua co tu ghep nao chua chu "${selectedKanji.character}" o cap ${compoundLevel}. Hay bo sung them du lieu tu vung.`
-              : `Chua co tu ghep phu hop cap ${compoundLevel}. Hay bo sung them du lieu tu vung.`}
+              ? `Chưa có từ ghép nào chứa chữ "${selectedKanji.character}" ở cấp ${compoundLevel}. Hãy bổ sung thêm dữ liệu từ vựng.`
+              : `Chưa có từ ghép phù hợp cấp ${compoundLevel}. Hãy bổ sung thêm dữ liệu từ vựng.`}
           </p>
         )}
       </div>
@@ -661,7 +885,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
           selectedDueAt={selectedDueAt}
           selectedKanjiBookmarked={selectedKanjiBookmarked}
           selectedKanjiPicked={selectedKanjiPicked}
-          togglePickedHref={buildKanjiPageHref({
+          togglePickedHref={buildScopedKanjiPageHref({
             level: selectedLevel,
             rawQuery,
             pickedIds: selectedKanjiToggledPickedIds,
@@ -673,6 +897,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
           selectedFlashcardHref={buildKanjiLearnHref({
             rawQuery: selectedKanji.character,
             level: selectedLevel,
+            scope: isUserKanjiId(selectedKanji.id) ? "personal" : flashcardScope,
           })}
           relatedFlashcardHref={relatedFlashcardHref}
           jsonRelatedWords={importedRelatedWords}
@@ -684,9 +909,11 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
       <div className="relative overflow-hidden rounded-3xl bg-white/80 p-6 shadow-[0_20px_50px_rgba(0,0,0,0.05)] backdrop-blur-md">
         <div className="pointer-events-none absolute -right-10 top-0 h-24 w-24 rounded-full bg-violet-200/25 blur-2xl" />
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-3xl font-extrabold text-slate-900">Thu vien Kanji ({filteredKanji.length})</h2>
+          <h2 className="text-3xl font-extrabold text-slate-900">
+            {isPersonalScope ? "Thư viện Kanji cá nhân" : "Thư viện Kanji"} ({filteredKanji.length})
+          </h2>
           <p className="text-sm text-slate-500">
-            Trang {currentPage}/{totalPages} · Moi trang {KANJI_PAGE_SIZE} chu
+            Trang {currentPage}/{totalPages} · Mỗi trang {KANJI_PAGE_SIZE} chữ
           </p>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -696,7 +923,13 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
                 href={allFilteredFlashcardHref}
                 className="rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-500"
               >
-                Flashcard bo loc
+                Flashcard bộ lọc
+              </Link>
+              <Link
+                href={allFilteredQuizHref}
+                className="rounded-full bg-sky-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-sky-500"
+              >
+                Trắc nghiệm bộ lọc
               </Link>
               <Link
                 href={pickedFlashcardHref}
@@ -706,17 +939,27 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
                     : "pointer-events-none cursor-not-allowed bg-slate-100 text-slate-400"
                 }`}
               >
-                Flashcard da chon ({activePickedIds.length})
+                Flashcard đã chọn ({activePickedIds.length})
+              </Link>
+              <Link
+                href={pickedQuizHref}
+                className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 ${
+                  activePickedIds.length > 0
+                    ? "bg-sky-100 text-sky-700 hover:-translate-y-0.5 hover:bg-sky-200"
+                    : "pointer-events-none cursor-not-allowed bg-slate-100 text-slate-400"
+                }`}
+              >
+                Quiz đã chọn ({activePickedIds.length})
               </Link>
               <Link
                 href={disablePickModeHref}
                 scroll={false}
                 className="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600 shadow-[0_8px_16px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-50"
               >
-                Tat che do chon
+                Tắt chế độ chọn
               </Link>
               <p className="text-xs text-slate-500">
-                Bam nut "Flash" tren tung the de tu chon bo Kanji can hoc.
+                Bấm nút &quot;Flash&quot; trên từng thẻ để tự chọn bộ Kanji cần học.
               </p>
             </>
           ) : (
@@ -726,10 +969,10 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
                 scroll={false}
                 className="rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-500"
               >
-                Chon che do Flashcard
+                Chọn chế độ Flashcard
               </Link>
               <p className="text-xs text-slate-500">
-                Bat che do nay de chon tung Kanji roi hoc flashcard theo bo ban tu tao.
+                Bật chế độ này để chọn từng Kanji rồi học flashcard theo bộ bạn tự tạo.
               </p>
             </>
           )}
@@ -737,7 +980,9 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
 
         {filteredKanji.length === 0 ? (
           <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-            Khong tim thay kanji phu hop. Thu tu khoa khac hoac ve lai net.
+            {isPersonalScope
+              ? "Bạn chưa có Kanji cá nhân nào phù hợp bộ lọc. Vào Tự học chủ động để import JSON Kanji."
+              : "Không tìm thấy kanji phù hợp. Thử từ khóa khác hoặc vẽ lại nét."}
           </p>
         ) : (
           <>
@@ -747,13 +992,13 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
             {totalPages > 1 ? (
               <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-50/90 px-4 py-3">
                 <p className="text-sm text-slate-500">
-                  Dang xem {pageStart + 1}-{Math.min(pageStart + KANJI_PAGE_SIZE, filteredKanji.length)} /{" "}
-                  {filteredKanji.length} chu
+                  Đang xem {pageStart + 1}-{Math.min(pageStart + KANJI_PAGE_SIZE, filteredKanji.length)} /{" "}
+                  {filteredKanji.length} chữ
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                   {currentPage > 1 ? (
                     <Link
-                      href={buildKanjiPageHref({
+                      href={buildScopedKanjiPageHref({
                         level: selectedLevel,
                         rawQuery,
                         pickedIds: activePickedIds,
@@ -764,7 +1009,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
                       scroll={false}
                       className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:-translate-y-0.5 hover:border-sky-200 hover:text-sky-700"
                     >
-                      ← Truoc
+                      ← Trước
                     </Link>
                   ) : null}
 
@@ -775,7 +1020,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
                       <div key={page} className="flex items-center gap-2">
                         {needsGap ? <span className="text-xs text-slate-400">...</span> : null}
                         <Link
-                          href={buildKanjiPageHref({
+                          href={buildScopedKanjiPageHref({
                             level: selectedLevel,
                             rawQuery,
                             pickedIds: activePickedIds,
@@ -798,7 +1043,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
 
                   {currentPage < totalPages ? (
                     <Link
-                      href={buildKanjiPageHref({
+                      href={buildScopedKanjiPageHref({
                         level: selectedLevel,
                         rawQuery,
                         pickedIds: activePickedIds,

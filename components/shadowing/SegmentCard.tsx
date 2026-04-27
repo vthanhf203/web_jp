@@ -178,13 +178,13 @@ export default function SegmentCard({
       </div>
 
       <div className={styles.translation}>
-        {isLoadingTranslation ? "Dang dich..." : translation || " "}
+        {isLoadingTranslation ? "Đang dịch..." : translation || " "}
       </div>
 
       <div className={styles.actionRow}>
         <div className={styles.leftActions}>
           <span className={styles.timestamp}>{formatTime(segment.start)}</span>
-          {isActive && isShadowingMode ? <span className={styles.shadowingBadge}>Nhai lai</span> : null}
+          {isActive && isShadowingMode ? <span className={styles.shadowingBadge}>Nhại lại</span> : null}
         </div>
 
         <button

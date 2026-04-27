@@ -26,6 +26,8 @@ export type KanjiMetadataEntry = {
   id: string;
   character: string;
   order: number | null;
+  strokeHint: string;
+  strokeImage: string;
   category: string;
   tags: string[];
   createdAt: string;
@@ -46,6 +48,19 @@ function nowIso(): string {
 
 function normalizeText(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeTextOrArray(value: unknown): string {
+  if (typeof value === "string") {
+    return value.trim();
+  }
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => (typeof item === "string" ? item.trim() : ""))
+      .filter(Boolean)
+      .join(", ");
+  }
+  return "";
 }
 
 function normalizeDate(value: unknown, fallback: string): string {
@@ -127,14 +142,30 @@ function normalizeEntry(input: unknown): KanjiMetadataEntry | null {
   }
 
   const raw = input as Partial<KanjiMetadataEntry>;
+  const sourceRaw = raw as Record<string, unknown>;
   const character = typeof raw.character === "string" ? raw.character.trim() : "";
   if (!character) {
     return null;
   }
 
   const now = nowIso();
-  const createdAt = normalizeDate((raw as Record<string, unknown>).createdAt, now);
+  const createdAt = normalizeDate(sourceRaw.createdAt, now);
   const updatedAt = normalizeDate(raw.updatedAt, createdAt);
+  const strokeHint =
+    normalizeTextOrArray(sourceRaw.strokeHint) ||
+    normalizeTextOrArray(sourceRaw.strokeGuide) ||
+    normalizeTextOrArray(sourceRaw.strokeOrder) ||
+    normalizeTextOrArray(sourceRaw.strokeOrderGuide) ||
+    normalizeTextOrArray(sourceRaw.writingHint) ||
+    normalizeTextOrArray(sourceRaw.writingGuide) ||
+    normalizeTextOrArray(sourceRaw.huongDanNet) ||
+    normalizeTextOrArray(sourceRaw.huong_dan_net) ||
+    normalizeTextOrArray(sourceRaw.huongDanViet);
+  const strokeImage =
+    normalizeText(sourceRaw.strokeImage) ||
+    normalizeText(sourceRaw.strokeImageUrl) ||
+    normalizeText(sourceRaw.strokeGuideImage) ||
+    normalizeText(sourceRaw.strokeOrderImage);
   const relatedWords = Array.isArray(raw.relatedWords)
     ? raw.relatedWords
         .map((item) => normalizeLinkedWord(item))
@@ -142,11 +173,13 @@ function normalizeEntry(input: unknown): KanjiMetadataEntry | null {
     : [];
 
   return {
-    id: normalizeText((raw as Record<string, unknown>).id) || character,
+    id: normalizeText(sourceRaw.id) || character,
     character,
-    order: parseOptionalOrder((raw as Record<string, unknown>).order),
-    category: normalizeText((raw as Record<string, unknown>).category),
-    tags: normalizeStringArray((raw as Record<string, unknown>).tags),
+    order: parseOptionalOrder(sourceRaw.order),
+    strokeHint,
+    strokeImage,
+    category: normalizeText(sourceRaw.category),
+    tags: normalizeStringArray(sourceRaw.tags),
     createdAt,
     relatedWords,
     updatedAt,

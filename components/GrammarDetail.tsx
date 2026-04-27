@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -106,23 +106,23 @@ export default function GrammarDetail({
           className={`${styles.bookmarkButton} ${bookmarked ? styles.bookmarkActive : ""}`}
           onClick={() => setBookmarked((prev) => !prev)}
           aria-pressed={bookmarked}
-          aria-label={bookmarked ? "Bo bookmark" : "Bookmark mau nay"}
+          aria-label={bookmarked ? "Bỏ bookmark" : "Bookmark mẫu này"}
         >
           <svg className={styles.bookmarkIcon} viewBox="0 0 24 24" aria-hidden="true">
             <path d="M6 4.5h12a1 1 0 011 1V21l-7-4-7 4V5.5a1 1 0 011-1z" />
           </svg>
-          {bookmarked ? "Da luu" : "Bookmark"}
+          {bookmarked ? "Đã lưu" : "Bookmark"}
         </button>
       </header>
 
       <section className={styles.block}>
-        <p className={styles.blockTitle}>Y nghia</p>
+        <p className={styles.blockTitle}>Ý nghĩa</p>
         <p className={styles.meaning}>{meaning}</p>
       </section>
 
       {usage.length > 0 ? (
         <section className={styles.block}>
-          <p className={styles.blockTitle}>Cach dung</p>
+          <p className={styles.blockTitle}>Cách dùng</p>
           <ul className={styles.usageList}>
             {usage.map((line, index) => (
               <li key={`usage-${index}`}>{line}</li>
@@ -168,7 +168,7 @@ export default function GrammarDetail({
 
       {notes.length > 0 ? (
         <section className={styles.block}>
-          <p className={styles.blockTitle}>Chu y</p>
+          <p className={styles.blockTitle}>Chú ý</p>
           <ul className={styles.notesList}>
             {notes.map((line, index) => (
               <li key={`note-${index}`}>{line}</li>
@@ -183,7 +183,7 @@ export default function GrammarDetail({
         className={styles.quizButton}
         disabled={!onQuizStart && !quizHref}
       >
-        Kiem tra nhanh
+        Kiểm tra nhanh
       </button>
     </article>
   );

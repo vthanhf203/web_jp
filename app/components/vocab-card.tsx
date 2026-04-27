@@ -135,8 +135,8 @@ export function VocabCard({
                 ? "border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100"
                 : "border-slate-200 bg-white text-slate-500 hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700"
             }`}
-            title={isBookmarked ? "Da luu" : "Luu tu nay"}
-            aria-label={isBookmarked ? "Da luu" : "Luu tu nay"}
+            title={isBookmarked ? "Đã lưu" : "Lưu từ này"}
+            aria-label={isBookmarked ? "Đã lưu" : "Lưu từ này"}
           >
             <BookmarkIcon active={isBookmarked} />
           </button>
@@ -167,11 +167,11 @@ export function VocabCard({
         </div>
 
         {!selectedDeckId ? (
-          <p className="text-xs font-semibold text-amber-700">Tao bo flashcard truoc de them nhanh</p>
+          <p className="text-xs font-semibold text-amber-700">Tạo bộ flashcard trước để thêm nhanh</p>
         ) : optimisticInDeck ? (
-          <p className="text-xs font-semibold text-emerald-700">Da trong flashcard dang chon</p>
+          <p className="text-xs font-semibold text-emerald-700">Đã trong flashcard đang chọn</p>
         ) : (
-          <p className="text-xs font-semibold text-blue-700">Bam dau cong de them vao flashcard</p>
+          <p className="text-xs font-semibold text-blue-700">Bấm dấu cộng để thêm vào flashcard</p>
         )}
       </div>
 
@@ -181,17 +181,17 @@ export function VocabCard({
         onClick={() => void toggleDeckMembership(!optimisticInDeck)}
         title={
           !selectedDeckId
-            ? "Tao flashcard truoc"
+            ? "Tạo flashcard trước"
             : optimisticInDeck
-              ? "Xoa khoi flashcard"
-              : "Them vao flashcard"
+              ? "Xóa khỏi flashcard"
+              : "Thêm vào flashcard"
         }
         aria-label={
           !selectedDeckId
-            ? "Tao flashcard truoc"
+            ? "Tạo flashcard trước"
             : optimisticInDeck
-              ? "Xoa khoi flashcard"
-              : "Them vao flashcard"
+              ? "Xóa khỏi flashcard"
+              : "Thêm vào flashcard"
         }
         className={`absolute bottom-4 right-4 inline-flex h-9 w-9 items-center justify-center rounded-full border shadow-sm transition ${deckButtonClass} ${
           !selectedDeckId || isPending ? "cursor-not-allowed opacity-50" : "hover:scale-105"

@@ -140,6 +140,7 @@ function touchKanjiPaths() {
   revalidatePath("/admin");
   revalidatePath("/admin/kanji");
   revalidatePath("/kanji");
+  revalidatePath("/kanji/worksheet");
   revalidatePath("/api/kanji-library");
 }
 
@@ -301,7 +302,7 @@ export async function importAdminGrammarPointsAction(
   if (!parsed.success) {
     return {
       status: "error",
-      message: "Hay chon bai va nhap du lieu ngu phap hop le.",
+      message: "Hãy chọn bài và nhập dữ liệu ngữ pháp hợp lệ.",
     };
   }
 
@@ -310,7 +311,7 @@ export async function importAdminGrammarPointsAction(
   if (!lesson) {
     return {
       status: "error",
-      message: "Khong tim thay bai ngu phap.",
+      message: "Không tìm thấy bài ngữ pháp.",
     };
   }
 
@@ -318,7 +319,7 @@ export async function importAdminGrammarPointsAction(
   if (rows.length === 0) {
     return {
       status: "error",
-      message: "Khong parse duoc du lieu. Hay thu JSON hoac JSON-lines.",
+      message: "Không parse được dữ liệu. Hãy thử JSON hoặc JSON-lines.",
     };
   }
 
@@ -342,7 +343,7 @@ export async function importAdminGrammarPointsAction(
   touchGrammarPaths();
   return {
     status: "success",
-    message: `Da them ${rows.length} mau ngu phap vao bai.`, 
+    message: `Đã thêm ${rows.length} mẫu ngữ pháp vào bài.`,
   };
 }
 
@@ -380,7 +381,7 @@ export async function uploadAdminGrammarImageAction(formData: FormData) {
   lesson.points.push({
     id: crypto.randomUUID(),
     order: nextOrder,
-    title: parsed.data.title || `Máº«u áº£nh ${nextOrder}`,
+    title: parsed.data.title || `Mẫu ảnh ${nextOrder}`,
     meaning: parsed.data.meaning || "",
     usage: [],
     examples: [],
@@ -507,6 +508,8 @@ async function upsertKanjiRows(rows: ImportedKanjiRow[]): Promise<{
         id: row.id || existingMeta?.id || `kanji-${row.character}`,
         character: row.character,
         order: row.order ?? existingMeta?.order ?? null,
+        strokeHint: row.strokeHint || existingMeta?.strokeHint || "",
+        strokeImage: row.strokeImage || existingMeta?.strokeImage || "",
         category: row.category || existingMeta?.category || "",
         tags: row.tags.length > 0 ? row.tags : existingMeta?.tags ?? [],
         createdAt: row.createdAt || existingMeta?.createdAt || nowIso,
@@ -558,7 +561,7 @@ export async function importAdminKanjiAction(
   if (!parsed.success) {
     return {
       status: "error",
-      message: "Hay nhap du lieu Kanji hop le.",
+      message: "Hãy nhập dữ liệu Kanji hợp lệ.",
     };
   }
 
@@ -566,7 +569,7 @@ export async function importAdminKanjiAction(
   if (rows.length === 0) {
     return {
       status: "error",
-      message: "Khong parse duoc du lieu Kanji. Hay thu JSON hoac JSON-lines.",
+      message: "Không parse được dữ liệu Kanji. Hãy thử JSON hoặc JSON-lines.",
     };
   }
 
@@ -575,7 +578,7 @@ export async function importAdminKanjiAction(
   touchKanjiPaths();
   return {
     status: "success",
-    message: `Da xu ly ${rows.length} kanji (${createdCount} moi, ${updatedCount} cap nhat).`, 
+    message: `Đã xử lý ${rows.length} kanji (${createdCount} mới, ${updatedCount} cập nhật).`,
   };
 }
 
@@ -592,7 +595,7 @@ export async function syncAdminKanjiFromUrlAction(
   if (!parsed.success) {
     return {
       status: "error",
-      message: "URL khong hop le. Vui long nhap URL API/JSON day du.",
+      message: "URL không hợp lệ. Vui lòng nhập URL API/JSON đầy đủ.",
     };
   }
 
@@ -613,7 +616,7 @@ export async function syncAdminKanjiFromUrlAction(
     if (!response.ok) {
       return {
         status: "error",
-        message: `Khong tai duoc du lieu tu URL (HTTP ${response.status}).`,
+        message: `Không tải được dữ liệu từ URL (HTTP ${response.status}).`,
       };
     }
 
@@ -623,7 +626,7 @@ export async function syncAdminKanjiFromUrlAction(
     if (rows.length === 0) {
       return {
         status: "error",
-        message: "URL co du lieu nhung khong parse duoc theo form Kanji.",
+        message: "URL có dữ liệu nhưng không parse được theo form Kanji.",
       };
     }
 
@@ -631,13 +634,13 @@ export async function syncAdminKanjiFromUrlAction(
     touchKanjiPaths();
     return {
       status: "success",
-      message: `Da sync ${rows.length} kanji (${createdCount} moi, ${updatedCount} cap nhat).`,
+      message: `Đã sync ${rows.length} kanji (${createdCount} mới, ${updatedCount} cập nhật).`,
     };
   } catch (error) {
     const message =
       error instanceof Error && error.name === "AbortError"
-        ? "Timeout khi goi URL. Thu lai hoac giam gioi han so dong."
-        : "Khong the ket noi toi URL nay. Kiem tra lai link va cho phep truy cap.";
+        ? "Timeout khi gọi URL. Thử lại hoặc giảm giới hạn số dòng."
+        : "Không thể kết nối tới URL này. Kiểm tra lại link và cho phép truy cập.";
     return {
       status: "error",
       message,

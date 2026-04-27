@@ -64,7 +64,7 @@ export async function POST(request: Request) {
 
     if (!groqApiKey) {
       return NextResponse.json(
-        { message: googleErrorMessage || "Chua cai dat GOOGLE_TRANSLATE_KEY hoac GROQ_API_KEY" },
+        { message: googleErrorMessage || "Chưa cài đặt GOOGLE_TRANSLATE_KEY hoặc GROQ_API_KEY" },
         { status: 500 }
       );
     }
@@ -92,12 +92,12 @@ export async function POST(request: Request) {
     } catch (error) {
       const groqErrorMessage = error instanceof Error ? error.message : "Groq translate failed.";
       return NextResponse.json(
-        { message: googleErrorMessage || groqErrorMessage || "Dich that bai" },
+        { message: googleErrorMessage || groqErrorMessage || "Dịch thất bại" },
         { status: 500 }
       );
     }
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Dich that bai";
+    const message = error instanceof Error ? error.message : "Dịch thất bại";
     return NextResponse.json({ message }, { status: 500 });
   }
 }

@@ -5,20 +5,24 @@ import { getCurrentUser } from "@/lib/auth";
 
 const highlights = [
   {
-    title: "Kanji thong minh",
-    body: "Tra nghia, On/Kun, ve net tim chu va hoc theo tung cap do JLPT.",
+    icon: "漢",
+    title: "Kanji thông minh",
+    body: "Tra nghĩa, On/Kun, vẽ nét tìm chữ và học theo từng cấp độ JLPT.",
   },
   {
-    title: "Tu vung theo chu de",
-    body: "N5-N1 theo nhom ro rang, hoc nhanh bang flashcard va luyen nho chu dong.",
+    icon: "📚",
+    title: "Từ vựng theo chủ đề",
+    body: "N5-N1 theo nhóm rõ ràng, học nhanh bằng flashcard và luyện nhớ chủ động.",
   },
   {
-    title: "Ngu phap de hieu",
-    body: "Vao bai truoc, mo chi tiet sau, bo cuc gon de khong roi mat.",
+    icon: "📝",
+    title: "Ngữ pháp dễ hiểu",
+    body: "Vào bài trước, mở chi tiết sau, bố cục gọn để không rối mắt.",
   },
   {
-    title: "Tien do ro rang",
-    body: "Theo doi XP, streak va cap do muc tieu de giu dong luc hoc moi ngay.",
+    icon: "🏆",
+    title: "Tiến độ rõ ràng",
+    body: "Theo dõi XP, streak và cấp độ mục tiêu để giữ động lực học mỗi ngày.",
   },
 ];
 
@@ -26,30 +30,33 @@ const studyTracks = [
   {
     href: "/kanji",
     title: "Kanji Studio",
-    subtitle: "Tap trung net ve + ghi nho hinh",
+    subtitle: "Tập trung nét vẽ + ghi nhớ hình",
     image: "/images/kanji-logo.png",
     fit: "contain",
+    label: "KANJI",
   },
   {
     href: "/vocab",
     title: "Vocab Flow",
-    subtitle: "Hoc theo chu de, sat dung de thi",
+    subtitle: "Học theo chủ đề, sát dụng đề thi",
     image: "/images/home-vocab.png",
     fit: "contain",
+    label: "VOCABULARY",
   },
   {
     href: "/grammar",
     title: "Grammar Map",
-    subtitle: "Nhap vao bai, xem mau cau theo logic",
+    subtitle: "Nhập vào bài, xem mẫu câu theo logic",
     image: "/images/home-grammar.png",
     fit: "contain",
+    label: "GRAMMAR",
   },
 ];
 
 const routine = [
-  "7 phut on lai bai da hoc",
-  "10 phut hoc chu de moi",
-  "8 phut luyen flashcard de nho sau",
+  "7 phút ôn lại bài đã học",
+  "10 phút học chủ đề mới",
+  "8 phút luyện flashcard để nhớ sâu",
 ];
 
 export default async function Home() {
@@ -60,7 +67,7 @@ export default async function Home() {
       <article className="hero-shell motion-rise">
         <Image
           src="https://images.unsplash.com/photo-1492571350019-22de08371fd3?auto=format&fit=crop&w=2000&q=80"
-          alt="Ban hoc tieng Nhat voi so tay va but"
+          alt="Bàn học tiếng Nhật với sổ tay và bút"
           fill
           priority
           sizes="(max-width: 1024px) 100vw, 1200px"
@@ -68,20 +75,20 @@ export default async function Home() {
         />
         <div className="hero-overlay" />
         <div className="hero-content">
-          <p className="chip">JLPT learning workspace</p>
-          <h1 className="mt-4 max-w-2xl text-4xl font-extrabold leading-tight text-white sm:text-5xl">
-            Hoc co nhip, nho lau, vao de la hoc duoc ngay
+          <p className="chip hero-badge">Không gian học JLPT</p>
+          <h1 className="hero-title mt-4 max-w-2xl text-white">
+            Học có nhịp, nhớ lâu, vào đề là học được ngay
           </h1>
           <p className="mt-4 max-w-2xl text-base text-slate-200 sm:text-lg">
-            Tu Kanji den ngu phap, moi phan deu duoc sap lai de ban hoc nhanh nhung van chac.
-            Giao dien gon, de dung ca tren may tinh va dien thoai.
+            Từ Kanji đến ngữ pháp, mỗi phần đều được sắp lại để bạn học nhanh nhưng vẫn chắc.
+            Giao diện gọn, dễ dùng cả trên máy tính và điện thoại.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href={user ? "/dashboard" : "/register"} className="btn-primary">
-              {user ? "Tiep tuc hom nay" : "Bat dau mien phi"}
+              {user ? "Tiếp tục hôm nay" : "Bắt đầu miễn phí"}
             </Link>
             <Link href="/vocab" className="btn-soft-dark">
-              Vao thu tu vung
+              Vào thư viện từ vựng
             </Link>
           </div>
         </div>
@@ -89,8 +96,11 @@ export default async function Home() {
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {highlights.map((item) => (
-          <article key={item.title} className="panel motion-rise p-5">
-            <h2 className="text-[1.08rem] font-bold text-slate-800">{item.title}</h2>
+          <article key={item.title} className="panel feature-card motion-rise p-5">
+            <span className="feature-icon" aria-hidden>
+              {item.icon}
+            </span>
+            <h2 className="mt-2 text-[1.08rem] font-bold text-slate-800">{item.title}</h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.body}</p>
           </article>
         ))}
@@ -101,11 +111,12 @@ export default async function Home() {
           <Link
             key={track.title}
             href={track.href}
-            className={`photo-tile motion-rise group overflow-hidden border border-slate-200 ${
+            className={`photo-tile module-card motion-rise group overflow-hidden border border-slate-200 ${
               track.fit === "contain" ? "poster-tile" : ""
             }`}
           >
             <div className="photo-frame">
+              <span className="module-badge">{track.label}</span>
               <Image
                 src={track.image}
                 alt={track.title}
@@ -127,22 +138,23 @@ export default async function Home() {
       <section className="panel motion-rise p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="chip">Routine 25 phut</p>
-            <h2 className="mt-3 text-3xl font-bold text-slate-800">Nhip hoc de giu den cuoi tuan</h2>
+            <p className="chip">Routine 25 phút</p>
+            <h2 className="mt-3 text-3xl font-bold text-slate-800">Nhịp học để giữ đến cuối tuần</h2>
           </div>
           <Link href="/dashboard" className="btn-soft">
-            Mo bang hoc
+            Mở bảng học
           </Link>
         </div>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
-          {routine.map((step, index) => (
-            <div
-              key={step}
-              className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700"
-            >
-              {index + 1}. {step}
-            </div>
-          ))}
+        <div className="relative mt-5">
+          <div className="routine-connector hidden md:block" />
+          <div className="grid gap-3 md:grid-cols-3">
+            {routine.map((step, index) => (
+              <div key={step} className="routine-step">
+                <span className="routine-step-badge">{index + 1}</span>
+                <p className="text-sm font-semibold text-slate-700">{step}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </section>

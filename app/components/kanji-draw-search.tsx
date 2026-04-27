@@ -1244,7 +1244,7 @@ export function KanjiDrawSearch({ items, initialQuery = "", level }: Props) {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               className="input-base"
-              placeholder="Nhap kanji, nghia, am On/Kun"
+              placeholder="Nhập kanji, nghĩa, âm On/Kun"
             />
             <button
               type="submit"
@@ -1273,7 +1273,7 @@ export function KanjiDrawSearch({ items, initialQuery = "", level }: Props) {
                 type="button"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-rose-600 shadow-[0_8px_20px_rgba(15,23,42,0.12)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-rose-50"
                 onClick={clearCanvas}
-                aria-label="Xoa net"
+                aria-label="Xóa nét"
               >
                 <Eraser className="h-4 w-4" />
               </button>
@@ -1281,22 +1281,22 @@ export function KanjiDrawSearch({ items, initialQuery = "", level }: Props) {
                 type="button"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white shadow-[0_10px_20px_rgba(15,23,42,0.2)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-800"
                 onClick={runRecognition}
-                aria-label="Nhan dien"
+                aria-label="Nhận diện"
               >
                 <WandSparkles className="h-4 w-4" />
               </button>
             </div>
             <div className="absolute bottom-4 left-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-600">
-              So net da ve: {drawnStrokeCount}
+              Số nét đã vẽ: {drawnStrokeCount}
             </div>
           </div>
         </article>
 
         <div className="space-y-4">
           <article className="rounded-3xl bg-white/84 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
-            <h3 className="text-xl font-black tracking-tight text-slate-900">Goi y tu net ve</h3>
+            <h3 className="text-xl font-black tracking-tight text-slate-900">Gợi ý từ nét vẽ</h3>
             <p className="mt-1 text-sm text-slate-500">
-              Ve cang ro tung net, top 1 cang chinh xac.
+              Vẽ càng rõ từng nét, top 1 càng chính xác.
             </p>
 
             {candidates.length > 0 ? (
@@ -1310,10 +1310,10 @@ export function KanjiDrawSearch({ items, initialQuery = "", level }: Props) {
                   }
                   learnByCandidate(top.char);
                 }}
-              >
-                <Sparkles className="h-4 w-4" />
-                Hoc Flashcard top 1
-              </button>
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Học Flashcard top 1
+                </button>
             ) : null}
 
             <div className="mt-3 flex flex-wrap gap-2">
@@ -1341,24 +1341,24 @@ export function KanjiDrawSearch({ items, initialQuery = "", level }: Props) {
               ))}
               {hasDrawing && candidates.length === 0 ? (
                 <span className="rounded-full bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-700 shadow-[0_8px_16px_rgba(245,158,11,0.2)]">
-                  Chua nhan dien duoc, thu ve lai.
+                  Chưa nhận diện được, thử vẽ lại.
                 </span>
               ) : null}
               {!hasDrawing ? (
                 <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600">
-                  Chua co net ve.
+                  Chưa có nét vẽ.
                 </span>
               ) : null}
             </div>
           </article>
 
           <article className="rounded-3xl bg-white/84 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
-            <p className="text-sm font-bold text-slate-700">Meo ve nhanh</p>
+            <p className="text-sm font-bold text-slate-700">Mẹo vẽ nhanh</p>
             <ul className="mt-2 space-y-2 text-sm text-slate-600">
-              <li>- Ve lon, nam giua canvas de nhan dien on dinh.</li>
-              <li>- Ve net ngang/doi xung tach roi nhau neu la chu co nhieu tang.</li>
-              <li>- Neu sai, bam icon xoa va ve lai tung phan.</li>
-              <li>- Co the nhan icon wand de scan ngay khong can doi.</li>
+              <li>- Vẽ lớn, nằm giữa canvas để nhận diện ổn định.</li>
+              <li>- Vẽ nét ngang/đối xứng tách rời nhau nếu là chữ có nhiều tầng.</li>
+              <li>- Nếu sai, bấm icon xóa và vẽ lại từng phần.</li>
+              <li>- Có thể nhấn icon wand để scan ngay không cần đợi.</li>
             </ul>
           </article>
         </div>

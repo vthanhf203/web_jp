@@ -54,6 +54,7 @@ function findSegmentIndexByTime(starts: number[], target: number): number {
 export default function ShadowingPage() {
   const videoRef = useRef<VideoPlayerHandle | null>(null);
   const pauseGuardRef = useRef<number | null>(null);
+  const indexSwitchAtRef = useRef(0);
 
   const [isLooping, setIsLooping] = useState(false);
 
@@ -70,6 +71,8 @@ export default function ShadowingPage() {
 
   const currentSegment = segments[currentIndex];
   const segmentStarts = useMemo(() => segments.map((seg) => seg.start), [segments]);
+  const progressPercent =
+    segments.length > 0 ? (Math.min(currentIndex + 1, segments.length) / segments.length) * 100 : 0;
 
   const seekToIndex = useCallback(
     (index: number, autoPlay = true) => {
@@ -80,6 +83,7 @@ export default function ShadowingPage() {
       const target = segments[index];
       pauseGuardRef.current = null;
       setCurrentIndex(index);
+      indexSwitchAtRef.current = performance.now();
       setCurrentTime(target.start);
       videoRef.current?.seekTo(target.start);
       if (autoPlay) {
@@ -139,10 +143,23 @@ export default function ShadowingPage() {
 
     const indexByTime = findSegmentIndexByTime(segmentStarts, currentTime);
     if (indexByTime !== currentIndex) {
+      const jumpDistance = Math.abs(indexByTime - currentIndex);
+      const isForwardStep = indexByTime > currentIndex && jumpDistance === 1;
+      const currentSegmentStart = segments[currentIndex]?.start ?? 0;
+      const currentSegmentElapsed = Math.max(0, currentTime - currentSegmentStart);
+      const minVisibleSeconds = 0.78;
+      const minSwitchGapMs = 520;
+      const switchedTooSoon = performance.now() - indexSwitchAtRef.current < minSwitchGapMs;
+
+      if (isForwardStep && (currentSegmentElapsed < minVisibleSeconds || switchedTooSoon)) {
+        return;
+      }
+
       setCurrentIndex(indexByTime);
       pauseGuardRef.current = null;
+      indexSwitchAtRef.current = performance.now();
     }
-  }, [currentTime, currentIndex, segmentStarts, segments.length, setCurrentIndex]);
+  }, [currentTime, currentIndex, segmentStarts, segments, setCurrentIndex]);
 
   useEffect(() => {
     if (!segments.length || !currentSegment) {
@@ -180,7 +197,9 @@ export default function ShadowingPage() {
   }, [playbackRate, videoSrc]);
 
   const progressCopy =
-    segments.length > 0 ? `${Math.min(currentIndex + 1, segments.length)} / ${segments.length} cau` : "0 / 0 cau";
+    segments.length > 0
+      ? `${Math.min(currentIndex + 1, segments.length)} / ${segments.length}`
+      : "0 / 0";
 
   if (!videoSrc) {
     return (
@@ -201,12 +220,15 @@ export default function ShadowingPage() {
               clearSession();
               setIsLooping(false);
             }}
-            aria-label="Chon video khac"
+            aria-label="Chọn video khác"
           >
-            {"<-"}
+            {"<- Bài học"}
           </button>
 
-          <p className={styles.videoTitle}>{videoTitle || "JLPT Shadowing"}</p>
+          <div className={styles.headerMeta}>
+            <p className={styles.videoTitle}>{videoTitle || "YouTube Transcript"}</p>
+            <p className={styles.headerHint}>Luyện nghe và shadowing theo từng câu.</p>
+          </div>
           <p className={styles.progressText}>{progressCopy}</p>
         </header>
 
@@ -215,16 +237,22 @@ export default function ShadowingPage() {
             <div className={styles.videoCard}>
               <VideoPlayer ref={videoRef} onTimeUpdate={handleTimeUpdate} />
             </div>
+            <div className={styles.videoProgress} aria-hidden="true">
+              <span
+                className={styles.videoProgressFill}
+                style={{ width: `${Math.max(8, progressPercent)}%` }}
+              />
+            </div>
 
             <div className={styles.lessonMeta}>
-              <p className={styles.lessonLine}>Bai {currentIndex + 1}, phan luyen nghe</p>
-              <p className={styles.lessonHint}>Nghe, nhai lai va lap cau de nho nhanh hon.</p>
+              <p className={styles.lessonLine}>Bài {currentIndex + 1}, phần luyện nghe</p>
+              <p className={styles.lessonHint}>Nghe, nhại lại và lặp câu để nhớ nhanh hơn.</p>
             </div>
 
             <article className={styles.currentCard}>
-              <p className={styles.currentLabel}>Cau dang hoc</p>
-              <p className={styles.currentText}>{currentSegment?.text ?? "Dang cho subtitle..."}</p>
-              <p className={styles.currentHint}>Tap doc theo nhip audio 2-3 lan.</p>
+              <p className={styles.currentLabel}>Câu đang học</p>
+              <p className={styles.currentText}>{currentSegment?.text ?? "Đang chờ subtitle..."}</p>
+              <p className={styles.currentHint}>Tập đọc theo nhịp audio 2-3 lần.</p>
             </article>
 
             <div className={styles.controlsCard}>
