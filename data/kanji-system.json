@@ -1,0 +1,2882 @@
+[
+  {
+    "character": "不",
+    "meaning": "không",
+    "onReading": "フ, ブ",
+    "kunReading": "-",
+    "strokeCount": 4,
+    "jlptLevel": "N4",
+    "exampleWord": "不便",
+    "exampleMeaning": "bất tiện"
+  },
+  {
+    "character": "世",
+    "meaning": "thế giới",
+    "onReading": "セ, セイ, ソウ",
+    "kunReading": "よ",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "世界",
+    "exampleMeaning": "thế giới"
+  },
+  {
+    "character": "主",
+    "meaning": "chủ; thầy",
+    "onReading": "シュ, シュウ, ス",
+    "kunReading": "あるじ, おも, ぬし",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "主人",
+    "exampleMeaning": "chồng; chủ"
+  },
+  {
+    "character": "乗",
+    "meaning": "lên; cưỡi; đi bằng",
+    "onReading": "ジョウ",
+    "kunReading": "の.る, の.せる",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "乗る",
+    "exampleMeaning": "lên; đi bằng"
+  },
+  {
+    "character": "事",
+    "meaning": "đồ vật; việc",
+    "onReading": "ジ, ズ",
+    "kunReading": "こと, つか.う, つか.える",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "用事",
+    "exampleMeaning": "kinh doanh"
+  },
+  {
+    "character": "京",
+    "meaning": "kinh đô; thủ đô",
+    "onReading": "キョウ, キン, ケイ",
+    "kunReading": "みやこ",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "東京",
+    "exampleMeaning": "Tokyo"
+  },
+  {
+    "character": "仕",
+    "meaning": "chăm sóc; phục vụ",
+    "onReading": "シ, ジ",
+    "kunReading": "つか.える",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "仕方",
+    "exampleMeaning": "đường; cách"
+  },
+  {
+    "character": "代",
+    "meaning": "thay thế",
+    "onReading": "タイ, ダイ",
+    "kunReading": "-が.わり, -がわ.り, か.える, か.わり, か.わる, かわ.り, かわ.る, しろ, よ",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "代わり",
+    "exampleMeaning": "thay thế"
+  },
+  {
+    "character": "以",
+    "meaning": "hoặc",
+    "onReading": "イ",
+    "kunReading": "もっ.て",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "以内",
+    "exampleMeaning": "trong phạm vi"
+  },
+  {
+    "character": "低",
+    "meaning": "thấp",
+    "onReading": "テイ",
+    "kunReading": "ひく.い, ひく.める",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "低い",
+    "exampleMeaning": "thấp"
+  },
+  {
+    "character": "住",
+    "meaning": "sống",
+    "onReading": "ジュウ, チュウ, ヂュウ",
+    "kunReading": "-ず.まい, す.まう, す.む",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "住む",
+    "exampleMeaning": "sống"
+  },
+  {
+    "character": "体",
+    "meaning": "cơ thể",
+    "onReading": "タイ, テイ",
+    "kunReading": "かたち, からだ",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "体",
+    "exampleMeaning": "cơ thể"
+  },
+  {
+    "character": "作",
+    "meaning": "làm; tạo",
+    "onReading": "サ, サク",
+    "kunReading": "-づく.り, つく.り, つく.る",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "作る",
+    "exampleMeaning": "làm; tạo ra"
+  },
+  {
+    "character": "使",
+    "meaning": "sử dụng",
+    "onReading": "シ",
+    "kunReading": "-つか.い, -づか.い, つか.い, つか.う",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "大使館",
+    "exampleMeaning": "đại sứ quán"
+  },
+  {
+    "character": "便",
+    "meaning": "tiện; thư tín; chuyến",
+    "onReading": "ベン, ビン",
+    "kunReading": "たよ.り",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "便利",
+    "exampleMeaning": "tiện lợi"
+  },
+  {
+    "character": "借",
+    "meaning": "mượn",
+    "onReading": "シャク",
+    "kunReading": "か.りる",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "借りる",
+    "exampleMeaning": "mượn"
+  },
+  {
+    "character": "働",
+    "meaning": "làm việc",
+    "onReading": "ドウ",
+    "kunReading": "はたら.く",
+    "strokeCount": 13,
+    "jlptLevel": "N4",
+    "exampleWord": "働く",
+    "exampleMeaning": "làm việc"
+  },
+  {
+    "character": "元",
+    "meaning": "gốc; nguyên bản",
+    "onReading": "ガン, ゲン",
+    "kunReading": "もと",
+    "strokeCount": 4,
+    "jlptLevel": "N4",
+    "exampleWord": "元気",
+    "exampleMeaning": "khỏe mạnh; tràn đầy năng lượng"
+  },
+  {
+    "character": "兄",
+    "meaning": "anh trai",
+    "onReading": "キョウ, ケイ",
+    "kunReading": "あに",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "兄",
+    "exampleMeaning": "anh trai"
+  },
+  {
+    "character": "光",
+    "meaning": "ánh sáng; sáng",
+    "onReading": "コウ",
+    "kunReading": "ひかり, ひか.る",
+    "strokeCount": 6,
+    "jlptLevel": "N4",
+    "exampleWord": "光",
+    "exampleMeaning": "ánh sáng"
+  },
+  {
+    "character": "公",
+    "meaning": "chính thức; công",
+    "onReading": "ク, コウ",
+    "kunReading": "おおやけ",
+    "strokeCount": 4,
+    "jlptLevel": "N4",
+    "exampleWord": "公園",
+    "exampleMeaning": "công viên"
+  },
+  {
+    "character": "写",
+    "meaning": "ảnh",
+    "onReading": "シャ, ジャ",
+    "kunReading": "うつ-, うつ.し, うつ.す, うつ.る",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "写す",
+    "exampleMeaning": "sao chép"
+  },
+  {
+    "character": "冬",
+    "meaning": "mùa đông",
+    "onReading": "トウ",
+    "kunReading": "ふゆ",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "冬",
+    "exampleMeaning": "mùa đông"
+  },
+  {
+    "character": "切",
+    "meaning": "cắt",
+    "onReading": "サイ, セツ",
+    "kunReading": "-き.り, -き.る, -き.れ, -き.れる, -ぎ.り, -ぎ.れ, き.り, き.る, き.れ, き.れる",
+    "strokeCount": 4,
+    "jlptLevel": "N4",
+    "exampleWord": "親切",
+    "exampleMeaning": "hiền; tử tế"
+  },
+  {
+    "character": "別",
+    "meaning": "tách rời",
+    "onReading": "ベツ",
+    "kunReading": "わ.ける, わか.れる",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "別れる",
+    "exampleMeaning": "chia tay"
+  },
+  {
+    "character": "力",
+    "meaning": "nỗ lực",
+    "onReading": "リイ, リキ, リョク",
+    "kunReading": "ちから",
+    "strokeCount": 2,
+    "jlptLevel": "N4",
+    "exampleWord": "力",
+    "exampleMeaning": "sức mạnh"
+  },
+  {
+    "character": "勉",
+    "meaning": "sức lực",
+    "onReading": "ベン",
+    "kunReading": "つと.める",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "勉強",
+    "exampleMeaning": "học tập"
+  },
+  {
+    "character": "動",
+    "meaning": "di chuyển",
+    "onReading": "ドウ",
+    "kunReading": "うご.かす, うご.く",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "動く",
+    "exampleMeaning": "chuyển; di chuyển"
+  },
+  {
+    "character": "区",
+    "meaning": "khu; quận",
+    "onReading": "ク",
+    "kunReading": "—",
+    "strokeCount": 4,
+    "jlptLevel": "N4",
+    "exampleWord": "地区",
+    "exampleMeaning": "khu vực"
+  },
+  {
+    "character": "医",
+    "meaning": "bác sĩ",
+    "onReading": "イ",
+    "kunReading": "い.する, い.やす, くすし",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "医学",
+    "exampleMeaning": "y học"
+  },
+  {
+    "character": "去",
+    "meaning": "rời khỏi",
+    "onReading": "キョ, コ",
+    "kunReading": "-さ.る, さ.る",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "去年",
+    "exampleMeaning": "năm ngoái"
+  },
+  {
+    "character": "台",
+    "meaning": "bệ; sân ga",
+    "onReading": "タイ, ダイ",
+    "kunReading": "うてな, つかさ, われ",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "台",
+    "exampleMeaning": "bộ đếm máy móc"
+  },
+  {
+    "character": "合",
+    "meaning": "hợp; gặp; vừa",
+    "onReading": "ゴウ, ガッ, カッ",
+    "kunReading": "あ.う, あ.わす, あ.わせる",
+    "strokeCount": 6,
+    "jlptLevel": "N4",
+    "exampleWord": "合う",
+    "exampleMeaning": "hợp; vừa"
+  },
+  {
+    "character": "同",
+    "meaning": "giống; cùng",
+    "onReading": "ドウ",
+    "kunReading": "おな.じ",
+    "strokeCount": 6,
+    "jlptLevel": "N4",
+    "exampleWord": "同じ",
+    "exampleMeaning": "giống; cùng"
+  },
+  {
+    "character": "味",
+    "meaning": "vị; nếm",
+    "onReading": "ミ",
+    "kunReading": "あじ, あじ.わう",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "味",
+    "exampleMeaning": "hương vị"
+  },
+  {
+    "character": "品",
+    "meaning": "hàng hóa",
+    "onReading": "ヒン, ホン",
+    "kunReading": "しな",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "品物",
+    "exampleMeaning": "bài viết"
+  },
+  {
+    "character": "員",
+    "meaning": "nhân viên",
+    "onReading": "イン",
+    "kunReading": "-",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "店員",
+    "exampleMeaning": "nhân viên cửa hàng"
+  },
+  {
+    "character": "問",
+    "meaning": "câu hỏi",
+    "onReading": "モン",
+    "kunReading": "と.い, と.う, とん",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "問題",
+    "exampleMeaning": "câu hỏi (ví dụ trong bài kiểm tra)"
+  },
+  {
+    "character": "図",
+    "meaning": "bản đồ",
+    "onReading": "ズ, ト",
+    "kunReading": "え, はか.る",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "地図",
+    "exampleMeaning": "bản đồ"
+  },
+  {
+    "character": "地",
+    "meaning": "mặt đất",
+    "onReading": "ジ, チ",
+    "kunReading": "-",
+    "strokeCount": 6,
+    "jlptLevel": "N4",
+    "exampleWord": "地理",
+    "exampleMeaning": "địa lý"
+  },
+  {
+    "character": "堂",
+    "meaning": "chùa",
+    "onReading": "ドウ",
+    "kunReading": "-",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "食堂",
+    "exampleMeaning": "nhà ăn"
+  },
+  {
+    "character": "場",
+    "meaning": "nơi chốn",
+    "onReading": "ジョウ, チョウ",
+    "kunReading": "ば",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "売り場",
+    "exampleMeaning": "quầy bán hàng"
+  },
+  {
+    "character": "声",
+    "meaning": "tiếng; giọng",
+    "onReading": "セイ, ショウ",
+    "kunReading": "こえ, こわ",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "声",
+    "exampleMeaning": "giọng; tiếng"
+  },
+  {
+    "character": "売",
+    "meaning": "bán",
+    "onReading": "バイ",
+    "kunReading": "う.る, う.れる",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "売り場",
+    "exampleMeaning": "quầy bán hàng"
+  },
+  {
+    "character": "夏",
+    "meaning": "mùa hè",
+    "onReading": "カ, ガ, ゲ",
+    "kunReading": "なつ",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "夏",
+    "exampleMeaning": "mùa hè"
+  },
+  {
+    "character": "夕",
+    "meaning": "đêm",
+    "onReading": "セキ",
+    "kunReading": "ゆう",
+    "strokeCount": 3,
+    "jlptLevel": "N4",
+    "exampleWord": "夕飯",
+    "exampleMeaning": "bữa tối"
+  },
+  {
+    "character": "夜",
+    "meaning": "đêm",
+    "onReading": "ヤ",
+    "kunReading": "よ, よる",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "夜",
+    "exampleMeaning": "đêm"
+  },
+  {
+    "character": "太",
+    "meaning": "to; mập",
+    "onReading": "タイ, タ",
+    "kunReading": "ふと.い, ふと.る",
+    "strokeCount": 4,
+    "jlptLevel": "N4",
+    "exampleWord": "太い",
+    "exampleMeaning": "to; dày"
+  },
+  {
+    "character": "好",
+    "meaning": "thích; ưa",
+    "onReading": "コウ",
+    "kunReading": "す.き, この.む",
+    "strokeCount": 6,
+    "jlptLevel": "N4",
+    "exampleWord": "好き",
+    "exampleMeaning": "thích"
+  },
+  {
+    "character": "妹",
+    "meaning": "em gái",
+    "onReading": "マイ",
+    "kunReading": "いもうと",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "妹",
+    "exampleMeaning": "em gái"
+  },
+  {
+    "character": "姉",
+    "meaning": "chị gái",
+    "onReading": "シ",
+    "kunReading": "あね, はは",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "姉",
+    "exampleMeaning": "chị gái"
+  },
+  {
+    "character": "始",
+    "meaning": "bắt đầu",
+    "onReading": "シ",
+    "kunReading": "-はじ.める, はじ.まる, はじ.める",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "始める",
+    "exampleMeaning": "bắt đầu"
+  },
+  {
+    "character": "字",
+    "meaning": "chữ; ký tự",
+    "onReading": "ジ",
+    "kunReading": "-な, あざ, あざな",
+    "strokeCount": 6,
+    "jlptLevel": "N4",
+    "exampleWord": "漢字",
+    "exampleMeaning": "kanji; chữ Hán"
+  },
+  {
+    "character": "室",
+    "meaning": "phòng",
+    "onReading": "シツ",
+    "kunReading": "むろ",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "研究室",
+    "exampleMeaning": "phòng thí nghiệm"
+  },
+  {
+    "character": "家",
+    "meaning": "nhà",
+    "onReading": "カ, ケ",
+    "kunReading": "いえ, うち, や",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "家内",
+    "exampleMeaning": "vợ tôi"
+  },
+  {
+    "character": "寒",
+    "meaning": "lạnh",
+    "onReading": "カン",
+    "kunReading": "さむ.い",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "寒い",
+    "exampleMeaning": "lạnh"
+  },
+  {
+    "character": "屋",
+    "meaning": "mái nhà",
+    "onReading": "オク",
+    "kunReading": "や",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "八百屋",
+    "exampleMeaning": "người bán rau"
+  },
+  {
+    "character": "工",
+    "meaning": "làm việc; công việc",
+    "onReading": "ク, グ, コウ",
+    "kunReading": "-",
+    "strokeCount": 3,
+    "jlptLevel": "N4",
+    "exampleWord": "工場",
+    "exampleMeaning": "nhà máy"
+  },
+  {
+    "character": "市",
+    "meaning": "thành phố; chợ",
+    "onReading": "シ",
+    "kunReading": "いち",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "市",
+    "exampleMeaning": "thành phố"
+  },
+  {
+    "character": "帰",
+    "meaning": "trở về; trả lại",
+    "onReading": "キ",
+    "kunReading": "おく.る, かえ.す, かえ.る, とつ.ぐ",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "帰り",
+    "exampleMeaning": "trở về; trả lại"
+  },
+  {
+    "character": "広",
+    "meaning": "rộng",
+    "onReading": "コウ",
+    "kunReading": "ひろ.い, ひろ.がる, ひろ.げる, ひろ.まる, ひろ.める",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "広い",
+    "exampleMeaning": "rộng rãi"
+  },
+  {
+    "character": "度",
+    "meaning": "mức độ",
+    "onReading": "タク, ト, ド",
+    "kunReading": "-た.い, たび",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "一度",
+    "exampleMeaning": "một lần"
+  },
+  {
+    "character": "建",
+    "meaning": "xây dựng",
+    "onReading": "ケン, コン",
+    "kunReading": "-だ.て, た.つ, た.て, た.てる",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "建てる",
+    "exampleMeaning": "xây"
+  },
+  {
+    "character": "引",
+    "meaning": "kéo",
+    "onReading": "イン",
+    "kunReading": "ひ.く, ひ.ける",
+    "strokeCount": 4,
+    "jlptLevel": "N4",
+    "exampleWord": "引く",
+    "exampleMeaning": "kéo"
+  },
+  {
+    "character": "弟",
+    "meaning": "em trai",
+    "onReading": "ダイ, テイ, デ",
+    "kunReading": "おとうと",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "弟",
+    "exampleMeaning": "em trai"
+  },
+  {
+    "character": "弱",
+    "meaning": "yếu",
+    "onReading": "ジャク",
+    "kunReading": "よわ.い, よわ.る, よわ.まる",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "弱い",
+    "exampleMeaning": "yếu"
+  },
+  {
+    "character": "強",
+    "meaning": "mạnh",
+    "onReading": "キョウ, ゴウ",
+    "kunReading": "こわ.い, し.いる, つよ.い, つよ.まる, つよ.める",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "強い",
+    "exampleMeaning": "mạnh"
+  },
+  {
+    "character": "待",
+    "meaning": "đợi",
+    "onReading": "タイ",
+    "kunReading": "-ま.ち, ま.つ",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "待つ",
+    "exampleMeaning": "đợi"
+  },
+  {
+    "character": "心",
+    "meaning": "trái tim; lòng",
+    "onReading": "シン",
+    "kunReading": "-ごころ, こころ",
+    "strokeCount": 4,
+    "jlptLevel": "N4",
+    "exampleWord": "心",
+    "exampleMeaning": "tâm trí"
+  },
+  {
+    "character": "思",
+    "meaning": "nghĩ",
+    "onReading": "シ",
+    "kunReading": "おぼ.す, おも.う, おもえら.く",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "思う",
+    "exampleMeaning": "nghĩ"
+  },
+  {
+    "character": "急",
+    "meaning": "vội",
+    "onReading": "キュウ",
+    "kunReading": "いそ.ぎ, いそ.ぐ, せ.く",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "特急",
+    "exampleMeaning": "tàu tốc hành đặc biệt"
+  },
+  {
+    "character": "悪",
+    "meaning": "xấu; tệ",
+    "onReading": "アク, オ",
+    "kunReading": "-にく.い, あ.し, ああ, いずくに, いずくんぞ, にく.い, にく.む, わる-, わる.い",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "悪い",
+    "exampleMeaning": "xấu; tệ"
+  },
+  {
+    "character": "意",
+    "meaning": "ý nghĩ",
+    "onReading": "イ",
+    "kunReading": "-",
+    "strokeCount": 13,
+    "jlptLevel": "N4",
+    "exampleWord": "用意",
+    "exampleMeaning": "chuẩn bị"
+  },
+  {
+    "character": "所",
+    "meaning": "chỗ; nơi",
+    "onReading": "ショ",
+    "kunReading": "ところ",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "場所",
+    "exampleMeaning": "địa điểm"
+  },
+  {
+    "character": "持",
+    "meaning": "cầm",
+    "onReading": "ジ",
+    "kunReading": "-も.ち, も.つ, も.てる",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "気持ち",
+    "exampleMeaning": "cảm giác"
+  },
+  {
+    "character": "教",
+    "meaning": "dạy",
+    "onReading": "キョウ",
+    "kunReading": "おし.える, おそ.わる",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "教会",
+    "exampleMeaning": "nhà thờ"
+  },
+  {
+    "character": "文",
+    "meaning": "văn học",
+    "onReading": "ブン, モン",
+    "kunReading": "あや, ふみ",
+    "strokeCount": 4,
+    "jlptLevel": "N4",
+    "exampleWord": "文学",
+    "exampleMeaning": "văn học"
+  },
+  {
+    "character": "料",
+    "meaning": "phí",
+    "onReading": "リョウ",
+    "kunReading": "-",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "料理",
+    "exampleMeaning": "nấu ăn"
+  },
+  {
+    "character": "方",
+    "meaning": "đường; cách",
+    "onReading": "ホウ",
+    "kunReading": "-かた, -がた, かた",
+    "strokeCount": 4,
+    "jlptLevel": "N4",
+    "exampleWord": "仕方",
+    "exampleMeaning": "đường; cách"
+  },
+  {
+    "character": "旅",
+    "meaning": "chuyến đi",
+    "onReading": "リョ",
+    "kunReading": "たび",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "旅館",
+    "exampleMeaning": "nhà trọ kiểu Nhật"
+  },
+  {
+    "character": "族",
+    "meaning": "dân tộc",
+    "onReading": "ゾク",
+    "kunReading": "-",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "家族",
+    "exampleMeaning": "gia đình"
+  },
+  {
+    "character": "早",
+    "meaning": "sớm; nhanh",
+    "onReading": "サッ, ソウ",
+    "kunReading": "さ-, はや, はや-, はや.い, はや.まる, はや.める",
+    "strokeCount": 6,
+    "jlptLevel": "N4",
+    "exampleWord": "早い",
+    "exampleMeaning": "sớm; nhanh"
+  },
+  {
+    "character": "明",
+    "meaning": "sáng",
+    "onReading": "ミョウ, ミン, メイ",
+    "kunReading": "-あ.け, あ.かす, あ.かり, あ.く, あ.くる, あ.ける, あか.らむ, あか.るい, あか.るむ, あき.らか",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "明日",
+    "exampleMeaning": "ngày mai"
+  },
+  {
+    "character": "映",
+    "meaning": "tỏa sáng",
+    "onReading": "エイ",
+    "kunReading": "-ば.え, うつ.す, うつ.る, は.える",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "映画",
+    "exampleMeaning": "phim"
+  },
+  {
+    "character": "春",
+    "meaning": "mùa xuân",
+    "onReading": "シュン",
+    "kunReading": "はる",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "春",
+    "exampleMeaning": "mùa xuân"
+  },
+  {
+    "character": "昼",
+    "meaning": "trưa",
+    "onReading": "チュウ",
+    "kunReading": "ひる",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "昼休み",
+    "exampleMeaning": "giờ nghỉ trưa"
+  },
+  {
+    "character": "暑",
+    "meaning": "nóng",
+    "onReading": "ショ",
+    "kunReading": "あつ.い",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "暑い",
+    "exampleMeaning": "nóng"
+  },
+  {
+    "character": "暗",
+    "meaning": "tối; tối tăm",
+    "onReading": "アン",
+    "kunReading": "くら.い, くら.む",
+    "strokeCount": 13,
+    "jlptLevel": "N4",
+    "exampleWord": "暗い",
+    "exampleMeaning": "tối"
+  },
+  {
+    "character": "曜",
+    "meaning": "thứ trong tuần",
+    "onReading": "ヨウ",
+    "kunReading": "-",
+    "strokeCount": 18,
+    "jlptLevel": "N4",
+    "exampleWord": "木曜日",
+    "exampleMeaning": "thứ năm"
+  },
+  {
+    "character": "有",
+    "meaning": "có; sở hữu",
+    "onReading": "ウ, ユウ",
+    "kunReading": "あ.る",
+    "strokeCount": 6,
+    "jlptLevel": "N4",
+    "exampleWord": "有名",
+    "exampleMeaning": "nổi tiếng"
+  },
+  {
+    "character": "服",
+    "meaning": "quần áo",
+    "onReading": "フク",
+    "kunReading": "-",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "洋服",
+    "exampleMeaning": "quần áo kiểu Tây"
+  },
+  {
+    "character": "朝",
+    "meaning": "buổi sáng",
+    "onReading": "チョウ",
+    "kunReading": "あさ",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "今朝",
+    "exampleMeaning": "sáng nay"
+  },
+  {
+    "character": "村",
+    "meaning": "làng",
+    "onReading": "ソン",
+    "kunReading": "むら",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "村",
+    "exampleMeaning": "làng"
+  },
+  {
+    "character": "林",
+    "meaning": "rừng cây",
+    "onReading": "リン",
+    "kunReading": "はやし",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "林",
+    "exampleMeaning": "rừng cây"
+  },
+  {
+    "character": "森",
+    "meaning": "rừng",
+    "onReading": "シン",
+    "kunReading": "もり",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "森",
+    "exampleMeaning": "rừng"
+  },
+  {
+    "character": "業",
+    "meaning": "nghề nghiệp",
+    "onReading": "ギョウ, ゴウ",
+    "kunReading": "わざ",
+    "strokeCount": 13,
+    "jlptLevel": "N4",
+    "exampleWord": "授業",
+    "exampleMeaning": "bài học; lớp học"
+  },
+  {
+    "character": "楽",
+    "meaning": "âm nhạc; vui",
+    "onReading": "ガク, ゴウ, ラク",
+    "kunReading": "この.む, たの.しい, たの.しむ",
+    "strokeCount": 13,
+    "jlptLevel": "N4",
+    "exampleWord": "楽しみ",
+    "exampleMeaning": "niềm vui"
+  },
+  {
+    "character": "歌",
+    "meaning": "hát",
+    "onReading": "カ",
+    "kunReading": "うた, うた.う",
+    "strokeCount": 14,
+    "jlptLevel": "N4",
+    "exampleWord": "歌",
+    "exampleMeaning": "bài hát"
+  },
+  {
+    "character": "止",
+    "meaning": "dừng",
+    "onReading": "シ",
+    "kunReading": "-さ.し, -さ.す, -と.める, -ど.まり, -ど.め, -や.む, と.まる, と.める, とど.まる, とど.め, とど.める, や.む, や.める, よ.す",
+    "strokeCount": 4,
+    "jlptLevel": "N4",
+    "exampleWord": "止まる",
+    "exampleMeaning": "dừng"
+  },
+  {
+    "character": "正",
+    "meaning": "đúng",
+    "onReading": "ショウ, セイ",
+    "kunReading": "ただ.しい, ただ.す, まさ, まさ.に",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "正しい",
+    "exampleMeaning": "đúng"
+  },
+  {
+    "character": "歩",
+    "meaning": "đi bộ",
+    "onReading": "フ, ブ, ホ",
+    "kunReading": "あゆ.む, ある.く",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "歩く",
+    "exampleMeaning": "đi bộ"
+  },
+  {
+    "character": "死",
+    "meaning": "chết",
+    "onReading": "シ",
+    "kunReading": "し.に-, し.ぬ",
+    "strokeCount": 6,
+    "jlptLevel": "N4",
+    "exampleWord": "死ぬ",
+    "exampleMeaning": "chết"
+  },
+  {
+    "character": "民",
+    "meaning": "dân; người dân",
+    "onReading": "ミン",
+    "kunReading": "たみ",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "国民",
+    "exampleMeaning": "quốc dân"
+  },
+  {
+    "character": "注",
+    "meaning": "đổ",
+    "onReading": "チュウ",
+    "kunReading": "さ.す, そそ.ぐ, つ.ぐ",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "注意",
+    "exampleMeaning": "chú ý; cẩn thận"
+  },
+  {
+    "character": "洋",
+    "meaning": "biển",
+    "onReading": "ヨウ",
+    "kunReading": "-",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "洋服",
+    "exampleMeaning": "quần áo kiểu Tây"
+  },
+  {
+    "character": "洗",
+    "meaning": "rửa",
+    "onReading": "セン",
+    "kunReading": "あら.う",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "洗う",
+    "exampleMeaning": "rửa"
+  },
+  {
+    "character": "漢",
+    "meaning": "Trung Quốc",
+    "onReading": "カン",
+    "kunReading": "-",
+    "strokeCount": 13,
+    "jlptLevel": "N4",
+    "exampleWord": "漢字",
+    "exampleMeaning": "kanji; chữ Hán"
+  },
+  {
+    "character": "無",
+    "meaning": "không",
+    "onReading": "ム, ブ",
+    "kunReading": "な.い",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "無理",
+    "exampleMeaning": "vô lý"
+  },
+  {
+    "character": "牛",
+    "meaning": "bò",
+    "onReading": "ギュウ",
+    "kunReading": "うし",
+    "strokeCount": 4,
+    "jlptLevel": "N4",
+    "exampleWord": "牛",
+    "exampleMeaning": "bò"
+  },
+  {
+    "character": "物",
+    "meaning": "đồ vật; việc",
+    "onReading": "ブツ, モツ",
+    "kunReading": "もの, もの-",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "飲み物",
+    "exampleMeaning": "uống"
+  },
+  {
+    "character": "特",
+    "meaning": "đặc biệt",
+    "onReading": "トク",
+    "kunReading": "-",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "特別",
+    "exampleMeaning": "đặc biệt"
+  },
+  {
+    "character": "犬",
+    "meaning": "chó",
+    "onReading": "ケン",
+    "kunReading": "いぬ, いぬ-",
+    "strokeCount": 4,
+    "jlptLevel": "N4",
+    "exampleWord": "犬",
+    "exampleMeaning": "chó"
+  },
+  {
+    "character": "理",
+    "meaning": "lý lẽ; luận lý",
+    "onReading": "リ",
+    "kunReading": "ことわり",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "無理",
+    "exampleMeaning": "vô lý"
+  },
+  {
+    "character": "産",
+    "meaning": "sản sinh; sản xuất",
+    "onReading": "サン",
+    "kunReading": "う.む, う.まれる",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "産む",
+    "exampleMeaning": "sinh ra"
+  },
+  {
+    "character": "用",
+    "meaning": "sử dụng",
+    "onReading": "ヨウ",
+    "kunReading": "もち.いる",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "用",
+    "exampleMeaning": "kinh doanh"
+  },
+  {
+    "character": "田",
+    "meaning": "ruộng lúa",
+    "onReading": "デン",
+    "kunReading": "た",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "田んぼ",
+    "exampleMeaning": "ruộng lúa"
+  },
+  {
+    "character": "町",
+    "meaning": "thị trấn; phố",
+    "onReading": "チョウ",
+    "kunReading": "まち",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "町",
+    "exampleMeaning": "thị trấn; phố"
+  },
+  {
+    "character": "画",
+    "meaning": "vẽ",
+    "onReading": "エ, カイ, カク, ガ",
+    "kunReading": "えが.く, かぎ.る, かく.する, はか.る, はかりごと",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "映画",
+    "exampleMeaning": "phim"
+  },
+  {
+    "character": "界",
+    "meaning": "thế giới",
+    "onReading": "カイ",
+    "kunReading": "-",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "世界",
+    "exampleMeaning": "thế giới"
+  },
+  {
+    "character": "病",
+    "meaning": "bệnh",
+    "onReading": "ビョウ, ヘイ",
+    "kunReading": "-や.み, や.む, やまい",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "病気",
+    "exampleMeaning": "bệnh"
+  },
+  {
+    "character": "発",
+    "meaning": "phát ra; chiếu",
+    "onReading": "ハツ, ホツ",
+    "kunReading": "あば.く, おこ.る, た.つ, つか.わす, はな.つ",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "出発",
+    "exampleMeaning": "khởi hành"
+  },
+  {
+    "character": "県",
+    "meaning": "tỉnh",
+    "onReading": "ケン",
+    "kunReading": "—",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "県",
+    "exampleMeaning": "tỉnh"
+  },
+  {
+    "character": "真",
+    "meaning": "sự thật",
+    "onReading": "シン",
+    "kunReading": "ま, ま-, まこと",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "真中",
+    "exampleMeaning": "ở giữa"
+  },
+  {
+    "character": "着",
+    "meaning": "đến",
+    "onReading": "ジャク, チャク",
+    "kunReading": "き.せる, き.る, つ.く, つ.ける",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "上着",
+    "exampleMeaning": "áo khoác"
+  },
+  {
+    "character": "知",
+    "meaning": "biết",
+    "onReading": "チ",
+    "kunReading": "し.らせる, し.る",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "知らせる",
+    "exampleMeaning": "thông báo"
+  },
+  {
+    "character": "研",
+    "meaning": "mài; chuốt",
+    "onReading": "ケン",
+    "kunReading": "と.ぐ",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "研究",
+    "exampleMeaning": "nghiên cứu"
+  },
+  {
+    "character": "社",
+    "meaning": "công ty",
+    "onReading": "シャ",
+    "kunReading": "やしろ",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "社長",
+    "exampleMeaning": "giám đốc công ty"
+  },
+  {
+    "character": "私",
+    "meaning": "tôi",
+    "onReading": "シ",
+    "kunReading": "わたくし, わたし",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "私",
+    "exampleMeaning": "tôi"
+  },
+  {
+    "character": "秋",
+    "meaning": "mùa thu",
+    "onReading": "シュウ",
+    "kunReading": "あき, とき",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "秋",
+    "exampleMeaning": "mùa thu"
+  },
+  {
+    "character": "究",
+    "meaning": "điều tra; khảo sát",
+    "onReading": "キュウ, ク",
+    "kunReading": "きわ.める",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "研究",
+    "exampleMeaning": "nghiên cứu"
+  },
+  {
+    "character": "立",
+    "meaning": "đứng",
+    "onReading": "リットル, リツ, リュウ",
+    "kunReading": "-た.つ, -た.て, -た.てる, -だ.て, -だ.てる, た.ち-, た.つ, た.て-, た.てる, たて-",
+    "strokeCount": 5,
+    "jlptLevel": "N4",
+    "exampleWord": "立てる",
+    "exampleMeaning": "đứng dậy"
+  },
+  {
+    "character": "答",
+    "meaning": "trả lời",
+    "onReading": "トウ",
+    "kunReading": "こた.え, こた.える",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "答える",
+    "exampleMeaning": "trả lời"
+  },
+  {
+    "character": "紙",
+    "meaning": "giấy",
+    "onReading": "シ",
+    "kunReading": "かみ",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "紙",
+    "exampleMeaning": "giấy"
+  },
+  {
+    "character": "終",
+    "meaning": "kết thúc",
+    "onReading": "シュウ",
+    "kunReading": "-お.わる, お.える, お.わる, おわ.る, つい, つい.に",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "終わる",
+    "exampleMeaning": "kết thúc"
+  },
+  {
+    "character": "習",
+    "meaning": "học",
+    "onReading": "シュウ, ジュ",
+    "kunReading": "なら.い, なら.う",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "習う",
+    "exampleMeaning": "học"
+  },
+  {
+    "character": "考",
+    "meaning": "nghĩ",
+    "onReading": "コウ",
+    "kunReading": "かんが.え, かんが.える",
+    "strokeCount": 6,
+    "jlptLevel": "N4",
+    "exampleWord": "考える",
+    "exampleMeaning": "nghĩ"
+  },
+  {
+    "character": "者",
+    "meaning": "người",
+    "onReading": "シャ",
+    "kunReading": "もの",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "医者",
+    "exampleMeaning": "bác sĩ"
+  },
+  {
+    "character": "肉",
+    "meaning": "thịt",
+    "onReading": "ニク",
+    "kunReading": "しし",
+    "strokeCount": 6,
+    "jlptLevel": "N4",
+    "exampleWord": "肉",
+    "exampleMeaning": "thịt"
+  },
+  {
+    "character": "自",
+    "meaning": "bản thân; tự",
+    "onReading": "シ, ジ",
+    "kunReading": "おの.ずから, おの.ずと, みずか.ら",
+    "strokeCount": 6,
+    "jlptLevel": "N4",
+    "exampleWord": "自分",
+    "exampleMeaning": "bản thân"
+  },
+  {
+    "character": "色",
+    "meaning": "màu sắc",
+    "onReading": "シキ, ショク",
+    "kunReading": "いろ",
+    "strokeCount": 6,
+    "jlptLevel": "N4",
+    "exampleWord": "茶色",
+    "exampleMeaning": "màu nâu"
+  },
+  {
+    "character": "英",
+    "meaning": "Anh",
+    "onReading": "エイ",
+    "kunReading": "はなぶさ",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "英語",
+    "exampleMeaning": "tiếng Anh"
+  },
+  {
+    "character": "茶",
+    "meaning": "trà",
+    "onReading": "サ, チャ",
+    "kunReading": "-",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "茶色",
+    "exampleMeaning": "màu nâu"
+  },
+  {
+    "character": "菜",
+    "meaning": "rau",
+    "onReading": "サイ",
+    "kunReading": "な",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "野菜",
+    "exampleMeaning": "rau củ"
+  },
+  {
+    "character": "薬",
+    "meaning": "thuốc",
+    "onReading": "ヤク",
+    "kunReading": "くすり",
+    "strokeCount": 16,
+    "jlptLevel": "N4",
+    "exampleWord": "薬",
+    "exampleMeaning": "thuốc"
+  },
+  {
+    "character": "親",
+    "meaning": "cha mẹ",
+    "onReading": "シン",
+    "kunReading": "おや, おや-, した.しい, した.しむ",
+    "strokeCount": 16,
+    "jlptLevel": "N4",
+    "exampleWord": "親",
+    "exampleMeaning": "cha mẹ"
+  },
+  {
+    "character": "計",
+    "meaning": "sắp xếp",
+    "onReading": "ケイ",
+    "kunReading": "はか.らう, はか.る",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "時計",
+    "exampleMeaning": "đồng hồ"
+  },
+  {
+    "character": "試",
+    "meaning": "kiểm tra",
+    "onReading": "シ",
+    "kunReading": "こころ.みる, ため.す",
+    "strokeCount": 13,
+    "jlptLevel": "N4",
+    "exampleWord": "試験",
+    "exampleMeaning": "kỳ thi"
+  },
+  {
+    "character": "説",
+    "meaning": "giải thích; thuyết",
+    "onReading": "セツ",
+    "kunReading": "と.く",
+    "strokeCount": 14,
+    "jlptLevel": "N4",
+    "exampleWord": "説明",
+    "exampleMeaning": "giải thích"
+  },
+  {
+    "character": "貸",
+    "meaning": "cho mượn",
+    "onReading": "タイ",
+    "kunReading": "か.し-, か.す, かし-",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "貸す",
+    "exampleMeaning": "cho mượn"
+  },
+  {
+    "character": "質",
+    "meaning": "chất lượng",
+    "onReading": "シチ, シツ, チ",
+    "kunReading": "ただ.す, たち, もと, わりふ",
+    "strokeCount": 15,
+    "jlptLevel": "N4",
+    "exampleWord": "質問",
+    "exampleMeaning": "câu hỏi"
+  },
+  {
+    "character": "赤",
+    "meaning": "màu đỏ",
+    "onReading": "シャク, セキ",
+    "kunReading": "あか, あか-, あか.い, あか.らむ, あか.らめる",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "赤",
+    "exampleMeaning": "màu đỏ"
+  },
+  {
+    "character": "走",
+    "meaning": "chạy",
+    "onReading": "ソウ",
+    "kunReading": "はし.る",
+    "strokeCount": 7,
+    "jlptLevel": "N4",
+    "exampleWord": "走る",
+    "exampleMeaning": "chạy"
+  },
+  {
+    "character": "起",
+    "meaning": "thức dậy",
+    "onReading": "キ",
+    "kunReading": "お.きる, お.こす, お.こる, おこ.す, た.つ",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "起きる",
+    "exampleMeaning": "thức dậy"
+  },
+  {
+    "character": "転",
+    "meaning": "cuộn",
+    "onReading": "テン",
+    "kunReading": "うたた, うつ.る, くる.めく, ころ.がす, ころ.がる, ころ.げる, ころ.ぶ, まろ.ぶ",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "自転車",
+    "exampleMeaning": "xe đạp"
+  },
+  {
+    "character": "軽",
+    "meaning": "nhẹ",
+    "onReading": "ケイ",
+    "kunReading": "かる.い",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "軽い",
+    "exampleMeaning": "nhẹ"
+  },
+  {
+    "character": "送",
+    "meaning": "gửi",
+    "onReading": "ソウ",
+    "kunReading": "おく.る",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "送る",
+    "exampleMeaning": "gửi"
+  },
+  {
+    "character": "通",
+    "meaning": "đi qua",
+    "onReading": "ツ, ツウ",
+    "kunReading": "-とお.り, -どお.し, -どお.り, かよ.う, とお.し, とお.す, とお.り, とお.る",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "通る",
+    "exampleMeaning": "đi ngang; trôi qua"
+  },
+  {
+    "character": "進",
+    "meaning": "tiến; tiến lên",
+    "onReading": "シン",
+    "kunReading": "すす.む, すす.める",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "進む",
+    "exampleMeaning": "tiến lên"
+  },
+  {
+    "character": "運",
+    "meaning": "mang; vận",
+    "onReading": "ウン",
+    "kunReading": "はこ.ぶ",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "運ぶ",
+    "exampleMeaning": "mang"
+  },
+  {
+    "character": "重",
+    "meaning": "nặng",
+    "onReading": "ジュウ, チョウ",
+    "kunReading": "え, おも, おも.い, おも.なう, おも.り, かさ.なる, かさ.ねる",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "重い",
+    "exampleMeaning": "nặng"
+  },
+  {
+    "character": "野",
+    "meaning": "đồng ruộng",
+    "onReading": "ショ, ヤ",
+    "kunReading": "の, の-",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "野菜",
+    "exampleMeaning": "rau"
+  },
+  {
+    "character": "銀",
+    "meaning": "bạc",
+    "onReading": "ギン",
+    "kunReading": "しろがね",
+    "strokeCount": 14,
+    "jlptLevel": "N4",
+    "exampleWord": "銀行",
+    "exampleMeaning": "ngân hàng"
+  },
+  {
+    "character": "門",
+    "meaning": "cổng; môn",
+    "onReading": "モン",
+    "kunReading": "かど",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "門",
+    "exampleMeaning": "cổng"
+  },
+  {
+    "character": "開",
+    "meaning": "mở",
+    "onReading": "カイ",
+    "kunReading": "-びら.き, あ.く, あ.ける, ひら.き, ひら.く, ひら.ける",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "開く",
+    "exampleMeaning": "mở"
+  },
+  {
+    "character": "院",
+    "meaning": "cơ sở; tổ chức",
+    "onReading": "イン",
+    "kunReading": "-",
+    "strokeCount": 10,
+    "jlptLevel": "N4",
+    "exampleWord": "病院",
+    "exampleMeaning": "bệnh viện"
+  },
+  {
+    "character": "集",
+    "meaning": "tụ tập; thu thập",
+    "onReading": "シュウ",
+    "kunReading": "あつ.まる, あつ.める, つど.う",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "集る",
+    "exampleMeaning": "tụ họp"
+  },
+  {
+    "character": "青",
+    "meaning": "màu xanh",
+    "onReading": "ショウ, セイ",
+    "kunReading": "あお, あお-, あお.い",
+    "strokeCount": 8,
+    "jlptLevel": "N4",
+    "exampleWord": "青",
+    "exampleMeaning": "màu xanh"
+  },
+  {
+    "character": "音",
+    "meaning": "âm thanh",
+    "onReading": "-ノン, イン, オン",
+    "kunReading": "おと, ね",
+    "strokeCount": 9,
+    "jlptLevel": "N4",
+    "exampleWord": "発音",
+    "exampleMeaning": "phát âm"
+  },
+  {
+    "character": "頭",
+    "meaning": "đầu",
+    "onReading": "トウ, ズ",
+    "kunReading": "あたま, かしら",
+    "strokeCount": 16,
+    "jlptLevel": "N4",
+    "exampleWord": "頭",
+    "exampleMeaning": "đầu"
+  },
+  {
+    "character": "題",
+    "meaning": "chủ đề",
+    "onReading": "ダイ",
+    "kunReading": "-",
+    "strokeCount": 18,
+    "jlptLevel": "N4",
+    "exampleWord": "問題",
+    "exampleMeaning": "vấn đề"
+  },
+  {
+    "character": "顔",
+    "meaning": "mặt; gương mặt",
+    "onReading": "ガン",
+    "kunReading": "かお",
+    "strokeCount": 18,
+    "jlptLevel": "N4",
+    "exampleWord": "顔",
+    "exampleMeaning": "mặt"
+  },
+  {
+    "character": "飯",
+    "meaning": "cơm",
+    "onReading": "ハン",
+    "kunReading": "めし",
+    "strokeCount": 12,
+    "jlptLevel": "N4",
+    "exampleWord": "ご飯",
+    "exampleMeaning": "bữa ăn; cơm"
+  },
+  {
+    "character": "館",
+    "meaning": "tòa nhà",
+    "onReading": "カン",
+    "kunReading": "たて, やかた",
+    "strokeCount": 16,
+    "jlptLevel": "N4",
+    "exampleWord": "旅館",
+    "exampleMeaning": "nhà trọ kiểu Nhật"
+  },
+  {
+    "character": "験",
+    "meaning": "xác nhận",
+    "onReading": "ケン, ゲン",
+    "kunReading": "あかし, しるし, ため.す, ためし",
+    "strokeCount": 18,
+    "jlptLevel": "N4",
+    "exampleWord": "経験",
+    "exampleMeaning": "kinh nghiệm"
+  },
+  {
+    "character": "魚",
+    "meaning": "cá",
+    "onReading": "ギョ",
+    "kunReading": "-ざかな, うお, さかな",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "魚",
+    "exampleMeaning": "cá"
+  },
+  {
+    "character": "鳥",
+    "meaning": "chim",
+    "onReading": "チョウ",
+    "kunReading": "とり",
+    "strokeCount": 11,
+    "jlptLevel": "N4",
+    "exampleWord": "鳥",
+    "exampleMeaning": "chim"
+  },
+  {
+    "character": "一",
+    "meaning": "Một",
+    "onReading": "イチ, イツ",
+    "kunReading": "ひと-, ひと.つ",
+    "strokeCount": 1,
+    "jlptLevel": "N5",
+    "exampleWord": "一つ",
+    "exampleMeaning": "Một cái"
+  },
+  {
+    "character": "七",
+    "meaning": "Bảy",
+    "onReading": "シチ",
+    "kunReading": "なな, なな.つ, なの",
+    "strokeCount": 2,
+    "jlptLevel": "N5",
+    "exampleWord": "七つ",
+    "exampleMeaning": "Bảy cái"
+  },
+  {
+    "character": "万",
+    "meaning": "Mười nghìn",
+    "onReading": "マン, バン",
+    "kunReading": "-",
+    "strokeCount": 3,
+    "jlptLevel": "N5",
+    "exampleWord": "一万",
+    "exampleMeaning": "10.000"
+  },
+  {
+    "character": "三",
+    "meaning": "Ba",
+    "onReading": "サン",
+    "kunReading": "み, み.つ, みっ.つ",
+    "strokeCount": 3,
+    "jlptLevel": "N5",
+    "exampleWord": "三つ",
+    "exampleMeaning": "Ba cái"
+  },
+  {
+    "character": "上",
+    "meaning": "Trên, lên",
+    "onReading": "ジョウ, ショウ",
+    "kunReading": "うえ, あ.がる, のぼ.る",
+    "strokeCount": 3,
+    "jlptLevel": "N5",
+    "exampleWord": "上",
+    "exampleMeaning": "Phía trên"
+  },
+  {
+    "character": "下",
+    "meaning": "Dưới, xuống",
+    "onReading": "カ, ゲ",
+    "kunReading": "した, さ.がる, くだ.る",
+    "strokeCount": 3,
+    "jlptLevel": "N5",
+    "exampleWord": "下",
+    "exampleMeaning": "Phía dưới"
+  },
+  {
+    "character": "中",
+    "meaning": "Trong, giữa",
+    "onReading": "チュウ",
+    "kunReading": "なか",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "中",
+    "exampleMeaning": "Bên trong"
+  },
+  {
+    "character": "九",
+    "meaning": "Chín",
+    "onReading": "キュウ, ク",
+    "kunReading": "ここの, ここの.つ",
+    "strokeCount": 2,
+    "jlptLevel": "N5",
+    "exampleWord": "九つ",
+    "exampleMeaning": "Chín cái"
+  },
+  {
+    "character": "二",
+    "meaning": "Hai",
+    "onReading": "ニ",
+    "kunReading": "ふた, ふた.つ",
+    "strokeCount": 2,
+    "jlptLevel": "N5",
+    "exampleWord": "二つ",
+    "exampleMeaning": "Hai cái"
+  },
+  {
+    "character": "五",
+    "meaning": "Năm",
+    "onReading": "ゴ",
+    "kunReading": "いつ, いつ.つ",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "五つ",
+    "exampleMeaning": "Năm cái"
+  },
+  {
+    "character": "人",
+    "meaning": "Người",
+    "onReading": "ジン, ニン",
+    "kunReading": "ひと",
+    "strokeCount": 2,
+    "jlptLevel": "N5",
+    "exampleWord": "日本人",
+    "exampleMeaning": "Người Nhật"
+  },
+  {
+    "character": "今",
+    "meaning": "Bây giờ",
+    "onReading": "コン, キン",
+    "kunReading": "いま",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "今日",
+    "exampleMeaning": "Hôm nay"
+  },
+  {
+    "character": "休",
+    "meaning": "Nghỉ",
+    "onReading": "キュウ",
+    "kunReading": "やす.む, やす.み",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "休む",
+    "exampleMeaning": "Nghỉ"
+  },
+  {
+    "character": "会",
+    "meaning": "Gặp, hội",
+    "onReading": "カイ, エ",
+    "kunReading": "あ.う",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "会社",
+    "exampleMeaning": "Công ty"
+  },
+  {
+    "character": "何",
+    "meaning": "Gì, cái gì",
+    "onReading": "カ",
+    "kunReading": "なに, なん",
+    "strokeCount": 7,
+    "jlptLevel": "N5",
+    "exampleWord": "何",
+    "exampleMeaning": "Cái gì"
+  },
+  {
+    "character": "億",
+    "meaning": "trăm triệu",
+    "onReading": "オク",
+    "kunReading": "—",
+    "strokeCount": 15,
+    "jlptLevel": "N5",
+    "exampleWord": "一億円",
+    "exampleMeaning": "một trăm triệu yên"
+  },
+  {
+    "character": "先",
+    "meaning": "Trước, tiên",
+    "onReading": "セン",
+    "kunReading": "さき, ま.ず",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "先生",
+    "exampleMeaning": "Giáo viên"
+  },
+  {
+    "character": "入",
+    "meaning": "Vào",
+    "onReading": "ニュウ, ジュ",
+    "kunReading": "い.る, はい.る",
+    "strokeCount": 2,
+    "jlptLevel": "N5",
+    "exampleWord": "入る",
+    "exampleMeaning": "Vào"
+  },
+  {
+    "character": "全",
+    "meaning": "toàn bộ; tất cả",
+    "onReading": "ゼン",
+    "kunReading": "まった.く, すべ.て",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "全部",
+    "exampleMeaning": "toàn bộ"
+  },
+  {
+    "character": "八",
+    "meaning": "Tám",
+    "onReading": "ハチ",
+    "kunReading": "や, や.つ, やっ.つ",
+    "strokeCount": 2,
+    "jlptLevel": "N5",
+    "exampleWord": "八つ",
+    "exampleMeaning": "Tám cái"
+  },
+  {
+    "character": "六",
+    "meaning": "Sáu",
+    "onReading": "ロク",
+    "kunReading": "む, む.つ, むっ.つ",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "六つ",
+    "exampleMeaning": "Sáu cái"
+  },
+  {
+    "character": "内",
+    "meaning": "Trong, nội",
+    "onReading": "ナイ",
+    "kunReading": "うち",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "内",
+    "exampleMeaning": "Bên trong / nhà mình"
+  },
+  {
+    "character": "円",
+    "meaning": "yên; tròn",
+    "onReading": "エン",
+    "kunReading": "まる.い",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "円",
+    "exampleMeaning": "yên"
+  },
+  {
+    "character": "出",
+    "meaning": "Ra",
+    "onReading": "シュツ, スイ",
+    "kunReading": "で.る, だ.す",
+    "strokeCount": 5,
+    "jlptLevel": "N5",
+    "exampleWord": "出る",
+    "exampleMeaning": "Ra"
+  },
+  {
+    "character": "分",
+    "meaning": "Phút, phần",
+    "onReading": "ブン, フン, プン",
+    "kunReading": "わ.ける, わ.かる",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "五分",
+    "exampleMeaning": "5 phút"
+  },
+  {
+    "character": "前",
+    "meaning": "Trước",
+    "onReading": "ゼン",
+    "kunReading": "まえ",
+    "strokeCount": 9,
+    "jlptLevel": "N5",
+    "exampleWord": "午前",
+    "exampleMeaning": "Buổi sáng / AM"
+  },
+  {
+    "character": "北",
+    "meaning": "Bắc",
+    "onReading": "ホク",
+    "kunReading": "きた",
+    "strokeCount": 5,
+    "jlptLevel": "N5",
+    "exampleWord": "北",
+    "exampleMeaning": "Phía bắc"
+  },
+  {
+    "character": "十",
+    "meaning": "Mười",
+    "onReading": "ジュウ, ジッ, ジュッ",
+    "kunReading": "とお, と",
+    "strokeCount": 2,
+    "jlptLevel": "N5",
+    "exampleWord": "十日",
+    "exampleMeaning": "Ngày mùng mười / mười ngày"
+  },
+  {
+    "character": "千",
+    "meaning": "Nghìn",
+    "onReading": "セン",
+    "kunReading": "ち",
+    "strokeCount": 3,
+    "jlptLevel": "N5",
+    "exampleWord": "千円",
+    "exampleMeaning": "1.000 yên"
+  },
+  {
+    "character": "午",
+    "meaning": "Ngọ, trưa",
+    "onReading": "ゴ",
+    "kunReading": "-",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "午前",
+    "exampleMeaning": "Buổi sáng / AM"
+  },
+  {
+    "character": "半",
+    "meaning": "Một nửa",
+    "onReading": "ハン",
+    "kunReading": "なか.ば",
+    "strokeCount": 5,
+    "jlptLevel": "N5",
+    "exampleWord": "一時半",
+    "exampleMeaning": "1 giờ rưỡi"
+  },
+  {
+    "character": "南",
+    "meaning": "Nam",
+    "onReading": "ナン",
+    "kunReading": "みなみ",
+    "strokeCount": 9,
+    "jlptLevel": "N5",
+    "exampleWord": "南",
+    "exampleMeaning": "Phía nam"
+  },
+  {
+    "character": "友",
+    "meaning": "Bạn",
+    "onReading": "ユウ",
+    "kunReading": "とも",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "友だち",
+    "exampleMeaning": "Bạn bè"
+  },
+  {
+    "character": "口",
+    "meaning": "Miệng, cửa",
+    "onReading": "コウ, ク",
+    "kunReading": "くち",
+    "strokeCount": 3,
+    "jlptLevel": "N5",
+    "exampleWord": "口",
+    "exampleMeaning": "Miệng"
+  },
+  {
+    "character": "古",
+    "meaning": "cũ",
+    "onReading": "コ",
+    "kunReading": "-ふる.す, ふる-, ふる.い",
+    "strokeCount": 5,
+    "jlptLevel": "N5",
+    "exampleWord": "古い",
+    "exampleMeaning": "cũ; già"
+  },
+  {
+    "character": "右",
+    "meaning": "Phải",
+    "onReading": "ウ, ユウ",
+    "kunReading": "みぎ",
+    "strokeCount": 5,
+    "jlptLevel": "N5",
+    "exampleWord": "右",
+    "exampleMeaning": "Bên phải"
+  },
+  {
+    "character": "名",
+    "meaning": "Tên, danh",
+    "onReading": "メイ, ミョウ",
+    "kunReading": "な",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "名前",
+    "exampleMeaning": "Tên"
+  },
+  {
+    "character": "四",
+    "meaning": "Bốn",
+    "onReading": "シ",
+    "kunReading": "よ, よ.つ, よっ.つ, よん",
+    "strokeCount": 5,
+    "jlptLevel": "N5",
+    "exampleWord": "四つ",
+    "exampleMeaning": "Bốn cái"
+  },
+  {
+    "character": "国",
+    "meaning": "quốc gia; nước",
+    "onReading": "コク",
+    "kunReading": "くに",
+    "strokeCount": 8,
+    "jlptLevel": "N5",
+    "exampleWord": "国",
+    "exampleMeaning": "Đất nước"
+  },
+  {
+    "character": "土",
+    "meaning": "Đất",
+    "onReading": "ド, ト",
+    "kunReading": "つち",
+    "strokeCount": 3,
+    "jlptLevel": "N5",
+    "exampleWord": "土曜日",
+    "exampleMeaning": "Thứ bảy"
+  },
+  {
+    "character": "外",
+    "meaning": "Ngoài",
+    "onReading": "ガイ, ゲ",
+    "kunReading": "そと, はず.す",
+    "strokeCount": 5,
+    "jlptLevel": "N5",
+    "exampleWord": "外",
+    "exampleMeaning": "Bên ngoài"
+  },
+  {
+    "character": "多",
+    "meaning": "nhiều",
+    "onReading": "タ",
+    "kunReading": "おお.い, まさ.に, まさ.る",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "多い",
+    "exampleMeaning": "nhiều"
+  },
+  {
+    "character": "大",
+    "meaning": "To, lớn",
+    "onReading": "ダイ, タイ",
+    "kunReading": "おお-, おお.きい",
+    "strokeCount": 3,
+    "jlptLevel": "N5",
+    "exampleWord": "大きい",
+    "exampleMeaning": "To, lớn"
+  },
+  {
+    "character": "天",
+    "meaning": "Trời",
+    "onReading": "テン",
+    "kunReading": "あま-, あめ",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "天気",
+    "exampleMeaning": "Thời tiết"
+  },
+  {
+    "character": "女",
+    "meaning": "Nữ, phụ nữ",
+    "onReading": "ジョ, ニョ, ニョウ",
+    "kunReading": "おんな, め",
+    "strokeCount": 3,
+    "jlptLevel": "N5",
+    "exampleWord": "女",
+    "exampleMeaning": "Phụ nữ"
+  },
+  {
+    "character": "子",
+    "meaning": "Con, trẻ em",
+    "onReading": "シ, ス",
+    "kunReading": "こ",
+    "strokeCount": 3,
+    "jlptLevel": "N5",
+    "exampleWord": "子ども",
+    "exampleMeaning": "Trẻ con"
+  },
+  {
+    "character": "学",
+    "meaning": "Học",
+    "onReading": "ガク",
+    "kunReading": "まな.ぶ",
+    "strokeCount": 8,
+    "jlptLevel": "N5",
+    "exampleWord": "学生",
+    "exampleMeaning": "Học sinh / sinh viên"
+  },
+  {
+    "character": "安",
+    "meaning": "Rẻ, yên",
+    "onReading": "アン",
+    "kunReading": "やす.い",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "安い",
+    "exampleMeaning": "Rẻ"
+  },
+  {
+    "character": "小",
+    "meaning": "Nhỏ",
+    "onReading": "ショウ",
+    "kunReading": "ちい.さい, こ, お",
+    "strokeCount": 3,
+    "jlptLevel": "N5",
+    "exampleWord": "小さい",
+    "exampleMeaning": "Nhỏ"
+  },
+  {
+    "character": "少",
+    "meaning": "ít",
+    "onReading": "ショウ",
+    "kunReading": "すく.ない, すこ.し",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "少し",
+    "exampleMeaning": "một chút"
+  },
+  {
+    "character": "山",
+    "meaning": "Núi",
+    "onReading": "サン",
+    "kunReading": "やま",
+    "strokeCount": 3,
+    "jlptLevel": "N5",
+    "exampleWord": "山",
+    "exampleMeaning": "Núi"
+  },
+  {
+    "character": "川",
+    "meaning": "Sông",
+    "onReading": "セン",
+    "kunReading": "かわ",
+    "strokeCount": 3,
+    "jlptLevel": "N5",
+    "exampleWord": "川",
+    "exampleMeaning": "Sông"
+  },
+  {
+    "character": "左",
+    "meaning": "Trái",
+    "onReading": "サ",
+    "kunReading": "ひだり",
+    "strokeCount": 5,
+    "jlptLevel": "N5",
+    "exampleWord": "左",
+    "exampleMeaning": "Bên trái"
+  },
+  {
+    "character": "年",
+    "meaning": "Năm",
+    "onReading": "ネン",
+    "kunReading": "とし",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "今年",
+    "exampleMeaning": "Năm nay"
+  },
+  {
+    "character": "店",
+    "meaning": "Cửa hàng",
+    "onReading": "テン",
+    "kunReading": "みせ",
+    "strokeCount": 8,
+    "jlptLevel": "N5",
+    "exampleWord": "店",
+    "exampleMeaning": "Cửa hàng"
+  },
+  {
+    "character": "後",
+    "meaning": "Sau",
+    "onReading": "ゴ, コウ",
+    "kunReading": "あと, うし.ろ, のち",
+    "strokeCount": 9,
+    "jlptLevel": "N5",
+    "exampleWord": "午後",
+    "exampleMeaning": "Buổi chiều / PM"
+  },
+  {
+    "character": "手",
+    "meaning": "Tay",
+    "onReading": "シュ",
+    "kunReading": "て, た-",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "手",
+    "exampleMeaning": "Tay"
+  },
+  {
+    "character": "新",
+    "meaning": "Mới",
+    "onReading": "シン",
+    "kunReading": "あたら.しい, あら.た",
+    "strokeCount": 13,
+    "jlptLevel": "N5",
+    "exampleWord": "新しい",
+    "exampleMeaning": "Mới"
+  },
+  {
+    "character": "日",
+    "meaning": "Ngày, mặt trời",
+    "onReading": "ニチ, ジツ",
+    "kunReading": "ひ, -び, -か",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "日本",
+    "exampleMeaning": "Nhật Bản"
+  },
+  {
+    "character": "時",
+    "meaning": "Giờ, thời gian",
+    "onReading": "ジ",
+    "kunReading": "とき",
+    "strokeCount": 10,
+    "jlptLevel": "N5",
+    "exampleWord": "何時",
+    "exampleMeaning": "Mấy giờ"
+  },
+  {
+    "character": "晴",
+    "meaning": "nắng; quang đãng",
+    "onReading": "セイ",
+    "kunReading": "は.れる, は.れ",
+    "strokeCount": 12,
+    "jlptLevel": "N5",
+    "exampleWord": "晴れ",
+    "exampleMeaning": "trời nắng"
+  },
+  {
+    "character": "書",
+    "meaning": "Viết",
+    "onReading": "ショ",
+    "kunReading": "か.く",
+    "strokeCount": 10,
+    "jlptLevel": "N5",
+    "exampleWord": "書く",
+    "exampleMeaning": "Viết"
+  },
+  {
+    "character": "月",
+    "meaning": "Tháng, mặt trăng",
+    "onReading": "ゲツ, ガツ",
+    "kunReading": "つき",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "月曜日",
+    "exampleMeaning": "Thứ hai"
+  },
+  {
+    "character": "木",
+    "meaning": "Cây, gỗ",
+    "onReading": "モク, ボク",
+    "kunReading": "き, こ-",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "木曜日",
+    "exampleMeaning": "Thứ năm"
+  },
+  {
+    "character": "本",
+    "meaning": "sách; gốc",
+    "onReading": "ホン",
+    "kunReading": "もと",
+    "strokeCount": 5,
+    "jlptLevel": "N5",
+    "exampleWord": "本",
+    "exampleMeaning": "Sách"
+  },
+  {
+    "character": "来",
+    "meaning": "Đến",
+    "onReading": "ライ",
+    "kunReading": "く.る, き.ます",
+    "strokeCount": 7,
+    "jlptLevel": "N5",
+    "exampleWord": "来る",
+    "exampleMeaning": "Đến"
+  },
+  {
+    "character": "東",
+    "meaning": "Đông",
+    "onReading": "トウ",
+    "kunReading": "ひがし",
+    "strokeCount": 8,
+    "jlptLevel": "N5",
+    "exampleWord": "東",
+    "exampleMeaning": "Phía đông"
+  },
+  {
+    "character": "校",
+    "meaning": "Trường",
+    "onReading": "コウ",
+    "kunReading": "-",
+    "strokeCount": 10,
+    "jlptLevel": "N5",
+    "exampleWord": "学校",
+    "exampleMeaning": "Trường học"
+  },
+  {
+    "character": "母",
+    "meaning": "Mẹ",
+    "onReading": "ボ",
+    "kunReading": "はは",
+    "strokeCount": 5,
+    "jlptLevel": "N5",
+    "exampleWord": "母",
+    "exampleMeaning": "Mẹ (của mình)"
+  },
+  {
+    "character": "毎",
+    "meaning": "Mỗi",
+    "onReading": "マイ",
+    "kunReading": "-",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "毎日",
+    "exampleMeaning": "Mỗi ngày"
+  },
+  {
+    "character": "気",
+    "meaning": "khí; tinh thần",
+    "onReading": "キ, ケ",
+    "kunReading": "-",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "天気",
+    "exampleMeaning": "Thời tiết"
+  },
+  {
+    "character": "水",
+    "meaning": "Nước",
+    "onReading": "スイ",
+    "kunReading": "みず",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "水曜日",
+    "exampleMeaning": "Thứ tư"
+  },
+  {
+    "character": "海",
+    "meaning": "biển",
+    "onReading": "カイ",
+    "kunReading": "うみ",
+    "strokeCount": 9,
+    "jlptLevel": "N5",
+    "exampleWord": "海",
+    "exampleMeaning": "biển"
+  },
+  {
+    "character": "火",
+    "meaning": "Lửa",
+    "onReading": "カ",
+    "kunReading": "ひ, -び, ほ-",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "火曜日",
+    "exampleMeaning": "Thứ ba"
+  },
+  {
+    "character": "父",
+    "meaning": "Cha",
+    "onReading": "フ",
+    "kunReading": "ちち",
+    "strokeCount": 4,
+    "jlptLevel": "N5",
+    "exampleWord": "父",
+    "exampleMeaning": "Cha (của mình)"
+  },
+  {
+    "character": "生",
+    "meaning": "sống; sinh",
+    "onReading": "セイ, ショウ",
+    "kunReading": "い.きる, う.まれる, なま",
+    "strokeCount": 5,
+    "jlptLevel": "N5",
+    "exampleWord": "学生",
+    "exampleMeaning": "Học sinh / sinh viên"
+  },
+  {
+    "character": "男",
+    "meaning": "Nam, đàn ông",
+    "onReading": "ダン, ナン",
+    "kunReading": "おとこ, お",
+    "strokeCount": 7,
+    "jlptLevel": "N5",
+    "exampleWord": "男",
+    "exampleMeaning": "Đàn ông"
+  },
+  {
+    "character": "白",
+    "meaning": "Trắng",
+    "onReading": "ハク, ビャク",
+    "kunReading": "しろ, しろ.い",
+    "strokeCount": 5,
+    "jlptLevel": "N5",
+    "exampleWord": "白い",
+    "exampleMeaning": "Màu trắng"
+  },
+  {
+    "character": "百",
+    "meaning": "Trăm",
+    "onReading": "ヒャク, ビャク, ピャク",
+    "kunReading": "-",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "百円",
+    "exampleMeaning": "100 yên"
+  },
+  {
+    "character": "目",
+    "meaning": "Mắt, thứ tự",
+    "onReading": "モク, ボク",
+    "kunReading": "め, -め",
+    "strokeCount": 5,
+    "jlptLevel": "N5",
+    "exampleWord": "目",
+    "exampleMeaning": "Mắt"
+  },
+  {
+    "character": "短",
+    "meaning": "ngắn",
+    "onReading": "タン",
+    "kunReading": "みじか.い",
+    "strokeCount": 12,
+    "jlptLevel": "N5",
+    "exampleWord": "短い",
+    "exampleMeaning": "ngắn"
+  },
+  {
+    "character": "空",
+    "meaning": "bầu trời; trống",
+    "onReading": "クウ",
+    "kunReading": "あ.き, あ.く, あ.ける, から, す.かす, す.く, そら, むな.しい",
+    "strokeCount": 8,
+    "jlptLevel": "N5",
+    "exampleWord": "空",
+    "exampleMeaning": "bầu trời"
+  },
+  {
+    "character": "耳",
+    "meaning": "Tai",
+    "onReading": "ジ",
+    "kunReading": "みみ",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "耳",
+    "exampleMeaning": "Tai"
+  },
+  {
+    "character": "聞",
+    "meaning": "Nghe, hỏi",
+    "onReading": "ブン, モン",
+    "kunReading": "き.く, き.こえる",
+    "strokeCount": 14,
+    "jlptLevel": "N5",
+    "exampleWord": "聞く",
+    "exampleMeaning": "Nghe, hỏi"
+  },
+  {
+    "character": "花",
+    "meaning": "hoa",
+    "onReading": "カ, ケ",
+    "kunReading": "はな",
+    "strokeCount": 7,
+    "jlptLevel": "N5",
+    "exampleWord": "花",
+    "exampleMeaning": "hoa"
+  },
+  {
+    "character": "行",
+    "meaning": "Đi",
+    "onReading": "コウ, ギョウ",
+    "kunReading": "い.く, ゆ.く, おこな.う",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "行く",
+    "exampleMeaning": "Đi"
+  },
+  {
+    "character": "西",
+    "meaning": "Tây",
+    "onReading": "セイ, サイ",
+    "kunReading": "にし",
+    "strokeCount": 6,
+    "jlptLevel": "N5",
+    "exampleWord": "西",
+    "exampleMeaning": "Phía tây"
+  },
+  {
+    "character": "見",
+    "meaning": "Xem, nhìn",
+    "onReading": "ケン",
+    "kunReading": "み.る, み.える",
+    "strokeCount": 7,
+    "jlptLevel": "N5",
+    "exampleWord": "見る",
+    "exampleMeaning": "Xem, nhìn"
+  },
+  {
+    "character": "言",
+    "meaning": "nói; lời",
+    "onReading": "ゲン, ゴン",
+    "kunReading": "い.う, こと",
+    "strokeCount": 7,
+    "jlptLevel": "N5",
+    "exampleWord": "言う",
+    "exampleMeaning": "nói"
+  },
+  {
+    "character": "話",
+    "meaning": "Nói chuyện",
+    "onReading": "わ",
+    "kunReading": "はなす, はなし",
+    "strokeCount": 13,
+    "jlptLevel": "N5",
+    "exampleWord": "話す",
+    "exampleMeaning": "Nói"
+  },
+  {
+    "character": "語",
+    "meaning": "ngôn ngữ",
+    "onReading": "ゴ",
+    "kunReading": "かた.る, かた.らう",
+    "strokeCount": 14,
+    "jlptLevel": "N5",
+    "exampleWord": "日本語",
+    "exampleMeaning": "Tiếng Nhật"
+  },
+  {
+    "character": "読",
+    "meaning": "Đọc",
+    "onReading": "ドク, トク, トウ",
+    "kunReading": "よ.む",
+    "strokeCount": 14,
+    "jlptLevel": "N5",
+    "exampleWord": "読む",
+    "exampleMeaning": "Đọc"
+  },
+  {
+    "character": "買",
+    "meaning": "Mua",
+    "onReading": "バイ",
+    "kunReading": "か.う",
+    "strokeCount": 12,
+    "jlptLevel": "N5",
+    "exampleWord": "買う",
+    "exampleMeaning": "Mua"
+  },
+  {
+    "character": "足",
+    "meaning": "Chân, đủ",
+    "onReading": "ソク",
+    "kunReading": "あし, た.りる",
+    "strokeCount": 7,
+    "jlptLevel": "N5",
+    "exampleWord": "足",
+    "exampleMeaning": "Chân"
+  },
+  {
+    "character": "車",
+    "meaning": "Xe",
+    "onReading": "シャ",
+    "kunReading": "くるま",
+    "strokeCount": 7,
+    "jlptLevel": "N5",
+    "exampleWord": "車",
+    "exampleMeaning": "Xe"
+  },
+  {
+    "character": "近",
+    "meaning": "gần",
+    "onReading": "キン, コン",
+    "kunReading": "ちか.い",
+    "strokeCount": 7,
+    "jlptLevel": "N5",
+    "exampleWord": "近く",
+    "exampleMeaning": "gần"
+  },
+  {
+    "character": "週",
+    "meaning": "Tuần",
+    "onReading": "シュウ",
+    "kunReading": "-",
+    "strokeCount": 11,
+    "jlptLevel": "N5",
+    "exampleWord": "毎週",
+    "exampleMeaning": "Mỗi tuần"
+  },
+  {
+    "character": "道",
+    "meaning": "đường; lối",
+    "onReading": "ドウ, トウ",
+    "kunReading": "みち",
+    "strokeCount": 12,
+    "jlptLevel": "N5",
+    "exampleWord": "道",
+    "exampleMeaning": "Con đường"
+  },
+  {
+    "character": "遠",
+    "meaning": "xa",
+    "onReading": "エン",
+    "kunReading": "とお.い",
+    "strokeCount": 13,
+    "jlptLevel": "N5",
+    "exampleWord": "遠い",
+    "exampleMeaning": "xa"
+  },
+  {
+    "character": "金",
+    "meaning": "Vàng, tiền",
+    "onReading": "キン, コン",
+    "kunReading": "かね, かな-",
+    "strokeCount": 8,
+    "jlptLevel": "N5",
+    "exampleWord": "金曜日",
+    "exampleMeaning": "Thứ sáu"
+  },
+  {
+    "character": "長",
+    "meaning": "Dài, trưởng",
+    "onReading": "チョウ",
+    "kunReading": "なが.い",
+    "strokeCount": 8,
+    "jlptLevel": "N5",
+    "exampleWord": "長い",
+    "exampleMeaning": "Dài"
+  },
+  {
+    "character": "間",
+    "meaning": "khoảng; giữa",
+    "onReading": "かん, けん",
+    "kunReading": "あいだ, ま",
+    "strokeCount": 12,
+    "jlptLevel": "N5",
+    "exampleWord": "時間",
+    "exampleMeaning": "Thời gian"
+  },
+  {
+    "character": "雨",
+    "meaning": "Mưa",
+    "onReading": "ウ",
+    "kunReading": "あめ, あま-",
+    "strokeCount": 8,
+    "jlptLevel": "N5",
+    "exampleWord": "雨",
+    "exampleMeaning": "Mưa"
+  },
+  {
+    "character": "雪",
+    "meaning": "tuyết",
+    "onReading": "セツ",
+    "kunReading": "ゆき",
+    "strokeCount": 11,
+    "jlptLevel": "N5",
+    "exampleWord": "雪",
+    "exampleMeaning": "tuyết"
+  },
+  {
+    "character": "雲",
+    "meaning": "mây",
+    "onReading": "ウン",
+    "kunReading": "くも",
+    "strokeCount": 12,
+    "jlptLevel": "N5",
+    "exampleWord": "雲",
+    "exampleMeaning": "mây"
+  },
+  {
+    "character": "電",
+    "meaning": "điện",
+    "onReading": "デン",
+    "kunReading": "-",
+    "strokeCount": 13,
+    "jlptLevel": "N5",
+    "exampleWord": "電気",
+    "exampleMeaning": "Điện"
+  },
+  {
+    "character": "風",
+    "meaning": "gió",
+    "onReading": "フ, フウ",
+    "kunReading": "かざ-, かぜ",
+    "strokeCount": 9,
+    "jlptLevel": "N5",
+    "exampleWord": "台風",
+    "exampleMeaning": "bão"
+  },
+  {
+    "character": "食",
+    "meaning": "Ăn, thực",
+    "onReading": "ショク, ジキ",
+    "kunReading": "た.べる, く.う",
+    "strokeCount": 9,
+    "jlptLevel": "N5",
+    "exampleWord": "食べる",
+    "exampleMeaning": "Ăn"
+  },
+  {
+    "character": "飲",
+    "meaning": "Uống",
+    "onReading": "イン",
+    "kunReading": "の.む",
+    "strokeCount": 12,
+    "jlptLevel": "N5",
+    "exampleWord": "飲む",
+    "exampleMeaning": "Uống"
+  },
+  {
+    "character": "駅",
+    "meaning": "Ga, trạm",
+    "onReading": "エキ",
+    "kunReading": "-",
+    "strokeCount": 14,
+    "jlptLevel": "N5",
+    "exampleWord": "駅",
+    "exampleMeaning": "Ga"
+  },
+  {
+    "character": "高",
+    "meaning": "Cao, đắt",
+    "onReading": "コウ",
+    "kunReading": "たか.い, たか",
+    "strokeCount": 10,
+    "jlptLevel": "N5",
+    "exampleWord": "高い",
+    "exampleMeaning": "Cao, đắt"
+  },
+  {
+    "character": "黒",
+    "meaning": "Đen",
+    "onReading": "コク",
+    "kunReading": "くろ, くろ.い",
+    "strokeCount": 11,
+    "jlptLevel": "N5",
+    "exampleWord": "黒い",
+    "exampleMeaning": "Màu đen"
+  }
+]

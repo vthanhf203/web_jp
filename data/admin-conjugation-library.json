@@ -1,0 +1,4791 @@
+{
+  "lessons": [
+    {
+      "id": "b83d6909-de81-4082-9d96-5b4d218d41fc",
+      "items": [
+        {
+          "id": "2369e553-9dad-444f-a76b-62a7d078ad9d",
+          "base": "かきます",
+          "note": "Quy tắc: V きます → V いて (Động từ nhóm 1 kết thúc bằng きます thì đổi thành いて.)",
+          "forms": [
+            {
+              "id": "df6f39ed-4f4b-4dbf-be86-5904dfa97533",
+              "label": "Thể て",
+              "value": "かいて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "viết",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ee97158d-be8e-4afa-9217-684c50b12f9d",
+          "base": "ききます",
+          "note": "Quy tắc: V きます → V いて (Động từ nhóm 1 kết thúc bằng きます thì đổi thành いて.)",
+          "forms": [
+            {
+              "id": "a921695d-e58d-46a9-8186-4f2c649fece6",
+              "label": "Thể て",
+              "value": "きいて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nghe",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ea5bab57-9203-4f96-bbaf-766cc4cd2198",
+          "base": "いそぎます",
+          "note": "Quy tắc: V ぎます → V いで (Động từ nhóm 1 kết thúc bằng ぎます thì đổi thành いで.)",
+          "forms": [
+            {
+              "id": "c7689e5a-1508-48cb-a80d-292b2249532e",
+              "label": "Thể て",
+              "value": "いそいで"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "vội",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ae8b0273-7070-4817-a582-c3bfc3af4c2e",
+          "base": "のみます",
+          "note": "Quy tắc: V みます / びます / にます → V んで (Động từ nhóm 1 kết thúc bằng みます, びます, にます thì đổi thành んで.)",
+          "forms": [
+            {
+              "id": "e3498b14-0a61-4fbf-b73a-7bc6fea50818",
+              "label": "Thể て",
+              "value": "のんで"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "uống",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "28b427e7-3f63-4ed3-ac43-08fe6a4b7b57",
+          "base": "よみます",
+          "note": "Quy tắc: V みます / びます / にます → V んで (Động từ nhóm 1 kết thúc bằng みます, びます, にます thì đổi thành んで.)",
+          "forms": [
+            {
+              "id": "0ecebba8-3c60-4b9a-988f-9cbd16bc3c5b",
+              "label": "Thể て",
+              "value": "よんで"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đọc",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "6089b2ff-2caa-4673-8d0c-1d80d659854e",
+          "base": "よびます",
+          "note": "Quy tắc: V みます / びます / にます → V んで (Động từ nhóm 1 kết thúc bằng みます, びます, にます thì đổi thành んで.)",
+          "forms": [
+            {
+              "id": "3932f0d1-be51-4147-9c62-80563f4fde27",
+              "label": "Thể て",
+              "value": "よんで"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "gọi",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "2adf4047-9905-4611-8137-90c7ea614949",
+          "base": "しにます",
+          "note": "Quy tắc: V みます / びます / にます → V んで (Động từ nhóm 1 kết thúc bằng みます, びます, にます thì đổi thành んで.)",
+          "forms": [
+            {
+              "id": "2dc98c70-de8b-4ef9-8f11-9c21fc524f47",
+              "label": "Thể て",
+              "value": "しんで"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "chết",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "0ccc9e36-d82a-4fe7-9a83-6fb20e2b8000",
+          "base": "かいます",
+          "note": "Quy tắc: V います / ちます / ります → V って (Động từ nhóm 1 kết thúc bằng います, ちます, ります thì đổi thành って.)",
+          "forms": [
+            {
+              "id": "e6173dc4-a0c5-41ae-bac3-d7b67189eb12",
+              "label": "Thể て",
+              "value": "かって"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "mua",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "52165ce4-e2c5-4e0c-abef-6a4d8f2ae43e",
+          "base": "いいます",
+          "note": "Quy tắc: V います / ちます / ります → V って (Động từ nhóm 1 kết thúc bằng います, ちます, ります thì đổi thành って.)",
+          "forms": [
+            {
+              "id": "a0904e12-c876-4228-b78d-6a05ec070a37",
+              "label": "Thể て",
+              "value": "いって"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nói",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "b4691d9b-4012-46fc-9075-30cedf3ea4d4",
+          "base": "とります",
+          "note": "Quy tắc: V います / ちます / ります → V って (Động từ nhóm 1 kết thúc bằng います, ちます, ります thì đổi thành って.)",
+          "forms": [
+            {
+              "id": "7afafdf8-c45c-46fc-ae68-b693b3d80208",
+              "label": "Thể て",
+              "value": "とって"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "lấy, cầm lấy",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "e0409531-0e07-42d8-ad20-11f25b6d07ab",
+          "base": "あります",
+          "note": "Quy tắc: V います / ちます / ります → V って (Động từ nhóm 1 kết thúc bằng います, ちます, ります thì đổi thành って.)",
+          "forms": [
+            {
+              "id": "7ab6c41e-7186-40fe-b05b-04c4f6380fb6",
+              "label": "Thể て",
+              "value": "あって"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ea29dcb8-4aed-4b8d-b3fb-0448825e7dea",
+          "base": "まちます",
+          "note": "Quy tắc: V います / ちます / ります → V って (Động từ nhóm 1 kết thúc bằng います, ちます, ります thì đổi thành って.)",
+          "forms": [
+            {
+              "id": "3d9d4031-0412-4451-954c-a770e22e28f3",
+              "label": "Thể て",
+              "value": "まって"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đợi",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "62e70476-6a44-488e-a8b9-f39c04521c27",
+          "base": "いきます",
+          "note": "Quy tắc: いきます → いって (Ngoại lệ. Bình thường きます sẽ thành いて, nhưng いきます thành いって.)",
+          "forms": [
+            {
+              "id": "c5ac2a8d-05e0-4f7c-a3fa-927408533046",
+              "label": "Thể て",
+              "value": "いって"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đi",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "149538e5-3749-4087-90e0-a6e3d513888a",
+          "base": "かします",
+          "note": "Quy tắc: V します → V して (Động từ nhóm 1 kết thúc bằng します thì đổi thành して.)",
+          "forms": [
+            {
+              "id": "278c201e-8609-4bf7-b855-8f179805956d",
+              "label": "Thể て",
+              "value": "かして"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "cho mượn",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "29843496-2ce0-47f8-851e-f2edcaa7ef60",
+          "base": "はなします",
+          "note": "Quy tắc: V します → V して (Động từ nhóm 1 kết thúc bằng します thì đổi thành して.)",
+          "forms": [
+            {
+              "id": "18839626-5616-4433-8f64-ac2e3a97701f",
+              "label": "Thể て",
+              "value": "はなして"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nói chuyện",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "3633b48b-d017-45e5-9f30-c5d06c8ee399",
+          "base": "たべます",
+          "note": "Quy tắc: V eます → V eて (Động từ nhóm 2 dạng eます thì bỏ ます, thêm て.)",
+          "forms": [
+            {
+              "id": "669191b0-6cc3-4dc2-9c0f-9af584929b98",
+              "label": "Thể て",
+              "value": "たべて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "ăn",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "f94169b7-2fdc-4d20-a90b-a49456d05bb8",
+          "base": "おしえます",
+          "note": "Quy tắc: V eます → V eて (Động từ nhóm 2 dạng eます thì bỏ ます, thêm て.)",
+          "forms": [
+            {
+              "id": "806fdea2-bb34-4d28-983a-4ba512b3599f",
+              "label": "Thể て",
+              "value": "おしえて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "dạy",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "277c7bc4-1036-411e-93b0-c4d615451580",
+          "base": "あげます",
+          "note": "Quy tắc: V eます → V eて (Động từ nhóm 2 dạng eます thì bỏ ます, thêm て.)",
+          "forms": [
+            {
+              "id": "eea843b1-f27c-423e-97b1-f6a7ada6ab75",
+              "label": "Thể て",
+              "value": "あげて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "cho, tặng",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "02c770b2-1ada-46a2-9368-0f982fed73f8",
+          "base": "ねます",
+          "note": "Quy tắc: V eます → V eて (Động từ nhóm 2 dạng eます thì bỏ ます, thêm て.)",
+          "forms": [
+            {
+              "id": "4da715b6-5325-46d4-99ee-fc408afd6851",
+              "label": "Thể て",
+              "value": "ねて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "ngủ",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "bc2ce2a9-09a6-47b9-9cba-c63229bc5713",
+          "base": "みます",
+          "note": "Quy tắc: V iます → V iて (Một số động từ nhóm 2 dạng iます cũng bỏ ます, thêm て.)",
+          "forms": [
+            {
+              "id": "4af9e43d-1c0b-4503-bec1-c0fc53e72ce4",
+              "label": "Thể て",
+              "value": "みて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "xem",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "e1ab9792-416e-4245-99e7-1dbdb0029ab2",
+          "base": "います",
+          "note": "Quy tắc: V iます → V iて (Một số động từ nhóm 2 dạng iます cũng bỏ ます, thêm て.)",
+          "forms": [
+            {
+              "id": "609f6251-8f29-4ff9-b4e7-dd523d74dccb",
+              "label": "Thể て",
+              "value": "いて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có, ở",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "4a0aaa16-ddf9-4be9-a774-aaa5d22a95b2",
+          "base": "おきます",
+          "note": "Quy tắc: V iます → V iて (Một số động từ nhóm 2 dạng iます cũng bỏ ます, thêm て.)",
+          "forms": [
+            {
+              "id": "db562208-5676-4c9c-b3f9-48a6310c735e",
+              "label": "Thể て",
+              "value": "おきて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "thức dậy",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "61a2b07b-830a-4459-b74e-3f52fa1d3394",
+          "base": "かります",
+          "note": "Quy tắc: V iます → V iて (Một số động từ nhóm 2 dạng iます cũng bỏ ます, thêm て.)",
+          "forms": [
+            {
+              "id": "7141de07-39a4-44d7-b997-4803a53f946e",
+              "label": "Thể て",
+              "value": "かりて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "mượn",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "0a6fe5b5-ed8d-457e-a657-b4def4579975",
+          "base": "べんきょうします",
+          "note": "Quy tắc: します → して (Động từ nhóm 3 với します thì đổi thành して.)",
+          "forms": [
+            {
+              "id": "854308e7-9587-48d4-9820-66d3920accd9",
+              "label": "Thể て",
+              "value": "べんきょうして"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "học",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "089d0817-a0c2-4869-8522-1af970823760",
+          "base": "じっしゅうします",
+          "note": "Quy tắc: します → して (Động từ nhóm 3 với します thì đổi thành して.)",
+          "forms": [
+            {
+              "id": "cd229cc4-b9d6-494c-832b-2c54d6120a13",
+              "label": "Thể て",
+              "value": "じっしゅうして"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "thực tập",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "91626b5c-18a5-4650-9c0f-1eca6cbdb28a",
+          "base": "かいものします",
+          "note": "Quy tắc: N します → N して (Danh từ + します thì đổi thành danh từ + して.)",
+          "forms": [
+            {
+              "id": "ea3905a9-0217-4202-b059-25b7bce0e4db",
+              "label": "Thể て",
+              "value": "かいものして"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "mua sắm",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "7c0f0020-7257-4f17-ad14-e6f104660a0c",
+          "base": "けんぶつします",
+          "note": "Quy tắc: N します → N して (Danh từ + します thì đổi thành danh từ + して.)",
+          "forms": [
+            {
+              "id": "9e9cb2d1-ccdd-4bbb-b118-56613bb67c02",
+              "label": "Thể て",
+              "value": "けんぶつして"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "tham quan",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "a0195801-5fd6-4c09-9646-49326e8d89bb",
+          "base": "きます",
+          "note": "Quy tắc: きます → きて (Động từ nhóm 3 きます chia thành きて.)",
+          "forms": [
+            {
+              "id": "d5ae1aff-fd24-4e45-b7de-4af6da0dc54b",
+              "label": "Thể て",
+              "value": "きて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đến",
+          "reading": "",
+          "createdAt": "2026-04-26T08:57:28.619Z",
+          "updatedAt": "2026-04-26T08:57:28.619Z",
+          "partOfSpeech": ""
+        }
+      ],
+      "title": "Thể て",
+      "formKey": "",
+      "createdAt": "2026-04-25T17:37:53.591Z",
+      "formLabel": "",
+      "jlptLevel": "N5",
+      "updatedAt": "2026-04-27T17:04:26.106Z",
+      "description": ""
+    },
+    {
+      "id": "08973813-a58a-465f-ac79-c028f1054779",
+      "items": [
+        {
+          "id": "be334247-8e59-4df4-bd00-9e6b9225f16d",
+          "base": "あいます",
+          "note": "Nhóm 1 | Quy tắc: V います → V わない (Trường hợp đặc biệt: động từ nhóm 1 kết thúc bằng います thì đổi thành わない.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aない | Quy tắc đặc biệt: V います → V わない | Các động từ nhóm 1 đều có vần [-i] đứng trước ます. Để chuyển sang thể ない, thay vần [-i] bằng vần [-a] rồi thêm ない. Trường hợp đặc biệt, những động từ có đuôi là い thì chuyển thành わ.",
+          "forms": [
+            {
+              "id": "b8a33e6e-f7f2-465c-a1b2-7e6dfd143156",
+              "label": "ない形",
+              "value": "あわない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "gặp",
+          "reading": "",
+          "createdAt": "2026-04-27T18:08:17.122Z",
+          "updatedAt": "2026-04-27T18:08:17.122Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "c3a9d2e1-b700-4777-b9bc-c0ec3f8d2f26",
+          "base": "かきます",
+          "note": "Nhóm 1 | Quy tắc: V iます → V aない (Nhóm 1 đổi âm hàng i trước ます sang hàng a rồi thêm ない.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aない | Quy tắc đặc biệt: V います → V わない | Các động từ nhóm 1 đều có vần [-i] đứng trước ます. Để chuyển sang thể ない, thay vần [-i] bằng vần [-a] rồi thêm ない. Trường hợp đặc biệt, những động từ có đuôi là い thì chuyển thành わ.",
+          "forms": [
+            {
+              "id": "9b3f3e80-5f93-4178-b043-db68be6ae066",
+              "label": "ない形",
+              "value": "かかない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "viết",
+          "reading": "",
+          "createdAt": "2026-04-27T18:08:17.122Z",
+          "updatedAt": "2026-04-27T18:08:17.122Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "15a0702e-0909-4f8e-839e-07b275ef5773",
+          "base": "いそぎます",
+          "note": "Nhóm 1 | Quy tắc: V iます → V aない (Nhóm 1 đổi âm hàng i trước ます sang hàng a rồi thêm ない.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aない | Quy tắc đặc biệt: V います → V わない | Các động từ nhóm 1 đều có vần [-i] đứng trước ます. Để chuyển sang thể ない, thay vần [-i] bằng vần [-a] rồi thêm ない. Trường hợp đặc biệt, những động từ có đuôi là い thì chuyển thành わ.",
+          "forms": [
+            {
+              "id": "9a0d1318-c473-454a-b211-3e3108cc8fa4",
+              "label": "ない形",
+              "value": "いそがない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "vội",
+          "reading": "",
+          "createdAt": "2026-04-27T18:08:17.122Z",
+          "updatedAt": "2026-04-27T18:08:17.122Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "6ec5044c-ba77-4ccf-8c2e-9ae0627a9a7d",
+          "base": "はなします",
+          "note": "Nhóm 1 | Quy tắc: V iます → V aない (Nhóm 1 đổi âm hàng i trước ます sang hàng a rồi thêm ない.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aない | Quy tắc đặc biệt: V います → V わない | Các động từ nhóm 1 đều có vần [-i] đứng trước ます. Để chuyển sang thể ない, thay vần [-i] bằng vần [-a] rồi thêm ない. Trường hợp đặc biệt, những động từ có đuôi là い thì chuyển thành わ.",
+          "forms": [
+            {
+              "id": "1e1b0e95-3f04-4ae5-84e8-30b6f918eabe",
+              "label": "ない形",
+              "value": "はなさない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nói chuyện",
+          "reading": "",
+          "createdAt": "2026-04-27T18:08:17.122Z",
+          "updatedAt": "2026-04-27T18:08:17.122Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ca8ba864-67e7-4935-af00-398b17b83200",
+          "base": "まちます",
+          "note": "Nhóm 1 | Quy tắc: V iます → V aない (Nhóm 1 đổi âm hàng i trước ます sang hàng a rồi thêm ない.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aない | Quy tắc đặc biệt: V います → V わない | Các động từ nhóm 1 đều có vần [-i] đứng trước ます. Để chuyển sang thể ない, thay vần [-i] bằng vần [-a] rồi thêm ない. Trường hợp đặc biệt, những động từ có đuôi là い thì chuyển thành わ.",
+          "forms": [
+            {
+              "id": "ce4209e4-4a9f-42ae-b661-43d50adbaeca",
+              "label": "ない形",
+              "value": "またない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đợi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:08:17.122Z",
+          "updatedAt": "2026-04-27T18:08:17.122Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "d05112eb-9dfb-4375-b14f-9a7f45cd7371",
+          "base": "あそびます",
+          "note": "Nhóm 1 | Quy tắc: V iます → V aない (Nhóm 1 đổi âm hàng i trước ます sang hàng a rồi thêm ない.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aない | Quy tắc đặc biệt: V います → V わない | Các động từ nhóm 1 đều có vần [-i] đứng trước ます. Để chuyển sang thể ない, thay vần [-i] bằng vần [-a] rồi thêm ない. Trường hợp đặc biệt, những động từ có đuôi là い thì chuyển thành わ.",
+          "forms": [
+            {
+              "id": "0ebff835-9c43-4ba2-9f0a-191d5670ee06",
+              "label": "ない形",
+              "value": "あそばない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "chơi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:08:17.122Z",
+          "updatedAt": "2026-04-27T18:08:17.122Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "9c27a4fa-3070-447c-8e29-a1695d6aa444",
+          "base": "よみます",
+          "note": "Nhóm 1 | Quy tắc: V iます → V aない (Nhóm 1 đổi âm hàng i trước ます sang hàng a rồi thêm ない.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aない | Quy tắc đặc biệt: V います → V わない | Các động từ nhóm 1 đều có vần [-i] đứng trước ます. Để chuyển sang thể ない, thay vần [-i] bằng vần [-a] rồi thêm ない. Trường hợp đặc biệt, những động từ có đuôi là い thì chuyển thành わ.",
+          "forms": [
+            {
+              "id": "df4f8a08-0f34-4eec-9417-4d5a8b362f89",
+              "label": "ない形",
+              "value": "よまない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đọc",
+          "reading": "",
+          "createdAt": "2026-04-27T18:08:17.122Z",
+          "updatedAt": "2026-04-27T18:08:17.122Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "35dd72aa-1bb1-43cc-ad77-92b0dc042a79",
+          "base": "とります",
+          "note": "Nhóm 1 | Quy tắc: V iます → V aない (Nhóm 1 đổi âm hàng i trước ます sang hàng a rồi thêm ない.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aない | Quy tắc đặc biệt: V います → V わない | Các động từ nhóm 1 đều có vần [-i] đứng trước ます. Để chuyển sang thể ない, thay vần [-i] bằng vần [-a] rồi thêm ない. Trường hợp đặc biệt, những động từ có đuôi là い thì chuyển thành わ.",
+          "forms": [
+            {
+              "id": "9922e346-8a9d-4d29-ad3f-9513748684bf",
+              "label": "ない形",
+              "value": "とらない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "lấy, cầm lấy",
+          "reading": "",
+          "createdAt": "2026-04-27T18:08:17.122Z",
+          "updatedAt": "2026-04-27T18:08:17.122Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "7b267c10-cf90-4996-b259-8453672e964a",
+          "base": "たべます",
+          "note": "Nhóm 2 | Quy tắc: V ます → V ない (Nhóm 2 bỏ ます rồi thêm ない.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vます → Vない | Động từ nhóm 2 bỏ ます rồi thêm ない.",
+          "forms": [
+            {
+              "id": "5abb3b20-8a0e-4a97-9b91-e8679710f884",
+              "label": "ない形",
+              "value": "たべない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "ăn",
+          "reading": "",
+          "createdAt": "2026-04-27T18:08:17.122Z",
+          "updatedAt": "2026-04-27T18:08:17.122Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "2ceb0ce7-bf70-4ceb-a93a-6ec5602e0c9a",
+          "base": "みます",
+          "note": "Nhóm 2 | Quy tắc: V ます → V ない (Nhóm 2 bỏ ます rồi thêm ない.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vます → Vない | Động từ nhóm 2 bỏ ます rồi thêm ない.",
+          "forms": [
+            {
+              "id": "dfc5c593-0565-4124-b605-7d8b1f2da4c2",
+              "label": "ない形",
+              "value": "みない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "xem",
+          "reading": "",
+          "createdAt": "2026-04-27T18:08:17.122Z",
+          "updatedAt": "2026-04-27T18:08:17.122Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "c6ef9d21-61f3-41af-a1e8-27415ee632bb",
+          "base": "します",
+          "note": "Nhóm 3 | Quy tắc: します → しない (Động từ nhóm 3 します chia thành しない.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: します → しない / きます → こない | Động từ nhóm 3 là nhóm đặc biệt, gồm します và きます.",
+          "forms": [
+            {
+              "id": "1d01f2cc-14bb-4afb-ae0c-435c0e099263",
+              "label": "ない形",
+              "value": "しない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "làm",
+          "reading": "",
+          "createdAt": "2026-04-27T18:08:17.122Z",
+          "updatedAt": "2026-04-27T18:08:17.122Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "bcfd38d8-f357-4cfe-b8ef-ab54c976b065",
+          "base": "きます",
+          "note": "Nhóm 3 | Quy tắc: きます → こない (Động từ nhóm 3 きます chia thành こない.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: します → しない / きます → こない | Động từ nhóm 3 là nhóm đặc biệt, gồm します và きます.",
+          "forms": [
+            {
+              "id": "d5f6c6ff-9c7f-49c3-803d-eaa5ce392e10",
+              "label": "ない形",
+              "value": "こない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đến",
+          "reading": "",
+          "createdAt": "2026-04-27T18:08:17.122Z",
+          "updatedAt": "2026-04-27T18:08:17.122Z",
+          "partOfSpeech": ""
+        }
+      ],
+      "title": "Thể ない",
+      "formKey": "nai_form",
+      "createdAt": "2026-04-27T17:38:15.296Z",
+      "formLabel": "ない形",
+      "jlptLevel": "N5",
+      "updatedAt": "2026-04-27T18:08:17.122Z",
+      "description": "Thể ない là thể phủ định dạng ngắn của động từ."
+    },
+    {
+      "id": "1d186452-2b05-4335-aed6-abbc0d647894",
+      "items": [
+        {
+          "id": "f95b0542-f8e0-4d73-9ec6-187203df94f8",
+          "base": "かう",
+          "note": "Nhóm 1 | Quy tắc: V iます → V u (Nhóm 1 đổi âm hàng i trước ます sang âm hàng u tương ứng.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V u | Động từ nhóm 1 là các động từ có âm trước ます thuộc hàng i. Khi chuyển sang thể từ điển, đổi âm hàng i sang âm hàng u tương ứng.",
+          "forms": [
+            {
+              "id": "9430029d-892e-4c5d-8005-b1b797499f8b",
+              "label": "辞書形",
+              "value": "かう"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "mua",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "1e3defeb-dd4d-480e-966b-e36a6cef3f5f",
+          "base": "まつ",
+          "note": "Nhóm 1 | Quy tắc: V iます → V u (Nhóm 1 đổi âm hàng i trước ます sang âm hàng u tương ứng.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V u | Động từ nhóm 1 là các động từ có âm trước ます thuộc hàng i. Khi chuyển sang thể từ điển, đổi âm hàng i sang âm hàng u tương ứng.",
+          "forms": [
+            {
+              "id": "9c066869-22fb-4693-b015-8147c215d197",
+              "label": "辞書形",
+              "value": "まつ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đợi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "0b4cce7e-1e6f-4b98-a08b-7cb7ca0a0b0c",
+          "base": "とる",
+          "note": "Nhóm 1 | Quy tắc: V iます → V u (Nhóm 1 đổi âm hàng i trước ます sang âm hàng u tương ứng.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V u | Động từ nhóm 1 là các động từ có âm trước ます thuộc hàng i. Khi chuyển sang thể từ điển, đổi âm hàng i sang âm hàng u tương ứng.",
+          "forms": [
+            {
+              "id": "c27231d9-c788-48b5-8c54-bbe55be12bcd",
+              "label": "辞書形",
+              "value": "とる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "lấy, cầm lấy",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "6a2b6bea-fe32-4f09-94e4-a57f9e7eb103",
+          "base": "すむ",
+          "note": "Nhóm 1 | Quy tắc: V iます → V u (Nhóm 1 đổi âm hàng i trước ます sang âm hàng u tương ứng.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V u | Động từ nhóm 1 là các động từ có âm trước ます thuộc hàng i. Khi chuyển sang thể từ điển, đổi âm hàng i sang âm hàng u tương ứng.",
+          "forms": [
+            {
+              "id": "22090440-dea3-492c-a108-06a25de8da2b",
+              "label": "辞書形",
+              "value": "すむ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "ở, sống",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "75eabd9d-2439-4a8d-a228-c051680ca838",
+          "base": "しぬ",
+          "note": "Nhóm 1 | Quy tắc: V iます → V u (Nhóm 1 đổi âm hàng i trước ます sang âm hàng u tương ứng.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V u | Động từ nhóm 1 là các động từ có âm trước ます thuộc hàng i. Khi chuyển sang thể từ điển, đổi âm hàng i sang âm hàng u tương ứng.",
+          "forms": [
+            {
+              "id": "55134bb5-f248-4fd3-90ae-9a3b5ab35123",
+              "label": "辞書形",
+              "value": "しぬ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "chết",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "10f36130-342f-40e5-b414-53e0958f3a73",
+          "base": "よぶ",
+          "note": "Nhóm 1 | Quy tắc: V iます → V u (Nhóm 1 đổi âm hàng i trước ます sang âm hàng u tương ứng.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V u | Động từ nhóm 1 là các động từ có âm trước ます thuộc hàng i. Khi chuyển sang thể từ điển, đổi âm hàng i sang âm hàng u tương ứng.",
+          "forms": [
+            {
+              "id": "607fe2b9-3acb-4c50-b3a4-3cbe4f616401",
+              "label": "辞書形",
+              "value": "よぶ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "gọi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "a39e3086-280b-4995-96dd-a6969f9a9fd4",
+          "base": "はなす",
+          "note": "Nhóm 1 | Quy tắc: V iます → V u (Nhóm 1 đổi âm hàng i trước ます sang âm hàng u tương ứng.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V u | Động từ nhóm 1 là các động từ có âm trước ます thuộc hàng i. Khi chuyển sang thể từ điển, đổi âm hàng i sang âm hàng u tương ứng.",
+          "forms": [
+            {
+              "id": "c30388b9-d2fc-4a0d-a4b7-e0a34b031540",
+              "label": "辞書形",
+              "value": "はなす"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nói chuyện",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "32f5f634-ce1f-4a70-8877-8f28333e5620",
+          "base": "かく",
+          "note": "Nhóm 1 | Quy tắc: V iます → V u (Nhóm 1 đổi âm hàng i trước ます sang âm hàng u tương ứng.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V u | Động từ nhóm 1 là các động từ có âm trước ます thuộc hàng i. Khi chuyển sang thể từ điển, đổi âm hàng i sang âm hàng u tương ứng.",
+          "forms": [
+            {
+              "id": "7f74c6b4-ae10-4216-a842-a5603ec2b20b",
+              "label": "辞書形",
+              "value": "かく"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "viết",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "48a8e88b-ea13-41da-97a3-89510410ccfb",
+          "base": "およぐ",
+          "note": "Nhóm 1 | Quy tắc: V iます → V u (Nhóm 1 đổi âm hàng i trước ます sang âm hàng u tương ứng.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V u | Động từ nhóm 1 là các động từ có âm trước ます thuộc hàng i. Khi chuyển sang thể từ điển, đổi âm hàng i sang âm hàng u tương ứng.",
+          "forms": [
+            {
+              "id": "26bed21e-1f38-4463-98be-7c98b4c214e7",
+              "label": "辞書形",
+              "value": "およぐ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bơi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "243f00b3-3dc5-4e3b-bfca-2c37c0468859",
+          "base": "たべる",
+          "note": "Nhóm 2 | Quy tắc: V ます → V る (Nhóm 2 bỏ ます rồi thêm る.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vます → Vる | Động từ nhóm 2 thường có dạng [-eる] hoặc [-iる]. Khi chuyển sang thể từ điển, bỏ ます rồi thêm る.",
+          "forms": [
+            {
+              "id": "2cdb818c-c339-41e7-9249-78c2d269a538",
+              "label": "辞書形",
+              "value": "たべる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "ăn",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "c8c3781d-93dc-4628-8e02-ba10f12fc43a",
+          "base": "みる",
+          "note": "Nhóm 2 | Quy tắc: V ます → V る (Nhóm 2 bỏ ます rồi thêm る.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vます → Vる | Động từ nhóm 2 thường có dạng [-eる] hoặc [-iる]. Khi chuyển sang thể từ điển, bỏ ます rồi thêm る.",
+          "forms": [
+            {
+              "id": "8381d9e8-2439-44cf-a99f-d56cf72c4edd",
+              "label": "辞書形",
+              "value": "みる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "xem",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "e3ae5d26-4e90-47a2-8544-f40fba822933",
+          "base": "かえる",
+          "note": "Nhìn giống nhóm 2 vì kết thúc bằng える, nhưng thực ra là động từ nhóm 1. | Nhóm 1 | Quy tắc: かえります → かえる (Động từ đặc biệt nhìn giống nhóm 2 nhưng thuộc nhóm 1.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V u | Động từ nhóm 1 là các động từ có âm trước ます thuộc hàng i. Khi chuyển sang thể từ điển, đổi âm hàng i sang âm hàng u tương ứng.",
+          "forms": [
+            {
+              "id": "024c9401-cca6-4a5f-ba75-27f6189bef13",
+              "label": "辞書形",
+              "value": "かえる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "trở về",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ac3db623-0baa-44e9-bab7-37ce545493bf",
+          "base": "しる",
+          "note": "Nhìn giống nhóm 2 vì kết thúc bằng いる, nhưng thực ra là động từ nhóm 1. | Nhóm 1 | Quy tắc: しります → しる (Động từ đặc biệt nhìn giống nhóm 2 nhưng thuộc nhóm 1.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V u | Động từ nhóm 1 là các động từ có âm trước ます thuộc hàng i. Khi chuyển sang thể từ điển, đổi âm hàng i sang âm hàng u tương ứng.",
+          "forms": [
+            {
+              "id": "ec083c85-44a4-4976-a922-e732af285978",
+              "label": "辞書形",
+              "value": "しる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "biết",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "2f72a71d-1745-47f6-9b71-2f4e7e2c478b",
+          "base": "する",
+          "note": "Nhóm 3 | Quy tắc: します → する (Động từ nhóm 3 します chia thành する.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: します → する / きます → くる | Động từ nhóm 3 gồm 2 động từ đặc biệt là します và きます.",
+          "forms": [
+            {
+              "id": "38371465-2d40-4773-b5d8-b3700c764c96",
+              "label": "辞書形",
+              "value": "する"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "làm",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ff3f705e-664c-4ba5-94c3-79da8e1761c1",
+          "base": "くる",
+          "note": "Nhóm 3 | Quy tắc: きます → くる (Động từ nhóm 3 きます chia thành くる.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: します → する / きます → くる | Động từ nhóm 3 gồm 2 động từ đặc biệt là します và きます.",
+          "forms": [
+            {
+              "id": "a1aa3966-3bd7-40d3-9bf7-a7e805f78e8d",
+              "label": "辞書形",
+              "value": "くる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đến",
+          "reading": "",
+          "createdAt": "2026-04-27T18:20:25.597Z",
+          "updatedAt": "2026-04-27T18:20:25.597Z",
+          "partOfSpeech": ""
+        }
+      ],
+      "title": "Thể từ điển",
+      "formKey": "dictionary_form",
+      "createdAt": "2026-04-27T18:20:25.597Z",
+      "formLabel": "辞書形 ( Vる）",
+      "jlptLevel": "N5",
+      "updatedAt": "2026-04-27T18:20:41.950Z",
+      "description": "Thể nguyên mẫu, còn gọi là thể từ điển, là thể cơ bản của động từ. Trong sách từ điển, các động từ được trình bày ở thể này."
+    },
+    {
+      "id": "d0d9e7ad-62c9-40aa-a248-9538bef6c819",
+      "items": [
+        {
+          "id": "bc5b8a2f-3d62-4e0f-a6dd-409a294310a4",
+          "base": "かきます",
+          "note": "Nhóm 1 | Quy tắc: V きます → V いた (Động từ nhóm 1 kết thúc bằng きます thì đổi thành いた.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vて → Vた / Vで → Vだ | Động từ nhóm 1 chia thể た giống cách chia thể て. Nếu thể て kết thúc bằng て thì đổi thành た, nếu kết thúc bằng で thì đổi thành だ.",
+          "forms": [
+            {
+              "id": "38df5cb7-100f-4876-9374-7cda3f5fd81c",
+              "label": "た形",
+              "value": "かいた"
+            },
+            {
+              "id": "e0c43848-1ea8-4406-abc2-640c782d1b5b",
+              "label": "Thể て",
+              "value": "かいて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "viết",
+          "reading": "",
+          "createdAt": "2026-04-27T18:23:03.610Z",
+          "updatedAt": "2026-04-27T18:23:03.610Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "21ecec77-52be-4840-aaf8-9baad5929596",
+          "base": "いそぎます",
+          "note": "Nhóm 1 | Quy tắc: V ぎます → V いだ (Động từ nhóm 1 kết thúc bằng ぎます thì đổi thành いだ.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vて → Vた / Vで → Vだ | Động từ nhóm 1 chia thể た giống cách chia thể て. Nếu thể て kết thúc bằng て thì đổi thành た, nếu kết thúc bằng で thì đổi thành だ.",
+          "forms": [
+            {
+              "id": "1ad781d9-0880-4cf5-8a56-755b196caf20",
+              "label": "た形",
+              "value": "いそいだ"
+            },
+            {
+              "id": "87e42fcd-3105-467f-871e-cc1210b2cb9b",
+              "label": "Thể て",
+              "value": "いそいで"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "vội",
+          "reading": "",
+          "createdAt": "2026-04-27T18:23:03.610Z",
+          "updatedAt": "2026-04-27T18:23:03.610Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "0df8d9b8-5229-40f7-a08f-9aab11cb3d30",
+          "base": "のみます",
+          "note": "Nhóm 1 | Quy tắc: V みます / びます / にます → V んだ (Động từ nhóm 1 kết thúc bằng みます, びます, にます thì đổi thành んだ.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vて → Vた / Vで → Vだ | Động từ nhóm 1 chia thể た giống cách chia thể て. Nếu thể て kết thúc bằng て thì đổi thành た, nếu kết thúc bằng で thì đổi thành だ.",
+          "forms": [
+            {
+              "id": "2daa7755-500a-4eae-9b7a-9b732ba23ad7",
+              "label": "た形",
+              "value": "のんだ"
+            },
+            {
+              "id": "1f193ec6-701a-43ee-8cd7-4f5235838d44",
+              "label": "Thể て",
+              "value": "のんで"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "uống",
+          "reading": "",
+          "createdAt": "2026-04-27T18:23:03.610Z",
+          "updatedAt": "2026-04-27T18:23:03.610Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "e68d28ea-1136-4522-bcb4-0884273ffcfb",
+          "base": "よみます",
+          "note": "Nhóm 1 | Quy tắc: V みます / びます / にます → V んだ (Động từ nhóm 1 kết thúc bằng みます, びます, にます thì đổi thành んだ.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vて → Vた / Vで → Vだ | Động từ nhóm 1 chia thể た giống cách chia thể て. Nếu thể て kết thúc bằng て thì đổi thành た, nếu kết thúc bằng で thì đổi thành だ.",
+          "forms": [
+            {
+              "id": "a220c64f-63f3-42c4-95d6-71b9cadab064",
+              "label": "た形",
+              "value": "よんだ"
+            },
+            {
+              "id": "1c782af4-6da4-438d-8e30-da374c2672ef",
+              "label": "Thể て",
+              "value": "よんで"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đọc",
+          "reading": "",
+          "createdAt": "2026-04-27T18:23:03.610Z",
+          "updatedAt": "2026-04-27T18:23:03.610Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "1a61ac11-eeb6-47c4-98b0-b9e3ecbc41aa",
+          "base": "かいます",
+          "note": "Nhóm 1 | Quy tắc: V います / ちます / ります → V った (Động từ nhóm 1 kết thúc bằng います, ちます, ります thì đổi thành った.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vて → Vた / Vで → Vだ | Động từ nhóm 1 chia thể た giống cách chia thể て. Nếu thể て kết thúc bằng て thì đổi thành た, nếu kết thúc bằng で thì đổi thành だ.",
+          "forms": [
+            {
+              "id": "80c796c9-51f1-4368-8229-13da1f619908",
+              "label": "た形",
+              "value": "かった"
+            },
+            {
+              "id": "ac00996a-9d45-443f-b584-eaff852264cd",
+              "label": "Thể て",
+              "value": "かって"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "mua",
+          "reading": "",
+          "createdAt": "2026-04-27T18:23:03.610Z",
+          "updatedAt": "2026-04-27T18:23:03.610Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "9f9bb365-75a0-4ed0-bd2a-fcdb009ba080",
+          "base": "まちます",
+          "note": "Nhóm 1 | Quy tắc: V います / ちます / ります → V った (Động từ nhóm 1 kết thúc bằng います, ちます, ります thì đổi thành った.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vて → Vた / Vで → Vだ | Động từ nhóm 1 chia thể た giống cách chia thể て. Nếu thể て kết thúc bằng て thì đổi thành た, nếu kết thúc bằng で thì đổi thành だ.",
+          "forms": [
+            {
+              "id": "0dc10bc7-5240-4411-b232-d5787367f833",
+              "label": "た形",
+              "value": "まった"
+            },
+            {
+              "id": "2e5b433b-5ff2-45a4-b349-1b19c5fd38e8",
+              "label": "Thể て",
+              "value": "まって"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đợi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:23:03.610Z",
+          "updatedAt": "2026-04-27T18:23:03.610Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "73c3a378-c70d-40e1-be1b-d028e01bdd9e",
+          "base": "とります",
+          "note": "Nhóm 1 | Quy tắc: V います / ちます / ります → V った (Động từ nhóm 1 kết thúc bằng います, ちます, ります thì đổi thành った.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vて → Vた / Vで → Vだ | Động từ nhóm 1 chia thể た giống cách chia thể て. Nếu thể て kết thúc bằng て thì đổi thành た, nếu kết thúc bằng で thì đổi thành だ.",
+          "forms": [
+            {
+              "id": "8d79a9ff-0fd9-450e-954f-fd53321ef576",
+              "label": "た形",
+              "value": "とった"
+            },
+            {
+              "id": "98d3cfa9-9762-4485-92a7-73c9d956a49a",
+              "label": "Thể て",
+              "value": "とって"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "lấy, cầm lấy",
+          "reading": "",
+          "createdAt": "2026-04-27T18:23:03.610Z",
+          "updatedAt": "2026-04-27T18:23:03.610Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "349628b9-a9e9-470c-918c-09c3bc43724d",
+          "base": "いきます",
+          "note": "Nhóm 1 | Quy tắc: いきます → いった (Ngoại lệ. いきます chia thể た là いった.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vて → Vた / Vで → Vだ | Động từ nhóm 1 chia thể た giống cách chia thể て. Nếu thể て kết thúc bằng て thì đổi thành た, nếu kết thúc bằng で thì đổi thành だ.",
+          "forms": [
+            {
+              "id": "e2fae2f8-08eb-46d9-8053-0715c1e27782",
+              "label": "た形",
+              "value": "いった"
+            },
+            {
+              "id": "ba76235a-1fca-403a-bd87-0b9c1e3bfb00",
+              "label": "Thể て",
+              "value": "いって"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:23:03.610Z",
+          "updatedAt": "2026-04-27T18:23:03.610Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ed8eff6e-ed21-4e95-84c2-a5af3f62cd06",
+          "base": "はなします",
+          "note": "Nhóm 1 | Quy tắc: V します → V した (Động từ nhóm 1 kết thúc bằng します thì đổi thành した.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vて → Vた / Vで → Vだ | Động từ nhóm 1 chia thể た giống cách chia thể て. Nếu thể て kết thúc bằng て thì đổi thành た, nếu kết thúc bằng で thì đổi thành だ.",
+          "forms": [
+            {
+              "id": "6987a0a7-f397-4856-9179-2f87fcbcc090",
+              "label": "た形",
+              "value": "はなした"
+            },
+            {
+              "id": "1aeea6c9-c0eb-466e-af89-df9d633ade03",
+              "label": "Thể て",
+              "value": "はなして"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nói chuyện",
+          "reading": "",
+          "createdAt": "2026-04-27T18:23:03.610Z",
+          "updatedAt": "2026-04-27T18:23:03.610Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "7f6c1a8f-16a2-466c-8939-82e9fbf75478",
+          "base": "たべます",
+          "note": "Nhóm 2 | Quy tắc: V ます → V た (Động từ nhóm 2 bỏ ます rồi thêm た.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vます → Vた | Động từ nhóm 2 bỏ ます rồi thêm た.",
+          "forms": [
+            {
+              "id": "c50e48ab-9e3c-4a88-9c5a-3d41bfda7c4c",
+              "label": "た形",
+              "value": "たべた"
+            },
+            {
+              "id": "0778d905-dc28-492c-98b5-f5b9b9bd0d22",
+              "label": "Thể て",
+              "value": "たべて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "ăn",
+          "reading": "",
+          "createdAt": "2026-04-27T18:23:03.610Z",
+          "updatedAt": "2026-04-27T18:23:03.610Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "859b66b2-1d6e-4f41-b50c-5deae7a27340",
+          "base": "みます",
+          "note": "Nhóm 2 | Quy tắc: V ます → V た (Động từ nhóm 2 bỏ ます rồi thêm た.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vます → Vた | Động từ nhóm 2 bỏ ます rồi thêm た.",
+          "forms": [
+            {
+              "id": "51d2d3f5-eee8-4e6e-be22-75434ed9464e",
+              "label": "た形",
+              "value": "みた"
+            },
+            {
+              "id": "fe45080c-6e40-4092-b89e-4e5744001b0e",
+              "label": "Thể て",
+              "value": "みて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "xem",
+          "reading": "",
+          "createdAt": "2026-04-27T18:23:03.610Z",
+          "updatedAt": "2026-04-27T18:23:03.610Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "a48bf798-8771-4077-99e5-da33ead55a60",
+          "base": "きます",
+          "note": "Nhóm 3 | Quy tắc: きます → きた (Động từ nhóm 3 きます chia thành きた.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: します → した / きます → きた | Động từ nhóm 3 gồm します và きます. します chia thành した, きます chia thành きた.",
+          "forms": [
+            {
+              "id": "fb4d8d7a-499e-4f98-92e4-82375fbb7885",
+              "label": "た形",
+              "value": "きた"
+            },
+            {
+              "id": "b28ae733-1d14-4c4d-95fb-7f03d75af177",
+              "label": "Thể て",
+              "value": "きて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đến",
+          "reading": "",
+          "createdAt": "2026-04-27T18:23:03.610Z",
+          "updatedAt": "2026-04-27T18:23:03.610Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "6db01fa2-e109-4d0c-bf76-b22c97c76283",
+          "base": "します",
+          "note": "Nhóm 3 | Quy tắc: します → した (Động từ nhóm 3 します chia thành した.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: します → した / きます → きた | Động từ nhóm 3 gồm します và きます. します chia thành した, きます chia thành きた.",
+          "forms": [
+            {
+              "id": "45a3fb60-20ee-4f07-a45a-5307abf36863",
+              "label": "た形",
+              "value": "した"
+            },
+            {
+              "id": "638ec597-0079-4231-a4eb-bd787f2f6ea7",
+              "label": "Thể て",
+              "value": "して"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "làm",
+          "reading": "",
+          "createdAt": "2026-04-27T18:23:03.610Z",
+          "updatedAt": "2026-04-27T18:23:03.610Z",
+          "partOfSpeech": ""
+        }
+      ],
+      "title": "Thể た",
+      "formKey": "ta_form",
+      "createdAt": "2026-04-27T18:23:03.610Z",
+      "formLabel": "た形 ( Thể た）",
+      "jlptLevel": "N5",
+      "updatedAt": "2026-04-27T18:25:09.224Z",
+      "description": "Thể た là động từ quá khứ dạng ngắn. Cách chia thể た giống như thể て, chỗ nào là て thì thay bằng た, chỗ nào là で thì thay bằng だ."
+    },
+    {
+      "id": "8d354728-dcd2-4615-b052-c2fedbf250d1",
+      "items": [
+        {
+          "id": "4ba57b99-4cd8-44f9-8722-6a715cf422ed",
+          "base": "かきます",
+          "note": "Thể từ điển | Nhóm: Động từ | Quy tắc: Vます → Vる (Động từ hiện tại khẳng định lịch sự chuyển sang thể từ điển.) | Mô tả nhóm: Động từ | Quy tắc chung: Vます → Vる / Vません → Vない / Vました → Vた / Vませんでした → Vなかった | Động từ ở thể lịch sự dùng ます, ません, ました, ませんでした. Khi chuyển sang thể thông thường, dùng thể từ điển, thể ない, thể た hoặc thể ない quá khứ.",
+          "forms": [
+            {
+              "id": "44421875-8aa9-4501-bf64-5dd72d6dac1b",
+              "label": "普通形",
+              "value": "かく"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "viết",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "85ce6a20-d126-4b51-ab66-c3587aeea6e6",
+          "base": "かきません",
+          "note": "Thể ない | Nhóm: Động từ | Quy tắc: Vません → Vない (Động từ hiện tại phủ định lịch sự chuyển sang thể ない.) | Mô tả nhóm: Động từ | Quy tắc chung: Vます → Vる / Vません → Vない / Vました → Vた / Vませんでした → Vなかった | Động từ ở thể lịch sự dùng ます, ません, ました, ませんでした. Khi chuyển sang thể thông thường, dùng thể từ điển, thể ない, thể た hoặc thể ない quá khứ.",
+          "forms": [
+            {
+              "id": "8ab6b804-8d02-4c1d-8a77-558f334c58fc",
+              "label": "普通形",
+              "value": "かかない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "không viết",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "e26c8e68-202e-4f32-8a90-f7fe25e0bcec",
+          "base": "かきました",
+          "note": "Thể た | Nhóm: Động từ | Quy tắc: Vました → Vた (Động từ quá khứ khẳng định lịch sự chuyển sang thể た.) | Mô tả nhóm: Động từ | Quy tắc chung: Vます → Vる / Vません → Vない / Vました → Vた / Vませんでした → Vなかった | Động từ ở thể lịch sự dùng ます, ません, ました, ませんでした. Khi chuyển sang thể thông thường, dùng thể từ điển, thể ない, thể た hoặc thể ない quá khứ.",
+          "forms": [
+            {
+              "id": "553fd5a6-ae39-4d99-80c9-fce95efb1794",
+              "label": "普通形",
+              "value": "かいた"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đã viết",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "2010305a-257f-40e3-adb3-3c38a66fc930",
+          "base": "かきませんでした",
+          "note": "Thể ない quá khứ | Nhóm: Động từ | Quy tắc: Vませんでした → Vなかった (Động từ quá khứ phủ định lịch sự chuyển sang thể ない quá khứ.) | Mô tả nhóm: Động từ | Quy tắc chung: Vます → Vる / Vません → Vない / Vました → Vた / Vませんでした → Vなかった | Động từ ở thể lịch sự dùng ます, ません, ました, ませんでした. Khi chuyển sang thể thông thường, dùng thể từ điển, thể ない, thể た hoặc thể ない quá khứ.",
+          "forms": [
+            {
+              "id": "d8c00471-bd20-4370-a2d4-bbc7b65c6b9b",
+              "label": "普通形",
+              "value": "かかなかった"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đã không viết",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "96303406-19e9-4300-b3b3-944edc75b10d",
+          "base": "あついです",
+          "note": "Nhóm: Tính từ い | Quy tắc: Aいです → Aい (Tính từ い hiện tại khẳng định bỏ です.) | Mô tả nhóm: Tính từ い | Quy tắc chung: Aいです → Aい | Tính từ い ở thể lịch sự thường thêm です. Khi chuyển sang thể thông thường thì bỏ です.",
+          "forms": [
+            {
+              "id": "72139818-e23b-43e2-a032-81ec7f6856f9",
+              "label": "普通形",
+              "value": "あつい"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nóng",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "c4e641c4-8153-42e1-9502-073ada0a074d",
+          "base": "あつくないです",
+          "note": "Nhóm: Tính từ い | Quy tắc: Aくないです → Aくない (Tính từ い hiện tại phủ định bỏ です.) | Mô tả nhóm: Tính từ い | Quy tắc chung: Aいです → Aい | Tính từ い ở thể lịch sự thường thêm です. Khi chuyển sang thể thông thường thì bỏ です.",
+          "forms": [
+            {
+              "id": "beea3fa6-c5b6-4e1d-8ffd-191db3b2454b",
+              "label": "普通形",
+              "value": "あつくない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "không nóng",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "b7a4cbb9-6077-4c81-8df6-045a93dfc610",
+          "base": "あつかったです",
+          "note": "Nhóm: Tính từ い | Quy tắc: Aかったです → Aかった (Tính từ い quá khứ khẳng định bỏ です.) | Mô tả nhóm: Tính từ い | Quy tắc chung: Aいです → Aい | Tính từ い ở thể lịch sự thường thêm です. Khi chuyển sang thể thông thường thì bỏ です.",
+          "forms": [
+            {
+              "id": "fa9a5dac-ba74-4c14-9c7f-e19c03fb7e07",
+              "label": "普通形",
+              "value": "あつかった"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đã nóng",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "24c3c793-ab67-4928-b764-172998aa214d",
+          "base": "あつくなかったです",
+          "note": "Nhóm: Tính từ い | Quy tắc: Aくなかったです → Aくなかった (Tính từ い quá khứ phủ định bỏ です.) | Mô tả nhóm: Tính từ い | Quy tắc chung: Aいです → Aい | Tính từ い ở thể lịch sự thường thêm です. Khi chuyển sang thể thông thường thì bỏ です.",
+          "forms": [
+            {
+              "id": "e5cfd73b-c1bd-4377-9ea6-a0bec6fb4cbc",
+              "label": "普通形",
+              "value": "あつくなかった"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đã không nóng",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "f5ad1973-88dd-4058-91ac-e6e81005fabf",
+          "base": "ひまです",
+          "note": "Nhóm: Tính từ な / Danh từ | Quy tắc: N/Aな です → N/Aな だ (Tính từ な hoặc danh từ hiện tại khẳng định dùng だ.) | Mô tả nhóm: Tính từ な / Danh từ | Quy tắc chung: です → だ / ではありません → ではない / でした → だった / ではありませんでした → ではなかった | Tính từ な và danh từ khi chuyển sang thể thông thường dùng だ, ではない, だった, ではなかった.",
+          "forms": [
+            {
+              "id": "59e91bb8-22cd-4959-bb3a-48b44e7230fa",
+              "label": "普通形",
+              "value": "ひまだ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "rảnh",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "36c01ae0-a67d-402b-9487-21c58d1a223a",
+          "base": "ひまではありません",
+          "note": "Nhóm: Tính từ な / Danh từ | Quy tắc: N/Aな ではありません → N/Aな ではない (Tính từ な hoặc danh từ hiện tại phủ định dùng ではない.) | Mô tả nhóm: Tính từ な / Danh từ | Quy tắc chung: です → だ / ではありません → ではない / でした → だった / ではありませんでした → ではなかった | Tính từ な và danh từ khi chuyển sang thể thông thường dùng だ, ではない, だった, ではなかった.",
+          "forms": [
+            {
+              "id": "7b2ef300-6c36-4b5f-a2f5-6083acdd6f78",
+              "label": "普通形",
+              "value": "ひまではない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "không rảnh",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "624788b6-969f-47c0-80c5-bbcf925f7421",
+          "base": "ひまでした",
+          "note": "Nhóm: Tính từ な / Danh từ | Quy tắc: N/Aな でした → N/Aな だった (Tính từ な hoặc danh từ quá khứ khẳng định dùng だった.) | Mô tả nhóm: Tính từ な / Danh từ | Quy tắc chung: です → だ / ではありません → ではない / でした → だった / ではありませんでした → ではなかった | Tính từ な và danh từ khi chuyển sang thể thông thường dùng だ, ではない, だった, ではなかった.",
+          "forms": [
+            {
+              "id": "31b24683-e043-48a6-9c34-5b138305a8b0",
+              "label": "普通形",
+              "value": "ひまだった"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đã rảnh",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ac09d3ab-a5ab-4099-ba8b-70014219c1b6",
+          "base": "ひまではありませんでした",
+          "note": "Nhóm: Tính từ な / Danh từ | Quy tắc: N/Aな ではありませんでした → N/Aな ではなかった (Tính từ な hoặc danh từ quá khứ phủ định dùng ではなかった.) | Mô tả nhóm: Tính từ な / Danh từ | Quy tắc chung: です → だ / ではありません → ではない / でした → だった / ではありませんでした → ではなかった | Tính từ な và danh từ khi chuyển sang thể thông thường dùng だ, ではない, だった, ではなかった.",
+          "forms": [
+            {
+              "id": "44785cab-788f-4b25-a9df-fcab0388b7de",
+              "label": "普通形",
+              "value": "ひまではなかった"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đã không rảnh",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "f33d2b0a-20c7-4886-9af1-088032916e34",
+          "base": "飲みたいです",
+          "note": "",
+          "forms": [
+            {
+              "id": "025c6ebd-209f-4b54-a78c-42908d803f6a",
+              "label": "普通形",
+              "value": "飲みたい"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "muốn uống",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "4ac2c433-0f86-4ede-86d4-33410adc5779",
+          "base": "飲みに行きます",
+          "note": "",
+          "forms": [
+            {
+              "id": "a27b843b-f528-4053-8e4e-542df1e1b8aa",
+              "label": "普通形",
+              "value": "飲みに行く"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đi uống",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "372ac73f-d387-496f-9659-dda7d27c1444",
+          "base": "書いてください",
+          "note": "",
+          "forms": [
+            {
+              "id": "07036330-2863-432d-8da8-4633080f1dfa",
+              "label": "普通形",
+              "value": "書いて"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "xin hãy viết",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "4a139cc4-3f3b-4116-bd1a-a39204cac87d",
+          "base": "書いています",
+          "note": "",
+          "forms": [
+            {
+              "id": "bd252c1f-c26f-462a-bce9-33bbdc7124c2",
+              "label": "普通形",
+              "value": "書いている"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đang viết",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "e8bdbc57-47cb-4ae1-83b4-7f3cbe0583b9",
+          "base": "書いてもいいです",
+          "note": "",
+          "forms": [
+            {
+              "id": "89c5abf1-490c-46df-a61c-88ae36ff3ace",
+              "label": "普通形",
+              "value": "書いてもいい"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể viết",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "063518a9-be2b-4a84-8727-c04f6c9b36d2",
+          "base": "書かなくてもいいです",
+          "note": "",
+          "forms": [
+            {
+              "id": "6e8fb897-44ee-4271-8577-8889d529c2ce",
+              "label": "普通形",
+              "value": "書かなくてもいい"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "không cần phải viết",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "07271a8f-1118-461f-9db4-bb2ee96bae04",
+          "base": "書いてあげます",
+          "note": "",
+          "forms": [
+            {
+              "id": "ed4358b1-d904-4e28-9071-3487f61945b4",
+              "label": "普通形",
+              "value": "書いてあげる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "sẽ viết giúp cho",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "06796265-3881-44d7-aba4-083009e1710e",
+          "base": "書いてもらいます",
+          "note": "",
+          "forms": [
+            {
+              "id": "67510c65-73cd-4508-8a23-4d2d98714dab",
+              "label": "普通形",
+              "value": "書いてもらう"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nhờ viết giúp",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "b1826894-4059-4dab-87f1-ee2eee06cbdb",
+          "base": "書いてくれます",
+          "note": "",
+          "forms": [
+            {
+              "id": "9fbe31ba-6d81-40a4-9a37-242301b3d353",
+              "label": "普通形",
+              "value": "書いてくれる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "viết giúp đi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "b8d5deb4-bf04-4302-a081-669c71e31f73",
+          "base": "行かなければなりません",
+          "note": "",
+          "forms": [
+            {
+              "id": "17ee3848-30ad-4999-9f3c-808393fec572",
+              "label": "普通形",
+              "value": "行かなければならない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "phải đi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "dfb21161-c6d5-4916-8dbf-f7847215fa1a",
+          "base": "食べることができます",
+          "note": "",
+          "forms": [
+            {
+              "id": "b689dca8-7508-434f-863b-2b495f471115",
+              "label": "普通形",
+              "value": "食べることができる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể ăn",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "9b306424-9523-4a45-8dd9-5afa21098707",
+          "base": "食べることです",
+          "note": "",
+          "forms": [
+            {
+              "id": "2b29c8e6-7615-4a99-bd1c-a90e890b0189",
+              "label": "普通形",
+              "value": "食べることだ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "là để ăn",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "47ec454d-4721-4076-b43f-a05b1cc49547",
+          "base": "読んだことがあります",
+          "note": "",
+          "forms": [
+            {
+              "id": "4a553d19-0718-4d5d-a16a-93c2c175ab67",
+              "label": "普通形",
+              "value": "読んだことがある"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có đọc, đã từng đọc",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "2e4857ab-7f2c-4b3e-ac85-047d64adddde",
+          "base": "読んだり、書いたりします",
+          "note": "",
+          "forms": [
+            {
+              "id": "3744f8cb-9a9a-43e5-b9b7-2fc2276ab09e",
+              "label": "普通形",
+              "value": "読んだり、書いたりする"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đọc, viết và...",
+          "reading": "",
+          "createdAt": "2026-04-27T18:33:34.876Z",
+          "updatedAt": "2026-04-27T18:33:34.876Z",
+          "partOfSpeech": ""
+        }
+      ],
+      "title": "Thể lịch sự và thông thường",
+      "formKey": "plain_polite_form",
+      "createdAt": "2026-04-27T18:33:34.876Z",
+      "formLabel": "丁寧形・普通形 (Thể lịch sự và thông thường)",
+      "jlptLevel": "N5",
+      "updatedAt": "2026-04-27T18:33:48.467Z",
+      "description": "Thể lịch sự là cách nói dùng với です, ます. Thể thông thường là cách nói ngắn gọn hơn, thường dùng trong văn nói thân mật hoặc trong các mẫu ngữ pháp."
+    },
+    {
+      "id": "fcf537bb-ab4c-4f62-9d1a-556cd8f14158",
+      "items": [
+        {
+          "id": "ba7b6e70-0f91-47c6-a708-43a9c091b2b3",
+          "base": "およぎます",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: V iます → V eます (Nhóm 1 đổi âm hàng i trước ます sang âm hàng e rồi thêm ます.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V eます | Động từ nhóm 1 có âm hàng i đứng trước ます. Khi chuyển sang thể khả năng, đổi âm hàng i sang âm hàng e rồi thêm ます.",
+          "forms": [
+            {
+              "id": "03dc4e77-3622-4cb8-a104-9403f618327c",
+              "label": "可能形",
+              "value": "およげます"
+            },
+            {
+              "id": "3aca24b2-a4ce-4e50-80ea-7de0c2459e0c",
+              "label": "dictionary potential thể",
+              "value": "およげる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể bơi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:36:13.029Z",
+          "updatedAt": "2026-04-27T18:36:13.029Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "dd13e593-0a3c-440a-89a3-e9d36528dd37",
+          "base": "よみます",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: V iます → V eます (Nhóm 1 đổi âm hàng i trước ます sang âm hàng e rồi thêm ます.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V eます | Động từ nhóm 1 có âm hàng i đứng trước ます. Khi chuyển sang thể khả năng, đổi âm hàng i sang âm hàng e rồi thêm ます.",
+          "forms": [
+            {
+              "id": "727448a6-0e8a-4171-ad20-8cf647c0f66a",
+              "label": "可能形",
+              "value": "よめます"
+            },
+            {
+              "id": "ab69cd21-72fc-4f9d-b8d3-cd37ef6277ce",
+              "label": "dictionary potential thể",
+              "value": "よめる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể đọc",
+          "reading": "",
+          "createdAt": "2026-04-27T18:36:13.029Z",
+          "updatedAt": "2026-04-27T18:36:13.029Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "6f4159dd-8453-4e44-8273-b356a11facfb",
+          "base": "いきます",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: V iます → V eます (Nhóm 1 đổi âm hàng i trước ます sang âm hàng e rồi thêm ます.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V eます | Động từ nhóm 1 có âm hàng i đứng trước ます. Khi chuyển sang thể khả năng, đổi âm hàng i sang âm hàng e rồi thêm ます.",
+          "forms": [
+            {
+              "id": "56c21997-64e4-4b8e-bc37-6b74a7980063",
+              "label": "可能形",
+              "value": "いけます"
+            },
+            {
+              "id": "81d85d82-5230-48a8-b199-ede6e4fbf08e",
+              "label": "dictionary potential thể",
+              "value": "いける"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể đi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:36:13.029Z",
+          "updatedAt": "2026-04-27T18:36:13.029Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ab9fcec7-9a1c-4efe-82dd-e02e392c4ed9",
+          "base": "はしります",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: V iます → V eます (Nhóm 1 đổi âm hàng i trước ます sang âm hàng e rồi thêm ます.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V eます | Động từ nhóm 1 có âm hàng i đứng trước ます. Khi chuyển sang thể khả năng, đổi âm hàng i sang âm hàng e rồi thêm ます.",
+          "forms": [
+            {
+              "id": "6e15f0b3-43e7-453a-abde-56fb4691be56",
+              "label": "可能形",
+              "value": "はしれます"
+            },
+            {
+              "id": "ea1f5c09-ee25-4cc9-a4d0-c75999bcb7f4",
+              "label": "dictionary potential thể",
+              "value": "はしれる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể chạy",
+          "reading": "",
+          "createdAt": "2026-04-27T18:36:13.029Z",
+          "updatedAt": "2026-04-27T18:36:13.029Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "62bb259e-4ff6-43b5-ac82-98d8dad4ce37",
+          "base": "うたいます",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: V iます → V eます (Nhóm 1 đổi âm hàng i trước ます sang âm hàng e rồi thêm ます.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V eます | Động từ nhóm 1 có âm hàng i đứng trước ます. Khi chuyển sang thể khả năng, đổi âm hàng i sang âm hàng e rồi thêm ます.",
+          "forms": [
+            {
+              "id": "7c8733ba-00b8-450a-b37d-9a7480c01515",
+              "label": "可能形",
+              "value": "うたえます"
+            },
+            {
+              "id": "805efe1a-a1f9-47fa-981b-f94e0973837c",
+              "label": "dictionary potential thể",
+              "value": "うたえる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể hát",
+          "reading": "",
+          "createdAt": "2026-04-27T18:36:13.029Z",
+          "updatedAt": "2026-04-27T18:36:13.029Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "2a409f60-0558-4eec-9ac1-06fbbd56fbc0",
+          "base": "もちます",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: V iます → V eます (Nhóm 1 đổi âm hàng i trước ます sang âm hàng e rồi thêm ます.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V eます | Động từ nhóm 1 có âm hàng i đứng trước ます. Khi chuyển sang thể khả năng, đổi âm hàng i sang âm hàng e rồi thêm ます.",
+          "forms": [
+            {
+              "id": "6743b675-37a5-49a1-8d2b-6c337109bc2f",
+              "label": "可能形",
+              "value": "もてます"
+            },
+            {
+              "id": "7e215403-da59-4376-ad9c-b048f7e8ea4d",
+              "label": "dictionary potential thể",
+              "value": "もてる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể cầm / có thể mang",
+          "reading": "",
+          "createdAt": "2026-04-27T18:36:13.029Z",
+          "updatedAt": "2026-04-27T18:36:13.029Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "86530e66-e605-44c6-9811-9dc4fe9cfaea",
+          "base": "なおします",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: V iます → V eます (Nhóm 1 đổi âm hàng i trước ます sang âm hàng e rồi thêm ます.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V eます | Động từ nhóm 1 có âm hàng i đứng trước ます. Khi chuyển sang thể khả năng, đổi âm hàng i sang âm hàng e rồi thêm ます.",
+          "forms": [
+            {
+              "id": "7c66cda2-1028-4f8d-b862-9a4866f79550",
+              "label": "可能形",
+              "value": "なおせます"
+            },
+            {
+              "id": "f1f227bc-e8e6-4957-89a8-00a39465675d",
+              "label": "dictionary potential thể",
+              "value": "なおせる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể sửa",
+          "reading": "",
+          "createdAt": "2026-04-27T18:36:13.029Z",
+          "updatedAt": "2026-04-27T18:36:13.029Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "db5b88dc-4d73-42e6-8825-111ef25c94c3",
+          "base": "たべます",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vます → Vられます (Nhóm 2 bỏ ます rồi thêm られます.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vます → Vられます | Động từ nhóm 2 bỏ ます rồi thêm られます.",
+          "forms": [
+            {
+              "id": "d79bddea-3d31-47cb-b5b2-67d5f5e929ef",
+              "label": "可能形",
+              "value": "たべられます"
+            },
+            {
+              "id": "963c453a-bb67-4bc2-85c4-a319d75eb5d8",
+              "label": "dictionary potential thể",
+              "value": "たべられる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể ăn",
+          "reading": "",
+          "createdAt": "2026-04-27T18:36:13.029Z",
+          "updatedAt": "2026-04-27T18:36:13.029Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "3f9981b2-a22d-4178-af26-447ac4c7cf73",
+          "base": "おぼえます",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vます → Vられます (Nhóm 2 bỏ ます rồi thêm られます.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vます → Vられます | Động từ nhóm 2 bỏ ます rồi thêm られます.",
+          "forms": [
+            {
+              "id": "54017535-4c03-4964-a41e-ccb2abcc5097",
+              "label": "可能形",
+              "value": "おぼえられます"
+            },
+            {
+              "id": "c01c5969-1ad0-4276-82ad-c4b56b436f4d",
+              "label": "dictionary potential thể",
+              "value": "おぼえられる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể nhớ",
+          "reading": "",
+          "createdAt": "2026-04-27T18:36:13.029Z",
+          "updatedAt": "2026-04-27T18:36:13.029Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "6e1fee10-693a-4d0d-aa81-ceae19dc6292",
+          "base": "たてます",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vます → Vられます (Nhóm 2 bỏ ます rồi thêm られます.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vます → Vられます | Động từ nhóm 2 bỏ ます rồi thêm られます.",
+          "forms": [
+            {
+              "id": "3fbe479f-53a2-45ae-ac6c-c8ea754b2dd7",
+              "label": "可能形",
+              "value": "たてられます"
+            },
+            {
+              "id": "00c4f67b-f82b-4077-ab29-95e5a2a95477",
+              "label": "dictionary potential thể",
+              "value": "たてられる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể xây / có thể dựng",
+          "reading": "",
+          "createdAt": "2026-04-27T18:36:13.029Z",
+          "updatedAt": "2026-04-27T18:36:13.029Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "545add2b-f786-4fa5-ad23-c1027b8f9e14",
+          "base": "します",
+          "note": "Nhóm: Nhóm 3 | Quy tắc: します → できます (Động từ nhóm 3 します chia thể khả năng thành できます.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: します → できます / きます → こられます | Động từ nhóm 3 là nhóm đặc biệt. します chuyển thành できます, きます chuyển thành こられます.",
+          "forms": [
+            {
+              "id": "fd7c6bc0-17ae-4131-96f0-1ddcf33d367f",
+              "label": "可能形",
+              "value": "できます"
+            },
+            {
+              "id": "4870ccaf-1748-48b9-af3c-b332806075fe",
+              "label": "dictionary potential thể",
+              "value": "できる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể làm",
+          "reading": "",
+          "createdAt": "2026-04-27T18:36:13.029Z",
+          "updatedAt": "2026-04-27T18:36:13.029Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "9cc17e80-2d24-4b9a-876c-21ab04ff87c9",
+          "base": "きます",
+          "note": "Nhóm: Nhóm 3 | Quy tắc: きます → こられます (Động từ nhóm 3 きます chia thể khả năng thành こられます.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: します → できます / きます → こられます | Động từ nhóm 3 là nhóm đặc biệt. します chuyển thành できます, きます chuyển thành こられます.",
+          "forms": [
+            {
+              "id": "49c2e504-1d00-46df-a9f7-5c38a465579c",
+              "label": "可能形",
+              "value": "こられます"
+            },
+            {
+              "id": "43102b3a-54d6-4672-b424-2be4f036cef3",
+              "label": "dictionary potential thể",
+              "value": "こられる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "có thể đến",
+          "reading": "",
+          "createdAt": "2026-04-27T18:36:13.029Z",
+          "updatedAt": "2026-04-27T18:36:13.029Z",
+          "partOfSpeech": ""
+        }
+      ],
+      "title": "Thể khả năng",
+      "formKey": "potential_form",
+      "createdAt": "2026-04-27T18:36:13.029Z",
+      "formLabel": "可能形",
+      "jlptLevel": "N4",
+      "updatedAt": "2026-04-27T19:05:35.668Z",
+      "description": "Thể khả năng dùng để diễn tả khả năng hoặc năng lực làm một việc gì đó."
+    },
+    {
+      "id": "2b420395-f64f-4ffc-9d15-c586c8b75683",
+      "items": [
+        {
+          "id": "2c7d693a-e5ec-428c-af95-cbf015323e79",
+          "base": "行(い)く",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vおう (Nhóm 1 đổi âm cuối hàng u sang hàng o rồi thêm う.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vおう | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng o rồi thêm う.",
+          "forms": [
+            {
+              "id": "ff1183b9-d287-4db3-981c-a2a1d1f36d87",
+              "label": "意向形(いこうけい)",
+              "value": "行(い)こう"
+            },
+            {
+              "id": "4598f5ec-32b7-4ffa-8419-a3313ad5332b",
+              "label": "Thể từ điển",
+              "value": "行(い)く"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "989c66a1-fa55-4016-916b-626fe37fe37d",
+          "base": "急(いそ)ぐ",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vおう (Nhóm 1 đổi âm cuối hàng u sang hàng o rồi thêm う.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vおう | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng o rồi thêm う.",
+          "forms": [
+            {
+              "id": "987a18de-35ef-4456-afee-0023bc281655",
+              "label": "意向形(いこうけい)",
+              "value": "急(いそ)ごう"
+            },
+            {
+              "id": "eacc0160-cb5b-4263-a82a-8cc790456a9b",
+              "label": "Thể từ điển",
+              "value": "急(いそ)ぐ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "vội",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "e8b819f7-6c49-4e2c-b946-cb83cbe9f607",
+          "base": "飲(の)む",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vおう (Nhóm 1 đổi âm cuối hàng u sang hàng o rồi thêm う.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vおう | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng o rồi thêm う.",
+          "forms": [
+            {
+              "id": "50a6d16e-aedb-4e16-8a8e-3a1fa82557d8",
+              "label": "意向形(いこうけい)",
+              "value": "飲(の)もう"
+            },
+            {
+              "id": "6932c8b8-f583-40e3-9076-b48a6a2adf7c",
+              "label": "Thể từ điển",
+              "value": "飲(の)む"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "uống",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ffb2adec-27be-46ad-9326-683c6a2116e1",
+          "base": "呼(よ)ぶ",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vおう (Nhóm 1 đổi âm cuối hàng u sang hàng o rồi thêm う.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vおう | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng o rồi thêm う.",
+          "forms": [
+            {
+              "id": "41d35aff-5466-429b-a747-fce50e9a12b9",
+              "label": "意向形(いこうけい)",
+              "value": "呼(よ)ぼう"
+            },
+            {
+              "id": "6c774dd4-d04a-4baf-9058-6d26e776e2b0",
+              "label": "Thể từ điển",
+              "value": "呼(よ)ぶ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "gọi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "9d0c0614-514b-4379-915a-663131ccf9d8",
+          "base": "終(お)わる",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vおう (Nhóm 1 đổi âm cuối hàng u sang hàng o rồi thêm う.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vおう | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng o rồi thêm う.",
+          "forms": [
+            {
+              "id": "69a12dc6-1fa4-4c99-ba1a-17af6c3a8e44",
+              "label": "意向形(いこうけい)",
+              "value": "終(お)わろう"
+            },
+            {
+              "id": "a62307da-eeff-44d9-a0ea-da7858b9e67c",
+              "label": "Thể từ điển",
+              "value": "終(お)わる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "kết thúc",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "f5acb22f-352e-4151-9139-e848fc2b0e4c",
+          "base": "待(ま)つ",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vおう (Nhóm 1 đổi âm cuối hàng u sang hàng o rồi thêm う.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vおう | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng o rồi thêm う.",
+          "forms": [
+            {
+              "id": "1ff21f74-a184-400c-9ba4-c622f3393b71",
+              "label": "意向形(いこうけい)",
+              "value": "待(ま)とう"
+            },
+            {
+              "id": "9a3a2846-ac10-4808-88d6-d690c7db9f19",
+              "label": "Thể từ điển",
+              "value": "待(ま)つ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đợi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "49358342-78e6-4c96-9f6f-4321a3d5a6d1",
+          "base": "会(あ)う",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vおう (Nhóm 1 đổi âm cuối hàng u sang hàng o rồi thêm う.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vおう | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng o rồi thêm う.",
+          "forms": [
+            {
+              "id": "7338e79d-cd28-4360-b1ea-970db5579607",
+              "label": "意向形(いこうけい)",
+              "value": "会(あ)おう"
+            },
+            {
+              "id": "829a3ab3-dc8b-4b12-89c2-5f62bd98af43",
+              "label": "Thể từ điển",
+              "value": "会(あ)う"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "gặp",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "afcc1323-5fb8-43d8-962b-a0ce8f452503",
+          "base": "話(はな)す",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vおう (Nhóm 1 đổi âm cuối hàng u sang hàng o rồi thêm う.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vおう | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng o rồi thêm う.",
+          "forms": [
+            {
+              "id": "a9f057b6-59ef-4ef3-b6e3-56e71e54d78d",
+              "label": "意向形(いこうけい)",
+              "value": "話(はな)そう"
+            },
+            {
+              "id": "d6fdc357-806a-4dde-880f-349713367481",
+              "label": "Thể từ điển",
+              "value": "話(はな)す"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nói chuyện",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "5195b07e-cba5-4a99-b318-59af6f07d78f",
+          "base": "食(た)べる",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vる → Vよう (Nhóm 2 bỏ る rồi thêm よう.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vる → Vよう | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm よう.",
+          "forms": [
+            {
+              "id": "86c96036-fc29-46c5-9a26-a2b3a30cf9e3",
+              "label": "意向形(いこうけい)",
+              "value": "食(た)べよう"
+            },
+            {
+              "id": "fc814182-c947-4b94-89d6-90e1b1705b3e",
+              "label": "Thể từ điển",
+              "value": "食(た)べる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "ăn",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "cda269f3-8ce7-4d90-a7d0-2de1f0b21a45",
+          "base": "始(はじ)める",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vる → Vよう (Nhóm 2 bỏ る rồi thêm よう.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vる → Vよう | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm よう.",
+          "forms": [
+            {
+              "id": "8c43540d-bce2-41ce-b97e-13c241f526ad",
+              "label": "意向形(いこうけい)",
+              "value": "始(はじ)めよう"
+            },
+            {
+              "id": "2903766e-a2cd-4799-89dd-68f7613efe16",
+              "label": "Thể từ điển",
+              "value": "始(はじ)める"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt đầu",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "069f1e8a-859b-4b2c-8524-64925b5ce8fd",
+          "base": "出(で)かける",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vる → Vよう (Nhóm 2 bỏ る rồi thêm よう.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vる → Vよう | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm よう.",
+          "forms": [
+            {
+              "id": "cc331a34-8f41-4314-81ea-ad073159529d",
+              "label": "意向形(いこうけい)",
+              "value": "出(で)かけよう"
+            },
+            {
+              "id": "ee0dfc5b-32e9-45d6-82c5-04dc1b5ac0bc",
+              "label": "Thể từ điển",
+              "value": "出(で)かける"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "ra ngoài",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "b2fad124-855a-44bc-830b-85c1470b70b3",
+          "base": "見(み)る",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vる → Vよう (Nhóm 2 bỏ る rồi thêm よう.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vる → Vよう | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm よう.",
+          "forms": [
+            {
+              "id": "b0caa9a2-99bc-49bb-9cb8-b6886eb2c9ba",
+              "label": "意向形(いこうけい)",
+              "value": "見(み)よう"
+            },
+            {
+              "id": "fdb85ce9-3c5e-4c5e-bd64-63d784cb5bc5",
+              "label": "Thể từ điển",
+              "value": "見(み)る"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "xem",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "f9561bc5-85cd-4c72-aec1-bbcdfd059648",
+          "base": "する",
+          "note": "Nhóm: Nhóm 3 | Quy tắc: する → しよう (Động từ nhóm 3 する chia thành しよう.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: する → しよう / 来(こ)る → 来(こ)よう | Động từ nhóm 3 là nhóm đặc biệt. する chuyển thành しよう, 来(こ)る chuyển thành 来(こ)よう.",
+          "forms": [
+            {
+              "id": "2310bb3f-6bdd-4b04-a8ab-e59c8fa1316a",
+              "label": "意向形(いこうけい)",
+              "value": "しよう"
+            },
+            {
+              "id": "2f55cfde-64bf-4d85-9f21-528c8ff63cde",
+              "label": "Thể từ điển",
+              "value": "する"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "làm",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "64df0de2-29bd-4f5d-8ec4-093cacce8b55",
+          "base": "来(こ)る",
+          "note": "Nhóm: Nhóm 3 | Quy tắc: 来(こ)る → 来(こ)よう (Động từ nhóm 3 来(こ)る chia thành 来(こ)よう.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: する → しよう / 来(こ)る → 来(こ)よう | Động từ nhóm 3 là nhóm đặc biệt. する chuyển thành しよう, 来(こ)る chuyển thành 来(こ)よう.",
+          "forms": [
+            {
+              "id": "9450161d-31af-4c0d-85eb-d2e4c07960ac",
+              "label": "意向形(いこうけい)",
+              "value": "来(こ)よう"
+            },
+            {
+              "id": "2d694f25-57c4-4539-b1e5-af0775462077",
+              "label": "Thể từ điển",
+              "value": "来(こ)る"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đến",
+          "reading": "",
+          "createdAt": "2026-04-27T18:45:06.334Z",
+          "updatedAt": "2026-04-27T18:45:06.334Z",
+          "partOfSpeech": ""
+        }
+      ],
+      "title": "Thể ý chí",
+      "formKey": "volitional_form",
+      "createdAt": "2026-04-27T18:45:06.334Z",
+      "formLabel": "意向形(いこうけい) - Thể ý chí",
+      "jlptLevel": "N4",
+      "updatedAt": "2026-04-27T19:05:09.541Z",
+      "description": "Thể ý chí dùng để diễn đạt ý muốn, dự định hoặc rủ rê làm một việc gì đó. Thể ý chí được chia từ động từ thể từ điển."
+    },
+    {
+      "id": "aee650b8-b194-4432-acec-7a8de0f77614",
+      "items": [
+        {
+          "id": "ae3cc1a1-a8de-48fa-af17-b0942fcf72e1",
+          "base": "急(いそ)ぐ",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vえ (Nhóm 1 đổi âm cuối hàng u sang hàng e.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vえ | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e.",
+          "forms": [
+            {
+              "id": "7f5da1ba-433c-468c-b8c7-db92e77a87ff",
+              "label": "命令形(めいれいけい)",
+              "value": "急(いそ)げ"
+            },
+            {
+              "id": "e853c0af-8f4c-468c-9c8a-f69212df4372",
+              "label": "Thể từ điển",
+              "value": "急(いそ)ぐ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "hãy vội / mau lên",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "b00b202f-d938-4a59-a3b4-e741cc4ce790",
+          "base": "飲(の)む",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vえ (Nhóm 1 đổi âm cuối hàng u sang hàng e.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vえ | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e.",
+          "forms": [
+            {
+              "id": "d55087dc-9430-4384-aa63-3c3b9eaf14ce",
+              "label": "命令形(めいれいけい)",
+              "value": "飲(の)め"
+            },
+            {
+              "id": "f09f4c48-3643-4ccc-9491-e769d0d2d5f6",
+              "label": "Thể từ điển",
+              "value": "飲(の)む"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "hãy uống",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "3df7ea53-2601-4abe-91c0-fdec436fa383",
+          "base": "行(い)く",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vえ (Nhóm 1 đổi âm cuối hàng u sang hàng e.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vえ | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e.",
+          "forms": [
+            {
+              "id": "649bf5e1-65ce-43c3-a098-aa2f7e9a6deb",
+              "label": "命令形(めいれいけい)",
+              "value": "行(い)け"
+            },
+            {
+              "id": "2243422e-f89e-4334-9c95-06bb48623401",
+              "label": "Thể từ điển",
+              "value": "行(い)く"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "hãy đi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "1c352cf4-03b2-4ec1-9dc8-e7ae0078ad02",
+          "base": "切(き)る",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vえ (Nhóm 1 đổi âm cuối hàng u sang hàng e.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vえ | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e.",
+          "forms": [
+            {
+              "id": "de5eb0c4-8803-4ff0-ae03-b3f94b2cc62a",
+              "label": "命令形(めいれいけい)",
+              "value": "切(き)れ"
+            },
+            {
+              "id": "012ed24c-6789-40bd-849a-f97debad0d4d",
+              "label": "Thể từ điển",
+              "value": "切(き)る"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "hãy cắt",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "7fd4f572-05f3-4a5d-a502-d3cc03c453b7",
+          "base": "歌(うた)う",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vえ (Nhóm 1 đổi âm cuối hàng u sang hàng e.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vえ | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e.",
+          "forms": [
+            {
+              "id": "ff290a5a-1a25-497f-b3bd-8fd6800dc6d2",
+              "label": "命令形(めいれいけい)",
+              "value": "歌(うた)え"
+            },
+            {
+              "id": "703f4188-333b-486f-845d-795c1641a1a7",
+              "label": "Thể từ điển",
+              "value": "歌(うた)う"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "hãy hát",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "a515d94e-3bc5-4123-81f9-ade6d17c7335",
+          "base": "持(も)つ",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vえ (Nhóm 1 đổi âm cuối hàng u sang hàng e.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vえ | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e.",
+          "forms": [
+            {
+              "id": "c5d993b8-1c17-4dad-9c76-2a193c223f0c",
+              "label": "命令形(めいれいけい)",
+              "value": "持(も)て"
+            },
+            {
+              "id": "2a2e3b57-da68-4d22-86da-b333a3d55dc4",
+              "label": "Thể từ điển",
+              "value": "持(も)つ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "hãy cầm / hãy mang",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "75bcce44-79fd-4990-a047-a45689463815",
+          "base": "直(なお)す",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vえ (Nhóm 1 đổi âm cuối hàng u sang hàng e.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vえ | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e.",
+          "forms": [
+            {
+              "id": "5f16ae3f-c8f0-4454-87e1-b86be1cf9e15",
+              "label": "命令形(めいれいけい)",
+              "value": "直(なお)せ"
+            },
+            {
+              "id": "5da41dd3-6151-4ea9-80a3-0683ac817f9c",
+              "label": "Thể từ điển",
+              "value": "直(なお)す"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "hãy sửa",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "64572ae3-c47b-4232-9a8e-83ac2690789b",
+          "base": "食(た)べる",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vる → Vろ (Nhóm 2 bỏ る rồi thêm ろ.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vる → Vろ | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm ろ.",
+          "forms": [
+            {
+              "id": "56e69271-2546-40f7-b5a8-1c96b589449c",
+              "label": "命令形(めいれいけい)",
+              "value": "食(た)べろ"
+            },
+            {
+              "id": "d01835f1-5414-4d72-a29e-26c403624b51",
+              "label": "Thể từ điển",
+              "value": "食(た)べる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "hãy ăn",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "e1d8b3d5-ef61-4bc0-8db7-c1cfe340d8f5",
+          "base": "起(お)きる",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vる → Vろ (Nhóm 2 bỏ る rồi thêm ろ.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vる → Vろ | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm ろ.",
+          "forms": [
+            {
+              "id": "23db8000-9a70-428d-ad63-4b53bd3afbc3",
+              "label": "命令形(めいれいけい)",
+              "value": "起(お)きろ"
+            },
+            {
+              "id": "12531839-f71c-43c6-b736-bdd9e1a943a0",
+              "label": "Thể từ điển",
+              "value": "起(お)きる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "hãy dậy",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "c12798f7-79be-4bb1-9046-dfae939ce691",
+          "base": "見(み)る",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vる → Vろ (Nhóm 2 bỏ る rồi thêm ろ.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vる → Vろ | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm ろ.",
+          "forms": [
+            {
+              "id": "3f53812b-7e77-40ab-9179-aac87f13b6cf",
+              "label": "命令形(めいれいけい)",
+              "value": "見(み)ろ"
+            },
+            {
+              "id": "96b7dfe2-0688-4501-b258-387d65113ed5",
+              "label": "Thể từ điển",
+              "value": "見(み)る"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "hãy xem",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "0322a77b-1c44-43e1-8e94-d91bf18ce63b",
+          "base": "する",
+          "note": "Nhóm: Nhóm 3 | Quy tắc: する → しろ (Động từ nhóm 3 する chia thành しろ.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: する → しろ / 来(く)る → 来(こ)い | Động từ nhóm 3 là nhóm đặc biệt. する chuyển thành しろ, 来(く)る chuyển thành 来(こ)い.",
+          "forms": [
+            {
+              "id": "53c09eb8-6321-45a9-8f93-3a792b56225a",
+              "label": "命令形(めいれいけい)",
+              "value": "しろ"
+            },
+            {
+              "id": "f4b03221-f12b-4b2a-8648-91b913907f8f",
+              "label": "Thể từ điển",
+              "value": "する"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "hãy làm",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "b0c100a4-1a9e-4014-ac69-c86b6a8403e4",
+          "base": "来(く)る",
+          "note": "Nhóm: Nhóm 3 | Quy tắc: 来(く)る → 来(こ)い (Động từ nhóm 3 来(く)る chia thành 来(こ)い.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: する → しろ / 来(く)る → 来(こ)い | Động từ nhóm 3 là nhóm đặc biệt. する chuyển thành しろ, 来(く)る chuyển thành 来(こ)い.",
+          "forms": [
+            {
+              "id": "2f5963fc-be40-4796-ba54-e279343a9c21",
+              "label": "命令形(めいれいけい)",
+              "value": "来(こ)い"
+            },
+            {
+              "id": "c0dcca89-4255-4ca3-9c3f-a48cb97aea97",
+              "label": "Thể từ điển",
+              "value": "来(く)る"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "hãy đến",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "1c0944c7-8987-400b-8262-7f0c97867213",
+          "base": "行(い)く",
+          "note": "Nhóm: 1 | Quy tắc: Vる / Vう + な (Chuyển động từ sang thể từ điển rồi thêm な.)",
+          "forms": [
+            {
+              "id": "3c853251-c164-40d5-bd7d-b2e988e6f19c",
+              "label": "禁止形(きんしけい)",
+              "value": "行(い)くな"
+            },
+            {
+              "id": "30e4e72f-9737-4056-8cf1-e68107bfd2ae",
+              "label": "Thể từ điển",
+              "value": "行(い)く"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đừng đi / cấm đi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "8901bd3a-3c76-48a1-b1ef-addd2fc8dace",
+          "base": "作(つく)る",
+          "note": "Nhóm: 1 | Quy tắc: Vる / Vう + な (Chuyển động từ sang thể từ điển rồi thêm な.)",
+          "forms": [
+            {
+              "id": "054602dc-4418-4f2a-8216-2e05c71dd9db",
+              "label": "禁止形(きんしけい)",
+              "value": "作(つく)るな"
+            },
+            {
+              "id": "1c7021ca-3ded-4378-90bf-f726daedc4de",
+              "label": "Thể từ điển",
+              "value": "作(つく)る"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đừng làm / đừng chế tạo",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "6e5e0c12-5ab3-4b82-88e5-c8ffdcd42552",
+          "base": "飲(の)む",
+          "note": "Nhóm: 1 | Quy tắc: Vる / Vう + な (Chuyển động từ sang thể từ điển rồi thêm な.)",
+          "forms": [
+            {
+              "id": "1302d2c1-c7d6-465b-a98e-e434ffbd7fcf",
+              "label": "禁止形(きんしけい)",
+              "value": "飲(の)むな"
+            },
+            {
+              "id": "8dfc7e42-c8a1-4d6c-9a96-419715febf91",
+              "label": "Thể từ điển",
+              "value": "飲(の)む"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đừng uống",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "cf86c76b-d545-453b-88e8-3f59cbcbd827",
+          "base": "待(ま)つ",
+          "note": "Nhóm: 1 | Quy tắc: Vる / Vう + な (Chuyển động từ sang thể từ điển rồi thêm な.)",
+          "forms": [
+            {
+              "id": "7d1d9b3c-81d0-4750-9b87-969641af4daa",
+              "label": "禁止形(きんしけい)",
+              "value": "待(ま)つな"
+            },
+            {
+              "id": "6d92c434-e7be-41cf-8b81-997fc9c9cc17",
+              "label": "Thể từ điển",
+              "value": "待(ま)つ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đừng đợi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "25e633b1-c7e3-4a49-975b-91bd84c9c2dc",
+          "base": "借(か)りる",
+          "note": "Nhóm: 2 | Quy tắc: Vる / Vう + な (Chuyển động từ sang thể từ điển rồi thêm な.)",
+          "forms": [
+            {
+              "id": "c1db142c-eb80-4a24-9eb6-7bd1a1df3458",
+              "label": "禁止形(きんしけい)",
+              "value": "借(か)りるな"
+            },
+            {
+              "id": "b054f9b9-f52d-48c9-bf8a-b1f0514c536e",
+              "label": "Thể từ điển",
+              "value": "借(か)りる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đừng mượn",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "144893a3-0370-4625-94cf-8f838dd02998",
+          "base": "寝(ね)る",
+          "note": "Nhóm: 2 | Quy tắc: Vる / Vう + な (Chuyển động từ sang thể từ điển rồi thêm な.)",
+          "forms": [
+            {
+              "id": "f01cb95d-68d9-42a4-a045-6562322ba961",
+              "label": "禁止形(きんしけい)",
+              "value": "寝(ね)るな"
+            },
+            {
+              "id": "ba473298-d851-4a86-9609-b9a17671a8e4",
+              "label": "Thể từ điển",
+              "value": "寝(ね)る"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đừng ngủ",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "0c3c2eff-b42a-4ae1-83d7-d75e12a7fe55",
+          "base": "する",
+          "note": "Nhóm: 3 | Quy tắc: Vる / Vう + な (Chuyển động từ sang thể từ điển rồi thêm な.)",
+          "forms": [
+            {
+              "id": "8ab56dc8-aad0-4251-b3d4-2d4428d203b0",
+              "label": "禁止形(きんしけい)",
+              "value": "するな"
+            },
+            {
+              "id": "7f3f52e1-10c1-4af9-972f-4e202e9bff2a",
+              "label": "Thể từ điển",
+              "value": "する"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đừng làm",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "cffad4e2-73b8-4cd7-83cb-7998e89803fc",
+          "base": "来(く)る",
+          "note": "Nhóm: 3 | Quy tắc: Vる / Vう + な (Chuyển động từ sang thể từ điển rồi thêm な.)",
+          "forms": [
+            {
+              "id": "bcc1e208-b871-46ed-8e8b-01643a0b5e61",
+              "label": "禁止形(きんしけい)",
+              "value": "来(く)るな"
+            },
+            {
+              "id": "2afccfc5-5ba2-4361-864f-2974921b0a55",
+              "label": "Thể từ điển",
+              "value": "来(く)る"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đừng đến",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "1803a25f-54e1-473f-aabd-196c5e2f1b51",
+          "base": "結婚(けっこん)する",
+          "note": "Nhóm: 3 | Quy tắc: Vる / Vう + な (Chuyển động từ sang thể từ điển rồi thêm な.)",
+          "forms": [
+            {
+              "id": "53e7dac8-7b2b-461e-b336-e77df97857f9",
+              "label": "禁止形(きんしけい)",
+              "value": "結婚(けっこん)するな"
+            },
+            {
+              "id": "623543ab-7415-423b-ae2a-a6e640896a10",
+              "label": "Thể từ điển",
+              "value": "結婚(けっこん)する"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "đừng kết hôn",
+          "reading": "",
+          "createdAt": "2026-04-27T18:48:38.178Z",
+          "updatedAt": "2026-04-27T18:48:38.178Z",
+          "partOfSpeech": ""
+        }
+      ],
+      "title": "Thể mệnh lệnh",
+      "formKey": "imperative_form",
+      "createdAt": "2026-04-27T18:48:38.178Z",
+      "formLabel": "命令形(めいれいけい) - Thể mệnh lệnh",
+      "jlptLevel": "N4",
+      "updatedAt": "2026-04-27T19:05:41.607Z",
+      "description": "Thể mệnh lệnh là dạng động từ dùng để ra lệnh hoặc yêu cầu mạnh. Dạng này khá mạnh nên cần chú ý khi sử dụng."
+    },
+    {
+      "id": "01365841-58d9-477e-b036-18289fcb1cab",
+      "items": [
+        {
+          "id": "43ba4a31-8ec7-4505-8f3c-137dd55e8c24",
+          "base": "聞(き)きます",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: V iます → V aれます (Nhóm 1 đổi âm hàng i trước ます sang hàng a rồi thêm れます.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aれます | Động từ nhóm 1 chuyển âm hàng i trước ます sang âm hàng a rồi thêm れます.",
+          "forms": [
+            {
+              "id": "c5acce8f-d08b-4dab-b321-7c27dd9ab577",
+              "label": "受身(うけみ)",
+              "value": "聞(き)かれます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được nghe",
+          "reading": "",
+          "createdAt": "2026-04-27T18:54:23.497Z",
+          "updatedAt": "2026-04-27T18:54:23.497Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "e05186a4-88bc-4292-a15d-ca97f227bbd9",
+          "base": "読(よ)みます",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: V iます → V aれます (Nhóm 1 đổi âm hàng i trước ます sang hàng a rồi thêm れます.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aれます | Động từ nhóm 1 chuyển âm hàng i trước ます sang âm hàng a rồi thêm れます.",
+          "forms": [
+            {
+              "id": "0f0be292-6724-417b-ba68-3eecb7d451df",
+              "label": "受身(うけみ)",
+              "value": "読(よ)まれます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được đọc",
+          "reading": "",
+          "createdAt": "2026-04-27T18:54:23.497Z",
+          "updatedAt": "2026-04-27T18:54:23.497Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "44d0b27e-926a-43af-b106-96d683d70dc0",
+          "base": "運(はこ)びます",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: V iます → V aれます (Nhóm 1 đổi âm hàng i trước ます sang hàng a rồi thêm れます.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aれます | Động từ nhóm 1 chuyển âm hàng i trước ます sang âm hàng a rồi thêm れます.",
+          "forms": [
+            {
+              "id": "487503e1-a083-4128-85bb-efd0a7c82166",
+              "label": "受身(うけみ)",
+              "value": "運(はこ)ばれます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được vận chuyển",
+          "reading": "",
+          "createdAt": "2026-04-27T18:54:23.497Z",
+          "updatedAt": "2026-04-27T18:54:23.497Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "8a08f1ad-bf91-41b5-86c1-15dce056610d",
+          "base": "取(と)ります",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: V iます → V aれます (Nhóm 1 đổi âm hàng i trước ます sang hàng a rồi thêm れます.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aれます | Động từ nhóm 1 chuyển âm hàng i trước ます sang âm hàng a rồi thêm れます.",
+          "forms": [
+            {
+              "id": "3dde3e65-f1bb-4fb7-91ea-880953eb7f63",
+              "label": "受身(うけみ)",
+              "value": "取(と)られます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được lấy",
+          "reading": "",
+          "createdAt": "2026-04-27T18:54:23.497Z",
+          "updatedAt": "2026-04-27T18:54:23.497Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "530742ca-cbd2-4197-8dc0-1eef23ff3baf",
+          "base": "使(つか)います",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: V います → V われます (Động từ nhóm 1 kết thúc bằng います thì đổi thành われます.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aれます | Động từ nhóm 1 chuyển âm hàng i trước ます sang âm hàng a rồi thêm れます.",
+          "forms": [
+            {
+              "id": "5fcffb01-1743-4fe4-964e-0c6e3193c4a3",
+              "label": "受身(うけみ)",
+              "value": "使(つか)われます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được sử dụng",
+          "reading": "",
+          "createdAt": "2026-04-27T18:54:23.497Z",
+          "updatedAt": "2026-04-27T18:54:23.497Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "e57e010d-ace9-4657-a458-5e24faf28cf7",
+          "base": "壊(こわ)します",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: V iます → V aれます (Nhóm 1 đổi âm hàng i trước ます sang hàng a rồi thêm れます.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: V iます → V aれます | Động từ nhóm 1 chuyển âm hàng i trước ます sang âm hàng a rồi thêm れます.",
+          "forms": [
+            {
+              "id": "8056b9fb-1145-4ccc-be75-7515a75d2fd3",
+              "label": "受身(うけみ)",
+              "value": "壊(こわ)されます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị phá hỏng",
+          "reading": "",
+          "createdAt": "2026-04-27T18:54:23.497Z",
+          "updatedAt": "2026-04-27T18:54:23.497Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "b502d3d6-d340-47ce-bd91-0a0c3f27f9a6",
+          "base": "食(た)べます",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vます → Vられます (Nhóm 2 bỏ ます rồi thêm られます.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vます → Vられます | Động từ nhóm 2 bỏ ます rồi thêm られます.",
+          "forms": [
+            {
+              "id": "f2db89fb-474f-4540-af32-f589ddbc673e",
+              "label": "受身(うけみ)",
+              "value": "食(た)べられます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được ăn",
+          "reading": "",
+          "createdAt": "2026-04-27T18:54:23.497Z",
+          "updatedAt": "2026-04-27T18:54:23.497Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "5c88187c-cd1e-4342-bcd1-52525a58d8b1",
+          "base": "褒(ほ)めます",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vます → Vられます (Nhóm 2 bỏ ます rồi thêm られます.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vます → Vられます | Động từ nhóm 2 bỏ ます rồi thêm られます.",
+          "forms": [
+            {
+              "id": "f2fd1d04-9bb8-4b79-b880-810bd50cbe77",
+              "label": "受身(うけみ)",
+              "value": "褒(ほ)められます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "được khen",
+          "reading": "",
+          "createdAt": "2026-04-27T18:54:23.497Z",
+          "updatedAt": "2026-04-27T18:54:23.497Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "8ed909e6-491f-4eec-b43b-96525699c3fc",
+          "base": "見(み)ます",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vます → Vられます (Nhóm 2 bỏ ます rồi thêm られます.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vます → Vられます | Động từ nhóm 2 bỏ ます rồi thêm られます.",
+          "forms": [
+            {
+              "id": "d3972fe4-16d1-4ffa-ac95-9ada6003012c",
+              "label": "受身(うけみ)",
+              "value": "見(み)られます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được nhìn thấy",
+          "reading": "",
+          "createdAt": "2026-04-27T18:54:23.497Z",
+          "updatedAt": "2026-04-27T18:54:23.497Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "95d05a7f-db2a-4b59-97cc-902f616291b5",
+          "base": "来(き)ます",
+          "note": "Nhóm: Nhóm 3 | Quy tắc: 来(き)ます → 来(こ)られます (Động từ nhóm 3 来(き)ます chia thể bị động thành 来(こ)られます.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: 来(き)ます → 来(こ)られます / します → されます | Động từ nhóm 3 là nhóm đặc biệt. 来(き)ます chuyển thành 来(こ)られます, します chuyển thành されます.",
+          "forms": [
+            {
+              "id": "4ff91792-16e8-43dc-9deb-5eb69fe289fa",
+              "label": "受身(うけみ)",
+              "value": "来(こ)られます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được đến",
+          "reading": "",
+          "createdAt": "2026-04-27T18:54:23.497Z",
+          "updatedAt": "2026-04-27T18:54:23.497Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "06d6c654-bbdc-410a-9491-ca742ce592b2",
+          "base": "します",
+          "note": "Nhóm: Nhóm 3 | Quy tắc: します → されます (Động từ nhóm 3 します chia thể bị động thành されます.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: 来(き)ます → 来(こ)られます / します → されます | Động từ nhóm 3 là nhóm đặc biệt. 来(き)ます chuyển thành 来(こ)られます, します chuyển thành されます.",
+          "forms": [
+            {
+              "id": "b5aed804-5c62-4354-9c00-00622e77ba3e",
+              "label": "受身(うけみ)",
+              "value": "されます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được làm",
+          "reading": "",
+          "createdAt": "2026-04-27T18:54:23.497Z",
+          "updatedAt": "2026-04-27T18:54:23.497Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "5c1cc1e3-b027-4dd6-aa07-defbf3cd008b",
+          "base": "聞(き)きます",
+          "note": "Nhóm: 1",
+          "forms": [
+            {
+              "id": "0b6ef178-14b4-4e04-a56c-11e68c218cd6",
+              "label": "受身(うけみ)",
+              "value": "聞(き)かれます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được nghe",
+          "reading": "",
+          "createdAt": "2026-04-27T18:58:54.829Z",
+          "updatedAt": "2026-04-27T18:58:54.829Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "4fa24859-6c30-4f9d-9d1d-663316b29481",
+          "base": "読(よ)みます",
+          "note": "Nhóm: 1",
+          "forms": [
+            {
+              "id": "6253b9f7-5098-48df-acde-be989d2962c2",
+              "label": "受身(うけみ)",
+              "value": "読(よ)まれます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được đọc",
+          "reading": "",
+          "createdAt": "2026-04-27T18:58:54.829Z",
+          "updatedAt": "2026-04-27T18:58:54.829Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ee1a95b4-0074-4cba-b42b-e344f839bcbb",
+          "base": "運(はこ)びます",
+          "note": "Nhóm: 1",
+          "forms": [
+            {
+              "id": "b3b79190-9e1b-4ec6-bd57-e70e771ccc71",
+              "label": "受身(うけみ)",
+              "value": "運(はこ)ばれます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được vận chuyển",
+          "reading": "",
+          "createdAt": "2026-04-27T18:58:54.829Z",
+          "updatedAt": "2026-04-27T18:58:54.829Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "5958af16-72b6-4601-a2f7-49869bccad1b",
+          "base": "取(と)ります",
+          "note": "Nhóm: 1",
+          "forms": [
+            {
+              "id": "4a0c0f1b-8311-4594-bb1c-930f2712bad1",
+              "label": "受身(うけみ)",
+              "value": "取(と)られます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được lấy",
+          "reading": "",
+          "createdAt": "2026-04-27T18:58:54.829Z",
+          "updatedAt": "2026-04-27T18:58:54.829Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "4ba44499-0462-4ec5-82a7-43cf8ba2769b",
+          "base": "使(つか)います",
+          "note": "Nhóm: 1",
+          "forms": [
+            {
+              "id": "24f26228-3f74-40b5-942a-188c69cbe2f4",
+              "label": "受身(うけみ)",
+              "value": "使(つか)われます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được sử dụng",
+          "reading": "",
+          "createdAt": "2026-04-27T18:58:54.829Z",
+          "updatedAt": "2026-04-27T18:58:54.829Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "18703529-837b-41a0-bce2-fd526f51e8cc",
+          "base": "壊(こわ)します",
+          "note": "Nhóm: 1",
+          "forms": [
+            {
+              "id": "a7ae599f-6f97-4ec4-9345-56d511b72a89",
+              "label": "受身(うけみ)",
+              "value": "壊(こわ)されます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị phá hỏng",
+          "reading": "",
+          "createdAt": "2026-04-27T18:58:54.829Z",
+          "updatedAt": "2026-04-27T18:58:54.829Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "52e4e6e2-9457-474f-af5e-8f0acc76e243",
+          "base": "食(た)べます",
+          "note": "Nhóm: 2",
+          "forms": [
+            {
+              "id": "625f5f7b-5885-4174-bbf1-1610c58bc353",
+              "label": "受身(うけみ)",
+              "value": "食(た)べられます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được ăn",
+          "reading": "",
+          "createdAt": "2026-04-27T18:58:54.829Z",
+          "updatedAt": "2026-04-27T18:58:54.829Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "980cc4e1-07b7-4b5b-a5ba-bfdf10b70b50",
+          "base": "褒(ほ)めます",
+          "note": "Nhóm: 2",
+          "forms": [
+            {
+              "id": "212e4dfc-3c92-40a0-88fe-e48a8cbc871b",
+              "label": "受身(うけみ)",
+              "value": "褒(ほ)められます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "được khen",
+          "reading": "",
+          "createdAt": "2026-04-27T18:58:54.829Z",
+          "updatedAt": "2026-04-27T18:58:54.829Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "5254953c-55bf-48ea-bc60-4f4f48b49407",
+          "base": "見(み)ます",
+          "note": "Nhóm: 2",
+          "forms": [
+            {
+              "id": "445c013c-dc1b-4cac-acea-2cdb51581c2a",
+              "label": "受身(うけみ)",
+              "value": "見(み)られます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được nhìn thấy",
+          "reading": "",
+          "createdAt": "2026-04-27T18:58:54.829Z",
+          "updatedAt": "2026-04-27T18:58:54.829Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "082d8518-f9de-49c8-b105-84b82cb7e768",
+          "base": "来(き)ます",
+          "note": "Nhóm: 3",
+          "forms": [
+            {
+              "id": "da848a1c-e5ef-43bb-8886-880044e08145",
+              "label": "受身(うけみ)",
+              "value": "来(こ)られます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được đến",
+          "reading": "",
+          "createdAt": "2026-04-27T18:58:54.829Z",
+          "updatedAt": "2026-04-27T18:58:54.829Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "b90c2794-1e32-462b-9dae-20f077f92faa",
+          "base": "します",
+          "note": "Nhóm: 3",
+          "forms": [
+            {
+              "id": "94379ff6-5b24-48c7-9194-e5eb58fc8731",
+              "label": "受身(うけみ)",
+              "value": "されます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được làm",
+          "reading": "",
+          "createdAt": "2026-04-27T18:58:54.829Z",
+          "updatedAt": "2026-04-27T18:58:54.829Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "1f36b715-3832-46f0-9394-cf2c10412d4e",
+          "base": "聞(き)きます",
+          "note": "Nhóm: 1",
+          "forms": [
+            {
+              "id": "51122660-701b-4a90-93d7-ac338e108e04",
+              "label": "受身(うけみ)",
+              "value": "聞(き)かれます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được nghe",
+          "reading": "",
+          "createdAt": "2026-04-27T19:00:01.876Z",
+          "updatedAt": "2026-04-27T19:00:01.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "3c8fc777-2e3d-4a22-8a60-c275f38ae963",
+          "base": "読(よ)みます",
+          "note": "Nhóm: 1",
+          "forms": [
+            {
+              "id": "8774b9da-e0f1-4261-948e-f2bf5db3d030",
+              "label": "受身(うけみ)",
+              "value": "読(よ)まれます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được đọc",
+          "reading": "",
+          "createdAt": "2026-04-27T19:00:01.876Z",
+          "updatedAt": "2026-04-27T19:00:01.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "140d5fc4-5a37-49ae-99ff-f201c55e7566",
+          "base": "運(はこ)びます",
+          "note": "Nhóm: 1",
+          "forms": [
+            {
+              "id": "8ca3ba2a-308a-451b-818c-66d1d255fe9f",
+              "label": "受身(うけみ)",
+              "value": "運(はこ)ばれます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được vận chuyển",
+          "reading": "",
+          "createdAt": "2026-04-27T19:00:01.876Z",
+          "updatedAt": "2026-04-27T19:00:01.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "e99de426-b1a9-495c-825b-2b26e4d2a2f9",
+          "base": "取(と)ります",
+          "note": "Nhóm: 1",
+          "forms": [
+            {
+              "id": "0cd7ebf7-bb56-4fa7-9205-16de6e772405",
+              "label": "受身(うけみ)",
+              "value": "取(と)られます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được lấy",
+          "reading": "",
+          "createdAt": "2026-04-27T19:00:01.876Z",
+          "updatedAt": "2026-04-27T19:00:01.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "31311442-d672-4900-a40f-b044d2493769",
+          "base": "使(つか)います",
+          "note": "Nhóm: 1",
+          "forms": [
+            {
+              "id": "18757c19-4539-4579-9162-9610954c3806",
+              "label": "受身(うけみ)",
+              "value": "使(つか)われます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được sử dụng",
+          "reading": "",
+          "createdAt": "2026-04-27T19:00:01.876Z",
+          "updatedAt": "2026-04-27T19:00:01.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "f908dc4d-6a88-4c77-8879-44cdbec2ee3a",
+          "base": "壊(こわ)します",
+          "note": "Nhóm: 1",
+          "forms": [
+            {
+              "id": "6c8db536-5328-4163-8b3e-0716b744985b",
+              "label": "受身(うけみ)",
+              "value": "壊(こわ)されます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị phá hỏng",
+          "reading": "",
+          "createdAt": "2026-04-27T19:00:01.876Z",
+          "updatedAt": "2026-04-27T19:00:01.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "5be60907-12eb-463d-8071-aeaece233f4e",
+          "base": "食(た)べます",
+          "note": "Nhóm: 2",
+          "forms": [
+            {
+              "id": "cc9859ec-2bf1-4a83-825e-57bf7fcc15a5",
+              "label": "受身(うけみ)",
+              "value": "食(た)べられます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được ăn",
+          "reading": "",
+          "createdAt": "2026-04-27T19:00:01.876Z",
+          "updatedAt": "2026-04-27T19:00:01.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "1fadec9c-9c4c-4d0c-9f93-3216a101569a",
+          "base": "褒(ほ)めます",
+          "note": "Nhóm: 2",
+          "forms": [
+            {
+              "id": "d2357af3-c0a6-4a37-860f-b3992e7b8b3b",
+              "label": "受身(うけみ)",
+              "value": "褒(ほ)められます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "được khen",
+          "reading": "",
+          "createdAt": "2026-04-27T19:00:01.876Z",
+          "updatedAt": "2026-04-27T19:00:01.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "1774dcb1-e668-4f0e-9d8c-e4b85e86f13d",
+          "base": "見(み)ます",
+          "note": "Nhóm: 2",
+          "forms": [
+            {
+              "id": "7a628294-34c1-4fc0-affd-624932398d82",
+              "label": "受身(うけみ)",
+              "value": "見(み)られます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được nhìn thấy",
+          "reading": "",
+          "createdAt": "2026-04-27T19:00:01.876Z",
+          "updatedAt": "2026-04-27T19:00:01.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "1518dd1c-fd61-401d-98b9-824ee537168c",
+          "base": "来(き)ます",
+          "note": "Nhóm: 3",
+          "forms": [
+            {
+              "id": "e59e73a8-c808-433c-958b-a5ab7a0ec765",
+              "label": "受身(うけみ)",
+              "value": "来(こ)られます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được đến",
+          "reading": "",
+          "createdAt": "2026-04-27T19:00:01.876Z",
+          "updatedAt": "2026-04-27T19:00:01.876Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "820c20eb-fb9e-409f-ba40-0ec5b56fdf1f",
+          "base": "します",
+          "note": "Nhóm: 3",
+          "forms": [
+            {
+              "id": "c7813fc0-7e76-468d-9aad-0c69bdb13b59",
+              "label": "受身(うけみ)",
+              "value": "されます"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bị/được làm",
+          "reading": "",
+          "createdAt": "2026-04-27T19:00:01.876Z",
+          "updatedAt": "2026-04-27T19:00:01.876Z",
+          "partOfSpeech": ""
+        }
+      ],
+      "title": "Thể bị động",
+      "formKey": "passive_form",
+      "createdAt": "2026-04-27T18:54:23.497Z",
+      "formLabel": "受身(うけみ)",
+      "jlptLevel": "N4",
+      "updatedAt": "2026-04-27T19:00:01.876Z",
+      "description": "Thể bị động dùng để diễn tả việc chủ thể bị hoặc được tác động bởi một hành động nào đó."
+    },
+    {
+      "id": "6c2e0bb9-3fb1-4a3d-860b-74a86e8d6308",
+      "items": [
+        {
+          "id": "4ff539eb-61c7-4b7d-b74c-49250abca5a1",
+          "base": "行(い)く",
+          "note": "Nhóm: Động từ nhóm 1 | Quy tắc: Vう → Vえば (Nhóm 1 đổi âm cuối hàng u sang hàng e rồi thêm ば.) | Mô tả nhóm: Động từ nhóm 1 | Quy tắc chung: Vう → Vえば | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e rồi thêm ば.",
+          "forms": [
+            {
+              "id": "d14b2c8b-b68e-42e1-a990-4a61472be56e",
+              "label": "条件形(じょうけんけい)",
+              "value": "行(い)けば"
+            },
+            {
+              "id": "0d4f02ef-a368-4038-8f6a-631a6b8392f8",
+              "label": "Thể từ điển",
+              "value": "行(い)く"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu đi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "0e095202-9f78-467c-b05c-0246dfc9f898",
+          "base": "急(いそ)ぐ",
+          "note": "Nhóm: Động từ nhóm 1 | Quy tắc: Vう → Vえば (Nhóm 1 đổi âm cuối hàng u sang hàng e rồi thêm ば.) | Mô tả nhóm: Động từ nhóm 1 | Quy tắc chung: Vう → Vえば | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e rồi thêm ば.",
+          "forms": [
+            {
+              "id": "cb179b9e-563d-4a3c-9b66-fb240f994ec4",
+              "label": "条件形(じょうけんけい)",
+              "value": "急(いそ)げば"
+            },
+            {
+              "id": "53980117-09bd-4065-bf42-e72b0fa54240",
+              "label": "Thể từ điển",
+              "value": "急(いそ)ぐ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu vội",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "45e801f6-a99f-4766-bed2-432eed559c80",
+          "base": "頼(たの)む",
+          "note": "Nhóm: Động từ nhóm 1 | Quy tắc: Vう → Vえば (Nhóm 1 đổi âm cuối hàng u sang hàng e rồi thêm ば.) | Mô tả nhóm: Động từ nhóm 1 | Quy tắc chung: Vう → Vえば | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e rồi thêm ば.",
+          "forms": [
+            {
+              "id": "3a695689-7614-42cb-a86f-dc8b0c99c04a",
+              "label": "条件形(じょうけんけい)",
+              "value": "頼(たの)めば"
+            },
+            {
+              "id": "071677c2-fd62-48a1-850f-5795f4654858",
+              "label": "Thể từ điển",
+              "value": "頼(たの)む"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu nhờ",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "fc8f0b8c-9362-4511-b8d5-0da053952c0a",
+          "base": "呼(よ)ぶ",
+          "note": "Nhóm: Động từ nhóm 1 | Quy tắc: Vう → Vえば (Nhóm 1 đổi âm cuối hàng u sang hàng e rồi thêm ば.) | Mô tả nhóm: Động từ nhóm 1 | Quy tắc chung: Vう → Vえば | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e rồi thêm ば.",
+          "forms": [
+            {
+              "id": "7aebbd64-63fa-4c75-a7c4-1f71ab30bb0f",
+              "label": "条件形(じょうけんけい)",
+              "value": "呼(よ)べば"
+            },
+            {
+              "id": "01a7a991-600c-40bf-9023-8e362aa3d9f1",
+              "label": "Thể từ điển",
+              "value": "呼(よ)ぶ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu gọi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "42fda7b0-0b31-4eaa-b00a-88dcf14f4b36",
+          "base": "ある",
+          "note": "Nhóm: Động từ nhóm 1 | Quy tắc: Vう → Vえば (Nhóm 1 đổi âm cuối hàng u sang hàng e rồi thêm ば.) | Mô tả nhóm: Động từ nhóm 1 | Quy tắc chung: Vう → Vえば | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e rồi thêm ば.",
+          "forms": [
+            {
+              "id": "57ffc84c-07c7-4f69-ae0f-f85fdadd3f69",
+              "label": "条件形(じょうけんけい)",
+              "value": "あれば"
+            },
+            {
+              "id": "f392d8a3-97ee-40c4-bf10-6aba18f44097",
+              "label": "Thể từ điển",
+              "value": "ある"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu có",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "bdd564ec-ce15-4643-bc71-5a0c27967f91",
+          "base": "買(か)う",
+          "note": "Nhóm: Động từ nhóm 1 | Quy tắc: Vう → Vえば (Nhóm 1 đổi âm cuối hàng u sang hàng e rồi thêm ば.) | Mô tả nhóm: Động từ nhóm 1 | Quy tắc chung: Vう → Vえば | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e rồi thêm ば.",
+          "forms": [
+            {
+              "id": "58b7d530-e01c-4a56-99b2-800fad8cfc20",
+              "label": "条件形(じょうけんけい)",
+              "value": "買(か)えば"
+            },
+            {
+              "id": "ec6b846c-0dce-4d95-826e-37e0f316ffba",
+              "label": "Thể từ điển",
+              "value": "買(か)う"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu mua",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ad547c03-1c9a-44c5-afad-860f224f383e",
+          "base": "待(ま)つ",
+          "note": "Nhóm: Động từ nhóm 1 | Quy tắc: Vう → Vえば (Nhóm 1 đổi âm cuối hàng u sang hàng e rồi thêm ば.) | Mô tả nhóm: Động từ nhóm 1 | Quy tắc chung: Vう → Vえば | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e rồi thêm ば.",
+          "forms": [
+            {
+              "id": "d7cdb757-07cb-46d5-829f-fb9872b88973",
+              "label": "条件形(じょうけんけい)",
+              "value": "待(ま)てば"
+            },
+            {
+              "id": "c1857b7f-1281-4de8-b9ab-ffdced641aa7",
+              "label": "Thể từ điển",
+              "value": "待(ま)つ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu đợi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "4e201b02-0970-4734-8233-c20c2e73b190",
+          "base": "話(はな)す",
+          "note": "Nhóm: Động từ nhóm 1 | Quy tắc: Vう → Vえば (Nhóm 1 đổi âm cuối hàng u sang hàng e rồi thêm ば.) | Mô tả nhóm: Động từ nhóm 1 | Quy tắc chung: Vう → Vえば | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng e rồi thêm ば.",
+          "forms": [
+            {
+              "id": "32d46edf-9126-48fe-8357-15fdb82bc136",
+              "label": "条件形(じょうけんけい)",
+              "value": "話(はな)せば"
+            },
+            {
+              "id": "375b87ff-9f91-448d-b245-636ff1f918ad",
+              "label": "Thể từ điển",
+              "value": "話(はな)す"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu nói chuyện",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "dc4302e6-3144-4427-9a60-c20c8ec2c7b2",
+          "base": "調(しら)べる",
+          "note": "Nhóm: Động từ nhóm 2 | Quy tắc: Vる → Vれば (Nhóm 2 bỏ る rồi thêm れば.) | Mô tả nhóm: Động từ nhóm 2 | Quy tắc chung: Vる → Vれば | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm れば.",
+          "forms": [
+            {
+              "id": "bd0bbb7e-9205-4f3a-95e3-1cbfcfe59b2f",
+              "label": "条件形(じょうけんけい)",
+              "value": "調(しら)べれば"
+            },
+            {
+              "id": "6f6d9c7c-3c25-4d02-9eb6-4c23d83e9069",
+              "label": "Thể từ điển",
+              "value": "調(しら)べる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu tra cứu / nếu điều tra",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "9799d311-883c-4ee1-b8e5-bc0082bc33d8",
+          "base": "変(か)える",
+          "note": "Nhóm: Động từ nhóm 2 | Quy tắc: Vる → Vれば (Nhóm 2 bỏ る rồi thêm れば.) | Mô tả nhóm: Động từ nhóm 2 | Quy tắc chung: Vる → Vれば | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm れば.",
+          "forms": [
+            {
+              "id": "e44c9747-419f-4d25-b989-ccc2bbcc67d9",
+              "label": "条件形(じょうけんけい)",
+              "value": "変(か)えれば"
+            },
+            {
+              "id": "85bc3ef6-6c9c-4d25-8cc4-2815e900a91f",
+              "label": "Thể từ điển",
+              "value": "変(か)える"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu thay đổi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "3e7846f4-5015-4d80-bfb5-cfa3e6a933b2",
+          "base": "見(み)る",
+          "note": "Nhóm: Động từ nhóm 2 | Quy tắc: Vる → Vれば (Nhóm 2 bỏ る rồi thêm れば.) | Mô tả nhóm: Động từ nhóm 2 | Quy tắc chung: Vる → Vれば | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm れば.",
+          "forms": [
+            {
+              "id": "57dda646-956b-41d3-a8d8-90d50183bfee",
+              "label": "条件形(じょうけんけい)",
+              "value": "見(み)れば"
+            },
+            {
+              "id": "7f16aca1-045c-49c9-80e4-1da495163538",
+              "label": "Thể từ điển",
+              "value": "見(み)る"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu xem",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "91a35355-e4ef-4657-ba07-18efde20f6d7",
+          "base": "いる",
+          "note": "Nhóm: Động từ nhóm 2 | Quy tắc: Vる → Vれば (Nhóm 2 bỏ る rồi thêm れば.) | Mô tả nhóm: Động từ nhóm 2 | Quy tắc chung: Vる → Vれば | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm れば.",
+          "forms": [
+            {
+              "id": "46b75435-676d-40c1-b214-8d904e8e54f9",
+              "label": "条件形(じょうけんけい)",
+              "value": "いれば"
+            },
+            {
+              "id": "4e8fad14-8a12-4842-bd96-187841ae5664",
+              "label": "Thể từ điển",
+              "value": "いる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu có / nếu ở",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "18e473b7-2653-48a3-bbdd-1ac56e9d7adc",
+          "base": "来(く)る",
+          "note": "Nhóm: Động từ nhóm 3 | Quy tắc: 来(く)る → 来(く)れば (Động từ nhóm 3 来(く)る chia thành 来(く)れば.) | Mô tả nhóm: Động từ nhóm 3 | Quy tắc chung: 来(く)る → 来(く)れば / する → すれば | Động từ nhóm 3 là nhóm đặc biệt. 来(く)る chuyển thành 来(く)れば, する chuyển thành すれば.",
+          "forms": [
+            {
+              "id": "66095aa6-3967-472f-9092-2a68ee861b27",
+              "label": "条件形(じょうけんけい)",
+              "value": "来(く)れば"
+            },
+            {
+              "id": "e46a68d4-e56d-4fb4-950b-4fe17446798e",
+              "label": "Thể từ điển",
+              "value": "来(く)る"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu đến",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "f212b437-eed6-42e3-8f76-3cb550b39b98",
+          "base": "する",
+          "note": "Nhóm: Động từ nhóm 3 | Quy tắc: する → すれば (Động từ nhóm 3 する chia thành すれば.) | Mô tả nhóm: Động từ nhóm 3 | Quy tắc chung: 来(く)る → 来(く)れば / する → すれば | Động từ nhóm 3 là nhóm đặc biệt. 来(く)る chuyển thành 来(く)れば, する chuyển thành すれば.",
+          "forms": [
+            {
+              "id": "b8b4e03f-a61c-499d-82f8-0e17c70de6fe",
+              "label": "条件形(じょうけんけい)",
+              "value": "すれば"
+            },
+            {
+              "id": "ab748f24-c74a-44e2-b414-ec76396c66af",
+              "label": "Thể từ điển",
+              "value": "する"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu làm",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "91bb498d-4870-4381-8ec6-f0cc89dbb6a5",
+          "base": "安(やす)い",
+          "note": "Nhóm: Tính từ い | Quy tắc: Aい → Aければ (Tính từ い bỏ い rồi thêm ければ.) | Mô tả nhóm: Tính từ い | Quy tắc chung: Aい → Aければ | Quy tắc đặc biệt: いい → よければ | Tính từ đuôi い bỏ い rồi thêm ければ.",
+          "forms": [
+            {
+              "id": "cac58897-1066-4042-a658-a86d56d3e641",
+              "label": "条件形(じょうけんけい)",
+              "value": "安(やす)ければ"
+            },
+            {
+              "id": "d63a0973-0a0b-4447-b279-0ec62dbb3c56",
+              "label": "Thể từ điển",
+              "value": "安(やす)い"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu rẻ",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "3b59ce9d-8764-4f3a-aadf-c1c98c8a9bec",
+          "base": "小(ちい)さい",
+          "note": "Nhóm: Tính từ い | Quy tắc: Aい → Aければ (Tính từ い bỏ い rồi thêm ければ.) | Mô tả nhóm: Tính từ い | Quy tắc chung: Aい → Aければ | Quy tắc đặc biệt: いい → よければ | Tính từ đuôi い bỏ い rồi thêm ければ.",
+          "forms": [
+            {
+              "id": "38480897-a16d-48c9-afd2-98ffd2dcd424",
+              "label": "条件形(じょうけんけい)",
+              "value": "小(ちい)さければ"
+            },
+            {
+              "id": "6db74738-d127-4ec0-8068-58d6a1d1ea3c",
+              "label": "Thể từ điển",
+              "value": "小(ちい)さい"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu nhỏ",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "3bfa31ef-9586-4567-ba5a-d12a26ff8b6a",
+          "base": "いい",
+          "note": "Nhóm: Tính từ い | Quy tắc: いい → よければ (Tính từ いい là trường hợp đặc biệt, chia thành よければ.) | Mô tả nhóm: Tính từ い | Quy tắc chung: Aい → Aければ | Quy tắc đặc biệt: いい → よければ | Tính từ đuôi い bỏ い rồi thêm ければ.",
+          "forms": [
+            {
+              "id": "b246160a-7f97-494a-9c76-e2fe153bc1cd",
+              "label": "条件形(じょうけんけい)",
+              "value": "よければ"
+            },
+            {
+              "id": "6f0c32a2-e3b2-4e51-bee4-f3122e98f795",
+              "label": "Thể từ điển",
+              "value": "いい"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu tốt / nếu được",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "ab384a10-8f82-4f8c-a589-f2f6b6faa067",
+          "base": "簡単(かんたん)な",
+          "note": "Nhóm: Tính từ な | Quy tắc: Aな / N → Aなら / Nなら (Tính từ な bỏ な rồi thêm なら. Danh từ thêm なら.)",
+          "forms": [
+            {
+              "id": "201af110-079c-423b-80a6-0b232427d979",
+              "label": "条件形(じょうけんけい)",
+              "value": "簡単(かんたん)なら"
+            },
+            {
+              "id": "4819aa0a-8f57-4e76-aa9f-9080f270445c",
+              "label": "Thể từ điển",
+              "value": "簡単(かんたん)な"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu đơn giản",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "83f5f7b0-2fa0-4fba-9868-72b5a6b045a4",
+          "base": "静(しず)かな",
+          "note": "Nhóm: Tính từ な | Quy tắc: Aな / N → Aなら / Nなら (Tính từ な bỏ な rồi thêm なら. Danh từ thêm なら.)",
+          "forms": [
+            {
+              "id": "96b7b61f-1f6f-4a69-98fb-4bb6a073c04e",
+              "label": "条件形(じょうけんけい)",
+              "value": "静(しず)かなら"
+            },
+            {
+              "id": "7c7fc061-76ec-41f9-b04d-f708838b417a",
+              "label": "Thể từ điển",
+              "value": "静(しず)かな"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu yên tĩnh",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "b9b6915c-93b2-4f12-99b8-f4d60d8dc5ae",
+          "base": "病気(びょうき)",
+          "note": "Nhóm: Danh từ | Quy tắc: Aな / N → Aなら / Nなら (Tính từ な bỏ な rồi thêm なら. Danh từ thêm なら.)",
+          "forms": [
+            {
+              "id": "fc2e17f4-e4ba-4f4a-9ffd-676a69e469d6",
+              "label": "条件形(じょうけんけい)",
+              "value": "病気(びょうき)なら"
+            },
+            {
+              "id": "cb7267b2-e9ce-452a-9e2b-692a5250d9a1",
+              "label": "Thể từ điển",
+              "value": "病気(びょうき)"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu bị bệnh",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "f71ec142-c5d4-475c-bbd3-996df496a436",
+          "base": "学生(がくせい)",
+          "note": "Nhóm: Danh từ | Quy tắc: Aな / N → Aなら / Nなら (Tính từ な bỏ な rồi thêm なら. Danh từ thêm なら.)",
+          "forms": [
+            {
+              "id": "ad0d6dff-34cb-4951-9536-54ad4c6853a7",
+              "label": "条件形(じょうけんけい)",
+              "value": "学生(がくせい)なら"
+            },
+            {
+              "id": "00bc2f3f-cc06-4ad8-8ab6-ede02ef961ff",
+              "label": "Thể từ điển",
+              "value": "学生(がくせい)"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu là học sinh / sinh viên",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "b42ae462-610a-463f-9626-45529027fe46",
+          "base": "行(い)く",
+          "note": "Nhóm: Động từ | Quy tắc: Vない → Vなければ (Động từ chia sang thể ない rồi đổi ない thành なければ.) | Mô tả nhóm: Động từ | Quy tắc chung: Vない → Vなければ | Động từ chuyển sang thể ない, sau đó bỏ い của ない và thêm ければ.",
+          "forms": [
+            {
+              "id": "e7d6aa31-8a46-4f60-b6c6-ef51ef76efc6",
+              "label": "否定(ひてい)の条件形(じょうけんけい)",
+              "value": "行(い)かなければ"
+            },
+            {
+              "id": "4d013292-bddf-4ee5-a740-1938ed34708b",
+              "label": "Thể từ điển",
+              "value": "行(い)く"
+            },
+            {
+              "id": "856dba98-04dd-4de6-a3ff-deef806249e4",
+              "label": "negative thể",
+              "value": "行(い)かない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu không đi",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "a076238d-0904-48f1-b943-58dbbfd438fe",
+          "base": "食(た)べる",
+          "note": "Nhóm: Động từ | Quy tắc: Vない → Vなければ (Động từ chia sang thể ない rồi đổi ない thành なければ.) | Mô tả nhóm: Động từ | Quy tắc chung: Vない → Vなければ | Động từ chuyển sang thể ない, sau đó bỏ い của ない và thêm ければ.",
+          "forms": [
+            {
+              "id": "f21fb0c6-8237-4d58-86ab-989d86a24bd8",
+              "label": "否定(ひてい)の条件形(じょうけんけい)",
+              "value": "食(た)べなければ"
+            },
+            {
+              "id": "84480e47-cb61-43fd-a61c-8762851ecfdf",
+              "label": "Thể từ điển",
+              "value": "食(た)べる"
+            },
+            {
+              "id": "537e79d5-d2f2-495a-98fe-b9a750d09cc0",
+              "label": "negative thể",
+              "value": "食(た)べない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu không ăn",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "4fb36be7-e599-4393-838d-9b1595472629",
+          "base": "する",
+          "note": "Nhóm: Động từ | Quy tắc: Vない → Vなければ (Động từ chia sang thể ない rồi đổi ない thành なければ.) | Mô tả nhóm: Động từ | Quy tắc chung: Vない → Vなければ | Động từ chuyển sang thể ない, sau đó bỏ い của ない và thêm ければ.",
+          "forms": [
+            {
+              "id": "cabde3e0-193a-4934-999e-6b1dfbaf2edf",
+              "label": "否定(ひてい)の条件形(じょうけんけい)",
+              "value": "しなければ"
+            },
+            {
+              "id": "335b0237-e6fe-4b97-9b71-21996ce39e3d",
+              "label": "Thể từ điển",
+              "value": "する"
+            },
+            {
+              "id": "901c6f9f-152a-4ac2-a1a5-fdc43bada105",
+              "label": "negative thể",
+              "value": "しない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu không làm",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "4da18c81-543c-4834-8be1-2eb46f076068",
+          "base": "来(く)る",
+          "note": "Nhóm: Động từ | Quy tắc: Vない → Vなければ (Động từ chia sang thể ない rồi đổi ない thành なければ.) | Mô tả nhóm: Động từ | Quy tắc chung: Vない → Vなければ | Động từ chuyển sang thể ない, sau đó bỏ い của ない và thêm ければ.",
+          "forms": [
+            {
+              "id": "6bd8d3b2-a72c-421c-b720-f341ddf3790c",
+              "label": "否定(ひてい)の条件形(じょうけんけい)",
+              "value": "来(こ)なければ"
+            },
+            {
+              "id": "b646f26e-a274-4b61-a37f-5381a2d3c09d",
+              "label": "Thể từ điển",
+              "value": "来(く)る"
+            },
+            {
+              "id": "dc9c4ec8-a384-4035-af6c-325b726efebd",
+              "label": "negative thể",
+              "value": "来(こ)ない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu không đến",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "c2bacacb-37e2-4ef0-8264-f6f3fdd60d0d",
+          "base": "安(やす)い",
+          "note": "Nhóm: Tính từ い | Quy tắc: Aくない → Aくなければ (Tính từ い chia phủ định rồi đổi ない thành なければ.) | Mô tả nhóm: Tính từ い | Quy tắc chung: Aくない → Aくなければ | Tính từ い chuyển sang phủ định くない, sau đó bỏ い và thêm ければ.",
+          "forms": [
+            {
+              "id": "ca0d58c7-bd5f-4f3d-bdef-65392f04fdab",
+              "label": "否定(ひてい)の条件形(じょうけんけい)",
+              "value": "安(やす)くなければ"
+            },
+            {
+              "id": "c1cc114d-2e92-49dc-9e8b-a37779e98559",
+              "label": "Thể từ điển",
+              "value": "安(やす)い"
+            },
+            {
+              "id": "e4c0e5d3-18f2-4958-b4e2-cb3eb4d0e0eb",
+              "label": "negative thể",
+              "value": "安(やす)くない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu không rẻ",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "78383e50-3766-481b-ac94-4a299a0dbfdb",
+          "base": "いい",
+          "note": "Nhóm: Tính từ い | Quy tắc: Aくない → Aくなければ (Tính từ い chia phủ định rồi đổi ない thành なければ.) | Mô tả nhóm: Tính từ い | Quy tắc chung: Aくない → Aくなければ | Tính từ い chuyển sang phủ định くない, sau đó bỏ い và thêm ければ.",
+          "forms": [
+            {
+              "id": "89ae4b28-0ee7-4678-8774-e2a5320a2c5d",
+              "label": "否定(ひてい)の条件形(じょうけんけい)",
+              "value": "よくなければ"
+            },
+            {
+              "id": "31d8841a-d74a-4dd1-978c-dfef229fc089",
+              "label": "Thể từ điển",
+              "value": "いい"
+            },
+            {
+              "id": "84ae6a88-eac8-4cf4-92f1-b9176e3a202c",
+              "label": "negative thể",
+              "value": "よくない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu không tốt",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "819ad250-df13-433b-8bc1-151eb0b51584",
+          "base": "簡単(かんたん)な",
+          "note": "Nhóm: Tính từ な | Quy tắc: A/Nではない → A/Nではなければ (Tính từ な và danh từ chia phủ định ではない rồi đổi ない thành なければ.)",
+          "forms": [
+            {
+              "id": "3dd7ac6e-7eb1-46da-ac90-9b34027063c9",
+              "label": "否定(ひてい)の条件形(じょうけんけい)",
+              "value": "簡単(かんたん)ではなければ"
+            },
+            {
+              "id": "15259e6f-e7be-47e9-8686-f9649b7c27a9",
+              "label": "Thể từ điển",
+              "value": "簡単(かんたん)な"
+            },
+            {
+              "id": "d4c62ca9-fcce-479c-8022-5ba437894476",
+              "label": "negative thể",
+              "value": "簡単(かんたん)ではない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu không đơn giản",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "d14ad069-3e19-484f-afd7-2643cb8702cc",
+          "base": "学生(がくせい)",
+          "note": "Nhóm: Danh từ | Quy tắc: A/Nではない → A/Nではなければ (Tính từ な và danh từ chia phủ định ではない rồi đổi ない thành なければ.)",
+          "forms": [
+            {
+              "id": "fd751298-fbb6-42e7-ba93-7d438c02b942",
+              "label": "否定(ひてい)の条件形(じょうけんけい)",
+              "value": "学生(がくせい)ではなければ"
+            },
+            {
+              "id": "7dfc7fb0-a380-4793-864d-a334fd831a8d",
+              "label": "Thể từ điển",
+              "value": "学生(がくせい)"
+            },
+            {
+              "id": "be2f6a3b-86e8-41eb-bad4-d80a82164859",
+              "label": "negative thể",
+              "value": "学生(がくせい)ではない"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "nếu không phải học sinh / sinh viên",
+          "reading": "",
+          "createdAt": "2026-04-27T18:57:28.198Z",
+          "updatedAt": "2026-04-27T18:57:28.198Z",
+          "partOfSpeech": ""
+        }
+      ],
+      "title": "Thể điều kiện - Khẳng định",
+      "formKey": "conditional_form",
+      "createdAt": "2026-04-27T18:57:28.198Z",
+      "formLabel": "条件形(じょうけんけい)",
+      "jlptLevel": "N4",
+      "updatedAt": "2026-04-27T19:06:00.265Z",
+      "description": "Thể điều kiện dùng để diễn tả điều kiện, nghĩa là nếu A thì B. Đây là dạng điều kiện với ば."
+    },
+    {
+      "id": "993be248-dff6-4c65-a9da-d9ba788f764f",
+      "items": [
+        {
+          "id": "00eca372-edaa-49ce-b2d5-36bf6a55b557",
+          "base": "書(か)く",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vあせる (Nhóm 1 đổi âm cuối hàng u sang hàng a rồi thêm せる.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vあせる | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng a rồi thêm せる.",
+          "forms": [
+            {
+              "id": "37e7cc71-aaec-46bf-85d5-5cef04a0464c",
+              "label": "使役形(しえきけい)",
+              "value": "書(か)かせる"
+            },
+            {
+              "id": "c1c8f4eb-1bce-411f-8333-3881e5619547",
+              "label": "Thể từ điển",
+              "value": "書(か)く"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt/cho viết",
+          "reading": "",
+          "createdAt": "2026-04-27T19:03:50.845Z",
+          "updatedAt": "2026-04-27T19:03:50.845Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "9da2beee-14e8-4fd5-a96b-371d0c6652a3",
+          "base": "急(いそ)ぐ",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vあせる (Nhóm 1 đổi âm cuối hàng u sang hàng a rồi thêm せる.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vあせる | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng a rồi thêm せる.",
+          "forms": [
+            {
+              "id": "9eab3286-6721-4e18-80c6-0ba58d767406",
+              "label": "使役形(しえきけい)",
+              "value": "急(いそ)がせる"
+            },
+            {
+              "id": "b4ac7d45-2437-4714-8968-1eee4ccac1ab",
+              "label": "Thể từ điển",
+              "value": "急(いそ)ぐ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt/cho vội",
+          "reading": "",
+          "createdAt": "2026-04-27T19:03:50.845Z",
+          "updatedAt": "2026-04-27T19:03:50.845Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "072e26f9-ab1a-4a20-999c-817b947ad1f3",
+          "base": "飲(の)む",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vあせる (Nhóm 1 đổi âm cuối hàng u sang hàng a rồi thêm せる.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vあせる | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng a rồi thêm せる.",
+          "forms": [
+            {
+              "id": "73181b13-b143-48f3-8d21-dad4646bf758",
+              "label": "使役形(しえきけい)",
+              "value": "飲(の)ませる"
+            },
+            {
+              "id": "2d975711-1477-4ae9-b9c7-7949ee1c983f",
+              "label": "Thể từ điển",
+              "value": "飲(の)む"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt/cho uống",
+          "reading": "",
+          "createdAt": "2026-04-27T19:03:50.845Z",
+          "updatedAt": "2026-04-27T19:03:50.845Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "789fc493-885f-4968-9596-adaba133c1b9",
+          "base": "呼(よ)ぶ",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vあせる (Nhóm 1 đổi âm cuối hàng u sang hàng a rồi thêm せる.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vあせる | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng a rồi thêm せる.",
+          "forms": [
+            {
+              "id": "c421826e-6bab-4baa-9f4a-1484db901f18",
+              "label": "使役形(しえきけい)",
+              "value": "呼(よ)ばせる"
+            },
+            {
+              "id": "6098e6ae-7e29-422f-9f79-72fb8e6907ee",
+              "label": "Thể từ điển",
+              "value": "呼(よ)ぶ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt/cho gọi",
+          "reading": "",
+          "createdAt": "2026-04-27T19:03:50.845Z",
+          "updatedAt": "2026-04-27T19:03:50.845Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "b785c8aa-1794-4d11-9dc2-1d326f537ead",
+          "base": "作(つく)る",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vあせる (Nhóm 1 đổi âm cuối hàng u sang hàng a rồi thêm せる.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vあせる | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng a rồi thêm せる.",
+          "forms": [
+            {
+              "id": "7cfd0b7a-8a4a-4c6c-a832-91b48cb7e801",
+              "label": "使役形(しえきけい)",
+              "value": "作(つく)らせる"
+            },
+            {
+              "id": "f0f72b06-3853-4f8d-8e04-f566201ccaa8",
+              "label": "Thể từ điển",
+              "value": "作(つく)る"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt/cho làm, chế tạo",
+          "reading": "",
+          "createdAt": "2026-04-27T19:03:50.845Z",
+          "updatedAt": "2026-04-27T19:03:50.845Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "d77bc1e6-ddb3-410d-9886-7e5e5d6907b4",
+          "base": "手伝(てつだ)う",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vわせる (Động từ nhóm 1 kết thúc bằng う thì đổi thành わせる.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vあせる | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng a rồi thêm せる.",
+          "forms": [
+            {
+              "id": "6cc70b36-0e1e-4d42-9d65-895acf5af9de",
+              "label": "使役形(しえきけい)",
+              "value": "手伝(てつだ)わせる"
+            },
+            {
+              "id": "7f82c383-6d15-418d-8998-ffed42844d83",
+              "label": "Thể từ điển",
+              "value": "手伝(てつだ)う"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt/cho giúp đỡ",
+          "reading": "",
+          "createdAt": "2026-04-27T19:03:50.845Z",
+          "updatedAt": "2026-04-27T19:03:50.845Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "00fbf2e6-0025-4800-9cf2-adeb8425b885",
+          "base": "持(も)つ",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vあせる (Nhóm 1 đổi âm cuối hàng u sang hàng a rồi thêm せる.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vあせる | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng a rồi thêm せる.",
+          "forms": [
+            {
+              "id": "fd0614b6-ffbc-4a0a-9d05-d74a1e9288d9",
+              "label": "使役形(しえきけい)",
+              "value": "持(も)たせる"
+            },
+            {
+              "id": "b0eb0043-6681-4e43-aa7f-fbcde2b670bc",
+              "label": "Thể từ điển",
+              "value": "持(も)つ"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt/cho cầm, mang",
+          "reading": "",
+          "createdAt": "2026-04-27T19:03:50.845Z",
+          "updatedAt": "2026-04-27T19:03:50.845Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "216e6f71-332f-441c-824f-e3ae4736d266",
+          "base": "直(なお)す",
+          "note": "Nhóm: Nhóm 1 | Quy tắc: Vう → Vあせる (Nhóm 1 đổi âm cuối hàng u sang hàng a rồi thêm せる.) | Mô tả nhóm: Nhóm 1 | Quy tắc chung: Vう → Vあせる | Động từ nhóm 1 chuyển đuôi hàng u ở thể từ điển sang hàng a rồi thêm せる.",
+          "forms": [
+            {
+              "id": "a3f0c8ad-0c4d-49c0-90f0-e7bc4fd3850c",
+              "label": "使役形(しえきけい)",
+              "value": "直(なお)させる"
+            },
+            {
+              "id": "38bd85af-7aaa-4829-b1c2-cd41389ed29b",
+              "label": "Thể từ điển",
+              "value": "直(なお)す"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt/cho sửa",
+          "reading": "",
+          "createdAt": "2026-04-27T19:03:50.845Z",
+          "updatedAt": "2026-04-27T19:03:50.845Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "80a4eddf-3fc4-4bfe-9eec-d83c04d91fd3",
+          "base": "食(た)べる",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vる → Vさせる (Nhóm 2 bỏ る rồi thêm させる.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vる → Vさせる | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm させる.",
+          "forms": [
+            {
+              "id": "07e896fe-b398-4718-9a58-c10add7d9a62",
+              "label": "使役形(しえきけい)",
+              "value": "食(た)べさせる"
+            },
+            {
+              "id": "92bcfbd5-cb0f-4940-96df-1281c774e328",
+              "label": "Thể từ điển",
+              "value": "食(た)べる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt/cho ăn",
+          "reading": "",
+          "createdAt": "2026-04-27T19:03:50.845Z",
+          "updatedAt": "2026-04-27T19:03:50.845Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "f2320c41-4cc4-466c-9907-bf0cd6ceac2d",
+          "base": "調(しら)べる",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vる → Vさせる (Nhóm 2 bỏ る rồi thêm させる.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vる → Vさせる | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm させる.",
+          "forms": [
+            {
+              "id": "c1cfac7a-a151-458a-b850-23da1f075101",
+              "label": "使役形(しえきけい)",
+              "value": "調(しら)べさせる"
+            },
+            {
+              "id": "ff2c7306-3a3c-4cb8-b4fc-d1a08c5298e1",
+              "label": "Thể từ điển",
+              "value": "調(しら)べる"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt/cho tra cứu, điều tra",
+          "reading": "",
+          "createdAt": "2026-04-27T19:03:50.845Z",
+          "updatedAt": "2026-04-27T19:03:50.845Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "1eb3d0f8-00c5-4efd-aaf3-f0f2c0de8cbf",
+          "base": "覚(おぼ)える",
+          "note": "Nhóm: Nhóm 2 | Quy tắc: Vる → Vさせる (Nhóm 2 bỏ る rồi thêm させる.) | Mô tả nhóm: Nhóm 2 | Quy tắc chung: Vる → Vさせる | Động từ nhóm 2 bỏ る ở thể từ điển rồi thêm させる.",
+          "forms": [
+            {
+              "id": "824ad1cd-85b0-449b-868b-fcff4a7c0f28",
+              "label": "使役形(しえきけい)",
+              "value": "覚(おぼ)えさせる"
+            },
+            {
+              "id": "6ad9930d-471f-4d66-abc6-68f8886ab586",
+              "label": "Thể từ điển",
+              "value": "覚(おぼ)える"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt/cho nhớ",
+          "reading": "",
+          "createdAt": "2026-04-27T19:03:50.845Z",
+          "updatedAt": "2026-04-27T19:03:50.845Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "18a5f83d-2c09-4f14-85a8-addfb8fd7dfb",
+          "base": "する",
+          "note": "Nhóm: Nhóm 3 | Quy tắc: する → させる (Động từ nhóm 3 する chia thành させる.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: する → させる / 来(く)る → 来(こ)させる | Động từ nhóm 3 là nhóm đặc biệt. する chuyển thành させる, 来(く)る chuyển thành 来(こ)させる.",
+          "forms": [
+            {
+              "id": "2b128a56-1d0f-44b3-8dbe-aebd3e0722e0",
+              "label": "使役形(しえきけい)",
+              "value": "させる"
+            },
+            {
+              "id": "0460b88e-4891-430a-9de2-951f81030670",
+              "label": "Thể từ điển",
+              "value": "する"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt/cho làm",
+          "reading": "",
+          "createdAt": "2026-04-27T19:03:50.845Z",
+          "updatedAt": "2026-04-27T19:03:50.845Z",
+          "partOfSpeech": ""
+        },
+        {
+          "id": "616c9313-dc2d-4d25-bc08-aa676a382bc8",
+          "base": "来(く)る",
+          "note": "Nhóm: Nhóm 3 | Quy tắc: 来(く)る → 来(こ)させる (Động từ nhóm 3 来(く)る chia thành 来(こ)させる.) | Mô tả nhóm: Nhóm 3 | Quy tắc chung: する → させる / 来(く)る → 来(こ)させる | Động từ nhóm 3 là nhóm đặc biệt. する chuyển thành させる, 来(く)る chuyển thành 来(こ)させる.",
+          "forms": [
+            {
+              "id": "9d8f843b-46b7-42e6-8b7d-e166d1ace136",
+              "label": "使役形(しえきけい)",
+              "value": "来(こ)させる"
+            },
+            {
+              "id": "beda269a-f5cb-469e-ad51-2cb65362a98a",
+              "label": "Thể từ điển",
+              "value": "来(く)る"
+            }
+          ],
+          "kanji": "",
+          "hanviet": "",
+          "meaning": "bắt/cho đến",
+          "reading": "",
+          "createdAt": "2026-04-27T19:03:50.845Z",
+          "updatedAt": "2026-04-27T19:03:50.845Z",
+          "partOfSpeech": ""
+        }
+      ],
+      "title": "Thể sai khiến",
+      "formKey": "causative_form",
+      "createdAt": "2026-04-27T19:03:50.845Z",
+      "formLabel": "使役形(しえきけい)",
+      "jlptLevel": "N4",
+      "updatedAt": "2026-04-27T19:05:46.685Z",
+      "description": "Thể sai khiến là dạng động từ diễn đạt ý sai khiến, yêu cầu, bắt buộc hoặc cho phép ai đó làm một hành động nào đó."
+    }
+  ],
+  "updatedAt": "2026-04-27T19:06:00.265Z"
+}
