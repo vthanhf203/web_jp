@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -145,14 +145,19 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
   const flashRef = useRef<HTMLDivElement | null>(null);
   const addDeckFormRef = useRef<HTMLFormElement | null>(null);
 
-  const current = items[order[index]];
+  const itemOrderKey = useMemo(() => items.map((item) => item.id).join(","), [items]);
+  const normalizedIndex = index >= 0 && index < items.length ? index : 0;
+  const effectiveOrder =
+    order.length === items.length ? order : Array.from({ length: items.length }, (_, idx) => idx);
+  const currentOrderIndex = effectiveOrder[normalizedIndex] ?? 0;
+  const current = items[currentOrderIndex] ?? items[0];
   const quizOptions = useMemo(() => makeQuizOptions(items, current), [items, current]);
   const effectiveQuizPromptMode =
     quizPromptMode === "mixed"
-      ? pickMixedQuizPromptMode(`${current.id}-${index}-${order[index] ?? 0}`)
+      ? pickMixedQuizPromptMode(`${current.id}-${normalizedIndex}-${currentOrderIndex}`)
       : quizPromptMode;
   const canAddToReview = current.isReviewable !== false;
-  const progressPercent = ((index + 1) / items.length) * 100;
+  const progressPercent = ((normalizedIndex + 1) / items.length) * 100;
 
   const japaneseVoices = useMemo(
     () => speechVoices.filter((voice) => voice.lang.toLowerCase().startsWith("ja")),
@@ -173,37 +178,29 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
     return japaneseVoices.find((voice) => voice.name === effectiveJaVoiceName) ?? null;
   }, [effectiveJaVoiceName, japaneseVoices]);
 
-  const jpFrontMain = current.character;
-  const jpFrontSub = [
+  const readingSub = [
     current.onReading ? `On: ${current.onReading}` : "",
     current.kunReading ? `Kun: ${current.kunReading}` : "",
   ]
     .filter(Boolean)
     .join(" | ");
 
+  const exampleSub = current.exampleWord
+    ? `Ví dụ: ${current.exampleWord}${current.exampleMeaning ? ` - ${current.exampleMeaning}` : ""}`
+    : "";
+
+  const jpFrontMain = current.character;
+  const jpFrontSub = "";
+
   const jpBackMain = current.meaning;
-  const jpBackSub = [
-    current.character ? `Kanji: ${current.character}` : "",
-    `${current.jlptLevel} - ${current.strokeCount} nét`,
-    current.exampleWord
-      ? `Ví dụ: ${current.exampleWord}${current.exampleMeaning ? ` - ${current.exampleMeaning}` : ""}`
-      : "",
-  ]
+  const jpBackSub = [readingSub, current.character ? `Kanji: ${current.character}` : "", exampleSub]
     .filter(Boolean)
     .join(" | ");
 
   const viFrontMain = current.meaning;
-  const viFrontSub = `${current.jlptLevel} - ${current.strokeCount} nét`;
+  const viFrontSub = "";
   const viBackMain = current.character;
-  const viBackSub = [
-    current.onReading ? `On: ${current.onReading}` : "",
-    current.kunReading ? `Kun: ${current.kunReading}` : "",
-    current.exampleWord
-      ? `Ví dụ: ${current.exampleWord}${current.exampleMeaning ? ` - ${current.exampleMeaning}` : ""}`
-      : "",
-  ]
-    .filter(Boolean)
-    .join(" | ");
+  const viBackSub = [readingSub, exampleSub].filter(Boolean).join(" | ");
 
   const frontMain = direction === "jp-vi" ? jpFrontMain : viFrontMain;
   const frontSub = direction === "jp-vi" ? jpFrontSub : viFrontSub;
@@ -341,6 +338,13 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
   }
 
   useEffect(() => {
+    setOrder(Array.from({ length: items.length }, (_, idx) => idx));
+    setIsShuffled(false);
+    setIndex(0);
+    resetPerCard();
+  }, [itemOrderKey, items.length, resetPerCard]);
+
+  useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
       return;
     }
@@ -375,7 +379,7 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
       speakCurrent();
     }, 120);
     return () => window.clearTimeout(timer);
-  }, [autoPlay, index, mode, speakCurrent]);
+  }, [autoPlay, mode, normalizedIndex, speakCurrent]);
 
   useEffect(() => {
     focusFlashcardArea();
@@ -506,8 +510,8 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
         <div className="relative border-b border-slate-500/20 px-4 py-4">
           <div className="flex items-center justify-between text-slate-300">
             <Link href={detailHref} className="inline-flex items-center gap-2 text-xl">
-              <span className="text-lg">[]</span>
-              <span>Xem chi ti?t</span>
+              <span className="text-lg">&#8599;</span>
+              <span>Xem chi tiết</span>
             </Link>
             <div className="inline-flex items-center gap-2">
               <span className="rounded-full bg-slate-700 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">
@@ -597,7 +601,7 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
               </p>
             </div>
             <p className="mt-2 text-center text-sm text-slate-300">
-              Câu {index + 1}/{items.length}
+              Câu {normalizedIndex + 1}/{items.length}
             </p>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -645,7 +649,7 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
                       </div>
                     ) : (
                       <p className="mt-1 text-sm text-slate-300">
-                        {option.character} · On: {option.onReading.trim() || "-"} · Kun:{" "}
+                        {option.character} | On: {option.onReading.trim() || "-"} | Kun:{" "}
                         {option.kunReading.trim() || "-"}
                       </p>
                     )}
@@ -724,14 +728,14 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
               className="rounded-full bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-200"
               onClick={goPrev}
             >
-              {"<"} C?u tr?c
+              {"<"} Câu trước
             </button>
             <button
               type="button"
               className="rounded-full bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-200"
               onClick={goNext}
             >
-              C?u sau {">"}
+              Câu sau {">"}
             </button>
           </div>
         </div>
@@ -755,8 +759,8 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
       <div className="relative border-b border-slate-500/20 px-4 py-4">
         <div className="flex items-center justify-between text-slate-300">
           <Link href={detailHref} className="inline-flex items-center gap-2 text-xl">
-            <span className="text-lg">[]</span>
-            <span>Xem chi ti?t</span>
+            <span className="text-lg">&#8599;</span>
+            <span>Xem chi tiết</span>
           </Link>
           <Link href={backHref} className="text-3xl leading-none text-slate-400 hover:text-white">
             x
@@ -786,7 +790,7 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
               goPrev();
               focusFlashcardArea();
             }}
-            aria-label="Th? tr?c"
+            aria-label="Thẻ trước"
           >
             {"<"}
           </button>
@@ -800,7 +804,7 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
               goNext();
               focusFlashcardArea();
             }}
-            aria-label="Th? sau"
+            aria-label="Thẻ sau"
           >
             {">"}
           </button>
@@ -816,17 +820,17 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
             >
               {shownMain}
             </p>
-            {shownSub ? <p className="mt-4 text-3xl text-slate-300">{shownSub}</p> : null}
+            {shownSub ? <p className="mt-5 max-w-2xl rounded-2xl border border-slate-300/30 bg-slate-900/25 px-5 py-3 text-xl leading-relaxed text-slate-100 sm:text-2xl">{shownSub}</p> : null}
           </div>
         </div>
       </div>
 
-      <div className="border-y border-slate-500/35 bg-[#44517a] px-4 py-3 text-3xl text-slate-200">
-        Phím tắt: <span className="rounded-md bg-slate-500/55 px-2 py-0.5">Space</span> lật
-        <span className="ml-2 rounded-md bg-slate-500/55 px-2 py-0.5">Z</span> biết
-        <span className="ml-2 rounded-md bg-slate-500/55 px-2 py-0.5">X</span> chưa biết
-        <span className="ml-2 rounded-md bg-slate-500/55 px-2 py-0.5">C</span> lưu ôn tập
-        <span className="ml-2 rounded-md bg-slate-500/55 px-2 py-0.5">R</span> phát âm
+      <div className="border-y border-slate-500/35 bg-[#44517a] px-4 py-2 text-base text-slate-200 sm:text-lg">
+        Phím tắt: <span className="rounded-md bg-slate-500/55 px-1.5 py-0.5 text-sm font-semibold">Space</span> lật
+        <span className="ml-2 rounded-md bg-slate-500/55 px-1.5 py-0.5 text-sm font-semibold">Z</span> biết
+        <span className="ml-2 rounded-md bg-slate-500/55 px-1.5 py-0.5 text-sm font-semibold">X</span> chưa biết
+        <span className="ml-2 rounded-md bg-slate-500/55 px-1.5 py-0.5 text-sm font-semibold">C</span> lưu ôn tập
+        <span className="ml-2 rounded-md bg-slate-500/55 px-1.5 py-0.5 text-sm font-semibold">R</span> phát âm
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 bg-[#1f2848] px-5 py-4">
@@ -858,14 +862,14 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
             x
           </button>
           <span className="text-4xl font-semibold">
-            {index + 1} / {items.length}
+            {normalizedIndex + 1} / {items.length}
           </span>
           <button
             type="button"
             onClick={() => markCard(true)}
             onMouseDown={(event) => event.preventDefault()}
             className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-600 text-5xl font-bold"
-            aria-label="Bi?t"
+            aria-label="Biết"
           >
             v
           </button>
@@ -894,7 +898,7 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
               focusFlashcardArea();
             }}
           >
-            L?t l?i
+            Lật lại
           </button>
 
           <button

@@ -400,6 +400,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     ? togglePickedId(activePickedIds, selectedKanji.id)
     : activePickedIds;
   const selectedFlashcardKanji = filteredKanji.filter((kanji) => pickedIdSet.has(kanji.id));
+  const orderedPickedIds = selectedFlashcardKanji.map((kanji) => kanji.id);
   const kanjiMetadataMap = new Map(
     kanjiMetadata.entries.map((entry) => [entry.character, entry.relatedWords])
   );
@@ -587,17 +588,17 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
   const worksheetHref = buildKanjiWorksheetHref({
     level: selectedLevel,
     rawQuery,
-    pickedIds: activePickedIds,
+    pickedIds: orderedPickedIds,
     scope,
   });
   const pickedFlashcardHref = buildKanjiLearnHref({
     level: selectedLevel,
-    pickedIds: activePickedIds,
+    pickedIds: orderedPickedIds,
     scope: flashcardScope,
   });
   const pickedQuizHref = buildKanjiLearnHref({
     level: selectedLevel,
-    pickedIds: activePickedIds,
+    pickedIds: orderedPickedIds,
     mode: "quiz",
     scope: flashcardScope,
   });

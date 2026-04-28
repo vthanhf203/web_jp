@@ -1,0 +1,9 @@
+#!/bin/sh
+
+echo "[pre-commit] Exporting DB data to data/* ..."
+npm run -s data:export-from-db || exit 1
+
+echo "[pre-commit] Staging exported data files ..."
+git add data || exit 1
+
+echo "[pre-commit] Done."

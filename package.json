@@ -14,6 +14,8 @@
     "db:studio": "prisma studio",
     "prisma:generate": "prisma generate",
     "data:migrate-to-db": "tsx scripts/migrate-file-data-to-db.ts",
+    "data:export-from-db": "node scripts/export-db-data-to-files.mjs",
+    "hooks:enable": "git config core.hooksPath .githooks",
     "grammar:import": "python scripts/import_grammar_pdf.py",
     "grammar:import-images": "python scripts/import_grammar_images.py"
   },

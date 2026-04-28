@@ -33,6 +33,8 @@ export type AdminConjugationLesson = {
   id: string;
   title: string;
   description: string;
+  formKey: string;
+  formLabel: string;
   jlptLevel: JlptLevel;
   createdAt: string;
   updatedAt: string;
@@ -125,6 +127,18 @@ function normalizeLesson(input: unknown): AdminConjugationLesson | null {
     title,
     description:
       typeof raw.description === "string" ? raw.description.trim() : "",
+    formKey:
+      typeof raw.formKey === "string"
+        ? raw.formKey.trim()
+        : typeof (raw as Record<string, unknown>).form === "string"
+          ? String((raw as Record<string, unknown>).form).trim()
+          : "",
+    formLabel:
+      typeof raw.formLabel === "string"
+        ? raw.formLabel.trim()
+        : typeof (raw as Record<string, unknown>).form_label === "string"
+          ? String((raw as Record<string, unknown>).form_label).trim()
+          : "",
     jlptLevel: normalizeJlptLevel(raw.jlptLevel),
     createdAt: typeof raw.createdAt === "string" ? raw.createdAt : nowIso(),
     updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : nowIso(),
@@ -188,4 +202,3 @@ export async function saveAdminConjugationLibrary(
 }
 
 export { JLPT_LEVELS, normalizeJlptLevel, type JlptLevel };
-

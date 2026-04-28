@@ -5,6 +5,7 @@ import {
   createAdminConjugationLessonAction,
   deleteAdminConjugationItemAction,
   deleteAdminConjugationLessonAction,
+  moveAdminConjugationLessonLevelAction,
   updateAdminConjugationLessonAction,
 } from "@/app/actions/admin-conjugation";
 import { AdminConjugationImportForm } from "@/app/components/admin-conjugation-import-form";
@@ -22,6 +23,9 @@ type SearchParams = Promise<{
   level?: string | string[];
 }>;
 
+const LEVEL_ALL = "ALL" as const;
+type LevelFilter = JlptLevel | typeof LEVEL_ALL;
+
 function pickSingle(value?: string | string[]): string | null {
   if (!value) {
     return null;
@@ -29,9 +33,12 @@ function pickSingle(value?: string | string[]): string | null {
   return Array.isArray(value) ? (value[0] ?? null) : value;
 }
 
-function levelStyle(level: JlptLevel, active: JlptLevel): string {
+function levelStyle(level: LevelFilter, active: LevelFilter): string {
   if (level !== active) {
     return "border-slate-200 bg-white text-slate-700 hover:bg-slate-50";
+  }
+  if (level === LEVEL_ALL) {
+    return "border-slate-700 bg-slate-900 text-white";
   }
   if (level === "N5") {
     return "border-emerald-300 bg-emerald-100 text-emerald-800";
@@ -48,13 +55,25 @@ function levelStyle(level: JlptLevel, active: JlptLevel): string {
   return "border-rose-300 bg-rose-100 text-rose-800";
 }
 
-function levelHref(level: JlptLevel, lessonId: string | null = null): string {
+function levelHref(level: LevelFilter, lessonId: string | null = null): string {
   const query = new URLSearchParams();
   query.set("level", level);
   if (lessonId) {
     query.set("lesson", lessonId);
   }
   return `/admin/conjugation?${query.toString()}`;
+}
+
+function parseLevelFilter(value: string | null): LevelFilter {
+  const raw = (value ?? "").trim().toUpperCase();
+  if (raw === LEVEL_ALL) {
+    return LEVEL_ALL;
+  }
+  return normalizeJlptLevel(value);
+}
+
+function levelText(level: LevelFilter): string {
+  return level === LEVEL_ALL ? "Tất cả" : level;
 }
 
 export default async function AdminConjugationPage(props: {
@@ -68,10 +87,11 @@ export default async function AdminConjugationPage(props: {
     a.createdAt.localeCompare(b.createdAt)
   );
 
-  const selectedLevel = normalizeJlptLevel(pickSingle(params.level));
-  const filteredLessons = lessons.filter(
-    (lesson) => lesson.jlptLevel === selectedLevel
-  );
+  const selectedLevel = parseLevelFilter(pickSingle(params.level));
+  const filteredLessons =
+    selectedLevel === LEVEL_ALL
+      ? lessons
+      : lessons.filter((lesson) => lesson.jlptLevel === selectedLevel);
   const requestedLessonId = pickSingle(params.lesson);
   const selectedLesson =
     filteredLessons.find((lesson) => lesson.id === requestedLessonId) ??
@@ -90,6 +110,12 @@ export default async function AdminConjugationPage(props: {
       ];
     })
   ) as Record<JlptLevel, { lessonCount: number; itemCount: number }>;
+  const allStats = {
+    lessonCount: lessons.length,
+    itemCount: lessons.reduce((sum, lesson) => sum + lesson.items.length, 0),
+  };
+  const createDefaultLevel: JlptLevel =
+    selectedLevel === LEVEL_ALL ? "N5" : selectedLevel;
 
   return (
     <section className="space-y-6 rounded-3xl border border-sky-100 bg-[#d8e5f7] p-6 shadow-[0_8px_28px_rgba(28,78,140,0.08)] [background-image:linear-gradient(rgba(255,255,255,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.3)_1px,transparent_1px)] [background-size:30px_30px]">
@@ -113,6 +139,18 @@ export default async function AdminConjugationPage(props: {
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
+          <Link
+            href={levelHref(LEVEL_ALL)}
+            className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${levelStyle(
+              LEVEL_ALL,
+              selectedLevel
+            )}`}
+          >
+            <div className="leading-tight">
+              <p>Tất cả ({allStats.lessonCount} lesson)</p>
+              <p className="text-xs font-medium opacity-80">{allStats.itemCount} mục</p>
+            </div>
+          </Link>
           {JLPT_LEVELS.map((level) => (
             <Link
               key={level}
@@ -142,15 +180,25 @@ export default async function AdminConjugationPage(props: {
             className="space-y-2 rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-sky-50/60 p-3.5"
           >
             <p className="text-sm font-semibold text-slate-700">
-              Tạo lesson mới cho {selectedLevel}
+              Tạo lesson mới cho {levelText(selectedLevel)}
             </p>
             <input
               name="title"
-              placeholder={`Ví dụ: ${selectedLevel} - Động từ thể ます`}
+              placeholder={`Ví dụ: ${createDefaultLevel} - Động từ thể ます`}
               className="input-base"
               maxLength={64}
             />
-            <input type="hidden" name="jlptLevel" value={selectedLevel} />
+            {selectedLevel === LEVEL_ALL ? (
+              <select name="jlptLevel" defaultValue={createDefaultLevel} className="input-base">
+                {JLPT_LEVELS.map((level) => (
+                  <option key={`create-${level}`} value={level}>
+                    Tạo vào cấp {level}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input type="hidden" name="jlptLevel" value={createDefaultLevel} />
+            )}
             <button type="submit" className="btn-primary w-full whitespace-nowrap">
               + Tạo lesson
             </button>
@@ -158,7 +206,7 @@ export default async function AdminConjugationPage(props: {
 
           <div className="mt-4 flex items-center justify-between gap-2">
             <h2 className="text-xl font-bold text-slate-800">
-              Lesson {selectedLevel}
+              Lesson {levelText(selectedLevel)}
             </h2>
             <span className="chip">{filteredLessons.length}</span>
           </div>
@@ -166,34 +214,57 @@ export default async function AdminConjugationPage(props: {
           <div className="mt-3 max-h-[70vh] space-y-2 overflow-y-auto pr-2">
             {filteredLessons.length === 0 ? (
               <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
-                Chưa có lesson chia thể ở {selectedLevel}.
+                Chưa có lesson chia thể ở {levelText(selectedLevel)}.
               </p>
             ) : (
               filteredLessons.map((lesson) => {
                 const active = selectedLesson?.id === lesson.id;
+                const formDisplayName = lesson.formLabel || lesson.title;
                 return (
                   <article
                     key={lesson.id}
-                    className={`rounded-xl border p-3 transition ${
+                    className={`rounded-xl border p-3 ${
                       active
-                        ? "border-sky-300 bg-gradient-to-r from-sky-50 to-white shadow-[0_12px_26px_rgba(37,99,235,0.14)]"
-                        : "border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white"
+                        ? "border-blue-300 bg-blue-50"
+                        : "border-slate-200 bg-slate-50 hover:border-slate-300"
                     }`}
                   >
-                    <Link href={levelHref(selectedLevel, lesson.id)} className="block rounded-lg">
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="min-w-0 truncate text-base font-semibold text-slate-800" title={lesson.title}>
-                          {lesson.title}
-                        </p>
-                        <span className="shrink-0 rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-xs font-semibold text-sky-700">
-                          {lesson.items.length} mục
-                        </span>
-                      </div>
+                    <Link href={levelHref(selectedLevel, lesson.id)} className="block">
+                      <p className="truncate font-semibold text-slate-800" title={formDisplayName}>
+                        {formDisplayName}
+                      </p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        {lesson.items.length} mục
+                        {lesson.formLabel && lesson.formLabel !== lesson.title
+                          ? ` • Lesson: ${lesson.title}`
+                          : ""}
+                      </p>
                       <p className="mt-1 text-xs text-slate-500">
                         Cấp {lesson.jlptLevel}
                         {active ? " • Đang chọn" : ""}
                       </p>
                     </Link>
+
+                    <form action={moveAdminConjugationLessonLevelAction} className="mt-2 flex items-center gap-2">
+                      <input type="hidden" name="lessonId" value={lesson.id} />
+                      <select
+                        name="targetLevel"
+                        defaultValue={lesson.jlptLevel}
+                        className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700"
+                      >
+                        {JLPT_LEVELS.map((level) => (
+                          <option key={`${lesson.id}-${level}`} value={level}>
+                            Chuyển sang {level}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="submit"
+                        className="rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-700 transition hover:bg-sky-100"
+                      >
+                        Chuyển cấp
+                      </button>
+                    </form>
 
                     <form action={deleteAdminConjugationLessonAction} className="mt-2">
                       <input type="hidden" name="lessonId" value={lesson.id} />
@@ -211,12 +282,19 @@ export default async function AdminConjugationPage(props: {
           </div>
         </aside>
 
-        <div className="space-y-5 rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
+        <div
+          key={selectedLesson?.id ?? "no-selected-lesson"}
+          className="space-y-5 rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm"
+        >
           {selectedLesson ? (
             <>
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                 <h3 className="text-lg font-bold text-slate-800">Thông tin lesson</h3>
-                <form action={updateAdminConjugationLessonAction} className="mt-3 grid gap-3">
+                <form
+                  key={`lesson-info-${selectedLesson.id}`}
+                  action={updateAdminConjugationLessonAction}
+                  className="mt-3 grid gap-3"
+                >
                   <input type="hidden" name="lessonId" value={selectedLesson.id} />
                   <label className="space-y-1">
                     <span className="text-sm font-semibold text-slate-600">Tên lesson</span>
@@ -226,6 +304,17 @@ export default async function AdminConjugationPage(props: {
                       className="input-base"
                       maxLength={64}
                       required
+                    />
+                  </label>
+
+                  <label className="space-y-1">
+                    <span className="text-sm font-semibold text-slate-600">Tên thể</span>
+                    <input
+                      name="formLabel"
+                      defaultValue={selectedLesson.formLabel}
+                      className="input-base"
+                      maxLength={40}
+                      placeholder="Ví dụ: Thể て"
                     />
                   </label>
 
@@ -270,7 +359,11 @@ export default async function AdminConjugationPage(props: {
                   Khuyến nghị mỗi item gồm từ gốc + nghĩa + mảng/forms các thể cần học.
                 </p>
                 <div className="mt-3">
-                  <AdminConjugationImportForm lessonId={selectedLesson.id} />
+                  <AdminConjugationImportForm
+                    key={`import-${selectedLesson.id}`}
+                    lessonId={selectedLesson.id}
+                    jlptLevel={selectedLevel}
+                  />
                 </div>
               </div>
 
@@ -351,13 +444,26 @@ export default async function AdminConjugationPage(props: {
               </div>
             </>
           ) : (
-            <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-              Chưa có lesson chia thể nào ở {selectedLevel}. Tạo lesson mới để bắt đầu.
-            </p>
+            <div className="space-y-4">
+              <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                Chưa có lesson chia thể nào ở {levelText(selectedLevel)}. Bạn vẫn có thể import JSON để hệ
+                thống tự tạo lesson.
+              </p>
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <h3 className="text-lg font-bold text-slate-800">
+                  Nhập dữ liệu chia thể bằng JSON
+                </h3>
+                <p className="mt-1 text-sm text-slate-600">
+                  Khi chưa chọn lesson, hệ thống sẽ tự tạo lesson mới từ metadata trong JSON.
+                </p>
+                <div className="mt-3">
+                  <AdminConjugationImportForm lessonId={null} jlptLevel={createDefaultLevel} />
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
     </section>
   );
 }
-

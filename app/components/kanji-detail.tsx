@@ -113,13 +113,13 @@ function relatedWordRow(entry: RelatedWord, selectedChar: string) {
       className="flex items-center justify-between gap-3 rounded-2xl bg-slate-50/85 px-3 py-2.5 shadow-[0_10px_20px_rgba(15,23,42,0.05)]"
     >
       <div className="min-w-0">
-        <p className="truncate text-xl font-bold leading-tight text-slate-800 sm:text-2xl">
+        <p className="break-words text-xl font-bold leading-tight text-slate-800 sm:text-2xl">
           {renderWordWithHighlight(displayedWord, selectedChar)}
           {entry.reading ? (
             <span className="ml-2 text-base font-medium text-slate-500">({entry.reading})</span>
           ) : null}
         </p>
-        <p className="truncate text-sm text-slate-600">
+        <p className="break-words text-sm text-slate-600">
           {entry.hanviet ? `${entry.hanviet.toUpperCase()} - ` : ""}
           {entry.meaning}
         </p>
@@ -143,10 +143,10 @@ export function KanjiDetail({
 }: Props) {
   return (
     <section
-      className="grid gap-5 scroll-mt-28 lg:scroll-mt-36 lg:grid-cols-[1.5fr_0.9fr]"
+      className="grid min-w-0 gap-5 scroll-mt-28 lg:scroll-mt-36 xl:grid-cols-[minmax(520px,1.2fr)_minmax(420px,0.8fr)]"
       id={`kanji-${selectedKanji.id}`}
     >
-      <article className="relative overflow-hidden rounded-3xl bg-white/84 p-5 shadow-[0_20px_50px_rgba(15,23,42,0.08)] backdrop-blur-md sm:p-6">
+      <article className="relative min-w-0 overflow-hidden rounded-3xl bg-white/84 p-5 shadow-[0_20px_50px_rgba(15,23,42,0.08)] backdrop-blur-md sm:p-6">
         <div className="pointer-events-none absolute -left-12 top-0 h-40 w-40 rounded-full bg-cyan-200/35 blur-3xl" />
         <div className="pointer-events-none absolute -right-8 bottom-0 h-36 w-36 rounded-full bg-indigo-200/35 blur-3xl" />
 
@@ -209,8 +209,8 @@ export function KanjiDetail({
           </div>
         </div>
 
-        <div className="relative mt-5 grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
-          <article className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-cyan-50/90 via-white/95 to-indigo-50/70 p-5 shadow-[0_18px_40px_rgba(15,23,42,0.1)] sm:p-6">
+        <div className="relative mt-5 grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(220px,0.42fr)]">
+          <article className="relative min-w-0 overflow-hidden rounded-3xl bg-gradient-to-br from-cyan-50/90 via-white/95 to-indigo-50/70 p-5 shadow-[0_18px_40px_rgba(15,23,42,0.1)] sm:p-6">
             <div className="pointer-events-none absolute -left-10 -top-12 h-28 w-28 rounded-full bg-cyan-200/40 blur-2xl" />
             <div className="pointer-events-none absolute -right-12 top-6 h-24 w-24 rounded-full bg-indigo-200/35 blur-2xl" />
 
@@ -218,7 +218,9 @@ export function KanjiDetail({
               <p className="font-kanji-art text-[6.6rem] leading-none text-slate-900 sm:text-[7.6rem]">
                 {selectedKanji.character}
               </p>
-              <p className="mt-2 text-5xl font-extrabold tracking-tight text-slate-950">{selectedKanji.meaning}</p>
+              <p className="mt-2 break-words text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
+                {selectedKanji.meaning}
+              </p>
               <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-semibold">
                 <span className="rounded-full bg-sky-100 px-3 py-1 text-sky-800">{selectedKanji.jlptLevel}</span>
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">Kanji Deep Dive</span>
@@ -266,7 +268,7 @@ export function KanjiDetail({
             </div>
           </article>
 
-          <div className="flex flex-col gap-4">
+          <div className="min-w-0 flex flex-col gap-4">
             <article className="relative overflow-hidden rounded-3xl bg-slate-50/92 p-4 shadow-[0_14px_34px_rgba(15,23,42,0.08)]">
               <div className="pointer-events-none absolute -right-12 -top-8 h-24 w-24 rounded-full bg-cyan-100/70 blur-2xl" />
               <div className="mt-4 rounded-2xl bg-white/85 p-4 shadow-[0_10px_20px_rgba(15,23,42,0.06)]">
@@ -283,7 +285,7 @@ export function KanjiDetail({
         </div>
       </article>
 
-      <aside>
+      <aside className="min-w-0">
         <article className="relative overflow-hidden rounded-3xl bg-white/84 p-5 shadow-[0_18px_44px_rgba(15,23,42,0.08)] backdrop-blur-md">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-xl font-black text-orange-500">Từ vựng liên quan</h3>

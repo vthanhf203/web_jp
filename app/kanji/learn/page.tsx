@@ -3,6 +3,7 @@ import Link from "next/link";
 import { KanjiStudyClient, type StudyMode } from "@/app/components/kanji-study-client";
 import { normalizeJlptLevel } from "@/lib/admin-vocab-library";
 import { requireUser } from "@/lib/auth";
+import { loadAdminKanjiMetadata } from "@/lib/kanji-metadata";
 import { sortKanjiByLearningOrder } from "@/lib/kanji-compound";
 import { prisma } from "@/lib/prisma";
 import { isUserKanjiId, loadUserKanjiStore } from "@/lib/user-kanji-store";
@@ -55,7 +56,7 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
       }
     : {};
   const dbSelectedIds = selectedIds.filter((id) => !isUserKanjiId(id));
-  const [queriedKanji, userKanjiStore] = await Promise.all([
+  const [queriedKanji, userKanjiStore, kanjiMetadata] = await Promise.all([
     scope === "personal"
       ? dbSelectedIds.length > 0
         ? prisma.kanji.findMany({
@@ -80,6 +81,7 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
             where: baseWhere,
           }),
     loadUserKanjiStore(user.id),
+    loadAdminKanjiMetadata(),
   ]);
 
   const personalKanji = userKanjiStore.items
@@ -106,28 +108,36 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
     exampleWord: item.exampleWord,
     exampleMeaning: item.exampleMeaning,
   }));
+  const metadataEntryMap = new Map(
+    kanjiMetadata.entries.map((entry) => [entry.character, entry])
+  );
+  const personalKanjiByCharacter = new Map(
+    userKanjiStore.items.map((item) => [item.character, item])
+  );
+  const sortedDbKanji = sortKanjiByLearningOrder(dbKanji, {
+    getOrder: (item) => metadataEntryMap.get(item.character)?.order,
+  });
+  const sortedPersonalKanji = sortKanjiByLearningOrder(personalKanji, {
+    getOrder: (item) => personalKanjiByCharacter.get(item.character)?.order,
+  });
 
-  const mergedByCharacter = new Map<string, (typeof personalKanji)[number]>();
-  if (scope !== "personal") {
-    for (const item of dbKanji) {
-      mergedByCharacter.set(item.character, item);
-    }
+  const mergedById = new Map<string, (typeof sortedDbKanji)[number]>();
+  for (const item of sortedDbKanji) {
+    mergedById.set(item.id, item);
   }
-  for (const item of personalKanji) {
-    mergedByCharacter.set(item.character, item);
+  for (const item of sortedPersonalKanji) {
+    mergedById.set(item.id, item);
   }
-  const mergedKanji = Array.from(mergedByCharacter.values());
 
-  const sortedBySelectedIds = selectedIds.length > 0
+  const defaultKanjiList = scope === "personal" ? sortedPersonalKanji : sortedDbKanji;
+  const orderedKanji = selectedIds.length > 0
     ? selectedIds
-        .map((id) => mergedKanji.find((item) => item.id === id))
-        .filter((item): item is (typeof mergedKanji)[number] => Boolean(item))
-    : scope === "personal"
-      ? mergedKanji
-      : sortKanjiByLearningOrder(mergedKanji);
+        .map((id) => mergedById.get(id))
+        .filter((item): item is (typeof defaultKanjiList)[number] => Boolean(item))
+    : defaultKanjiList;
 
   const filteredKanji = query
-    ? sortedBySelectedIds.filter((kanji) => {
+    ? orderedKanji.filter((kanji) => {
         const haystacks = [
           kanji.character,
           kanji.meaning,
@@ -139,7 +149,7 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
         ].map((value) => value.toLowerCase());
         return haystacks.some((value) => value.includes(query));
       })
-    : sortedBySelectedIds;
+    : orderedKanji;
 
   const backQuery = new URLSearchParams();
   if (rawQuery) {

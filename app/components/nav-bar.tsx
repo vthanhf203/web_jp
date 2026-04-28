@@ -23,19 +23,19 @@ function navIcon(path: string) {
 }
 
 const privateLinks: NavLinkItem[] = [
-  { href: "/dashboard", label: "Tong quan", iconPath: "M3 12l9-8 9 8M5 10v10h14V10" },
-  { href: "/personal", label: "Lo trinh", iconPath: "M3 6h18M6 12h12M9 18h6" },
-  { href: "/placement", label: "Test dau vao", iconPath: "M8 12l3 3 5-6M4 5h16v14H4z" },
-  { href: "/focus", label: "On sai", iconPath: "M12 3l7 4v5c0 5-3 7-7 9-4-2-7-4-7-9V7l7-4z" },
+  { href: "/dashboard", label: "Tổng quan", iconPath: "M3 12l9-8 9 8M5 10v10h14V10" },
+  { href: "/personal", label: "Lộ trình", iconPath: "M3 6h18M6 12h12M9 18h6" },
+  { href: "/placement", label: "Test đầu vào", iconPath: "M8 12l3 3 5-6M4 5h16v14H4z" },
+  { href: "/focus", label: "Ôn sai", iconPath: "M12 3l7 4v5c0 5-3 7-7 9-4-2-7-4-7-9V7l7-4z" },
   { href: "/search", label: "Search", iconPath: "M11 4a7 7 0 105.3 11.6L20 19" },
   { href: "/shadowing", label: "Shadowing", iconPath: "M4 12a8 8 0 0116 0v5a2 2 0 01-2 2h-2v-6h4M4 12v5a2 2 0 002 2h2v-6H4" },
   { href: "/kanji", label: "Kanji", iconPath: "M5 6h14M5 12h14M5 18h14M12 6v12" },
   { href: "/kanji/worksheet", label: "In PDF Kanji", iconPath: "M7 4h10v4H7zM6 10h12a2 2 0 012 2v5H4v-5a2 2 0 012-2zm2 8h8v2H8z" },
-  { href: "/self-study", label: "Tu hoc chu dong", iconPath: "M4 19h16M6 5h8l4 4v10H6zM10 11h4M10 15h4" },
-  { href: "/kanji/roadmap", label: "Lo trinh Kanji", iconPath: "M4 18l6-6 4 4 6-8" },
-  { href: "/vocab", label: "Tu vung", iconPath: "M5 4h10a3 3 0 013 3v13H8a3 3 0 01-3-3zM8 4v16" },
-  { href: "/grammar", label: "Ngu phap", iconPath: "M6 5h12M6 12h12M6 19h12" },
-  { href: "/conjugation", label: "Chia the", iconPath: "M5 5h14M5 12h14M5 19h8M16 16l3 3 3-3" },
+  { href: "/self-study", label: "Tự học chủ động", iconPath: "M4 19h16M6 5h8l4 4v10H6zM10 11h4M10 15h4" },
+  { href: "/kanji/roadmap", label: "Lộ trình Kanji", iconPath: "M4 18l6-6 4 4 6-8" },
+  { href: "/vocab", label: "Từ vựng", iconPath: "M5 4h10a3 3 0 013 3v13H8a3 3 0 01-3-3zM8 4v16" },
+  { href: "/grammar", label: "Ngữ pháp", iconPath: "M6 5h12M6 12h12M6 19h12" },
+  { href: "/conjugation", label: "Chia thể", iconPath: "M5 5h14M5 12h14M5 19h8M16 16l3 3 3-3" },
 ];
 
 export async function NavBar() {
@@ -63,7 +63,7 @@ export async function NavBar() {
               </span>
               <div className="leading-tight">
                 <p className="text-sm font-semibold text-slate-700">JP Lab</p>
-                <p className="text-xs text-slate-500">Kanji | Tu vung | Ngu phap</p>
+                <p className="text-xs text-slate-500">Kanji | Từ vựng | Ngữ pháp</p>
               </div>
             </Link>
 
@@ -74,29 +74,29 @@ export async function NavBar() {
                   <span className="mx-1 text-slate-300">|</span>
                   <span className="font-bold text-emerald-700">{user.xp} XP</span>
                   <span className="mx-1 text-slate-300">|</span>
-                  <span className="font-bold text-orange-600">{user.streak} ngay</span>
+                  <span className="font-bold text-orange-600">{user.streak} ngày</span>
                 </div>
                 {personalState ? (
                   <DailyReminderClient
                     enabled={personalState.reminders.enabled}
                     hour={personalState.reminders.hour}
                     minute={personalState.reminders.minute}
-                    label="Mo JP Lab 20 phut de giu streak hom nay."
+                    label="Mở JP Lab 20 phút để giữ streak hôm nay."
                   />
                 ) : null}
                 <form action={logoutAction}>
                   <button type="submit" className="btn-danger">
-                    Dang xuat
+                    Đăng xuất
                   </button>
                 </form>
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 <Link href="/login" className="btn-soft text-sm">
-                  Dang nhap
+                  Đăng nhập
                 </Link>
                 <Link href="/register" className="btn-primary text-sm">
-                  Tao tai khoan
+                  Tạo tài khoản
                 </Link>
               </div>
             )}
