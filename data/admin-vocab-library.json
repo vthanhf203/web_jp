@@ -3662,28 +3662,6 @@
           "partOfSpeech": "expression"
         },
         {
-          "id": "bc29aa04-c734-4e52-bead-eb90b9c07ce8",
-          "word": "のりかえます",
-          "kanji": "乗り換えます",
-          "hanviet": "thừa hoán",
-          "meaning": "Chuyển, đổi tàu/xe",
-          "reading": "のりかえます",
-          "createdAt": "2026-04-25T16:31:51.002Z",
-          "updatedAt": "2026-04-25T16:31:51.002Z",
-          "partOfSpeech": "verb"
-        },
-        {
-          "id": "97e84938-dc7a-4729-81ef-320c013b5be0",
-          "word": "うんてんします",
-          "kanji": "運転します",
-          "hanviet": "vận chuyển",
-          "meaning": "Lái xe",
-          "reading": "うんてんします",
-          "createdAt": "2026-04-25T16:31:51.002Z",
-          "updatedAt": "2026-04-25T16:31:51.002Z",
-          "partOfSpeech": "verb"
-        },
-        {
           "id": "c87dcabc-9b42-481f-8bfb-fc4f6c80d4de",
           "word": "こうつう",
           "kanji": "交通",
@@ -3709,7 +3687,7 @@
       "title": "Di chuyển & giao thông",
       "createdAt": "2026-04-25T16:28:12.916Z",
       "jlptLevel": "N5",
-      "updatedAt": "2026-04-25T16:32:24.359Z",
+      "updatedAt": "2026-04-29T17:28:52.546Z",
       "description": ""
     },
     {
@@ -9951,12 +9929,34 @@
           "createdAt": "2026-04-25T16:32:38.040Z",
           "updatedAt": "2026-04-25T16:32:38.040Z",
           "partOfSpeech": "verb"
+        },
+        {
+          "id": "bc29aa04-c734-4e52-bead-eb90b9c07ce8",
+          "word": "のりかえます",
+          "kanji": "乗り換えます",
+          "hanviet": "thừa hoán",
+          "meaning": "Chuyển, đổi tàu/xe",
+          "reading": "のりかえます",
+          "createdAt": "2026-04-25T16:31:51.002Z",
+          "updatedAt": "2026-04-29T17:28:42.319Z",
+          "partOfSpeech": "verb"
+        },
+        {
+          "id": "97e84938-dc7a-4729-81ef-320c013b5be0",
+          "word": "うんてんします",
+          "kanji": "運転します",
+          "hanviet": "vận chuyển",
+          "meaning": "Lái xe",
+          "reading": "うんてんします",
+          "createdAt": "2026-04-25T16:31:51.002Z",
+          "updatedAt": "2026-04-29T17:28:52.546Z",
+          "partOfSpeech": "verb"
         }
       ],
       "title": "Động từ",
       "createdAt": "2026-04-25T16:30:01.091Z",
       "jlptLevel": "N5",
-      "updatedAt": "2026-04-25T16:32:38.040Z",
+      "updatedAt": "2026-04-29T17:28:52.546Z",
       "description": ""
     },
     {
@@ -24710,5 +24710,5 @@
       "description": ""
     }
   ],
-  "updatedAt": "2026-04-25T17:02:28.242Z"
+  "updatedAt": "2026-04-29T17:28:52.546Z"
 }
