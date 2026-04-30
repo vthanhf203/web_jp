@@ -76,6 +76,7 @@ export default async function VocabLearnPage(props: { searchParams: SearchParams
       <VocabStudyClient
         lessonTitle={`${group.jlptLevel} | ${formatVocabLabel(group.title)}`}
         mode={mode}
+        alwaysShowQuizFurigana
         items={group.items.map((item) => ({
           id: item.id,
           word: item.word,
@@ -117,6 +118,7 @@ export default async function VocabLearnPage(props: { searchParams: SearchParams
     <VocabStudyClient
       lessonTitle={formatVocabLabel(lesson.title)}
       mode={mode}
+      alwaysShowQuizFurigana
       items={lesson.items.map((item) => ({
         id: item.id,
         word: item.word,

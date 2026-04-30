@@ -15,6 +15,7 @@ import {
 
 export type StudyMode = "flashcard" | "quiz" | "recall";
 type FlashcardPromptMode = "jp_to_vi" | "vi_to_jp" | "kanji_to_answer";
+type QuizPromptMode = "reading_meaning_to_kanji" | "vi_to_jp";
 type RecallKanaMode = "hiragana" | "katakana";
 
 type StudyItem = {
@@ -31,6 +32,7 @@ type Props = {
   mode: StudyMode;
   items: StudyItem[];
   backHref?: string;
+  alwaysShowQuizFurigana?: boolean;
 };
 
 const HARD_ITEMS_PAGE_SIZE = 8;
@@ -417,7 +419,13 @@ function ModeTitle({ mode }: { mode: StudyMode }) {
   return <span>Nhồi nhét</span>;
 }
 
-export function VocabStudyClient({ lessonTitle, mode, items, backHref = "/vocab" }: Props) {
+export function VocabStudyClient({
+  lessonTitle,
+  mode,
+  items,
+  backHref = "/vocab",
+  alwaysShowQuizFurigana = false,
+}: Props) {
   const router = useRouter();
   const [order, setOrder] = useState<number[]>(() => items.map((_, index) => index));
   const [isShuffled, setIsShuffled] = useState(false);
@@ -431,6 +439,7 @@ export function VocabStudyClient({ lessonTitle, mode, items, backHref = "/vocab"
 
   const [isFlipped, setIsFlipped] = useState(false);
   const [flashPromptMode, setFlashPromptMode] = useState<FlashcardPromptMode>("jp_to_vi");
+  const [quizPromptMode, setQuizPromptMode] = useState<QuizPromptMode>("reading_meaning_to_kanji");
 
   const [selectedOptionId, setSelectedOptionId] = useState("");
   const [checkedQuiz, setCheckedQuiz] = useState(false);
@@ -660,6 +669,13 @@ export function VocabStudyClient({ lessonTitle, mode, items, backHref = "/vocab"
     [focusFlashcardArea]
   );
 
+  const changeQuizPromptMode = useCallback((nextMode: QuizPromptMode) => {
+    setQuizPromptMode(nextMode);
+    setSelectedOptionId("");
+    setCheckedQuiz(false);
+    setQuizCorrect(false);
+  }, []);
+
   const toggleHardReview = useCallback(() => {
     if (hardOrder.length === 0) {
       return;
@@ -803,6 +819,21 @@ export function VocabStudyClient({ lessonTitle, mode, items, backHref = "/vocab"
   const flashSubText = isFlipped ? flashBackSub : flashFrontSub;
   const flashMainLabel = isFlipped ? flashBackLabel : flashFrontLabel;
   const flashSubLabel = isFlipped ? flashBackSubLabel : flashFrontSubLabel;
+  const quizQuestionMain =
+    quizPromptMode === "vi_to_jp"
+      ? meaningMain || hanvietMain || displayReadingMain(current)
+      : displayReadingMain(current);
+  const quizQuestionSub =
+    quizPromptMode === "vi_to_jp"
+      ? hanvietMain
+        ? `Hán Việt: ${hanvietMain}`
+        : ""
+      : meaningMain;
+  const quizPromptChip =
+    quizPromptMode === "vi_to_jp"
+      ? "Câu hỏi: Nghĩa tiếng Việt"
+      : "Câu hỏi: Hiragana + Nghĩa";
+  const quizAnswerChip = quizPromptMode === "vi_to_jp" ? "Đáp án: Tiếng Nhật" : "Đáp án: Kanji";
 
   useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
@@ -1338,18 +1369,50 @@ export function VocabStudyClient({ lessonTitle, mode, items, backHref = "/vocab"
 
       {mode === "quiz" ? (
         <div className="rounded-2xl bg-[#32416d] p-8">
-          <div className="mb-8 flex justify-end">
+          <div className="mb-8 flex flex-wrap items-center justify-end gap-3">
+            <div className="inline-flex rounded-xl bg-slate-800/80 p-1 text-sm">
+              <button
+                type="button"
+                className={`rounded-lg px-3 py-1 font-semibold transition ${
+                  quizPromptMode === "reading_meaning_to_kanji"
+                    ? "bg-emerald-500 text-white"
+                    : "text-slate-200 hover:bg-slate-700"
+                }`}
+                onClick={() => changeQuizPromptMode("reading_meaning_to_kanji")}
+              >
+                Hiragana + nghĩa
+              </button>
+              <button
+                type="button"
+                className={`rounded-lg px-3 py-1 font-semibold transition ${
+                  quizPromptMode === "vi_to_jp"
+                    ? "bg-sky-500 text-white"
+                    : "text-slate-200 hover:bg-slate-700"
+                }`}
+                onClick={() => changeQuizPromptMode("vi_to_jp")}
+              >
+                Nghĩa Việt -{">"} Nhật
+              </button>
+            </div>
             <div className="inline-flex rounded-xl bg-slate-700 p-1 text-sm">
               <span className="rounded-lg bg-emerald-500 px-3 py-1 font-semibold text-white">
-                Câu hỏi: Hiragana + Nghĩa
+                {quizPromptChip}
               </span>
-              <span className="px-3 py-1 text-slate-200">Đáp án: Kanji</span>
+              <span className="px-3 py-1 text-slate-200">{quizAnswerChip}</span>
             </div>
           </div>
 
           <div className="mb-8 text-center">
-            <h2 className="text-5xl font-semibold text-white">{displayReadingMain(current)}</h2>
-            <p className="mt-2 text-2xl font-medium text-slate-200">{current.meaning}</p>
+            <h2
+              className={`font-semibold text-white ${
+                quizPromptMode === "vi_to_jp" ? "text-4xl sm:text-5xl" : "text-5xl"
+              }`}
+            >
+              {quizQuestionMain}
+            </h2>
+            {quizQuestionSub ? (
+              <p className="mt-2 text-2xl font-medium text-slate-200">{quizQuestionSub}</p>
+            ) : null}
           </div>
 
           <div className="grid gap-3 md:grid-cols-2">
@@ -1361,7 +1424,7 @@ export function VocabStudyClient({ lessonTitle, mode, items, backHref = "/vocab"
               const optionMain = displayJapanese(option).trim() || displayReadingMain(option).trim();
               const optionReading = option.reading.trim();
               const showFurigana =
-                checkedQuiz &&
+                (alwaysShowQuizFurigana || checkedQuiz) &&
                 optionReading.length > 0 &&
                 hasJapaneseChars(optionMain) &&
                 optionReading !== optionMain;
