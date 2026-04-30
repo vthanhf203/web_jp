@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { addKanjiToReviewAction } from "@/app/actions/study";
@@ -9,11 +10,16 @@ import {
   AUDIO_RATE_KEY,
   AUDIO_VOICE_KEY,
 } from "@/app/components/audio-settings-client";
+import {
+  readLearningProgress,
+  upsertLearningProgress,
+} from "@/app/components/learning-progress-storage";
 
 type StudyKanjiItem = {
   id: string;
   character: string;
   meaning: string;
+  hanviet?: string;
   onReading: string;
   kunReading: string;
   strokeCount: number;
@@ -21,6 +27,16 @@ type StudyKanjiItem = {
   exampleMeaning: string;
   jlptLevel: string;
   isReviewable?: boolean;
+  relatedWords?: Array<{
+    id: string;
+    word: string;
+    reading: string;
+    meaning: string;
+    hanviet?: string;
+    exampleSentence?: string;
+    exampleMeaning?: string;
+    sourceLabel?: string;
+  }>;
 };
 
 export type StudyMode = "flashcard" | "quiz";
@@ -30,10 +46,14 @@ type Props = {
   backHref: string;
   items: StudyKanjiItem[];
   mode: StudyMode;
+  relatedVocabCount?: number;
+  relatedVocabFlashcardHref?: string;
+  relatedVocabQuizHref?: string;
 };
 
 type Direction = "jp-vi" | "vi-jp";
 type QuizPromptMode = "meaning_to_kanji" | "kanji_to_meaning" | "mixed";
+const HARD_ITEMS_PAGE_SIZE = 8;
 
 const preferredJaVoiceKeywords = [
   "haruka online",
@@ -116,13 +136,63 @@ function pickMixedQuizPromptMode(seed: string): Exclude<QuizPromptMode, "mixed">
   return Math.abs(hash) % 2 === 0 ? "meaning_to_kanji" : "kanji_to_meaning";
 }
 
-export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
+function splitReadings(value: string): string[] {
+  return value
+    .split(/[,\u3001\u30fb/]/)
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .slice(0, 8);
+}
+
+function compactWhitespace(value: string): string {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function buildRelatedWordLabel(input: {
+  word: string;
+  reading: string;
+  meaning: string;
+  hanviet?: string;
+  exampleSentence?: string;
+  exampleMeaning?: string;
+}): string {
+  const surface = compactWhitespace(input.word || "");
+  const reading = compactWhitespace(input.reading || "");
+  const meaning = compactWhitespace(input.meaning || "");
+  const hanviet = compactWhitespace(input.hanviet || "");
+  const exampleSentence = compactWhitespace(input.exampleSentence || "");
+  const exampleMeaning = compactWhitespace(input.exampleMeaning || "");
+  if (!surface || !meaning) {
+    return "";
+  }
+
+  const left = reading ? `${surface} (${reading})` : surface;
+  const right = hanviet ? `${hanviet.toUpperCase()} - ${meaning}` : meaning;
+  const exampleRaw = exampleSentence || exampleMeaning;
+  const example = exampleRaw.length > 48 ? `${exampleRaw.slice(0, 48).trim()}...` : exampleRaw;
+  return example ? `${left}: ${right} · VD: ${example}` : `${left}: ${right}`;
+}
+
+export function KanjiStudyClient({
+  title,
+  backHref,
+  items,
+  mode,
+  relatedVocabCount = 0,
+  relatedVocabFlashcardHref,
+  relatedVocabQuizHref,
+}: Props) {
+  const router = useRouter();
   const [order, setOrder] = useState<number[]>(() => items.map((_, index) => index));
   const [isShuffled, setIsShuffled] = useState(false);
   const [index, setIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [knownCount, setKnownCount] = useState(0);
   const [unknownCount, setUnknownCount] = useState(0);
+  const [hardItemIds, setHardItemIds] = useState<string[]>([]);
+  const [isHardReview, setIsHardReview] = useState(false);
+  const [showHardPanel, setShowHardPanel] = useState(true);
+  const [hardPage, setHardPage] = useState(1);
   const [direction, setDirection] = useState<Direction>("jp-vi");
   const [quizPromptMode, setQuizPromptMode] = useState<QuizPromptMode>("meaning_to_kanji");
   const [selectedOptionId, setSelectedOptionId] = useState("");
@@ -144,20 +214,44 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
 
   const flashRef = useRef<HTMLDivElement | null>(null);
   const addDeckFormRef = useRef<HTMLFormElement | null>(null);
+  const restoredProgressRef = useRef(false);
+  const [sessionHref, setSessionHref] = useState("");
 
   const itemOrderKey = useMemo(() => items.map((item) => item.id).join(","), [items]);
-  const normalizedIndex = index >= 0 && index < items.length ? index : 0;
   const effectiveOrder =
     order.length === items.length ? order : Array.from({ length: items.length }, (_, idx) => idx);
-  const currentOrderIndex = effectiveOrder[normalizedIndex] ?? 0;
+  const hardIdSet = useMemo(() => new Set(hardItemIds), [hardItemIds]);
+  const hardOrder = useMemo(
+    () =>
+      effectiveOrder.filter((orderIndex) => {
+        const target = items[orderIndex];
+        return target ? hardIdSet.has(target.id) : false;
+      }),
+    [effectiveOrder, hardIdSet, items]
+  );
+  const activeOrder =
+    mode === "flashcard" && isHardReview && hardOrder.length > 0 ? hardOrder : effectiveOrder;
+  const activeCount = activeOrder.length;
+  const normalizedIndex = index >= 0 && index < activeCount ? index : 0;
+  const currentOrderIndex = activeOrder[normalizedIndex] ?? activeOrder[0] ?? 0;
   const current = items[currentOrderIndex] ?? items[0];
+  const hardItems = useMemo(() => {
+    const map = new Map(items.map((item) => [item.id, item]));
+    return hardItemIds.map((id) => map.get(id)).filter((item): item is StudyKanjiItem => !!item);
+  }, [hardItemIds, items]);
+  const hardTotalPages = Math.max(1, Math.ceil(hardItems.length / HARD_ITEMS_PAGE_SIZE));
+  const hardPageSafe = Math.min(hardPage, hardTotalPages);
+  const hardPageItems = useMemo(() => {
+    const start = (hardPageSafe - 1) * HARD_ITEMS_PAGE_SIZE;
+    return hardItems.slice(start, start + HARD_ITEMS_PAGE_SIZE);
+  }, [hardItems, hardPageSafe]);
   const quizOptions = useMemo(() => makeQuizOptions(items, current), [items, current]);
   const effectiveQuizPromptMode =
     quizPromptMode === "mixed"
       ? pickMixedQuizPromptMode(`${current.id}-${normalizedIndex}-${currentOrderIndex}`)
       : quizPromptMode;
   const canAddToReview = current.isReviewable !== false;
-  const progressPercent = ((normalizedIndex + 1) / items.length) * 100;
+  const progressPercent = activeCount > 0 ? ((normalizedIndex + 1) / activeCount) * 100 : 0;
 
   const japaneseVoices = useMemo(
     () => speechVoices.filter((voice) => voice.lang.toLowerCase().startsWith("ja")),
@@ -178,37 +272,125 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
     return japaneseVoices.find((voice) => voice.name === effectiveJaVoiceName) ?? null;
   }, [effectiveJaVoiceName, japaneseVoices]);
 
-  const readingSub = [
-    current.onReading ? `On: ${current.onReading}` : "",
-    current.kunReading ? `Kun: ${current.kunReading}` : "",
-  ]
-    .filter(Boolean)
-    .join(" | ");
+  const onReadingParts = splitReadings(current.onReading || "");
+  const kunReadingParts = splitReadings(current.kunReading || "");
+  const hanvietSub = current.hanviet?.trim() ? `Hán Việt: ${current.hanviet.trim()}` : "";
 
   const exampleSub = current.exampleWord
     ? `Ví dụ: ${current.exampleWord}${current.exampleMeaning ? ` - ${current.exampleMeaning}` : ""}`
     : "";
 
+  const relatedWordPreview = (current.relatedWords ?? [])
+    .map((entry) =>
+      buildRelatedWordLabel({
+        word: entry.word,
+        reading: entry.reading,
+        meaning: entry.meaning,
+        hanviet: entry.hanviet,
+        exampleSentence: entry.exampleSentence,
+        exampleMeaning: entry.exampleMeaning,
+      })
+    )
+    .filter(Boolean);
+
+  const activeRelatedKanji = useMemo(() => {
+    if (mode === "flashcard" && isHardReview && hardOrder.length > 0) {
+      return hardOrder
+        .map((orderIndex) => items[orderIndex])
+        .filter((item): item is StudyKanjiItem => Boolean(item));
+    }
+    return items;
+  }, [hardOrder, isHardReview, items, mode]);
+
+  const activeRelatedKanjiIds = useMemo(
+    () => Array.from(new Set(activeRelatedKanji.map((item) => item.id).filter(Boolean))),
+    [activeRelatedKanji]
+  );
+
+  const activeRelatedVocabCount = useMemo(() => {
+    const unique = new Set<string>();
+    for (const kanji of activeRelatedKanji) {
+      for (const word of kanji.relatedWords ?? []) {
+        const surface = (word.word || "").trim();
+        const reading = (word.reading || "").trim();
+        const meaning = (word.meaning || "").trim();
+        if (!surface || !meaning) {
+          continue;
+        }
+        unique.add(`${surface}|${reading}|${meaning}`.toLowerCase());
+      }
+    }
+    return unique.size;
+  }, [activeRelatedKanji]);
+
+  const buildRelatedHref = useCallback(
+    (nextMode: "flashcard" | "quiz"): string => {
+      const seed =
+        nextMode === "quiz"
+          ? relatedVocabQuizHref || relatedVocabFlashcardHref || "/kanji/learn"
+          : relatedVocabFlashcardHref || relatedVocabQuizHref || "/kanji/learn";
+      const url = new URL(seed, "https://local.app");
+      const params = new URLSearchParams(url.search);
+      params.delete("q");
+      params.set("related", "vocab");
+      if (nextMode === "quiz") {
+        params.set("mode", "quiz");
+      } else {
+        params.delete("mode");
+      }
+      if (activeRelatedKanjiIds.length > 0) {
+        params.set("ids", activeRelatedKanjiIds.join(","));
+      } else {
+        params.delete("ids");
+      }
+      const queryString = params.toString();
+      return queryString ? `/kanji/learn?${queryString}` : "/kanji/learn";
+    },
+    [activeRelatedKanjiIds, relatedVocabFlashcardHref, relatedVocabQuizHref]
+  );
+
+  const activeRelatedVocabFlashcardHref = useMemo(
+    () => buildRelatedHref("flashcard"),
+    [buildRelatedHref]
+  );
+  const activeRelatedVocabQuizHref = useMemo(() => buildRelatedHref("quiz"), [buildRelatedHref]);
+  const hasRelatedVocabDeck =
+    activeRelatedVocabCount > 0 &&
+    Boolean(activeRelatedVocabFlashcardHref) &&
+    Boolean(activeRelatedVocabQuizHref);
+
   const jpFrontMain = current.character;
   const jpFrontSub = "";
 
   const jpBackMain = current.meaning;
-  const jpBackSub = [readingSub, current.character ? `Kanji: ${current.character}` : "", exampleSub]
+  const jpBackSub = [hanvietSub, current.character ? `Kanji: ${current.character}` : "", exampleSub]
     .filter(Boolean)
     .join(" | ");
 
   const viFrontMain = current.meaning;
   const viFrontSub = "";
   const viBackMain = current.character;
-  const viBackSub = [readingSub, exampleSub].filter(Boolean).join(" | ");
+  const viBackSub = [hanvietSub, exampleSub].filter(Boolean).join(" | ");
 
   const frontMain = direction === "jp-vi" ? jpFrontMain : viFrontMain;
   const frontSub = direction === "jp-vi" ? jpFrontSub : viFrontSub;
   const backMain = direction === "jp-vi" ? jpBackMain : viBackMain;
   const backSub = direction === "jp-vi" ? jpBackSub : viBackSub;
 
-  const shownMain = isFlipped ? backMain : frontMain;
-  const shownSub = isFlipped ? backSub : frontSub;
+  const pickMainClass = (text: string): string => {
+    const trimmed = text.trim();
+    const hasJapanese = hasJapaneseChars(trimmed);
+    const length = trimmed.length;
+    if (hasJapanese) {
+      return length > 8 ? "text-5xl sm:text-6xl" : "text-8xl sm:text-[7.25rem]";
+    }
+    if (length > 24) {
+      return "text-4xl sm:text-5xl";
+    }
+    return "text-5xl sm:text-6xl";
+  };
+  const frontMainClass = pickMainClass(frontMain);
+  const backMainClass = pickMainClass(backMain);
 
   const focusFlashcardArea = useCallback(() => {
     flashRef.current?.focus();
@@ -222,14 +404,24 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
   }, []);
 
   const goNext = useCallback(() => {
-    setIndex((prev) => (prev + 1) % items.length);
+    setIndex((prev) => {
+      if (activeCount <= 0) {
+        return 0;
+      }
+      return (prev + 1) % activeCount;
+    });
     resetPerCard();
-  }, [items.length, resetPerCard]);
+  }, [activeCount, resetPerCard]);
 
   const goPrev = useCallback(() => {
-    setIndex((prev) => (prev - 1 + items.length) % items.length);
+    setIndex((prev) => {
+      if (activeCount <= 0) {
+        return 0;
+      }
+      return (prev - 1 + activeCount) % activeCount;
+    });
     resetPerCard();
-  }, [items.length, resetPerCard]);
+  }, [activeCount, resetPerCard]);
 
   const flipCard = useCallback(() => {
     setIsFlipped((prev) => !prev);
@@ -241,11 +433,32 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
         setKnownCount((prev) => prev + 1);
       } else {
         setUnknownCount((prev) => prev + 1);
+        setHardItemIds((prev) => (prev.includes(current.id) ? prev : [...prev, current.id]));
       }
       goNext();
     },
-    [goNext]
+    [current.id, goNext]
   );
+
+  const toggleHardReview = useCallback(() => {
+    if (hardOrder.length === 0) {
+      return;
+    }
+    setIsHardReview((prev) => !prev);
+    setIndex(0);
+    resetPerCard();
+    focusFlashcardArea();
+  }, [focusFlashcardArea, hardOrder.length, resetPerCard]);
+
+  const removeHardItem = useCallback((itemId: string) => {
+    setHardItemIds((prev) => prev.filter((id) => id !== itemId));
+  }, []);
+
+  const clearHardItems = useCallback(() => {
+    setHardItemIds([]);
+    setIsHardReview(false);
+    setHardPage(1);
+  }, []);
 
   const checkQuiz = useCallback(() => {
     if (!selectedOptionId) {
@@ -338,11 +551,93 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
   }
 
   useEffect(() => {
+    setIndex((prev) => {
+      if (activeCount <= 0) {
+        return 0;
+      }
+      if (prev >= activeCount) {
+        return 0;
+      }
+      return prev;
+    });
+  }, [activeCount]);
+
+  useEffect(() => {
+    if (isHardReview && hardOrder.length === 0) {
+      setIsHardReview(false);
+    }
+  }, [hardOrder.length, isHardReview]);
+
+  useEffect(() => {
+    setHardPage((prev) => Math.max(1, Math.min(prev, hardTotalPages)));
+  }, [hardTotalPages]);
+
+  useEffect(() => {
     setOrder(Array.from({ length: items.length }, (_, idx) => idx));
     setIsShuffled(false);
     setIndex(0);
     resetPerCard();
   }, [itemOrderKey, items.length, resetPerCard]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const href = `${window.location.pathname}${window.location.search}`;
+    setSessionHref(href);
+    const saved = readLearningProgress(href);
+    if (saved && saved.itemSignature === itemOrderKey && saved.totalCount > 0) {
+      if (saved.order?.length === items.length) {
+        setOrder(saved.order);
+        setIsShuffled(Boolean(saved.isShuffled));
+      }
+      setHardItemIds(saved.hardItemIds ?? []);
+      setIsHardReview(Boolean(saved.isHardReview && (saved.hardItemIds?.length ?? 0) > 0));
+      setIndex(Math.min(Math.max(0, saved.currentIndex), Math.max(0, items.length - 1)));
+    }
+    restoredProgressRef.current = true;
+  }, [itemOrderKey, items.length]);
+
+  useEffect(() => {
+    if (!restoredProgressRef.current || !sessionHref || !current) {
+      return;
+    }
+
+    upsertLearningProgress({
+      id: sessionHref,
+      href: sessionHref,
+      kind: "kanji",
+      title,
+      mode,
+      currentIndex: normalizedIndex,
+      totalCount: activeCount,
+      percent: Math.round(progressPercent),
+      currentLabel: current.character,
+      subLabel: [current.hanviet, current.meaning].filter(Boolean).join(" · "),
+      hardCount: hardItems.length,
+      hardItemIds,
+      isHardReview,
+      order,
+      isShuffled,
+      itemSignature: itemOrderKey,
+      updatedAt: Date.now(),
+    });
+  }, [
+    activeCount,
+    current,
+    hardItemIds,
+    hardItems.length,
+    isShuffled,
+    isHardReview,
+    itemOrderKey,
+    mode,
+    normalizedIndex,
+    order,
+    progressPercent,
+    sessionHref,
+    title,
+  ]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
@@ -503,6 +798,13 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
 
   const detailHref = `/kanji?q=${encodeURIComponent(current.character)}#kanji-${current.id}`;
   const modeLabel = mode === "quiz" ? "Trắc nghiệm" : "Flashcard";
+  const handleGoBack = useCallback(() => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push(backHref);
+  }, [backHref, router]);
 
   if (mode === "quiz") {
     return (
@@ -517,9 +819,13 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
               <span className="rounded-full bg-slate-700 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">
                 {modeLabel}
               </span>
-              <Link href={backHref} className="text-3xl leading-none text-slate-400 hover:text-white">
+              <button
+                type="button"
+                onClick={handleGoBack}
+                className="text-3xl leading-none text-slate-400 hover:text-white"
+              >
                 x
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -601,7 +907,7 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
               </p>
             </div>
             <p className="mt-2 text-center text-sm text-slate-300">
-              Câu {normalizedIndex + 1}/{items.length}
+              Câu {normalizedIndex + 1}/{activeCount}
             </p>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -740,9 +1046,9 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
           </div>
         </div>
 
-        <div className="h-2 rounded-b-2xl bg-slate-700/70">
+        <div className="h-2 overflow-hidden rounded-b-2xl bg-slate-700/70">
           <div
-            className="h-2 rounded-b-2xl bg-emerald-400 transition-all"
+            className="h-2 bg-emerald-400 transition-all"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -762,16 +1068,20 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
             <span className="text-lg">&#8599;</span>
             <span>Xem chi tiết</span>
           </Link>
-          <Link href={backHref} className="text-3xl leading-none text-slate-400 hover:text-white">
+          <button
+            type="button"
+            onClick={handleGoBack}
+            className="text-3xl leading-none text-slate-400 hover:text-white"
+          >
             x
-          </Link>
+          </button>
         </div>
 
         <div
           role="button"
           ref={flashRef}
           tabIndex={0}
-          className="relative mt-4 min-h-[360px] cursor-pointer select-none rounded-xl outline-none"
+          className="relative mt-4 min-h-[440px] cursor-pointer select-none rounded-xl outline-none sm:min-h-[470px]"
           onClick={flipCard}
           onMouseDown={() => focusFlashcardArea()}
           onKeyDown={(event) => {
@@ -809,18 +1119,117 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
             {">"}
           </button>
 
-          <div className="mx-auto flex min-h-[340px] max-w-3xl flex-col items-center justify-center px-16 text-center">
-            <p className="text-sm uppercase tracking-[0.24em] text-slate-300">
-              {direction === "jp-vi" ? "JP -> VI" : "VI -> JP"}
-            </p>
-            <p
-              className={`mt-4 font-semibold text-white ${
-                shownMain.length > 24 ? "text-5xl sm:text-6xl" : "text-7xl sm:text-8xl"
-              }`}
+          <div className="mx-auto w-full max-w-3xl px-16 [perspective:1400px]">
+            <div
+              className="relative min-h-[420px] transition-transform duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] motion-reduce:transition-none sm:min-h-[450px]"
+              style={{
+                transformStyle: "preserve-3d",
+                WebkitTransformStyle: "preserve-3d",
+                transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+                willChange: "transform",
+              }}
             >
-              {shownMain}
-            </p>
-            {shownSub ? <p className="mt-5 max-w-2xl rounded-2xl border border-slate-300/30 bg-slate-900/25 px-5 py-3 text-xl leading-relaxed text-slate-100 sm:text-2xl">{shownSub}</p> : null}
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center text-center [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
+                style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
+              >
+                <p className="text-sm uppercase tracking-[0.24em] text-slate-300">
+                  {direction === "jp-vi" ? "JP -> VI" : "VI -> JP"}
+                </p>
+                <p className={`mt-4 font-semibold text-white ${frontMainClass}`}>{frontMain}</p>
+                {frontSub ? (
+                  <p className="mt-4 max-w-2xl rounded-2xl border border-slate-300/30 bg-slate-900/25 px-4 py-2.5 text-base leading-relaxed text-slate-100 sm:text-lg">
+                    {frontSub}
+                  </p>
+                ) : null}
+              </div>
+
+              <div
+                className="absolute inset-0 [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
+                style={{
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",
+                  transform: "rotateY(180deg)",
+                }}
+              >
+                <div className="flex min-h-[420px] flex-col items-center justify-center py-1 text-center sm:min-h-[450px]">
+                  <p className="text-sm uppercase tracking-[0.24em] text-slate-300">
+                    {direction === "jp-vi" ? "JP -> VI" : "VI -> JP"}
+                  </p>
+                  <p className={`mt-4 font-semibold text-white ${backMainClass}`}>{backMain}</p>
+                  {backSub ? (
+                    <p className="mt-4 max-w-2xl rounded-2xl border border-slate-300/30 bg-slate-900/25 px-4 py-2.5 text-base leading-relaxed text-slate-100 sm:text-lg">
+                      {backSub}
+                    </p>
+                  ) : null}
+                  {(onReadingParts.length > 0 || kunReadingParts.length > 0) ? (
+                    <div className="mt-3 w-full max-w-2xl rounded-2xl border border-slate-300/30 bg-slate-900/20 px-4 py-3 text-left">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-300">
+                        On / Kun Reading
+                      </p>
+                      <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                        <div className="rounded-xl bg-sky-500/12 p-2.5">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-200">On</p>
+                          <div className="mt-1.5 flex flex-wrap gap-1.5">
+                            {(onReadingParts.length > 0 ? onReadingParts : ["-"]).map((reading, idx) => (
+                              <span
+                                key={`on-${idx}-${reading}`}
+                                className="rounded-full border border-sky-300/45 bg-sky-400/22 px-2.5 py-0.5 text-xs font-semibold text-sky-100"
+                              >
+                                {reading}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="rounded-xl bg-orange-500/12 p-2.5">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-orange-200">Kun</p>
+                          <div className="mt-1.5 flex flex-wrap gap-1.5">
+                            {(kunReadingParts.length > 0 ? kunReadingParts : ["-"]).map((reading, idx) => (
+                              <span
+                                key={`kun-${idx}-${reading}`}
+                                className="rounded-full border border-orange-300/45 bg-orange-400/22 px-2.5 py-0.5 text-xs font-semibold text-orange-100"
+                              >
+                                {reading}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                  {relatedWordPreview.length > 0 ? (
+                    <div className="mt-3 w-full max-w-2xl rounded-2xl border border-slate-300/30 bg-slate-900/20 px-4 py-3 text-left">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-300">
+                        Từ vựng liên quan
+                      </p>
+                      <ul className="mt-2 space-y-1">
+                        {relatedWordPreview.map((entry) => (
+                          <li key={entry} className="text-sm leading-snug text-slate-100">
+                            • {entry}
+                          </li>
+                        ))}
+                      </ul>
+                      {hasRelatedVocabDeck ? (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <Link
+                            href={activeRelatedVocabFlashcardHref}
+                            className="rounded-full border border-emerald-300/50 bg-emerald-400/20 px-3 py-1.5 text-xs font-semibold text-emerald-50 hover:bg-emerald-400/30"
+                          >
+                            Flashcard {activeRelatedVocabCount} từ liên quan
+                          </Link>
+                          <Link
+                            href={activeRelatedVocabQuizHref}
+                            className="rounded-full border border-sky-300/50 bg-sky-400/20 px-3 py-1.5 text-xs font-semibold text-sky-50 hover:bg-sky-400/30"
+                          >
+                            Quiz nhanh
+                          </Link>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -862,8 +1271,13 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
             x
           </button>
           <span className="text-4xl font-semibold">
-            {normalizedIndex + 1} / {items.length}
+            {normalizedIndex + 1} / {activeCount}
           </span>
+          {isHardReview ? (
+            <span className="rounded-full border border-rose-300 bg-rose-500/20 px-2 py-0.5 text-xs font-semibold text-rose-100">
+              Từ khó
+            </span>
+          ) : null}
           <button
             type="button"
             onClick={() => markCard(true)}
@@ -912,6 +1326,38 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
           >
             {isShuffled ? "Thứ tự gốc" : "Đảo"}
           </button>
+          <button
+            type="button"
+            className={`rounded-full px-4 py-2 font-semibold ${
+              hardItems.length === 0
+                ? "cursor-not-allowed bg-slate-700/60 text-slate-400"
+                : isHardReview
+                  ? "bg-rose-500/30 text-rose-100"
+                  : "bg-slate-700 text-slate-200"
+            }`}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={toggleHardReview}
+            disabled={hardItems.length === 0}
+          >
+            {isHardReview ? `Xem tất cả (${items.length})` : `Ôn từ khó (${hardItems.length})`}
+          </button>
+
+          {hasRelatedVocabDeck ? (
+            <>
+              <Link
+                href={activeRelatedVocabFlashcardHref}
+                className="rounded-full bg-emerald-500/25 px-4 py-2 font-semibold text-emerald-100 ring-1 ring-emerald-300/35 hover:bg-emerald-500/35"
+              >
+                Từ liên quan ({activeRelatedVocabCount})
+              </Link>
+              <Link
+                href={activeRelatedVocabQuizHref}
+                className="rounded-full bg-sky-500/25 px-4 py-2 font-semibold text-sky-100 ring-1 ring-sky-300/35 hover:bg-sky-500/35"
+              >
+                Quiz từ liên quan
+              </Link>
+            </>
+          ) : null}
 
           <button
             type="button"
@@ -941,9 +1387,109 @@ export function KanjiStudyClient({ title, backHref, items, mode }: Props) {
         </div>
       </div>
 
-      <div className="h-2 rounded-b-2xl bg-slate-700/70">
+      <div className="mt-4 rounded-2xl border border-slate-500/40 bg-[#25315a] p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-slate-100">
+              Danh sách chữ chưa thuộc ({hardItems.length})
+            </h3>
+            <p className="mt-1 text-xs text-slate-300">
+              Chữ nào bấm <span className="font-semibold text-rose-300">X</span> sẽ vào đây để ôn lại.
+              {hardItems.length > 0 ? ` Trang ${hardPageSafe}/${hardTotalPages}.` : ""}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="rounded-full border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
+              onClick={() => setShowHardPanel((prev) => !prev)}
+            >
+              {showHardPanel ? "Ẩn danh sách" : "Hiện danh sách"}
+            </button>
+            <button
+              type="button"
+              className="rounded-full border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
+              onClick={toggleHardReview}
+              disabled={hardItems.length === 0}
+            >
+              {isHardReview ? "Đang ôn từ khó" : "Ôn nhóm từ khó"}
+            </button>
+            <button
+              type="button"
+              className="rounded-full border border-rose-300/70 px-3 py-1 text-xs font-semibold text-rose-100 hover:bg-rose-500/20"
+              onClick={clearHardItems}
+              disabled={hardItems.length === 0}
+            >
+              Xóa danh sách
+            </button>
+          </div>
+        </div>
+
+        {!showHardPanel ? (
+          <p className="mt-3 rounded-lg border border-slate-500/40 bg-[#1f2a4f] px-3 py-2 text-sm text-slate-300">
+            Danh sách đang được thu gọn. Bấm{" "}
+            <span className="font-semibold text-sky-300">Hiện danh sách</span> để xem lại.
+          </p>
+        ) : hardItems.length === 0 ? (
+          <p className="mt-3 rounded-lg border border-slate-500/40 bg-[#243056] px-3 py-2 text-sm text-slate-300">
+            Chưa có chữ khó. Bấm nút <span className="font-bold text-rose-300">X</span> để đánh dấu chữ cần ôn lại.
+          </p>
+        ) : (
+          <>
+            <div className="mt-3 grid gap-2 md:grid-cols-2">
+              {hardPageItems.map((item) => (
+                <article
+                  key={item.id}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-slate-400/50 bg-[#23305a] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-lg font-semibold text-white">{item.character}</p>
+                    <p className="truncate text-sm text-slate-300">
+                      {item.hanviet ? `${item.hanviet.toUpperCase()} - ` : ""}
+                      {item.meaning}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="shrink-0 rounded-full border border-slate-300/80 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
+                    onClick={() => removeHardItem(item.id)}
+                  >
+                    Bỏ
+                  </button>
+                </article>
+              ))}
+            </div>
+
+            {hardItems.length > HARD_ITEMS_PAGE_SIZE ? (
+              <div className="mt-3 flex items-center justify-between rounded-lg border border-slate-500/40 bg-[#1f2a4f] px-3 py-2 text-xs">
+                <button
+                  type="button"
+                  className="rounded-full border border-slate-400 px-3 py-1 font-semibold text-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                  onClick={() => setHardPage((prev) => Math.max(1, prev - 1))}
+                  disabled={hardPageSafe <= 1}
+                >
+                  ← Trang trước
+                </button>
+                <span className="font-semibold text-slate-200">
+                  Trang {hardPageSafe} / {hardTotalPages}
+                </span>
+                <button
+                  type="button"
+                  className="rounded-full border border-slate-400 px-3 py-1 font-semibold text-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                  onClick={() => setHardPage((prev) => Math.min(hardTotalPages, prev + 1))}
+                  disabled={hardPageSafe >= hardTotalPages}
+                >
+                  Trang sau →
+                </button>
+              </div>
+            ) : null}
+          </>
+        )}
+      </div>
+
+      <div className="h-2 overflow-hidden rounded-b-2xl bg-slate-700/70">
         <div
-          className="h-2 rounded-b-2xl bg-emerald-400 transition-all"
+          className="h-2 bg-emerald-400 transition-all"
           style={{ width: `${progressPercent}%` }}
         />
       </div>

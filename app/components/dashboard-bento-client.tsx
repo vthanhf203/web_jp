@@ -2,20 +2,31 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import type { ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Variants } from "framer-motion";
 import {
   BarChart3,
   BellRing,
   BookOpen,
   CheckCircle2,
+  ChevronLeft,
   ChevronRight,
+  Clock3,
   Flame,
   Languages,
+  PlayCircle,
   Trophy,
   Target,
+  X,
   Zap,
 } from "lucide-react";
+
+import {
+  clearLearningProgress,
+  learningProgressUpdatedEventName,
+  readLearningProgressList,
+  type LearningProgressSnapshot,
+} from "@/app/components/learning-progress-storage";
 
 type LearningStep = {
   href: string;
@@ -73,6 +84,72 @@ const cardVariants: Variants = {
     },
   },
 };
+
+const TIMER_STORAGE_KEY = "jp-study-timer:v3";
+const RESUME_PAGE_SIZE = 3;
+
+type TimerResume = {
+  href: string;
+  title: string;
+  subtitle: string;
+  percent: number;
+  running: boolean;
+};
+
+function formatRemaining(totalSeconds: number): string {
+  const safe = Math.max(0, Math.round(totalSeconds));
+  const minutes = Math.floor(safe / 60);
+  const seconds = safe % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+function readTimerResume(): TimerResume | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  try {
+    const raw = window.localStorage.getItem(TIMER_STORAGE_KEY);
+    if (!raw) {
+      return null;
+    }
+    const parsed = JSON.parse(raw) as {
+      durationMinutes?: number;
+      remainingSeconds?: number;
+      running?: boolean;
+      endAtMs?: number | null;
+    };
+    const durationMinutes = Math.max(1, Math.round(Number(parsed.durationMinutes ?? 25)));
+    const totalSeconds = durationMinutes * 60;
+    const running = Boolean(parsed.running);
+    const endAtMs = Number.isFinite(Number(parsed.endAtMs)) ? Number(parsed.endAtMs) : null;
+    const storedRemaining = Math.max(0, Math.round(Number(parsed.remainingSeconds ?? totalSeconds)));
+    const remainingSeconds =
+      running && endAtMs ? Math.max(0, Math.ceil((endAtMs - Date.now()) / 1000)) : storedRemaining;
+    if (!running && (remainingSeconds <= 0 || remainingSeconds >= totalSeconds)) {
+      return null;
+    }
+    const doneSeconds = totalSeconds - Math.min(totalSeconds, remainingSeconds);
+    return {
+      href: "/study-timer",
+      title: running ? "Bấm giờ đang chạy" : "Bấm giờ đang tạm dừng",
+      subtitle: `${formatRemaining(remainingSeconds)} còn lại`,
+      percent: Math.max(0, Math.min(100, Math.round((doneSeconds / totalSeconds) * 100))),
+      running,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function modeLabel(mode: string): string {
+  if (mode === "quiz") {
+    return "Trắc nghiệm";
+  }
+  if (mode === "recall") {
+    return "Nhồi nhét";
+  }
+  return "Flashcard";
+}
 
 function ProgressRing({ value }: { value: number }) {
   const safeValue = Math.max(0, Math.min(100, value));
@@ -132,6 +209,62 @@ function MetricCard({
   );
 }
 
+function LearningResumeCard({
+  item,
+  onClear,
+}: {
+  item: LearningProgressSnapshot;
+  onClear: (href: string) => void;
+}) {
+  return (
+    <div className="group relative rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm transition hover:border-emerald-200 hover:shadow-[0_16px_32px_rgba(15,23,42,0.10)]">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-extrabold text-emerald-800">
+              {item.kind === "kanji" ? "Kanji" : "Từ vựng"}
+            </span>
+            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">
+              {modeLabel(item.mode)}
+            </span>
+          </div>
+          <p className="mt-2 truncate text-base font-black text-slate-900" title={item.title}>
+            {item.title}
+          </p>
+          <p className="mt-1 truncate text-sm font-semibold text-slate-600" title={item.currentLabel}>
+            {item.currentLabel || "Đang học"} · {item.currentIndex + 1}/{item.totalCount}
+          </p>
+          <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">{item.subLabel}</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => onClear(item.href)}
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-slate-400 opacity-70 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 group-hover:opacity-100"
+          aria-label="Xóa phiên đang dở"
+          title="Xóa phiên đang dở"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200">
+        <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-sky-500" style={{ width: `${item.percent}%` }} />
+      </div>
+      <div className="mt-3 flex items-center justify-between gap-2">
+        <span className="text-xs font-semibold text-slate-500">
+          {item.percent}% {item.hardCount > 0 ? `· ${item.hardCount} từ khó` : ""}
+        </span>
+        <Link
+          href={item.href}
+          className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-700"
+        >
+          <PlayCircle className="h-4 w-4" />
+          Tiếp tục
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export function DashboardBentoClient({
   userName,
   initials,
@@ -151,6 +284,55 @@ export function DashboardBentoClient({
   chart7,
   maxChartCount,
 }: Props) {
+  const [progressItems, setProgressItems] = useState<LearningProgressSnapshot[]>([]);
+  const [timerResume, setTimerResume] = useState<TimerResume | null>(null);
+  const [resumePage, setResumePage] = useState(1);
+
+  useEffect(() => {
+    function syncResumeState() {
+      setProgressItems(readLearningProgressList());
+      setTimerResume(readTimerResume());
+    }
+
+    syncResumeState();
+    const interval = window.setInterval(syncResumeState, 1000);
+    window.addEventListener("storage", syncResumeState);
+    window.addEventListener("focus", syncResumeState);
+    window.addEventListener(learningProgressUpdatedEventName(), syncResumeState);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("storage", syncResumeState);
+      window.removeEventListener("focus", syncResumeState);
+      window.removeEventListener(learningProgressUpdatedEventName(), syncResumeState);
+    };
+  }, []);
+
+  const hasResumeItems = progressItems.length > 0 || Boolean(timerResume);
+  const resumeTotalPages = Math.max(1, Math.ceil(progressItems.length / RESUME_PAGE_SIZE));
+  const safeResumePage = Math.min(resumePage, resumeTotalPages);
+  const visibleProgressItems = progressItems.slice(
+    (safeResumePage - 1) * RESUME_PAGE_SIZE,
+    safeResumePage * RESUME_PAGE_SIZE
+  );
+  const resumeGridClass = useMemo(
+    () =>
+      timerResume && progressItems.length > 0
+        ? "grid gap-3 lg:grid-cols-[0.82fr_1.18fr]"
+        : "grid gap-3",
+    [progressItems.length, timerResume]
+  );
+
+  function clearResumeItem(href: string) {
+    clearLearningProgress(href);
+    const nextItems = readLearningProgressList();
+    setProgressItems(nextItems);
+    setResumePage((page) => Math.min(page, Math.max(1, Math.ceil(nextItems.length / RESUME_PAGE_SIZE))));
+  }
+
+  useEffect(() => {
+    setResumePage((page) => Math.min(page, resumeTotalPages));
+  }, [resumeTotalPages]);
+
   return (
     <section className="space-y-6">
       <motion.div
@@ -235,6 +417,88 @@ export function DashboardBentoClient({
               iconClass="bg-violet-50"
             />
           </div>
+
+          {hasResumeItems ? (
+            <motion.article
+              variants={cardVariants}
+              className="rounded-3xl border border-emerald-200/70 bg-gradient-to-br from-white/92 via-emerald-50/80 to-sky-50/70 p-5 shadow-[0_14px_34px_rgba(15,23,42,0.08)] xl:col-span-12"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-black text-slate-900">Tiếp tục học</h2>
+                  <p className="mt-1 text-sm text-slate-500">Các phiên đang dở được lưu tự động trên trình duyệt này.</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  {progressItems.length > RESUME_PAGE_SIZE ? (
+                    <div className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1">
+                      <button
+                        type="button"
+                        className="grid h-8 w-8 place-items-center rounded-full text-slate-600 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-35"
+                        onClick={() => setResumePage((page) => Math.max(1, page - 1))}
+                        disabled={safeResumePage <= 1}
+                        aria-label="Phiên trước"
+                        title="Phiên trước"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <span className="min-w-14 text-center text-xs font-black text-slate-600">
+                        {safeResumePage}/{resumeTotalPages}
+                      </span>
+                      <button
+                        type="button"
+                        className="grid h-8 w-8 place-items-center rounded-full text-slate-600 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-35"
+                        onClick={() => setResumePage((page) => Math.min(resumeTotalPages, page + 1))}
+                        disabled={safeResumePage >= resumeTotalPages}
+                        aria-label="Phiên sau"
+                        title="Phiên sau"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : null}
+                  <Link
+                    href="/study-timer"
+                    className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50"
+                  >
+                    <Clock3 className="h-4 w-4" />
+                    Bấm giờ
+                  </Link>
+                </div>
+              </div>
+              <div className={`mt-4 ${resumeGridClass}`}>
+                {timerResume ? (
+                  <Link
+                    href={timerResume.href}
+                    className="rounded-2xl border border-sky-200 bg-white/92 p-4 shadow-sm transition hover:border-sky-300 hover:shadow-[0_16px_32px_rgba(14,165,233,0.14)]"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <span className={`rounded-full px-2.5 py-1 text-xs font-extrabold ${
+                          timerResume.running ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+                        }`}>
+                          Timer
+                        </span>
+                        <p className="mt-2 text-base font-black text-slate-900">{timerResume.title}</p>
+                        <p className="mt-1 text-sm font-semibold text-slate-600">{timerResume.subtitle}</p>
+                      </div>
+                      <Clock3 className="h-6 w-6 text-sky-700" />
+                    </div>
+                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200">
+                      <div className="h-full rounded-full bg-gradient-to-r from-sky-500 to-emerald-500" style={{ width: `${timerResume.percent}%` }} />
+                    </div>
+                  </Link>
+                ) : null}
+
+                {progressItems.length > 0 ? (
+                  <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                    {visibleProgressItems.map((item) => (
+                      <LearningResumeCard key={item.href} item={item} onClear={clearResumeItem} />
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            </motion.article>
+          ) : null}
 
           <motion.article
             variants={cardVariants}

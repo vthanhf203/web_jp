@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -8,6 +8,10 @@ import {
   AUDIO_RATE_KEY,
   AUDIO_VOICE_KEY,
 } from "@/app/components/audio-settings-client";
+import {
+  readLearningProgress,
+  upsertLearningProgress,
+} from "@/app/components/learning-progress-storage";
 
 export type StudyMode = "flashcard" | "quiz" | "recall";
 type FlashcardPromptMode = "jp_to_vi" | "vi_to_jp" | "kanji_to_answer";
@@ -26,6 +30,7 @@ type Props = {
   lessonTitle: string;
   mode: StudyMode;
   items: StudyItem[];
+  backHref?: string;
 };
 
 const HARD_ITEMS_PAGE_SIZE = 8;
@@ -388,12 +393,6 @@ function displayReadingMain(item: StudyItem): string {
   return item.reading || item.word || item.kanji;
 }
 
-function shouldShowReadingHint(item: StudyItem): boolean {
-  const main = displayJapanese(item).trim();
-  const reading = item.reading.trim();
-  return main.length > 0 && reading.length > 0 && main !== reading;
-}
-
 function makeQuizOptions(items: StudyItem[], current: StudyItem): StudyItem[] {
   const others = items
     .filter((item) => item.id !== current.id);
@@ -418,7 +417,8 @@ function ModeTitle({ mode }: { mode: StudyMode }) {
   return <span>Nhồi nhét</span>;
 }
 
-export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
+export function VocabStudyClient({ lessonTitle, mode, items, backHref = "/vocab" }: Props) {
+  const router = useRouter();
   const [order, setOrder] = useState<number[]>(() => items.map((_, index) => index));
   const [isShuffled, setIsShuffled] = useState(false);
   const [index, setIndex] = useState(0);
@@ -457,6 +457,8 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
   });
   const flashcardAreaRef = useRef<HTMLDivElement | null>(null);
   const recallInputRef = useRef<HTMLInputElement | null>(null);
+  const restoredProgressRef = useRef(false);
+  const [sessionHref, setSessionHref] = useState("");
 
   const hardIdSet = useMemo(() => new Set(hardItemIds), [hardItemIds]);
   const hardOrder = useMemo(
@@ -513,6 +515,7 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
 
   const progressPercent =
     activeCount > 0 ? ((index + 1) / activeCount) * 100 : 0;
+  const itemSignature = useMemo(() => items.map((item) => item.id).join("|"), [items]);
 
   const goNext = useCallback(() => {
     setIndex((prev) => {
@@ -545,6 +548,66 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
       return prev;
     });
   }, [activeCount]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const href = `${window.location.pathname}${window.location.search}`;
+    setSessionHref(href);
+    const saved = readLearningProgress(href);
+    if (saved && saved.itemSignature === itemSignature && saved.totalCount > 0) {
+      if (saved.order?.length === items.length) {
+        setOrder(saved.order);
+        setIsShuffled(Boolean(saved.isShuffled));
+      }
+      setHardItemIds(saved.hardItemIds ?? []);
+      setIsHardReview(Boolean(saved.isHardReview && (saved.hardItemIds?.length ?? 0) > 0));
+      setIndex(Math.min(Math.max(0, saved.currentIndex), Math.max(0, items.length - 1)));
+    }
+    restoredProgressRef.current = true;
+  }, [itemSignature, items.length]);
+
+  useEffect(() => {
+    if (!restoredProgressRef.current || !sessionHref || !current) {
+      return;
+    }
+
+    upsertLearningProgress({
+      id: sessionHref,
+      href: sessionHref,
+      kind: "vocab",
+      title: lessonTitle,
+      mode,
+      currentIndex: index,
+      totalCount: activeCount,
+      percent: Math.round(progressPercent),
+      currentLabel: displayJapanese(current) || current.word || current.reading,
+      subLabel: current.meaning,
+      hardCount: hardItems.length,
+      hardItemIds,
+      isHardReview,
+      order,
+      isShuffled,
+      itemSignature,
+      updatedAt: Date.now(),
+    });
+  }, [
+    activeCount,
+    current,
+    hardItemIds,
+    hardItems.length,
+    index,
+    isShuffled,
+    isHardReview,
+    itemSignature,
+    lessonTitle,
+    mode,
+    order,
+    progressPercent,
+    sessionHref,
+  ]);
 
   useEffect(() => {
     if (isHardReview && hardOrder.length === 0) {
@@ -917,16 +980,25 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
     return () => window.clearTimeout(timer);
   }, [autoPlay, index, mode, speakCurrentFlash]);
 
+  const handleGoBack = useCallback(() => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push(backHref);
+  }, [backHref, router]);
+
   return (
     <section className="mx-auto w-full max-w-5xl rounded-3xl border border-[#41507c] bg-[#2f3c66] p-4 text-slate-100 shadow-[0_16px_35px_rgba(18,28,56,0.45)] sm:p-5">
       <div className="mb-4 flex items-center justify-between">
-        <Link
-          href="/vocab"
+        <button
+          type="button"
+          onClick={handleGoBack}
           className="inline-flex items-center gap-2 text-base text-slate-300 transition hover:text-white"
         >
           <span>{"<"}</span>
           <span>Quay lại</span>
-        </Link>
+        </button>
         <div className="text-center">
           <p className="text-sm uppercase tracking-widest text-slate-300">{lessonTitle}</p>
           <h1 className="text-xl font-bold text-white">
@@ -1269,14 +1341,16 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
           <div className="mb-8 flex justify-end">
             <div className="inline-flex rounded-xl bg-slate-700 p-1 text-sm">
               <span className="rounded-lg bg-emerald-500 px-3 py-1 font-semibold text-white">
-                Cách đọc
+                Câu hỏi: Hiragana + Nghĩa
               </span>
-              <span className="px-3 py-1 text-slate-200">Kanji</span>
-              <span className="px-3 py-1 text-slate-200">Ý nghĩa</span>
+              <span className="px-3 py-1 text-slate-200">Đáp án: Kanji</span>
             </div>
           </div>
 
-          <h2 className="mb-8 text-center text-6xl font-semibold text-white">{current.meaning}</h2>
+          <div className="mb-8 text-center">
+            <h2 className="text-5xl font-semibold text-white">{displayReadingMain(current)}</h2>
+            <p className="mt-2 text-2xl font-medium text-slate-200">{current.meaning}</p>
+          </div>
 
           <div className="grid gap-3 md:grid-cols-2">
             {quizOptions.map((option, optionIndex) => {
@@ -1284,8 +1358,13 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
               const selected = selectedOptionId === option.id;
               const correct = checkedQuiz && option.id === current.id;
               const wrong = checkedQuiz && selected && option.id !== current.id;
-              const optionMain = displayReadingMain(option).trim();
-              const optionReading = shouldShowReadingHint(option) ? displayJapanese(option).trim() : "";
+              const optionMain = displayJapanese(option).trim() || displayReadingMain(option).trim();
+              const optionReading = option.reading.trim();
+              const showFurigana =
+                checkedQuiz &&
+                optionReading.length > 0 &&
+                hasJapaneseChars(optionMain) &&
+                optionReading !== optionMain;
 
               return (
                 <button
@@ -1302,13 +1381,17 @@ export function VocabStudyClient({ lessonTitle, mode, items }: Props) {
                   }`}
                   onClick={() => !checkedQuiz && setSelectedOptionId(option.id)}
                 >
-                  <span className="mr-3 text-xl text-slate-300">{optionNo}</span>
-                  <span>{optionMain}</span>
-                  {optionReading ? (
-                    <span className="mt-1 block text-xl font-medium text-slate-300">
-                      {optionReading}
-                    </span>
-                  ) : null}
+                  <span className="mr-3 text-2xl text-slate-300">{optionNo}</span>
+                  {showFurigana ? (
+                    <ruby className="font-kanji leading-none [ruby-position:over]">
+                      <span className="font-kanji text-[1.08em] font-semibold">{optionMain}</span>
+                      <rt className="relative top-[0.1em] text-[0.31em] leading-none font-semibold text-slate-200/95">
+                        {optionReading}
+                      </rt>
+                    </ruby>
+                  ) : (
+                    <span className="font-kanji text-[1.08em] font-semibold leading-none">{optionMain}</span>
+                  )}
                 </button>
               );
             })}

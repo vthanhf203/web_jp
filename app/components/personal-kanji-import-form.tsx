@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useRef } from "react";
+import { useActionState, useRef, useState } from "react";
 
 import {
   clearPersonalKanjiAction,
@@ -31,19 +31,41 @@ type Props = {
   items?: PersonalKanjiRow[];
 };
 
+function buildPersonalExportUrl(download: boolean): string {
+  const query = new URLSearchParams();
+  if (download) {
+    query.set("download", "1");
+  }
+  const queryString = query.toString();
+  return queryString ? `/api/personal/kanji-export?${queryString}` : "/api/personal/kanji-export";
+}
+
 export function PersonalKanjiImportForm({ items = [] }: Props) {
   const [state, formAction, pending] = useActionState(importPersonalKanjiAction, initialState);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [isLoadingExisting, setIsLoadingExisting] = useState(false);
+  const [clientMessage, setClientMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  const canInteract = !pending && !isLoadingExisting;
 
   return (
     <div className="space-y-3">
-      <form action={formAction} className="space-y-3">
+      <form
+        action={formAction}
+        className="space-y-3"
+        onSubmit={() => {
+          setClientMessage(null);
+        }}
+      >
         <textarea
           ref={textareaRef}
           name="rawInput"
           className="min-h-44 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-sky-400 focus:ring-3 focus:ring-sky-100"
-          placeholder='Dan JSON Kanji cua ban: [{"character":"\\u4f4e","meaning":"thap","jlptLevel":"N4","strokeHint":"1 net trai, 2 net phai","strokeImage":"/kanji-stroke/raw/abc.jpg","relatedVocabularies":[...]}]'
-          disabled={pending}
+          placeholder='Dán JSON Kanji của bạn: [{"character":"低","meaning":"thấp","jlptLevel":"N4","strokeHint":"...","strokeImage":"/kanji-stroke/raw/abc.jpg","relatedVocabularies":[...]}]'
+          disabled={!canInteract}
           required
         />
 
@@ -58,13 +80,24 @@ export function PersonalKanjiImportForm({ items = [] }: Props) {
             {state.message}
           </p>
         ) : null}
+        {clientMessage ? (
+          <p
+            className={
+              clientMessage.type === "error"
+                ? "rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
+                : "rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
+            }
+          >
+            {clientMessage.text}
+          </p>
+        ) : null}
 
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="submit"
             className="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
-            disabled={pending}
-        >
+            disabled={!canInteract}
+          >
             {pending ? "Đang import..." : "Import JSON cá nhân"}
           </button>
 
@@ -76,12 +109,58 @@ export function PersonalKanjiImportForm({ items = [] }: Props) {
                 return;
               }
               textareaRef.current.value =
-                '[\n  {\n    "character": "\\u4f4e",\n    "meaning": "thấp",\n    "onReading": "\\u30c6\\u30a4",\n    "kunReading": "\\u3072\\u304f.\\u3044, \\u3072\\u304f.\\u3081\\u308b",\n    "strokeCount": 7,\n    "jlptLevel": "N4",\n    "order": 12,\n    "category": "tinh_chat",\n    "strokeHint": "1 (\\u30ce) bên trái, 2 (\\u4E3F) giữa, 3 (\\u6C0F) bên phải",\n    "strokeImage": "/kanji-stroke/raw/example.jpg",\n    "relatedVocabularies": [\n      { "word": "\\u4f4e\\u3044", "reading": "\\u3072\\u304f\\u3044", "meaning": "thấp" },\n      { "word": "\\u4f4e\\u6e29", "reading": "\\u3066\\u3044\\u304a\\u3093", "meaning": "nhiệt độ thấp" },\n      { "word": "\\u6700\\u4f4e", "reading": "\\u3055\\u3044\\u3066\\u3044", "meaning": "thấp nhất" }\n    ]\n  }\n]';
+                '[\n  {\n    "character": "低",\n    "meaning": "thấp",\n    "onReading": ["テイ"],\n    "kunReading": ["ひく.い", "ひく.める"],\n    "strokeCount": 7,\n    "jlptLevel": "N4",\n    "order": 12,\n    "category": "tinh_chat",\n    "strokeHint": "1 (ノ) bên trái, 2 (丿) giữa, 3 (氏) bên phải",\n    "strokeImage": "/kanji-stroke/raw/example.jpg",\n    "relatedVocabularies": [\n      { "word": "低い", "reading": "ひくい", "meaning": "thấp" },\n      { "word": "低温", "reading": "ていおん", "meaning": "nhiệt độ thấp" },\n      { "word": "最低", "reading": "さいてい", "meaning": "thấp nhất" }\n    ]\n  }\n]';
+              setClientMessage(null);
             }}
-            disabled={pending}
+            disabled={!canInteract}
           >
             Mẫu JSON
           </button>
+
+          <button
+            type="button"
+            className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700"
+            onClick={async () => {
+              setClientMessage(null);
+              setIsLoadingExisting(true);
+              try {
+                const response = await fetch(buildPersonalExportUrl(false), {
+                  method: "GET",
+                  cache: "no-store",
+                });
+                if (!response.ok) {
+                  throw new Error(`HTTP ${response.status}`);
+                }
+                const parsed = (await response.json()) as unknown;
+                const text = JSON.stringify(parsed, null, 2);
+                if (textareaRef.current) {
+                  textareaRef.current.value = text;
+                }
+                const itemCount = Array.isArray(parsed) ? parsed.length : 0;
+                setClientMessage({
+                  type: "success",
+                  text: `Đã nạp JSON cá nhân hiện có (${itemCount} Kanji).`,
+                });
+              } catch {
+                setClientMessage({
+                  type: "error",
+                  text: "Không lấy được JSON Kanji cá nhân. Hãy thử lại.",
+                });
+              } finally {
+                setIsLoadingExisting(false);
+              }
+            }}
+            disabled={!canInteract}
+          >
+            {isLoadingExisting ? "Đang nạp..." : "Nạp từ kho hiện có"}
+          </button>
+
+          <a
+            href={buildPersonalExportUrl(true)}
+            className="rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700"
+          >
+            Tải JSON cá nhân
+          </a>
 
           <button
             type="button"
@@ -90,8 +169,9 @@ export function PersonalKanjiImportForm({ items = [] }: Props) {
               if (textareaRef.current) {
                 textareaRef.current.value = "";
               }
+              setClientMessage(null);
             }}
-            disabled={pending}
+            disabled={!canInteract}
           >
             Xóa nhập
           </button>
@@ -111,7 +191,7 @@ export function PersonalKanjiImportForm({ items = [] }: Props) {
                   ? "border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
                   : "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
               }`}
-              disabled={items.length === 0 || pending}
+              disabled={items.length === 0 || pending || isLoadingExisting}
             >
               Xóa toàn bộ
             </button>
@@ -162,7 +242,7 @@ export function PersonalKanjiImportForm({ items = [] }: Props) {
                   <button
                     type="submit"
                     className="rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-100"
-                    disabled={pending}
+                    disabled={pending || isLoadingExisting}
                   >
                     Xóa
                   </button>
@@ -175,3 +255,4 @@ export function PersonalKanjiImportForm({ items = [] }: Props) {
     </div>
   );
 }
+

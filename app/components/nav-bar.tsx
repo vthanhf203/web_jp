@@ -25,11 +25,11 @@ function navIcon(path: string) {
 const privateLinks: NavLinkItem[] = [
   { href: "/dashboard", label: "Tổng quan", iconPath: "M3 12l9-8 9 8M5 10v10h14V10" },
   { href: "/personal", label: "Lộ trình", iconPath: "M3 6h18M6 12h12M9 18h6" },
-  { href: "/placement", label: "Test đầu vào", iconPath: "M8 12l3 3 5-6M4 5h16v14H4z" },
-  { href: "/focus", label: "Ôn sai", iconPath: "M12 3l7 4v5c0 5-3 7-7 9-4-2-7-4-7-9V7l7-4z" },
+  { href: "/study-timer", label: "Bấm giờ học", iconPath: "M12 8v4l3 3M5 4l2 2M19 4l-2 2M12 22a9 9 0 100-18 9 9 0 000 18z" },
   { href: "/search", label: "Search", iconPath: "M11 4a7 7 0 105.3 11.6L20 19" },
   { href: "/shadowing", label: "Shadowing", iconPath: "M4 12a8 8 0 0116 0v5a2 2 0 01-2 2h-2v-6h4M4 12v5a2 2 0 002 2h2v-6H4" },
   { href: "/kanji", label: "Kanji", iconPath: "M5 6h14M5 12h14M5 18h14M12 6v12" },
+  { href: "/kanji/related-review", label: "Ôn từ Kanji", iconPath: "M5 5h14v14H5zM8 9h8M8 13h5M16 16l3 3M19 16v3" },
   { href: "/kanji/worksheet", label: "In PDF Kanji", iconPath: "M7 4h10v4H7zM6 10h12a2 2 0 012 2v5H4v-5a2 2 0 012-2zm2 8h8v2H8z" },
   { href: "/self-study", label: "Tự học chủ động", iconPath: "M4 19h16M6 5h8l4 4v10H6zM10 11h4M10 15h4" },
   { href: "/kanji/roadmap", label: "Lộ trình Kanji", iconPath: "M4 18l6-6 4 4 6-8" },

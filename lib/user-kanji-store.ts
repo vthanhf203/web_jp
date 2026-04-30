@@ -28,6 +28,7 @@ export type UserKanjiLinkedWord = {
 export type UserKanjiItem = {
   id: string;
   character: string;
+  hanviet: string;
   meaning: string;
   onReading: string;
   kunReading: string;
@@ -193,13 +194,25 @@ function encodeValueForId(value: string): string {
       return typeof codePoint === "number" ? `u${codePoint.toString(16)}` : "";
     })
     .filter(Boolean)
-    .join("-");
+    .join("");
+}
+
+function buildUserKanjiIdFromCharacter(character: string): string {
+  const encodedCharacter = encodeValueForId(character);
+  if (!encodedCharacter) {
+    return "";
+  }
+  return `${USER_KANJI_ID_PREFIX}${encodedCharacter}`;
 }
 
 function safeUserKanjiId(value: string, fallback = ""): string {
+  const byCharacter = buildUserKanjiIdFromCharacter(fallback);
+  if (byCharacter) {
+    return byCharacter;
+  }
+
   const encoded = encodeValueForId(value);
-  const encodedFallback = encodeValueForId(fallback);
-  const normalized = encoded || encodedFallback || crypto.randomUUID();
+  const normalized = encoded || crypto.randomUUID();
   return normalized.startsWith(USER_KANJI_ID_PREFIX)
     ? normalized
     : `${USER_KANJI_ID_PREFIX}${normalized}`;
@@ -227,6 +240,7 @@ function normalizeItem(input: unknown): UserKanjiItem | null {
   return {
     id: safeUserKanjiId(normalizeText(raw.id), character),
     character,
+    hanviet: normalizeText(raw.hanviet),
     meaning,
     onReading: normalizeText(raw.onReading) || "-",
     kunReading: normalizeText(raw.kunReading) || "-",
@@ -305,6 +319,7 @@ function convertImportedRow(
   return {
     id: safeUserKanjiId(row.id || existing?.id || "", row.character),
     character: row.character,
+    hanviet: row.hanviet || existing?.hanviet || "",
     meaning: row.meaning,
     onReading: row.onReading || existing?.onReading || "-",
     kunReading: row.kunReading || existing?.kunReading || "-",

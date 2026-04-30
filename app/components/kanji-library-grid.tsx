@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 type KanjiLibraryItem = {
   id: string;
   character: string;
+  hanviet?: string;
   meaning: string;
   jlptLevel: string;
   href: string;
@@ -67,6 +68,7 @@ export function KanjiLibraryGrid({ items, selectionEnabled }: Props) {
       {items.map((item, index) => {
         const theme = getLevelTheme(item.jlptLevel);
         const isHighlighted = item.active || item.picked;
+        const subtitle = item.hanviet?.trim() || item.meaning;
 
         return (
           <motion.article
@@ -123,10 +125,10 @@ export function KanjiLibraryGrid({ items, selectionEnabled }: Props) {
                 <p className="font-kanji-art text-4xl font-bold leading-none text-slate-900 sm:text-[2.5rem]">
                   {item.character}
                 </p>
-                <p className="mt-1 truncate text-xs text-slate-600">{item.meaning}</p>
+                <p className="mt-1 truncate text-xs text-slate-600">{subtitle}</p>
 
                 <p className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-900/0 transition-all duration-300 group-hover:text-slate-900/25">
-                  {item.meaning}
+                  {subtitle}
                 </p>
               </div>
             </Link>

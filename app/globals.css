@@ -75,6 +75,152 @@ body {
   animation: pulse-shadow 2.2s ease-in-out infinite;
 }
 
+.study-flip-digit {
+  position: relative;
+  width: 108px;
+  height: 150px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 14px;
+  background: #07090d;
+  perspective: 1100px;
+  box-shadow:
+    0 22px 36px rgba(15, 23, 42, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.study-flip-half,
+.study-flip-flap {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 50%;
+  overflow: hidden;
+}
+
+.study-flip-half-top {
+  top: 0;
+  background: linear-gradient(180deg, #303033 0%, #1a1d24 100%);
+}
+
+.study-flip-half-bottom {
+  bottom: 0;
+  background: linear-gradient(180deg, #151922 0%, #090b10 100%);
+}
+
+.study-flip-number {
+  position: absolute;
+  right: 0;
+  left: -0.08em;
+  height: 200%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fafafa;
+  font-family: var(--font-sans);
+  font-size: 106px;
+  font-weight: 950;
+  letter-spacing: -0.08em;
+  line-height: 1;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.42);
+}
+
+.study-flip-number-top {
+  top: 0;
+}
+
+.study-flip-number-bottom {
+  bottom: 0;
+  color: #d8d8d8;
+}
+
+.study-flip-hinge {
+  position: absolute;
+  z-index: 40;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 4px;
+  transform: translateY(-50%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 35%),
+    #020304;
+  box-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.study-flip-flap {
+  z-index: 35;
+  background: #171b23;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.study-flip-flap-top {
+  top: 0;
+  transform-origin: bottom center;
+  background: linear-gradient(180deg, #363638 0%, #181c25 100%);
+  animation: studyFlipTop 0.34s cubic-bezier(0.37, 0.01, 0.94, 0.35) forwards;
+}
+
+.study-flip-flap-bottom {
+  bottom: 0;
+  transform: rotateX(90deg);
+  transform-origin: top center;
+  background: linear-gradient(180deg, #111722 0%, #2a313d 100%);
+  animation: studyFlipBottom 0.34s cubic-bezier(0.06, 0.84, 0.35, 1) 0.34s forwards;
+}
+
+.study-flip-flap-shadow,
+.study-flip-flap-light {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.study-flip-flap-shadow {
+  background: linear-gradient(180deg, transparent 10%, rgba(0, 0, 0, 0.5) 100%);
+}
+
+.study-flip-flap-light {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.13), transparent 58%);
+}
+
+@keyframes studyFlipTop {
+  0% {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+  100% {
+    transform: rotateX(-90deg);
+    filter: brightness(0.55);
+  }
+}
+
+@keyframes studyFlipBottom {
+  0% {
+    transform: rotateX(90deg);
+    filter: brightness(0.62);
+  }
+  100% {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+}
+
+@media (min-width: 640px) {
+  .study-flip-digit {
+    width: 126px;
+    height: 176px;
+  }
+
+  .study-flip-number {
+    font-size: 126px;
+  }
+}
+
 @keyframes pulse-shadow {
   0% {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.34);

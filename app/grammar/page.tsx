@@ -139,6 +139,13 @@ function lessonDisplayTitle(lessonNumber: number, title?: string): string {
   return title.trim();
 }
 
+function toDisplayLessonNumber(level: GrammarLevel, lessonNumber: number): number {
+  if (level === "N4" && lessonNumber >= 1 && lessonNumber <= 25) {
+    return lessonNumber + 25;
+  }
+  return lessonNumber;
+}
+
 function splitExampleLine(line: string): { jp: string; vi: string } {
   const text = line.trim();
   if (!text) {
@@ -216,7 +223,10 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
 
   const selectedTopicRaw = selectedLesson ? displayTopic(selectedLesson.topic) : null;
   const selectedLessonTitle = selectedLesson
-    ? lessonDisplayTitle(selectedLesson.lessonNumber, selectedLesson.title)
+    ? lessonDisplayTitle(
+        toDisplayLessonNumber(selectedLesson.level, selectedLesson.lessonNumber),
+        selectedLesson.title
+      )
     : "";
   const selectedTopic = selectedTopicRaw;
   const levelBookTitle =
@@ -261,6 +271,7 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
     active: entry === level,
   }));
   const roadmapLessons: GrammarRoadmapLesson[] = lessonsByLevel.map((lesson) => {
+    const displayLessonNumber = toDisplayLessonNumber(lesson.level, lesson.lessonNumber);
     const learnedCount = lessonPointLearnedCount.get(lesson.id) ?? 0;
     const progress = lesson.pointCount
       ? Math.round((learnedCount / Math.max(lesson.pointCount, 1)) * 100)
@@ -276,8 +287,8 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
     return {
       id: lesson.id,
       href: buildGrammarHref({ level, lessonId: lesson.id }),
-      lessonNumber: lesson.lessonNumber,
-      title: lessonDisplayTitle(lesson.lessonNumber, lesson.title),
+      lessonNumber: displayLessonNumber,
+      title: lessonDisplayTitle(displayLessonNumber, lesson.title),
       topic: displayTopic(lesson.topic),
       pointCount: lesson.pointCount,
       learnedCount,
@@ -359,7 +370,10 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
                   >
                     <div className="flex items-center justify-between gap-2">
                       <p className="line-clamp-1 text-sm font-semibold text-slate-800">
-                        {lessonDisplayTitle(lesson.lessonNumber, lesson.title)}
+                        {lessonDisplayTitle(
+                          toDisplayLessonNumber(lesson.level, lesson.lessonNumber),
+                          lesson.title
+                        )}
                       </p>
                       <span className="shrink-0 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-slate-600 shadow-sm">
                         {learnedInLesson}/{lesson.pointCount}

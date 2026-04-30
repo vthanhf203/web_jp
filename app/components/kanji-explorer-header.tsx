@@ -22,6 +22,8 @@ type Props = {
   allQuizHref: string;
   pickedFlashcardHref: string;
   pickedQuizHref: string;
+  pickedRelatedVocabFlashcardHref: string;
+  pickedRelatedVocabQuizHref: string;
   clearPickedHref?: string;
   pickedCount: number;
   pickedPreview?: string;
@@ -37,6 +39,8 @@ export function KanjiExplorerHeader({
   allQuizHref,
   pickedFlashcardHref,
   pickedQuizHref,
+  pickedRelatedVocabFlashcardHref,
+  pickedRelatedVocabQuizHref,
   clearPickedHref,
   pickedCount,
   pickedPreview,
@@ -139,6 +143,26 @@ export function KanjiExplorerHeader({
             }`}
           >
             Quiz đã chọn
+          </Link>
+          <Link
+            href={pickedRelatedVocabFlashcardHref}
+            className={`rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 ${
+              pickedCount > 0
+                ? "bg-orange-100 text-orange-700 hover:-translate-y-0.5 hover:bg-orange-200"
+                : "pointer-events-none cursor-not-allowed bg-slate-100 text-slate-400"
+            }`}
+          >
+            Từ liên quan
+          </Link>
+          <Link
+            href={pickedRelatedVocabQuizHref}
+            className={`rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 ${
+              pickedCount > 0
+                ? "bg-amber-100 text-amber-800 hover:-translate-y-0.5 hover:bg-amber-200"
+                : "pointer-events-none cursor-not-allowed bg-slate-100 text-slate-400"
+            }`}
+          >
+            Quiz từ liên quan
           </Link>
           {pickedCount > 0 && clearPickedHref ? (
             <Link

@@ -122,6 +122,20 @@ const updateItemSchema = z.object({
   meaning: z.string().trim().min(1),
 });
 
+const moveItemTopicSchema = z.object({
+  sourceLessonId: z.string().min(1),
+  targetLessonId: z.string().min(1),
+  itemId: z.string().min(1),
+  currentLevel: z.preprocess(
+    (value) => (typeof value === "string" ? value : undefined),
+    z.string().trim().optional()
+  ),
+  returnLessonId: z.preprocess(
+    (value) => (typeof value === "string" ? value : undefined),
+    z.string().trim().optional()
+  ),
+});
+
 function nowIso(): string {
   return new Date().toISOString();
 }
@@ -764,4 +778,63 @@ export async function updateAdminVocabItemAction(formData: FormData) {
   await saveAdminVocabLibrary(library);
   touchSharedPaths();
   redirect(`/admin/vocab?level=${lesson.jlptLevel}&lesson=${lesson.id}`);
+}
+
+export async function moveAdminVocabItemTopicAction(formData: FormData) {
+  await requireAdmin();
+
+  const parsed = moveItemTopicSchema.safeParse({
+    sourceLessonId: formData.get("sourceLessonId"),
+    targetLessonId: formData.get("targetLessonId"),
+    itemId: formData.get("itemId"),
+    currentLevel: formData.get("currentLevel"),
+    returnLessonId: formData.get("returnLessonId"),
+  });
+  if (!parsed.success) {
+    return;
+  }
+
+  const {
+    sourceLessonId,
+    targetLessonId,
+    itemId,
+    currentLevel: currentLevelRaw,
+    returnLessonId,
+  } = parsed.data;
+
+  if (sourceLessonId === targetLessonId) {
+    const redirectLevel = normalizeJlptLevel(currentLevelRaw);
+    const redirectLesson = returnLessonId || sourceLessonId;
+    redirect(`/admin/vocab?level=${redirectLevel}&lesson=${redirectLesson}`);
+  }
+
+  const library = await loadAdminVocabLibrary();
+  const sourceLesson = findLesson(library.lessons, sourceLessonId);
+  const targetLesson = findLesson(library.lessons, targetLessonId);
+  if (!sourceLesson || !targetLesson) {
+    return;
+  }
+
+  const itemIndex = sourceLesson.items.findIndex((entry) => entry.id === itemId);
+  if (itemIndex < 0) {
+    return;
+  }
+
+  const [item] = sourceLesson.items.splice(itemIndex, 1);
+  if (!item) {
+    return;
+  }
+
+  const now = nowIso();
+  item.updatedAt = now;
+  sourceLesson.updatedAt = now;
+  targetLesson.updatedAt = now;
+  targetLesson.items.push(item);
+
+  await saveAdminVocabLibrary(library);
+  touchSharedPaths();
+
+  const redirectLevel = normalizeJlptLevel(currentLevelRaw || sourceLesson.jlptLevel);
+  const redirectLesson = returnLessonId || sourceLesson.id;
+  redirect(`/admin/vocab?level=${redirectLevel}&lesson=${redirectLesson}`);
 }

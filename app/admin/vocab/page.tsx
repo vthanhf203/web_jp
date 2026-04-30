@@ -6,6 +6,7 @@ import {
   deleteAdminVocabImportHistoryAction,
   deleteAdminVocabItemAction,
   deleteAdminVocabLessonAction,
+  moveAdminVocabItemTopicAction,
   rollbackAdminVocabImportAction,
   updateAdminVocabItemAction,
   updateAdminVocabLessonAction,
@@ -142,6 +143,29 @@ export default async function AdminVocabPage(props: { searchParams: SearchParams
     });
   const aggregatePreviewRows = aggregateRows.slice(0, 240);
   const aggregateIsTruncated = aggregateRows.length > aggregatePreviewRows.length;
+  const sameLevelMoveLessons = selectedLesson
+    ? lessons
+        .filter(
+          (lesson) =>
+            lesson.id !== selectedLesson.id && lesson.jlptLevel === selectedLevel
+        )
+        .sort((a, b) => a.title.localeCompare(b.title, "vi", { sensitivity: "base" }))
+    : [];
+  const crossLevelMoveLessons = selectedLesson
+    ? lessons
+        .filter(
+          (lesson) =>
+            lesson.id !== selectedLesson.id && lesson.jlptLevel !== selectedLevel
+        )
+        .sort((a, b) => {
+          const levelCompare = JLPT_LEVELS.indexOf(a.jlptLevel) - JLPT_LEVELS.indexOf(b.jlptLevel);
+          if (levelCompare !== 0) {
+            return levelCompare;
+          }
+          return a.title.localeCompare(b.title, "vi", { sensitivity: "base" });
+        })
+    : [];
+  const hasMoveTargets = sameLevelMoveLessons.length > 0 || crossLevelMoveLessons.length > 0;
 
   return (
     <section className="space-y-6 rounded-3xl border border-sky-100 bg-[#d8e5f7] p-6 shadow-[0_8px_28px_rgba(28,78,140,0.08)] [background-image:linear-gradient(rgba(255,255,255,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.3)_1px,transparent_1px)] [background-size:30px_30px]">
@@ -441,21 +465,21 @@ export default async function AdminVocabPage(props: { searchParams: SearchParams
                     className="mt-3 max-h-[380px] space-y-2 overflow-x-auto overflow-y-auto pr-1"
                     data-scroll-restore-key="admin-vocab-item-list"
                   >
-                    <div className="grid min-w-[960px] grid-cols-[1fr_1fr_1fr_1fr_0.8fr_1.2fr_auto] items-center gap-3 rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <div className="grid min-w-[1020px] grid-cols-[1fr_1fr_1fr_1fr_0.8fr_1.2fr_auto] items-center gap-3 rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
                       <span>Word</span>
                       <span>Reading</span>
                       <span>Kanji</span>
                       <span>Hán Việt</span>
                       <span className="text-center">POS</span>
                       <span>Meaning</span>
-                      <span className="text-right">Action</span>
+                      <span className="text-right">Action / Chuyển chủ đề</span>
                     </div>
                     {items.map((item) => {
                       const isEditing = editItemId === item.id;
                       return (
                         <div
                           key={item.id}
-                          className="grid min-w-[960px] grid-cols-[1fr_1fr_1fr_1fr_0.8fr_1.2fr_auto] items-center gap-3 rounded-lg bg-white px-3 py-2"
+                          className="grid min-w-[1020px] grid-cols-[1fr_1fr_1fr_1fr_0.8fr_1.2fr_auto] items-center gap-3 rounded-lg bg-white px-3 py-2"
                         >
                           {isEditing ? (
                             <form
@@ -537,6 +561,47 @@ export default async function AdminVocabPage(props: { searchParams: SearchParams
                                   </button>
                                 </form>
                               </div>
+                              {hasMoveTargets ? (
+                                <form
+                                  action={moveAdminVocabItemTopicAction}
+                                  className="mt-2 flex items-center justify-end gap-2"
+                                >
+                                  <input type="hidden" name="sourceLessonId" value={selectedLesson.id} />
+                                  <input type="hidden" name="itemId" value={item.id} />
+                                  <input type="hidden" name="currentLevel" value={selectedLevel} />
+                                  <input type="hidden" name="returnLessonId" value={selectedLesson.id} />
+                                  <select
+                                    name="targetLessonId"
+                                    className="max-w-[260px] rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700"
+                                    defaultValue={sameLevelMoveLessons[0]?.id || crossLevelMoveLessons[0]?.id || ""}
+                                  >
+                                    {sameLevelMoveLessons.length > 0 ? (
+                                      <optgroup label={`Cùng cấp ${selectedLevel}`}>
+                                        {sameLevelMoveLessons.map((lesson) => (
+                                          <option key={`same-${lesson.id}`} value={lesson.id}>
+                                            {lesson.title}
+                                          </option>
+                                        ))}
+                                      </optgroup>
+                                    ) : null}
+                                    {crossLevelMoveLessons.length > 0 ? (
+                                      <optgroup label="Khác cấp JLPT">
+                                        {crossLevelMoveLessons.map((lesson) => (
+                                          <option key={`cross-${lesson.id}`} value={lesson.id}>
+                                            [{lesson.jlptLevel}] {lesson.title}
+                                          </option>
+                                        ))}
+                                      </optgroup>
+                                    ) : null}
+                                  </select>
+                                  <button
+                                    type="submit"
+                                    className="rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-700 transition hover:bg-sky-100"
+                                  >
+                                    Chuyển
+                                  </button>
+                                </form>
+                              ) : null}
                             </>
                           )}
                         </div>

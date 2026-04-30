@@ -1,6 +1,7 @@
 type ParsedKanjiInput = {
   id: string;
   character: string;
+  hanviet: string;
   meaning: string;
   onReading: string;
   kunReading: string;
@@ -378,6 +379,9 @@ function rowFromObject(source: Record<string, unknown>): ParsedKanjiInput | null
   const exampleMeaningFromRelated = related.words[0]?.meaning || "";
   const hasExtraMetadata =
     Object.prototype.hasOwnProperty.call(source, "id") ||
+    Object.prototype.hasOwnProperty.call(source, "hanviet") ||
+    Object.prototype.hasOwnProperty.call(source, "hanViet") ||
+    Object.prototype.hasOwnProperty.call(source, "sinoVietnamese") ||
     Object.prototype.hasOwnProperty.call(source, "order") ||
     Object.prototype.hasOwnProperty.call(source, "sequence") ||
     Object.prototype.hasOwnProperty.call(source, "sortOrder") ||
@@ -402,6 +406,7 @@ function rowFromObject(source: Record<string, unknown>): ParsedKanjiInput | null
   return {
     id,
     character,
+    hanviet: pickString(source, ["hanviet", "hanViet", "sinoVietnamese"]),
     meaning,
     onReading: pickStringOrArray(source, ["onReading", "on", "onyomi"]),
     kunReading: pickStringOrArray(source, ["kunReading", "kun", "kunyomi"]),
@@ -455,6 +460,7 @@ function rowFromLine(line: string): ParsedKanjiInput | null {
   return {
     id: `kanji-${parts[0]}`,
     character: parts[0],
+    hanviet: "",
     meaning: parts[1],
     onReading: parts[2] ?? "",
     kunReading: parts[3] ?? "",
