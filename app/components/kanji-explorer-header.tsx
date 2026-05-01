@@ -64,7 +64,7 @@ export function KanjiExplorerHeader({
         </p>
       </div>
 
-      <div className="relative mt-5 grid gap-4 2xl:grid-cols-[minmax(0,1fr)_auto] 2xl:items-end">
+      <div className="relative mt-5 grid gap-4">
         <div>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(88px,1fr))] gap-2 rounded-2xl bg-white/72 p-2 shadow-[0_12px_26px_rgba(15,23,42,0.08)]">
             {tabs.map((tab) => (
