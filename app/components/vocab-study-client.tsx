@@ -15,7 +15,7 @@ import {
 
 export type StudyMode = "flashcard" | "quiz" | "recall";
 type FlashcardPromptMode = "jp_to_vi" | "vi_to_jp" | "kanji_to_answer";
-type QuizPromptMode = "reading_meaning_to_kanji" | "vi_to_jp";
+type QuizPromptMode = "reading_meaning_to_kanji" | "vi_to_jp" | "kanji_to_hiragana";
 type RecallKanaMode = "hiragana" | "katakana";
 
 type StudyItem = {
@@ -393,6 +393,13 @@ function displayJapanese(item: StudyItem): string {
 
 function displayReadingMain(item: StudyItem): string {
   return item.reading || item.word || item.kanji;
+}
+
+function pickPrimaryReading(value: string): string {
+  return value
+    .split(/[,\u3001\u30fb/]/)
+    .map((entry) => entry.trim())
+    .filter(Boolean)[0] ?? "";
 }
 
 function makeQuizOptions(items: StudyItem[], current: StudyItem): StudyItem[] {
@@ -822,18 +829,29 @@ export function VocabStudyClient({
   const quizQuestionMain =
     quizPromptMode === "vi_to_jp"
       ? meaningMain || hanvietMain || displayReadingMain(current)
-      : displayReadingMain(current);
+      : quizPromptMode === "kanji_to_hiragana"
+        ? kanjiMain || displayJapanese(current)
+        : displayReadingMain(current);
   const quizQuestionSub =
     quizPromptMode === "vi_to_jp"
       ? hanvietMain
         ? `Hán Việt: ${hanvietMain}`
         : ""
-      : meaningMain;
+      : quizPromptMode === "kanji_to_hiragana"
+        ? ""
+        : meaningMain;
   const quizPromptChip =
     quizPromptMode === "vi_to_jp"
       ? "Câu hỏi: Nghĩa tiếng Việt"
-      : "Câu hỏi: Hiragana + Nghĩa";
-  const quizAnswerChip = quizPromptMode === "vi_to_jp" ? "Đáp án: Tiếng Nhật" : "Đáp án: Kanji";
+      : quizPromptMode === "kanji_to_hiragana"
+        ? "Câu hỏi: Kanji"
+        : "Câu hỏi: Hiragana + Nghĩa";
+  const quizAnswerChip =
+    quizPromptMode === "reading_meaning_to_kanji"
+      ? "Đáp án: Kanji"
+      : quizPromptMode === "kanji_to_hiragana"
+        ? "Đáp án: Hiragana"
+        : "Đáp án: Tiếng Nhật";
 
   useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
@@ -1393,6 +1411,17 @@ export function VocabStudyClient({
               >
                 Nghĩa Việt -{">"} Nhật
               </button>
+              <button
+                type="button"
+                className={`rounded-lg px-3 py-1 font-semibold transition ${
+                  quizPromptMode === "kanji_to_hiragana"
+                    ? "bg-fuchsia-500 text-white"
+                    : "text-slate-200 hover:bg-slate-700"
+                }`}
+                onClick={() => changeQuizPromptMode("kanji_to_hiragana")}
+              >
+                Kanji -{">"} Hiragana
+              </button>
             </div>
             <div className="inline-flex rounded-xl bg-slate-700 p-1 text-sm">
               <span className="rounded-lg bg-emerald-500 px-3 py-1 font-semibold text-white">
@@ -1421,13 +1450,19 @@ export function VocabStudyClient({
               const selected = selectedOptionId === option.id;
               const correct = checkedQuiz && option.id === current.id;
               const wrong = checkedQuiz && selected && option.id !== current.id;
-              const optionMain = displayJapanese(option).trim() || displayReadingMain(option).trim();
+              const optionMain =
+                quizPromptMode === "kanji_to_hiragana"
+                  ? pickPrimaryReading(option.reading) || displayReadingMain(option).trim()
+                  : displayJapanese(option).trim() || displayReadingMain(option).trim();
               const optionReading = option.reading.trim();
               const showFurigana =
                 (alwaysShowQuizFurigana || checkedQuiz) &&
                 optionReading.length > 0 &&
+                quizPromptMode !== "kanji_to_hiragana" &&
                 hasJapaneseChars(optionMain) &&
                 optionReading !== optionMain;
+              const showMeaningAfterCheck =
+                quizPromptMode === "kanji_to_hiragana" && checkedQuiz;
 
               return (
                 <button
@@ -1455,6 +1490,11 @@ export function VocabStudyClient({
                   ) : (
                     <span className="font-kanji text-[1.08em] font-semibold leading-none">{optionMain}</span>
                   )}
+                  {showMeaningAfterCheck ? (
+                    <p className="mt-2 text-base font-medium text-slate-200">
+                      {option.meaning}
+                    </p>
+                  ) : null}
                 </button>
               );
             })}

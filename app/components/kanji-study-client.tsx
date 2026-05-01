@@ -52,7 +52,7 @@ type Props = {
 };
 
 type Direction = "jp-vi" | "vi-jp";
-type QuizPromptMode = "meaning_to_kanji" | "kanji_to_meaning" | "mixed";
+type QuizPromptMode = "meaning_to_kanji" | "kanji_to_meaning" | "kanji_to_hiragana" | "mixed";
 const HARD_ITEMS_PAGE_SIZE = 8;
 
 const preferredJaVoiceKeywords = [
@@ -142,6 +142,24 @@ function splitReadings(value: string): string[] {
     .map((entry) => entry.trim())
     .filter(Boolean)
     .slice(0, 8);
+}
+
+function katakanaToHiragana(value: string): string {
+  return value.replace(/[\u30a1-\u30f6]/g, (char) =>
+    String.fromCharCode(char.charCodeAt(0) - 0x60)
+  );
+}
+
+function pickPrimaryHiraganaReading(item: StudyKanjiItem): string {
+  const kun = splitReadings(item.kunReading)[0] ?? "";
+  if (kun) {
+    return kun;
+  }
+  const on = splitReadings(item.onReading)[0] ?? "";
+  if (on) {
+    return katakanaToHiragana(on);
+  }
+  return "";
 }
 
 function compactWhitespace(value: string): string {
@@ -738,6 +756,15 @@ export function KanjiStudyClient({
           focusFlashcardArea();
           return;
         }
+        if (key === "t") {
+          event.preventDefault();
+          setQuizPromptMode("kanji_to_hiragana");
+          setSelectedOptionId("");
+          setCheckedQuiz(false);
+          setQuizCorrect(false);
+          focusFlashcardArea();
+          return;
+        }
         if (["1", "2", "3", "4"].includes(key)) {
           event.preventDefault();
           const optionIndex = Number(key) - 1;
@@ -869,6 +896,22 @@ export function KanjiStudyClient({
                 <button
                   type="button"
                   className={`rounded-lg px-3 py-1.5 font-semibold transition ${
+                    quizPromptMode === "kanji_to_hiragana"
+                      ? "bg-fuchsia-500 text-white"
+                      : "text-slate-200 hover:bg-slate-600"
+                  }`}
+                  onClick={() => {
+                    setQuizPromptMode("kanji_to_hiragana");
+                    setSelectedOptionId("");
+                    setCheckedQuiz(false);
+                    setQuizCorrect(false);
+                  }}
+                >
+                  Kanji {"->"} Hiragana
+                </button>
+                <button
+                  type="button"
+                  className={`rounded-lg px-3 py-1.5 font-semibold transition ${
                     quizPromptMode === "mixed"
                       ? "bg-violet-500 text-white"
                       : "text-slate-200 hover:bg-slate-600"
@@ -888,7 +931,9 @@ export function KanjiStudyClient({
             <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
               {effectiveQuizPromptMode === "meaning_to_kanji"
                 ? "Chọn Kanji đúng cho nghĩa sau"
-                : "Chọn nghĩa đúng cho Kanji sau"}
+                : effectiveQuizPromptMode === "kanji_to_hiragana"
+                  ? "Chọn cách đọc Hiragana đúng cho Kanji sau"
+                  : "Chọn nghĩa đúng cho Kanji sau"}
             </p>
             <h2 className="mt-3 text-center text-5xl font-bold text-white sm:text-6xl">
               {effectiveQuizPromptMode === "meaning_to_kanji" ? current.meaning : current.character}
@@ -916,6 +961,10 @@ export function KanjiStudyClient({
                 const selected = selectedOptionId === option.id;
                 const correct = checkedQuiz && option.id === current.id;
                 const wrong = checkedQuiz && selected && option.id !== current.id;
+                const optionReadingHiragana = pickPrimaryHiraganaReading(option);
+                const showMeaningAfterSelect =
+                  effectiveQuizPromptMode === "kanji_to_hiragana" &&
+                  (selected || (checkedQuiz && option.id === current.id));
                 return (
                   <button
                     key={`${option.id}-${optionIndex}`}
@@ -940,7 +989,11 @@ export function KanjiStudyClient({
                       {optionNo}. Lựa chọn
                     </p>
                     <p className="mt-1 text-4xl font-bold text-white">
-                      {effectiveQuizPromptMode === "meaning_to_kanji" ? option.character : option.meaning}
+                      {effectiveQuizPromptMode === "meaning_to_kanji"
+                        ? option.character
+                        : effectiveQuizPromptMode === "kanji_to_hiragana"
+                          ? optionReadingHiragana || option.character
+                          : option.meaning}
                     </p>
                     {effectiveQuizPromptMode === "meaning_to_kanji" ? (
                       <div className="mt-1 space-y-0.5 text-sm text-slate-300">
@@ -952,6 +1005,19 @@ export function KanjiStudyClient({
                           <span className="font-semibold text-orange-300">Kun:</span>{" "}
                           {option.kunReading.trim() || "-"}
                         </p>
+                      </div>
+                    ) : effectiveQuizPromptMode === "kanji_to_hiragana" ? (
+                      <div className="mt-1 space-y-0.5 text-sm text-slate-300">
+                        <p>
+                          {option.character} | On: {option.onReading.trim() || "-"} | Kun:{" "}
+                          {option.kunReading.trim() || "-"}
+                        </p>
+                        {showMeaningAfterSelect ? (
+                          <p>
+                            <span className="font-semibold text-emerald-300">Nghĩa:</span>{" "}
+                            {option.meaning}
+                          </p>
+                        ) : null}
                       </div>
                     ) : (
                       <p className="mt-1 text-sm text-slate-300">
@@ -1005,7 +1071,7 @@ export function KanjiStudyClient({
             </div>
 
             <p className="mt-3 text-center text-sm text-slate-300">
-              Phím tắt: Q/W/E đổi kiểu câu hỏi, 1-4 chọn đáp án, Enter kiểm tra/câu tiếp, mũi tên trái-phải để chuyển câu.
+              Phím tắt: Q/W/E/T đổi kiểu câu hỏi, 1-4 chọn đáp án, Enter kiểm tra/câu tiếp, mũi tên trái-phải để chuyển câu.
             </p>
           </div>
         </div>
