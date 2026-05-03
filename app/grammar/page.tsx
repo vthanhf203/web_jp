@@ -3,9 +3,18 @@ import GrammarRoadmap, {
   type GrammarRoadmapLesson,
   type GrammarRoadmapLevelTab,
 } from "@/app/grammar/grammar-roadmap";
-import GrammarPointCards from "@/app/grammar/grammar-point-cards";
 import GrammarDetail from "@/components/GrammarDetail";
-import SearchBar from "@/components/SearchBar";
+import {
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  Flower2,
+  Lightbulb,
+  PenLine,
+  Search,
+  Sparkles,
+  TrendingUp,
+} from "lucide-react";
 
 import { requireUser } from "@/lib/auth";
 import {
@@ -201,9 +210,10 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
     ? selectedLesson.points.filter((point) => pointMatchesQuery(point, query))
     : [];
 
-  const selectedPoint = requestedPointId
+  const selectedPointFromQuery = requestedPointId
     ? filteredPoints.find((point) => point.id === requestedPointId) ?? null
     : null;
+  const selectedPoint = selectedPointFromQuery ?? filteredPoints[0] ?? null;
   if (selectedPoint) {
     const nextLearned = markGrammarPointLearned(personalState, selectedPoint.id);
     if (nextLearned.added) {
@@ -221,14 +231,12 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
       ? filteredPoints[selectedPointIndex + 1] ?? null
       : null;
 
-  const selectedTopicRaw = selectedLesson ? displayTopic(selectedLesson.topic) : null;
   const selectedLessonTitle = selectedLesson
     ? lessonDisplayTitle(
         toDisplayLessonNumber(selectedLesson.level, selectedLesson.lessonNumber),
         selectedLesson.title
       )
     : "";
-  const selectedTopic = selectedTopicRaw;
   const levelBookTitle =
     level === "N5"
       ? "Minna no Nihongo I (Bài 1~25)"
@@ -263,6 +271,21 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
   const overallProgress = totalPointCount
     ? Math.round((learnedPointCount / totalPointCount) * 100)
     : 0;
+  const selectedLessonLearnedCount = selectedLesson
+    ? lessonPointLearnedCount.get(selectedLesson.id) ?? 0
+    : 0;
+  const selectedLessonProgress =
+    selectedLesson && selectedLesson.pointCount > 0
+      ? Math.round((selectedLessonLearnedCount / selectedLesson.pointCount) * 100)
+      : 0;
+  const relatedPoints =
+    selectedLesson && selectedPoint
+      ? filteredPoints.filter((point) => point.id !== selectedPoint.id).slice(0, 5)
+      : [];
+  const reminderText =
+    selectedPoint?.notes.find((line) => !shouldHideGrammarNote(line)) ||
+    selectedPoint?.meaning ||
+    "Doc mau cau, xem vi du, roi luyen tap ngay de giu nhip nho.";
   const heroLesson = focusLesson;
   const levelTabs: GrammarRoadmapLevelTab[] = GRAMMAR_LEVELS.map((entry) => ({
     level: entry,
@@ -298,7 +321,14 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
   });
 
   return (
-    <section className="space-y-8 rounded-[2rem] bg-[#F8FAFC] p-5 sm:p-6">
+    <section
+      className={
+        selectedLesson
+          ? "rounded-[2rem] bg-[#f7f8ff] p-3 shadow-[0_18px_46px_rgba(15,23,42,0.08)] sm:p-4"
+          : "space-y-8 rounded-[2rem] bg-[#F8FAFC] p-5 sm:p-6"
+      }
+    >
+      {!selectedLesson ? (
       <div className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-white/55 p-5 shadow-[0_22px_48px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-6">
         <div className="pointer-events-none absolute -right-14 -top-16 h-52 w-52 rounded-full bg-[radial-gradient(circle_at_center,rgba(167,139,250,0.2)_0%,rgba(125,211,252,0.12)_44%,rgba(255,255,255,0)_72%)]" />
         <div className="relative flex flex-wrap items-center justify-between gap-4">
@@ -345,103 +375,116 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
           </p>
         </div>
       </div>
+      ) : null}
 
       {!hasLessons ? (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-amber-800">
           Chưa có dữ liệu ngữ pháp. Hãy chạy script import PDF để nạp dữ liệu.
         </div>
       ) : selectedLesson ? (
-        <div className="grid gap-8 lg:grid-cols-[320px_minmax(0,1fr)]">
-          <aside className="self-start rounded-2xl bg-white/90 p-5 shadow-[0_12px_34px_rgba(15,23,42,0.08)] backdrop-blur-xl lg:ml-8">
-            <h2 className="text-xl font-bold text-slate-900">Danh sách bài {level}</h2>
-            <div className="mt-4 max-h-[66vh] space-y-2 overflow-y-auto pr-1">
+        <div className="grid gap-4 xl:grid-cols-[240px_minmax(0,1fr)_230px]">
+          <aside className="self-start overflow-hidden rounded-[22px] border border-[#ebe9ff] bg-white p-4 shadow-[0_16px_36px_rgba(50,45,120,0.08)]">
+            <div className="flex items-center gap-2">
+              <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#f0edff] text-[#7c5cff]">
+                <Flower2 className="h-5 w-5" />
+              </span>
+              <h2 className="text-sm font-black text-[#1a1f3d]">Danh sach bai {level}</h2>
+            </div>
+            <div className="mt-4 max-h-[70vh] space-y-2 overflow-y-auto pr-1">
               {lessonsByLevel.map((lesson) => {
                 const active = lesson.id === selectedLesson.id;
+                const displayLessonNumber = toDisplayLessonNumber(lesson.level, lesson.lessonNumber);
                 const learnedInLesson = lessonPointLearnedCount.get(lesson.id) ?? 0;
+                const lessonDone = lesson.pointCount > 0 && learnedInLesson >= lesson.pointCount;
                 return (
                   <Link
                     key={lesson.id}
                     href={buildGrammarHref({ level, lessonId: lesson.id })}
-                    className={`group block rounded-full px-4 py-3 transition ${
+                    className={`flex items-center gap-3 rounded-xl border px-3 py-3 transition ${
                       active
-                        ? "bg-indigo-50 ring-1 ring-indigo-200 shadow-[0_10px_24px_rgba(99,102,241,0.16)]"
-                        : "bg-slate-50/90 hover:bg-white hover:shadow-[0_8px_18px_rgba(15,23,42,0.08)]"
+                        ? "border-[#8b6cff] bg-[#f4f1ff] shadow-[0_12px_26px_rgba(124,92,255,0.15)]"
+                        : "border-transparent bg-[#fafbff] hover:border-[#e8e3ff] hover:bg-white"
                     }`}
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="line-clamp-1 text-sm font-semibold text-slate-800">
-                        {lessonDisplayTitle(
-                          toDisplayLessonNumber(lesson.level, lesson.lessonNumber),
-                          lesson.title
-                        )}
-                      </p>
-                      <span className="shrink-0 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-slate-600 shadow-sm">
-                        {learnedInLesson}/{lesson.pointCount}
-                      </span>
-                    </div>
+                    <span
+                      className={`grid h-6 w-6 place-items-center rounded-lg ${
+                        active ? "bg-[#7c5cff] text-white" : "bg-[#eeeaff] text-[#7c5cff]"
+                      }`}
+                    >
+                      <BookOpen className="h-3.5 w-3.5" />
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-sm font-bold text-[#26304f]">
+                      Bai {displayLessonNumber}
+                    </span>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                        lessonDone
+                          ? "bg-emerald-50 text-emerald-600"
+                          : learnedInLesson > 0
+                            ? "bg-blue-50 text-blue-600"
+                            : "bg-slate-100 text-slate-500"
+                      }`}
+                    >
+                      {learnedInLesson}/{lesson.pointCount}
+                    </span>
                   </Link>
                 );
               })}
             </div>
           </aside>
 
-          <div className="rounded-2xl bg-white/92 p-6 shadow-[0_14px_36px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-            <div className="mb-5">
-              <Link href={buildGrammarHref({ level })} className="btn-soft text-sm">
-                &larr; Quay lại danh sách bài
+          <main className="rounded-[22px] border border-[#ebe9ff] bg-white p-4 shadow-[0_18px_42px_rgba(50,45,120,0.08)] sm:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <Link
+                href={buildGrammarHref({ level })}
+                className="inline-flex items-center gap-2 rounded-xl border border-[#e5e0ff] bg-white px-3 py-2 text-xs font-bold text-[#6b55dc] shadow-sm transition hover:bg-[#f7f4ff]"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Quay lai danh sach bai
               </Link>
+              <p className="text-sm font-black text-[#7c5cff]">
+                Mau {selectedPoint ? selectedPoint.order : 0}/{filteredPoints.length}
+              </p>
             </div>
-            <div className="flex flex-wrap items-end justify-between gap-5">
+
+            <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+                <span className="rounded-full bg-[#efeaff] px-2.5 py-1 text-xs font-black text-[#7c5cff]">
                   {selectedLesson.level}
-                </p>
-                <h2 className="mt-1 text-3xl font-extrabold tracking-tight text-slate-900">
+                </span>
+                <h1 className="mt-2 text-3xl font-black leading-tight text-[#101735]">
                   {selectedLessonTitle}
-                </h2>
-                {selectedTopic ? (
-                  <p className="mt-1.5 text-sm text-slate-500">Chủ đề: {selectedTopic}</p>
-                ) : null}
+                </h1>
+                <p className="mt-1 text-sm font-medium text-[#6b7288]">
+                  Chon mot mau ngu phap ben duoi de xem chi tiet.
+                </p>
               </div>
 
-              <form className="w-full sm:w-[280px] lg:w-[340px]">
+              <form className="relative w-full sm:w-[320px]">
                 <input type="hidden" name="level" value={level} />
                 <input type="hidden" name="lesson" value={selectedLesson.id} />
-                <SearchBar
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9aa3bd]" />
+                <input
+                  type="search"
                   name="q"
                   defaultValue={rawQuery}
-                  placeholder="Tìm theo ý nghĩa, mẫu câu, ví dụ..."
+                  placeholder="Tim theo y nghia, mau cau, vi du..."
+                  className="h-11 w-full rounded-xl border border-[#dde4f6] bg-white pl-10 pr-3 text-sm font-semibold text-[#26304f] outline-none transition placeholder:text-[#9aa3bd] focus:border-[#8b6cff] focus:ring-4 focus:ring-[#8b6cff]/10"
                 />
-                <button type="submit" className="sr-only">Tìm</button>
+                <button type="submit" className="sr-only">Tim</button>
               </form>
             </div>
 
             {filteredPoints.length === 0 ? (
               <p className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                Không có mẫu nào khớp từ khóa tìm kiếm.
+                Khong co mau nao khop tu khoa tim kiem.
               </p>
             ) : selectedPoint ? (
-              <div className="mt-7 space-y-5">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <Link
-                    href={buildGrammarHref({
-                      level,
-                      lessonId: selectedLesson.id,
-                      rawQuery,
-                    })}
-                    className="btn-soft text-sm"
-                  >
-                    &larr; Quay lại danh sách mẫu
-                  </Link>
-                  <p className="text-sm text-slate-500">
-                    Mẫu {selectedPoint.order}/{filteredPoints.length}
-                  </p>
-                </div>
-
+              <div className="mt-5">
                 <GrammarDetail
                   order={selectedPoint.order}
-                  title={selectedPoint.title || `Mẫu ${selectedPoint.order}`}
-                  meaning={selectedPoint.meaning || "Chưa có ý nghĩa ngắn."}
+                  title={selectedPoint.title || `Mau ${selectedPoint.order}`}
+                  meaning={selectedPoint.meaning || "Chua co y nghia ngan."}
                   usage={
                     selectedPoint.usage.length > 0
                       ? selectedPoint.usage
@@ -459,15 +502,9 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
                     }))}
                   notes={selectedPoint.notes.filter((line) => !shouldHideGrammarNote(line))}
                   initialBookmarked={selectedPointBookmarked}
-                  quizHref={buildGrammarHref({
-                    level,
-                    lessonId: selectedLesson.id,
-                    pointId: selectedPoint.id,
-                    rawQuery,
-                  })}
                 />
 
-                <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_1.3fr_1fr]">
                   {prevPoint ? (
                     <Link
                       href={buildGrammarHref({
@@ -476,15 +513,30 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
                         pointId: prevPoint.id,
                         rawQuery,
                       })}
-                      className="btn-soft text-sm"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#dde4f6] bg-white px-4 py-3 text-sm font-bold text-[#6b55dc] transition hover:bg-[#f7f4ff]"
                     >
-                      &larr; Mẫu trước
+                      <ChevronLeft className="h-4 w-4" />
+                      Mau truoc
                     </Link>
                   ) : (
-                    <span className="rounded-xl bg-slate-100 px-4 py-2 text-sm text-slate-400">
-                      &larr; Mẫu trước
+                    <span className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#edf0f8] bg-[#f8fafc] px-4 py-3 text-sm font-bold text-slate-400">
+                      <ChevronLeft className="h-4 w-4" />
+                      Mau truoc
                     </span>
                   )}
+
+                  <Link
+                    href={buildGrammarHref({
+                      level,
+                      lessonId: selectedLesson.id,
+                      pointId: selectedPoint.id,
+                      rawQuery,
+                    })}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7c5cff] to-[#5b43e9] px-5 py-3 text-sm font-black text-white shadow-[0_16px_28px_rgba(124,92,255,0.28)] transition hover:-translate-y-0.5"
+                  >
+                    <PenLine className="h-4 w-4" />
+                    Luyen tap ngay
+                  </Link>
 
                   {nextPoint ? (
                     <Link
@@ -494,39 +546,98 @@ export default async function GrammarPage(props: { searchParams: SearchParams })
                         pointId: nextPoint.id,
                         rawQuery,
                       })}
-                      className="btn-primary text-sm"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#dde4f6] bg-white px-4 py-3 text-sm font-bold text-[#6b55dc] transition hover:bg-[#f7f4ff]"
                     >
-                      Mẫu tiếp &rarr;
+                      Mau tiep theo
+                      <ChevronRight className="h-4 w-4" />
                     </Link>
                   ) : (
-                    <span className="rounded-xl bg-slate-100 px-4 py-2 text-sm text-slate-400">
-                      Mẫu tiếp &rarr;
+                    <span className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#edf0f8] bg-[#f8fafc] px-4 py-3 text-sm font-bold text-slate-400">
+                      Mau tiep theo
+                      <ChevronRight className="h-4 w-4" />
                     </span>
                   )}
                 </div>
               </div>
-            ) : (
-              <div className="mt-7 space-y-4">
-                <p className="text-sm text-slate-500">
-                  Chọn một mẫu ngữ pháp bên dưới để xem chi tiết.
-                </p>
-                <GrammarPointCards
-                  items={filteredPoints.map((point) => ({
-                    id: point.id,
-                    href: buildGrammarHref({
-                      level,
-                      lessonId: selectedLesson.id,
-                      pointId: point.id,
-                      rawQuery,
-                    }),
-                    order: point.order,
-                    title: point.title || `Mẫu ${point.order}`,
-                    meaning: point.meaning,
-                  }))}
-                />
+            ) : null}
+          </main>
+
+          <aside className="space-y-4 self-start">
+            <section className="rounded-[20px] border border-[#f0dced] bg-[#fff8fb] p-4 shadow-[0_14px_32px_rgba(100,45,90,0.07)]">
+              <div className="flex items-center gap-2">
+                <span className="grid h-8 w-8 place-items-center rounded-xl bg-pink-100 text-pink-500">
+                  <Lightbulb className="h-4 w-4" />
+                </span>
+                <h3 className="text-sm font-black text-[#26304f]">Meo nho</h3>
               </div>
-            )}
-          </div>
+              <p className="mt-3 text-sm leading-6 text-[#667085]">{reminderText}</p>
+            </section>
+
+            <section className="rounded-[20px] border border-[#e9e5ff] bg-white p-4 shadow-[0_14px_32px_rgba(50,45,120,0.07)]">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-[#7c5cff]" />
+                <h3 className="text-sm font-black text-[#26304f]">Tien do bai</h3>
+              </div>
+              <div className="mt-4 grid place-items-center">
+                <div
+                  className="grid h-28 w-28 place-items-center rounded-full"
+                  style={{
+                    background: `conic-gradient(#7c5cff ${selectedLessonProgress * 3.6}deg, #eeeaff 0deg)`,
+                  }}
+                >
+                  <div className="grid h-20 w-20 place-items-center rounded-full bg-white text-center">
+                    <p className="text-2xl font-black text-[#7c5cff]">
+                      {selectedLessonLearnedCount}/{selectedLesson.pointCount}
+                    </p>
+                    <p className="text-[11px] font-bold text-[#7a8198]">mau da hoc</p>
+                  </div>
+                </div>
+              </div>
+              <p className="mt-3 text-center text-xs font-bold text-[#7a8198]">
+                Hoan thanh {selectedLessonProgress}%
+              </p>
+            </section>
+
+            <section className="rounded-[20px] border border-[#e9edf8] bg-white p-4 shadow-[0_14px_32px_rgba(50,45,120,0.07)]">
+              <h3 className="text-sm font-black text-[#26304f]">Mau lien quan</h3>
+              <div className="mt-3 space-y-2">
+                {relatedPoints.length > 0 ? (
+                  relatedPoints.map((point) => (
+                    <Link
+                      key={point.id}
+                      href={buildGrammarHref({
+                        level,
+                        lessonId: selectedLesson.id,
+                        pointId: point.id,
+                        rawQuery,
+                      })}
+                      className="flex items-center justify-between gap-3 rounded-xl px-2 py-2 text-sm font-bold text-[#4b556f] transition hover:bg-[#f7f4ff] hover:text-[#6b55dc]"
+                    >
+                      <span className="min-w-0 flex-1 truncate">
+                        {point.order}. {point.title || `Mau ${point.order}`}
+                      </span>
+                      <ChevronRight className="h-4 w-4 shrink-0" />
+                    </Link>
+                  ))
+                ) : (
+                  <p className="rounded-xl bg-[#f8fafc] px-3 py-3 text-sm font-semibold text-[#7a8198]">
+                    Bai nay chi co mot mau phu hop.
+                  </p>
+                )}
+              </div>
+            </section>
+
+            <section className="rounded-[20px] border border-[#ffe6cc] bg-[#fff8ed] p-4 shadow-[0_14px_32px_rgba(120,70,20,0.07)]">
+              <div className="flex items-start gap-3">
+                <span className="grid h-9 w-9 place-items-center rounded-xl bg-orange-100 text-orange-500">
+                  <Sparkles className="h-5 w-5" />
+                </span>
+                <p className="text-sm font-bold leading-6 text-[#7a5730]">
+                  Hoc moi ngay mot chut, tien bo moi ngay mot nhieu.
+                </p>
+              </div>
+            </section>
+          </aside>
         </div>
       ) : (
         <GrammarRoadmap

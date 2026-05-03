@@ -7,6 +7,11 @@ type ParsedKanjiInput = {
   kunReading: string;
   strokeHint: string;
   strokeImage: string;
+  radical: ParsedKanjiRadical | null;
+  radicalHint: string;
+  mnemonic: string;
+  components: ParsedKanjiComponent[];
+  structure: ParsedKanjiStructure | null;
   strokeCount: number;
   jlptLevel: string;
   order: number | null;
@@ -19,6 +24,29 @@ type ParsedKanjiInput = {
   relatedWords: ParsedKanjiLinkedWord[];
   relatedWordsProvided: boolean;
   metadataProvided: boolean;
+};
+
+type ParsedKanjiRadical = {
+  symbol: string;
+  name: string;
+  meaning: string;
+  position: string;
+  note: string;
+};
+
+type ParsedKanjiComponent = {
+  symbol: string;
+  name: string;
+  meaning: string;
+  position: string;
+  role: string;
+};
+
+type ParsedKanjiStructure = {
+  type: string;
+  formula: string;
+  meaning: string;
+  note: string;
 };
 
 type ParsedKanjiLinkedWord = {
@@ -95,6 +123,125 @@ function parseStringArray(value: unknown): string[] {
       .filter(Boolean);
   }
   return [];
+}
+
+function normalizeRadicalObject(source: Record<string, unknown>): ParsedKanjiRadical | null {
+  const symbol =
+    pickString(source, ["symbol", "char", "radical", "kanji", "value"]) ||
+    pickString(source, ["boThu", "bushu"]);
+  const name =
+    pickString(source, ["name", "label", "ten", "boThuName", "bushuName"]);
+  const meaning =
+    pickString(source, ["meaning", "nghia", "boThuMeaning", "bushuMeaning"]);
+  const position =
+    pickString(source, ["position", "viTri", "boThuPosition", "bushuPosition"]);
+  const note = pickString(source, ["note", "memo", "ghiChu", "boThuNote", "bushuNote"]);
+
+  if (!symbol && !name && !meaning && !position && !note) {
+    return null;
+  }
+
+  return {
+    symbol,
+    name,
+    meaning,
+    position,
+    note,
+  };
+}
+
+function parseRadical(source: Record<string, unknown>): ParsedKanjiRadical | null {
+  const radicalRaw = source.radical ?? source.bushu ?? source.boThu ?? source.bo_thu;
+  if (typeof radicalRaw === "string") {
+    const symbol = radicalRaw.trim();
+    if (symbol) {
+      return {
+        symbol,
+        name: "",
+        meaning: "",
+        position: "",
+        note: "",
+      };
+    }
+  }
+  if (radicalRaw && typeof radicalRaw === "object") {
+    return normalizeRadicalObject(radicalRaw as Record<string, unknown>);
+  }
+
+  return normalizeRadicalObject({
+    symbol: pickString(source, [
+      "radicalChar",
+      "radicalSymbol",
+      "bushuChar",
+      "boThuChar",
+      "bo_thu_char",
+    ]),
+    name: pickString(source, ["radicalName", "bushuName", "boThuName"]),
+    meaning: pickString(source, ["radicalMeaning", "bushuMeaning", "boThuMeaning"]),
+    position: pickString(source, ["radicalPosition", "bushuPosition", "boThuPosition"]),
+    note: pickString(source, ["radicalNote", "bushuNote", "boThuNote"]),
+  });
+}
+
+function normalizeComponentObject(source: Record<string, unknown>): ParsedKanjiComponent | null {
+  const symbol = pickString(source, ["symbol", "char", "kanji", "value", "component"]);
+  const name = pickString(source, ["name", "label", "ten"]);
+  const meaning = pickString(source, ["meaning", "nghia"]);
+  const position = pickString(source, ["position", "viTri"]);
+  const role = pickString(source, ["role", "type"]);
+
+  if (!symbol && !name && !meaning && !position && !role) {
+    return null;
+  }
+
+  return {
+    symbol,
+    name,
+    meaning,
+    position,
+    role,
+  };
+}
+
+function parseComponents(value: unknown): ParsedKanjiComponent[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((item) => {
+      if (typeof item === "string") {
+        return normalizeComponentObject({ char: item });
+      }
+      if (item && typeof item === "object") {
+        return normalizeComponentObject(item as Record<string, unknown>);
+      }
+      return null;
+    })
+    .filter((item): item is ParsedKanjiComponent => !!item);
+}
+
+function parseStructure(value: unknown): ParsedKanjiStructure | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const source = value as Record<string, unknown>;
+  const type = pickString(source, ["type", "kind"]);
+  const formula = pickString(source, ["formula", "composition"]);
+  const meaning = pickString(source, ["meaning", "nghia", "explanation"]);
+  const note = pickString(source, ["note", "memo", "ghiChu"]);
+
+  if (!type && !formula && !meaning && !note) {
+    return null;
+  }
+
+  return {
+    type,
+    formula,
+    meaning,
+    note,
+  };
 }
 
 function parseNumber(value: unknown): number {
@@ -369,6 +516,23 @@ function rowFromObject(source: Record<string, unknown>): ParsedKanjiInput | null
   }
   const jlptLevel = normalizeJlpt(source.jlptLevel ?? source.level ?? source.jlpt);
   const related = parseRelatedWords(source, jlptLevel);
+  const radical = parseRadical(source);
+  const components = parseComponents(source.components ?? source.parts ?? source.compositionParts);
+  const structure = parseStructure(source.structure ?? source.composition ?? source.kanjiStructure);
+  const radicalHint = pickStringOrArray(source, [
+    "radicalHint",
+    "radical_hint",
+    "bushuHint",
+    "boThuHint",
+    "bo_thu_hint",
+  ]);
+  const mnemonic = pickStringOrArray(source, [
+    "mnemonic",
+    "memoryTip",
+    "memoryHint",
+    "goiNho",
+    "ghiNho",
+  ]);
   const nowIso = new Date().toISOString();
   const tags = parseStringArray(source.tags);
   const order = parseOptionalOrder(source.order ?? source.sequence ?? source.sortOrder);
@@ -395,6 +559,31 @@ function rowFromObject(source: Record<string, unknown>): ParsedKanjiInput | null
     Object.prototype.hasOwnProperty.call(source, "strokeImageUrl") ||
     Object.prototype.hasOwnProperty.call(source, "strokeGuideImage") ||
     Object.prototype.hasOwnProperty.call(source, "strokeOrderImage") ||
+    Object.prototype.hasOwnProperty.call(source, "radical") ||
+    Object.prototype.hasOwnProperty.call(source, "bushu") ||
+    Object.prototype.hasOwnProperty.call(source, "boThu") ||
+    Object.prototype.hasOwnProperty.call(source, "bo_thu") ||
+    Object.prototype.hasOwnProperty.call(source, "radicalChar") ||
+    Object.prototype.hasOwnProperty.call(source, "radicalSymbol") ||
+    Object.prototype.hasOwnProperty.call(source, "radicalName") ||
+    Object.prototype.hasOwnProperty.call(source, "radicalMeaning") ||
+    Object.prototype.hasOwnProperty.call(source, "radicalPosition") ||
+    Object.prototype.hasOwnProperty.call(source, "radicalNote") ||
+    Object.prototype.hasOwnProperty.call(source, "radicalHint") ||
+    Object.prototype.hasOwnProperty.call(source, "radical_hint") ||
+    Object.prototype.hasOwnProperty.call(source, "bushuHint") ||
+    Object.prototype.hasOwnProperty.call(source, "boThuHint") ||
+    Object.prototype.hasOwnProperty.call(source, "mnemonic") ||
+    Object.prototype.hasOwnProperty.call(source, "memoryTip") ||
+    Object.prototype.hasOwnProperty.call(source, "memoryHint") ||
+    Object.prototype.hasOwnProperty.call(source, "goiNho") ||
+    Object.prototype.hasOwnProperty.call(source, "ghiNho") ||
+    Object.prototype.hasOwnProperty.call(source, "components") ||
+    Object.prototype.hasOwnProperty.call(source, "parts") ||
+    Object.prototype.hasOwnProperty.call(source, "compositionParts") ||
+    Object.prototype.hasOwnProperty.call(source, "structure") ||
+    Object.prototype.hasOwnProperty.call(source, "composition") ||
+    Object.prototype.hasOwnProperty.call(source, "kanjiStructure") ||
     Object.prototype.hasOwnProperty.call(source, "huongDanNet") ||
     Object.prototype.hasOwnProperty.call(source, "huong_dan_net") ||
     Object.prototype.hasOwnProperty.call(source, "huongDanViet") ||
@@ -428,6 +617,11 @@ function rowFromObject(source: Record<string, unknown>): ParsedKanjiInput | null
       "strokeOrderImage",
       "image",
     ]),
+    radical,
+    radicalHint,
+    mnemonic,
+    components,
+    structure,
     strokeCount: parseNumber(source.strokeCount ?? source.strokes ?? source.net),
     jlptLevel,
     order,
@@ -466,6 +660,19 @@ function rowFromLine(line: string): ParsedKanjiInput | null {
     kunReading: parts[3] ?? "",
     strokeHint: parts[9] ?? "",
     strokeImage: parts[10] ?? "",
+    radical: parts[11]
+      ? {
+          symbol: parts[11],
+          name: "",
+          meaning: "",
+          position: "",
+          note: "",
+        }
+      : null,
+    radicalHint: "",
+    mnemonic: "",
+    components: [],
+    structure: null,
     strokeCount: parseNumber(parts[4] ?? 1),
     jlptLevel,
     order: null,
@@ -486,7 +693,7 @@ function rowFromLine(line: string): ParsedKanjiInput | null {
         .filter((item): item is ParsedKanjiLinkedWord => !!item);
     })(),
     relatedWordsProvided: Boolean(parts[8]),
-    metadataProvided: Boolean(parts[8] || parts[9]),
+    metadataProvided: Boolean(parts[8] || parts[9] || parts[11]),
   };
 }
 

@@ -14,7 +14,8 @@ import {
   type GrammarLevel,
 } from "@/lib/grammar-dataset";
 import { parseGrammarInput } from "@/lib/grammar-import";
-import { parseKanjiInput, type ImportedKanjiRow } from "@/lib/kanji-import";
+import type { ImportedKanjiRow } from "@/lib/kanji-import";
+import { buildKanjiImportReport, formatKanjiImportReport } from "@/lib/kanji-import-report";
 import {
   getKanjiMetadataMap,
   loadAdminKanjiMetadata,
@@ -510,6 +511,11 @@ async function upsertKanjiRows(rows: ImportedKanjiRow[]): Promise<{
         order: row.order ?? existingMeta?.order ?? null,
         strokeHint: row.strokeHint || existingMeta?.strokeHint || "",
         strokeImage: row.strokeImage || existingMeta?.strokeImage || "",
+        radical: row.radical ?? existingMeta?.radical ?? null,
+        radicalHint: row.radicalHint || existingMeta?.radicalHint || "",
+        mnemonic: row.mnemonic || existingMeta?.mnemonic || "",
+        components: row.components.length > 0 ? row.components : existingMeta?.components ?? [],
+        structure: row.structure ?? existingMeta?.structure ?? null,
         category: row.category || existingMeta?.category || "",
         tags: row.tags.length > 0 ? row.tags : existingMeta?.tags ?? [],
         createdAt: row.createdAt || existingMeta?.createdAt || nowIso,
@@ -565,7 +571,8 @@ export async function importAdminKanjiAction(
     };
   }
 
-  const rows = parseKanjiInput(parsed.data.rawInput).slice(0, 1000);
+  const { rows: parsedRows, report } = buildKanjiImportReport(parsed.data.rawInput);
+  const rows = parsedRows.slice(0, 1000);
   if (rows.length === 0) {
     return {
       status: "error",
@@ -576,9 +583,15 @@ export async function importAdminKanjiAction(
   const { createdCount, updatedCount } = await upsertKanjiRows(rows);
 
   touchKanjiPaths();
+  const reportSummary = formatKanjiImportReport(report, {
+    limitNote:
+      parsedRows.length > 1000
+        ? `Giới hạn import: chỉ lấy 1000 mục đầu (đã parse ${parsedRows.length}).`
+        : "",
+  });
   return {
     status: "success",
-    message: `Đã xử lý ${rows.length} kanji (${createdCount} mới, ${updatedCount} cập nhật).`,
+    message: `Đã xử lý ${rows.length} kanji (${createdCount} mới, ${updatedCount} cập nhật).${reportSummary}`,
   };
 }
 
@@ -622,7 +635,8 @@ export async function syncAdminKanjiFromUrlAction(
 
     const rawText = await response.text();
     const limit = parsed.data.limit ?? 500;
-    const rows = parseKanjiInput(rawText).slice(0, limit);
+    const { rows: parsedRows, report } = buildKanjiImportReport(rawText);
+    const rows = parsedRows.slice(0, limit);
     if (rows.length === 0) {
       return {
         status: "error",
@@ -632,9 +646,15 @@ export async function syncAdminKanjiFromUrlAction(
 
     const { createdCount, updatedCount } = await upsertKanjiRows(rows);
     touchKanjiPaths();
+    const reportSummary = formatKanjiImportReport(report, {
+      limitNote:
+        parsedRows.length > limit
+          ? `Giới hạn sync: chỉ lấy ${limit} mục đầu (đã parse ${parsedRows.length}).`
+          : "",
+    });
     return {
       status: "success",
-      message: `Đã sync ${rows.length} kanji (${createdCount} mới, ${updatedCount} cập nhật).`,
+      message: `Đã sync ${rows.length} kanji (${createdCount} mới, ${updatedCount} cập nhật).${reportSummary}`,
     };
   } catch (error) {
     const message =

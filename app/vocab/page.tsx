@@ -8,6 +8,7 @@ import {
   renameVocabLessonAction,
   updateVocabItemAction,
 } from "@/app/actions/vocab-manager";
+import { ArrowRight, BookOpenText, Flower2, UserRound, WandSparkles, Zap } from "lucide-react";
 import { VocabLibraryBento } from "@/app/components/vocab-library-bento";
 import { VocabImportForm } from "@/app/components/vocab-import-form";
 import { requireUser } from "@/lib/auth";
@@ -195,60 +196,96 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
 
   const pageShellClass =
     activeMode === "library"
-      ? "space-y-7 rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm"
+      ? "space-y-5 rounded-[28px] border border-[#e7e9f7] bg-[#fbfbff] p-4 shadow-[0_18px_44px_rgba(40,45,110,0.08)] sm:p-5"
       : "space-y-7 rounded-3xl border border-sky-100 bg-[#d8e5f7] p-7 shadow-[0_8px_28px_rgba(28,78,140,0.08)] [background-image:linear-gradient(rgba(255,255,255,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.3)_1px,transparent_1px)] [background-size:30px_30px]";
-
-  const modeCardClass =
-    activeMode === "library"
-      ? "rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
-      : "rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm";
 
   return (
     <section className={pageShellClass}>
-      <div className={modeCardClass}>
+      <div className="rounded-[24px] bg-transparent">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900">Trang Từ Vựng</h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Chọn cách học bạn muốn: khám phá kho từ vựng hoặc tự học cá nhân.
+            <h1 className="flex items-center gap-2 text-3xl font-black text-[#171934]">
+              <Flower2 className="h-7 w-7 text-[#fb6fa7]" />
+              Trang Từ Vựng
+            </h1>
+            <p className="mt-1 text-sm font-medium text-[#737894]">
+              Chọn cách học từ vựng phù hợp với lộ trình học cá nhân.
             </p>
           </div>
+          <Link
+            href={
+              studyLessonId
+                ? `/vocab/learn?lesson=${studyLessonId}&mode=flashcard`
+                : selfHref()
+            }
+            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#8c63ff] to-[#5b55ee] px-4 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(112,88,238,0.28)] transition hover:-translate-y-0.5"
+          >
+            <Zap className="h-4 w-4" />
+            Luyện tập nhanh
+          </Link>
         </div>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <div className="mt-5 grid gap-4 md:grid-cols-3">
           <Link
             href={levelHref(selectedLevel)}
-            className={`rounded-2xl border px-4 py-4 transition ${
+            className={`group relative overflow-hidden rounded-[22px] border px-5 py-4 transition hover:-translate-y-0.5 ${
               activeMode === "library"
-                ? "border-sky-200 bg-sky-50 shadow-sm"
-                : "border-slate-200 bg-white hover:bg-slate-50"
+                ? "border-[#d9d8ff] bg-[#f7f6ff] shadow-[0_14px_34px_rgba(99,92,230,0.12)]"
+                : "border-[#e6e9f6] bg-white hover:border-[#d9d8ff] hover:bg-[#fbfaff]"
             }`}
           >
-            <p className="text-lg font-bold text-slate-900">Kho từ vựng admin</p>
-            <p className="mt-1 text-sm text-slate-500">
-              Xem các chủ đề N5-N1 đã được admin cập nhật.
-            </p>
+            <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#ddd7ff]/55" />
+            <div className="relative flex items-center gap-4">
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-[#755cf5] to-[#ad8cff] text-white shadow-[0_10px_18px_rgba(117,92,245,0.22)]">
+                <BookOpenText className="h-5 w-5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-base font-black text-[#171934]">Kho từ vựng admin</p>
+                <p className="mt-1 text-xs font-semibold text-[#737894]">
+                  Xem các chủ đề N5-N1 đã được cập nhật.
+                </p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-[#8a8fab] transition group-hover:translate-x-1" />
+            </div>
           </Link>
           <Link
             href={selfHref()}
-            className={`rounded-2xl border px-4 py-4 transition ${
+            className={`group relative overflow-hidden rounded-[22px] border px-5 py-4 transition hover:-translate-y-0.5 ${
               activeMode === "self"
-                ? "border-emerald-300 bg-emerald-50 shadow-sm"
-                : "border-slate-200 bg-white hover:bg-slate-50"
+                ? "border-[#bfe5ff] bg-[#f3fbff] shadow-[0_14px_34px_rgba(45,156,219,0.12)]"
+                : "border-[#e6e9f6] bg-white hover:border-[#bfe5ff] hover:bg-[#f7fcff]"
             }`}
           >
-            <p className="text-lg font-bold text-slate-900">Tự học cá nhân</p>
-            <p className="mt-1 text-sm text-slate-500">
-              Tạo bài riêng, nhập JSON và học theo 3 chế độ.
-            </p>
+            <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#d7f0ff]/60" />
+            <div className="relative flex items-center gap-4">
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-[#35a8f4] to-[#74d6ff] text-white shadow-[0_10px_18px_rgba(53,168,244,0.22)]">
+                <UserRound className="h-5 w-5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-base font-black text-[#171934]">Tự học cá nhân</p>
+                <p className="mt-1 text-xs font-semibold text-[#737894]">
+                  Tạo bài riêng, nhập JSON và học 3 chế độ.
+                </p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-[#8a8fab] transition group-hover:translate-x-1" />
+            </div>
           </Link>
           <Link
             href="/self-study"
-            className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-4 transition hover:bg-indigo-100"
+            className="group relative overflow-hidden rounded-[22px] border border-[#ffd4e5] bg-[#fff7fb] px-5 py-4 transition hover:-translate-y-0.5 hover:bg-[#fff2f8]"
           >
-            <p className="text-lg font-bold text-slate-900">Tự học chủ động</p>
-            <p className="mt-1 text-sm text-slate-500">
-              Gom import Kanji + Từ vựng trên một trang riêng.
-            </p>
+            <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#ffd5e6]/70" />
+            <div className="relative flex items-center gap-4">
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-[#ff79a8] to-[#ffb1cc] text-white shadow-[0_10px_18px_rgba(255,121,168,0.2)]">
+                <WandSparkles className="h-5 w-5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-base font-black text-[#171934]">Tự học chủ động</p>
+                <p className="mt-1 text-xs font-semibold text-[#737894]">
+                  Gom import Kanji + Từ vựng ở một nơi.
+                </p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-[#8a8fab] transition group-hover:translate-x-1" />
+            </div>
           </Link>
         </div>
       </div>

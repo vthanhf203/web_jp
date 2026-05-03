@@ -19,7 +19,7 @@ import {
   upsertBookmark,
   type PlacementBreakdown,
 } from "@/lib/user-personal-data";
-import { parseKanjiInput } from "@/lib/kanji-import";
+import { buildKanjiImportReport, formatKanjiImportReport } from "@/lib/kanji-import-report";
 import {
   loadUserKanjiStore,
   saveUserKanjiStore,
@@ -669,7 +669,8 @@ export async function importPersonalKanjiAction(
     };
   }
 
-  const rows = parseKanjiInput(parsed.data.rawInput).slice(0, 1000);
+  const { rows: parsedRows, report } = buildKanjiImportReport(parsed.data.rawInput);
+  const rows = parsedRows.slice(0, 1000);
   if (rows.length === 0) {
     return {
       status: "error",
@@ -681,9 +682,16 @@ export async function importPersonalKanjiAction(
 
   touchPersonalKanjiPaths();
 
+  const reportSummary = formatKanjiImportReport(report, {
+    limitNote:
+      parsedRows.length > 1000
+        ? `Giới hạn import: chỉ lấy 1000 mục đầu (đã parse ${parsedRows.length}).`
+        : "",
+  });
+
   return {
     status: "success",
-    message: `Đã lưu ${rows.length} Kanji cá nhân (${createdCount} mới, ${updatedCount} cập nhật).`,
+    message: `Đã lưu ${rows.length} Kanji cá nhân (${createdCount} mới, ${updatedCount} cập nhật).${reportSummary}`,
   };
 }
 

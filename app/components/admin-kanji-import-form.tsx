@@ -14,8 +14,7 @@ const initialState: AdminImportState = {
 
 const ADMIN_KANJI_DRAFT_KEY = "admin_kanji_import_draft_v1";
 
-const SAMPLE_JSON =
-  '[\n  {\n    "id": "n5-001",\n    "character": "\\u751f",\n    "meaning": "Sinh, song",\n    "onReading": ["\\u30bb\\u30a4", "\\u30b7\\u30e7\\u30a6"],\n    "kunReading": ["\\u3044\\u304d\\u308b", "\\u3046\\u307e\\u308c\\u308b", "\\u306a\\u307e"],\n    "strokeCount": 5,\n    "jlptLevel": "N5",\n    "order": 12,\n    "category": "life",\n    "tags": ["life", "existence"],\n    "relatedVocabularies": [\n      {\n        "id": "v-001",\n        "word": "\\u5b66\\u751f",\n        "reading": "\\u304c\\u304f\\u305b\\u3044",\n        "meaning": "Hoc sinh",\n        "type": "noun",\n        "jlptLevel": "N5",\n        "exampleSentence": "\\u79c1\\u306f\\u5b66\\u751f\\u3067\\u3059\\u3002",\n        "exampleMeaning": "Toi la hoc sinh"\n      },\n      {\n        "id": "v-002",\n        "word": "\\u5148\\u751f",\n        "reading": "\\u305b\\u3093\\u305b\\u3044",\n        "meaning": "Giao vien",\n        "type": "noun",\n        "jlptLevel": "N5",\n        "exampleSentence": "\\u5148\\u751f\\u306b\\u805e\\u304d\\u307e\\u3059\\u3002",\n        "exampleMeaning": "Toi hoi giao vien"\n      }\n    ],\n    "createdAt": "2026-04-18",\n    "updatedAt": "2026-04-18"\n  }\n]';
+const SAMPLE_JSON = "[\n  {\n    \"id\": \"kanji-海\",\n    \"character\": \"海\",\n    \"meaning\": \"Biển\",\n    \"onReading\": [\n      \"カイ\"\n    ],\n    \"kunReading\": [\n      \"うみ\"\n    ],\n    \"strokeCount\": 9,\n    \"jlptLevel\": \"N5\",\n    \"order\": 1,\n    \"category\": \"nature\",\n    \"tags\": [\n      \"water\",\n      \"nature\",\n      \"sea\"\n    ],\n    \"radical\": {\n      \"char\": \"氵\",\n      \"name\": \"Thủy\",\n      \"meaning\": \"Nước, chất lỏng\",\n      \"position\": \"left\",\n      \"note\": \"Bộ thủ nằm bên trái, thường liên quan đến nước.\"\n    },\n    \"radicalHint\": \"Bộ 氵 thường liên quan đến nước, chất lỏng, sông, biển.\",\n    \"mnemonic\": \"Rất nhiều nước kéo dài mọi nơi → 海 là biển.\",\n    \"components\": [\n      {\n        \"char\": \"氵\",\n        \"name\": \"Thủy\",\n        \"meaning\": \"Nước, chất lỏng\",\n        \"position\": \"left\",\n        \"role\": \"radical\"\n      },\n      {\n        \"char\": \"毎\",\n        \"name\": \"Mỗi\",\n        \"meaning\": \"Mỗi, thường xuyên\",\n        \"position\": \"right\",\n        \"role\": \"component\"\n      }\n    ],\n    \"structure\": {\n      \"type\": \"left-right\",\n      \"formula\": \"氵 + 毎 = 海\",\n      \"meaning\": \"Nước + nhiều/mỗi nơi → biển\",\n      \"note\": \"氵 giúp đoán nghĩa liên quan đến nước; 毎 giúp nhớ hình dạng chữ.\"\n    },\n    \"relatedVocabularies\": [\n      {\n        \"id\": \"v-umi\",\n        \"word\": \"海\",\n        \"reading\": \"うみ\",\n        \"meaning\": \"Biển\",\n        \"type\": \"noun\",\n        \"jlptLevel\": \"N5\",\n        \"exampleSentence\": \"海(うみ)へ行(い)きます。\",\n        \"exampleMeaning\": \"Tôi đi ra biển.\"\n      }\n    ],\n    \"createdAt\": \"2026-04-18\",\n    \"updatedAt\": \"2026-04-18\"\n  }\n]";
 
 function persistDraft(value: string) {
   try {
@@ -101,7 +100,7 @@ export function AdminKanjiImportForm({ selectedLevel }: AdminKanjiImportFormProp
           }
         }}
         className="min-h-48 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-sky-400 focus:ring-3 focus:ring-sky-100"
-        placeholder='Hỗ trợ JSON array / JSON object / JSON-lines / text. Field mới: id, character, meaning, onReading[], kunReading[], strokeCount, jlptLevel, order, category, tags[], strokeHint, strokeImage, relatedVocabularies[].'
+        placeholder="Hỗ trợ JSON array / JSON object / JSON-lines / text. Field mới: id, character, meaning, onReading[], kunReading[], strokeCount, jlptLevel, order, category, tags[], strokeHint, strokeImage, radical{}, radicalHint, mnemonic, components[], structure{}, relatedVocabularies[]."
         disabled={!canInteract}
         required
       />
@@ -110,8 +109,8 @@ export function AdminKanjiImportForm({ selectedLevel }: AdminKanjiImportFormProp
         <p
           className={
             state.status === "error"
-              ? "rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-              : "rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
+              ? "whitespace-pre-line rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
+              : "whitespace-pre-line rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
           }
         >
           {state.message}

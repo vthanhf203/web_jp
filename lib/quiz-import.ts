@@ -10,7 +10,10 @@ export type ImportedQuizRow = {
   optionD: string;
   correctOption: QuizOption;
   explanation: string;
+  optionReadings: Partial<Record<QuizOption, string>>;
 };
+
+const OPTION_KEYS = [QuizOption.A, QuizOption.B, QuizOption.C, QuizOption.D] as const;
 
 function normalizeText(value: unknown): string {
   if (typeof value !== "string") {
@@ -63,29 +66,113 @@ function pickString(source: Record<string, unknown>, keys: string[]): string {
   return "";
 }
 
-function optionsFromObject(source: Record<string, unknown>): [string, string, string, string] {
-  const optionArray = source.options;
-  if (Array.isArray(optionArray) && optionArray.length >= 4) {
-    return [
-      normalizeText(optionArray[0]),
-      normalizeText(optionArray[1]),
-      normalizeText(optionArray[2]),
-      normalizeText(optionArray[3]),
+function optionTextFromValue(value: unknown): string {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return pickString(value as Record<string, unknown>, [
+      "text",
+      "label",
+      "value",
+      "kanji",
+      "word",
+      "answer",
+      "content",
+    ]);
+  }
+  return normalizeText(value);
+}
+
+function optionReadingFromValue(value: unknown): string {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return "";
+  }
+  return pickString(value as Record<string, unknown>, [
+    "reading",
+    "furigana",
+    "kana",
+    "yomi",
+    "ruby",
+  ]);
+}
+
+function optionReadingsFromObject(source: Record<string, unknown>): Partial<Record<QuizOption, string>> {
+  const output: Partial<Record<QuizOption, string>> = {};
+  const keyedSource = source.optionReadings ?? source.readings ?? source.furigana;
+
+  if (keyedSource && typeof keyedSource === "object" && !Array.isArray(keyedSource)) {
+    const keyed = keyedSource as Record<string, unknown>;
+    const pairs: Array<[QuizOption, string[]]> = [
+      [QuizOption.A, ["A", "a", "optionA", "option_a"]],
+      [QuizOption.B, ["B", "b", "optionB", "option_b"]],
+      [QuizOption.C, ["C", "c", "optionC", "option_c"]],
+      [QuizOption.D, ["D", "d", "optionD", "option_d"]],
     ];
+    for (const [option, keys] of pairs) {
+      const reading = pickString(keyed, keys);
+      if (reading) {
+        output[option] = reading;
+      }
+    }
   }
 
-  return [
-    pickString(source, ["optionA", "a", "answerA", "option_a"]),
-    pickString(source, ["optionB", "b", "answerB", "option_b"]),
-    pickString(source, ["optionC", "c", "answerC", "option_c"]),
-    pickString(source, ["optionD", "d", "answerD", "option_d"]),
+  const directPairs: Array<[QuizOption, string[]]> = [
+    [QuizOption.A, ["optionAReading", "readingA", "furiganaA", "aReading", "option_a_reading"]],
+    [QuizOption.B, ["optionBReading", "readingB", "furiganaB", "bReading", "option_b_reading"]],
+    [QuizOption.C, ["optionCReading", "readingC", "furiganaC", "cReading", "option_c_reading"]],
+    [QuizOption.D, ["optionDReading", "readingD", "furiganaD", "dReading", "option_d_reading"]],
   ];
+  for (const [option, keys] of directPairs) {
+    const reading = pickString(source, keys);
+    if (reading) {
+      output[option] = reading;
+    }
+  }
+
+  return output;
+}
+
+function optionsFromObject(source: Record<string, unknown>): {
+  options: [string, string, string, string];
+  readings: Partial<Record<QuizOption, string>>;
+} {
+  const optionArray = source.options;
+  if (Array.isArray(optionArray) && optionArray.length >= 4) {
+    const readings: Partial<Record<QuizOption, string>> = {};
+    for (let index = 0; index < 4; index += 1) {
+      const reading = optionReadingFromValue(optionArray[index]);
+      if (reading) {
+        readings[OPTION_KEYS[index]] = reading;
+      }
+    }
+    return {
+      options: [
+        optionTextFromValue(optionArray[0]),
+        optionTextFromValue(optionArray[1]),
+        optionTextFromValue(optionArray[2]),
+        optionTextFromValue(optionArray[3]),
+      ],
+      readings: {
+        ...optionReadingsFromObject(source),
+        ...readings,
+      },
+    };
+  }
+
+  return {
+    options: [
+      pickString(source, ["optionA", "a", "answerA", "option_a"]),
+      pickString(source, ["optionB", "b", "answerB", "option_b"]),
+      pickString(source, ["optionC", "c", "answerC", "option_c"]),
+      pickString(source, ["optionD", "d", "answerD", "option_d"]),
+    ],
+    readings: optionReadingsFromObject(source),
+  };
 }
 
 function rowFromObject(source: Record<string, unknown>): ImportedQuizRow | null {
   const prompt = pickString(source, ["prompt", "question", "cauHoi", "content"]);
   const category = pickString(source, ["category", "topic", "type"]) || "Tong hop";
-  const [optionA, optionB, optionC, optionD] = optionsFromObject(source);
+  const { options, readings } = optionsFromObject(source);
+  const [optionA, optionB, optionC, optionD] = options;
   const correctOption = normalizeQuizOption(
     source.correctOption ?? source.correct ?? source.answer ?? source.key
   );
@@ -105,6 +192,7 @@ function rowFromObject(source: Record<string, unknown>): ImportedQuizRow | null 
     optionD,
     correctOption,
     explanation,
+    optionReadings: readings,
   };
 }
 
@@ -155,6 +243,7 @@ function rowFromLine(line: string): ImportedQuizRow | null {
     optionD,
     correctOption: normalizeQuizOption(correctOption),
     explanation: rest.join(" - "),
+    optionReadings: {},
   };
 }
 
@@ -245,4 +334,3 @@ export function parseQuizInput(rawInput: string): ImportedQuizRow[] {
 
   return parseTextInput(text);
 }
-

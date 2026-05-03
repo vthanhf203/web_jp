@@ -1,4 +1,4 @@
-export type LearningProgressKind = "kanji" | "vocab";
+export type LearningProgressKind = "kanji" | "vocab" | "quiz";
 
 export type LearningProgressSnapshot = {
   id: string;
@@ -18,6 +18,9 @@ export type LearningProgressSnapshot = {
   isHardReview?: boolean;
   order?: number[];
   isShuffled?: boolean;
+  questionOrder?: string[];
+  selectedAnswers?: Record<string, string>;
+  checkedAnswers?: Record<string, boolean>;
 };
 
 const STORAGE_KEY = "jp-learning-progress:v1";
@@ -38,7 +41,8 @@ function normalizeSnapshot(input: unknown): LearningProgressSnapshot | null {
   if (!href || !title) {
     return null;
   }
-  const kind: LearningProgressKind = raw.kind === "kanji" ? "kanji" : "vocab";
+  const kind: LearningProgressKind =
+    raw.kind === "kanji" || raw.kind === "vocab" || raw.kind === "quiz" ? raw.kind : "vocab";
   const totalCount = Math.max(0, Math.round(Number(raw.totalCount ?? 0)));
   const currentIndex = Math.max(0, Math.round(Number(raw.currentIndex ?? 0)));
   const percent = Math.max(0, Math.min(100, Math.round(Number(raw.percent ?? 0))));
@@ -50,6 +54,29 @@ function normalizeSnapshot(input: unknown): LearningProgressSnapshot | null {
         .map((item) => Number(item))
         .filter((item) => Number.isInteger(item) && item >= 0)
     : [];
+  const questionOrder = Array.isArray(raw.questionOrder)
+    ? raw.questionOrder.filter((item): item is string => typeof item === "string" && Boolean(item.trim()))
+    : [];
+  const selectedAnswers =
+    raw.selectedAnswers && typeof raw.selectedAnswers === "object"
+      ? Object.fromEntries(
+          Object.entries(raw.selectedAnswers).filter(
+            (entry): entry is [string, string] =>
+              typeof entry[0] === "string" &&
+              typeof entry[1] === "string" &&
+              ["A", "B", "C", "D"].includes(entry[1])
+          )
+        )
+      : {};
+  const checkedAnswers =
+    raw.checkedAnswers && typeof raw.checkedAnswers === "object"
+      ? Object.fromEntries(
+          Object.entries(raw.checkedAnswers).filter(
+            (entry): entry is [string, boolean] =>
+              typeof entry[0] === "string" && typeof entry[1] === "boolean"
+          )
+        )
+      : {};
 
   return {
     id: typeof raw.id === "string" && raw.id.trim() ? raw.id : href,
@@ -69,6 +96,9 @@ function normalizeSnapshot(input: unknown): LearningProgressSnapshot | null {
     isHardReview: Boolean(raw.isHardReview),
     order,
     isShuffled: Boolean(raw.isShuffled),
+    questionOrder,
+    selectedAnswers,
+    checkedAnswers,
   };
 }
 

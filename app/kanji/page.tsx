@@ -34,6 +34,7 @@ type SearchParams = Promise<{
   page?: string | string[];
   scope?: string | string[];
   deck?: string | string[];
+  deckView?: string | string[];
   pickReset?: string | string[];
 }>;
 
@@ -58,6 +59,28 @@ type KanjiListItem = {
   kunReading: string;
   strokeHint: string;
   strokeImage: string;
+  radical: {
+    symbol: string;
+    name: string;
+    meaning: string;
+    position: string;
+    note: string;
+  } | null;
+  radicalHint: string;
+  mnemonic: string;
+  components: {
+    symbol: string;
+    name: string;
+    meaning: string;
+    position: string;
+    role: string;
+  }[];
+  structure: {
+    type: string;
+    formula: string;
+    meaning: string;
+    note: string;
+  } | null;
   strokeCount: number;
   jlptLevel: JlptLevel;
   exampleWord: string;
@@ -205,6 +228,7 @@ function buildKanjiPageHref(options: {
   pickMode?: boolean;
   scope?: "all" | "personal";
   deckId?: string;
+  deckView?: boolean;
   pickReset?: boolean;
 }): string {
   const query = (options.rawQuery ?? "").trim();
@@ -235,6 +259,9 @@ function buildKanjiPageHref(options: {
   const deckId = (options.deckId ?? "").trim();
   if (deckId) {
     params.set("deck", deckId);
+  }
+  if (options.deckView) {
+    params.set("deckView", "1");
   }
   if (options.pickReset) {
     params.set("pickReset", "1");
@@ -403,6 +430,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
   const rawPickMode = pickSingle(params.pickMode).trim();
   const rawPage = pickSingle(params.page).trim();
   const rawDeckId = pickSingle(params.deck).trim();
+  const rawDeckView = pickSingle(params.deckView).trim();
   const rawPickReset = pickSingle(params.pickReset).trim();
   const scope: "all" | "personal" = rawScope === "personal" ? "personal" : "all";
   const isPersonalScope = scope === "personal";
@@ -462,6 +490,11 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     kunReading: item.kunReading,
     strokeHint: metadataEntryMap.get(item.character)?.strokeHint || "",
     strokeImage: metadataEntryMap.get(item.character)?.strokeImage || "",
+    radical: metadataEntryMap.get(item.character)?.radical || null,
+    radicalHint: metadataEntryMap.get(item.character)?.radicalHint || "",
+    mnemonic: metadataEntryMap.get(item.character)?.mnemonic || "",
+    components: metadataEntryMap.get(item.character)?.components || [],
+    structure: metadataEntryMap.get(item.character)?.structure || null,
     strokeCount: item.strokeCount,
     jlptLevel: normalizeJlptLevel(item.jlptLevel),
     exampleWord: item.exampleWord,
@@ -478,6 +511,11 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
       kunReading: item.kunReading,
       strokeHint: item.strokeHint || metadataEntryMap.get(item.character)?.strokeHint || "",
       strokeImage: item.strokeImage || metadataEntryMap.get(item.character)?.strokeImage || "",
+      radical: metadataEntryMap.get(item.character)?.radical || null,
+      radicalHint: metadataEntryMap.get(item.character)?.radicalHint || "",
+      mnemonic: metadataEntryMap.get(item.character)?.mnemonic || "",
+      components: metadataEntryMap.get(item.character)?.components || [],
+      structure: metadataEntryMap.get(item.character)?.structure || null,
       strokeCount: item.strokeCount,
       jlptLevel: item.jlptLevel,
       exampleWord: item.exampleWord,
@@ -514,6 +552,24 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
           kanji.kunReading,
           kanji.strokeHint,
           kanji.strokeImage,
+          kanji.radical?.symbol ?? "",
+          kanji.radical?.name ?? "",
+          kanji.radical?.meaning ?? "",
+          kanji.radical?.position ?? "",
+          kanji.radical?.note ?? "",
+          kanji.radicalHint,
+          kanji.mnemonic,
+          ...kanji.components.flatMap((component) => [
+            component.symbol,
+            component.name,
+            component.meaning,
+            component.position,
+            component.role,
+          ]),
+          kanji.structure?.type ?? "",
+          kanji.structure?.formula ?? "",
+          kanji.structure?.meaning ?? "",
+          kanji.structure?.note ?? "",
           kanji.jlptLevel,
           kanji.exampleWord,
           kanji.exampleMeaning,
@@ -524,6 +580,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
   const flashcardScope: "all" | "personal" = isPersonalScope ? "personal" : "all";
   const scopedDecks = kanjiPickDeckStore.decks.filter((deck) => deck.scope === scope);
   const selectedDeck = scopedDecks.find((deck) => deck.id === rawDeckId) ?? null;
+  const isDeckView = rawDeckView === "1" && Boolean(selectedDeck);
   const pickResetRequested = rawPickReset === "1";
   const fallbackPickedIds = selectedDeck
     ? selectedDeck.pickedIds
@@ -872,7 +929,8 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
           .join(" · ")}${selectedFlashcardKanji.length > 12 ? ` ... (+${selectedFlashcardKanji.length - 12})` : ""}`
       : "";
   const pageKanji = filteredKanji.slice(pageStart, pageStart + KANJI_PAGE_SIZE);
-  const pageItems = pageKanji.map((kanji) => {
+  const visibleKanji = isDeckView ? selectedFlashcardKanji : pageKanji;
+  const pageItems = visibleKanji.map((kanji) => {
     const toggledPickedIds = togglePickedId(activePickedIds, kanji.id);
     return {
       id: kanji.id,
@@ -921,6 +979,16 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
       page: 1,
       pickMode: true,
       deckId,
+    });
+  const buildDeckLibraryHref = (deckId: string) =>
+    buildScopedKanjiPageHref({
+      level: null,
+      rawQuery: "",
+      selectedChar: "",
+      page: 1,
+      pickMode: true,
+      deckId,
+      deckView: true,
     });
   const buildDeckFlashcardHref = (deckPickedIds: string[]) =>
     buildKanjiLearnHref({
@@ -1251,9 +1319,12 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
                           >
                             {deck.title}
                           </Link>
-                          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                          <Link
+                            href={`${buildDeckLibraryHref(deck.id)}#kanji-list`}
+                            className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 hover:bg-slate-200"
+                          >
                             {deck.pickedIds.length} chu
-                          </span>
+                          </Link>
                         </div>
                         <div className="mt-2 flex items-center justify-between gap-2">
                           <Link
@@ -1304,10 +1375,15 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
           </p>
         ) : (
           <>
-            <div className="mt-4">
+            {isDeckView && selectedDeck ? (
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
+                Dang xem toan bo bo: {selectedDeck.title} ({selectedFlashcardKanji.length} chu)
+              </p>
+            ) : null}
+            <div id="kanji-list" className="mt-4">
               <KanjiLibraryGrid items={pageItems} selectionEnabled={isPickMode} />
             </div>
-            {totalPages > 1 ? (
+            {!isDeckView && totalPages > 1 ? (
               <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-50/90 px-4 py-3">
                 <p className="text-sm text-slate-500">
                   Dang xem {pageStart + 1}-{Math.min(pageStart + KANJI_PAGE_SIZE, filteredKanji.length)} /{" "}

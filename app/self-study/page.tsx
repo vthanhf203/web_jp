@@ -1,9 +1,13 @@
 import Link from "next/link";
 
+import { deleteSelfStudyQuizDeckAction } from "@/app/actions/self-study-quiz";
 import { createSelfStudyVocabLessonAction } from "@/app/actions/vocab-manager";
 import { PersonalKanjiImportForm } from "@/app/components/personal-kanji-import-form";
+import { SelfStudyQuizImportForm } from "@/app/components/self-study-quiz-import-form";
 import { VocabImportForm } from "@/app/components/vocab-import-form";
+import { isAdminEmail } from "@/lib/admin";
 import { requireUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { loadUserKanjiStore } from "@/lib/user-kanji-store";
 import { formatVocabLabel } from "@/lib/vietnamese-labels";
 import { loadUserVocabStore } from "@/lib/vocab-store";
@@ -11,6 +15,8 @@ import { loadUserVocabStore } from "@/lib/vocab-store";
 type SearchParams = Promise<{
   lesson?: string | string[];
 }>;
+
+const SELF_STUDY_PREFIX = "SELF::";
 
 function pickSingle(value?: string | string[]): string {
   if (!value) {
@@ -22,6 +28,10 @@ function pickSingle(value?: string | string[]): string {
   return value;
 }
 
+function toQuizDeckLabel(category: string): string {
+  return category.startsWith(SELF_STUDY_PREFIX) ? category.slice(SELF_STUDY_PREFIX.length) : category;
+}
+
 export default async function SelfStudyPage(props: { searchParams: SearchParams }) {
   const user = await requireUser();
   const params = await props.searchParams;
@@ -31,6 +41,27 @@ export default async function SelfStudyPage(props: { searchParams: SearchParams 
     loadUserKanjiStore(user.id),
     loadUserVocabStore(user.id),
   ]);
+  const isAdmin = isAdminEmail(user.email);
+  const selfStudyQuizDecks = isAdmin
+    ? await prisma.quizQuestion.groupBy({
+        by: ["category"],
+        where: {
+          category: {
+            startsWith: SELF_STUDY_PREFIX,
+          },
+        },
+        _count: {
+          _all: true,
+        },
+        orderBy: {
+          category: "asc",
+        },
+      })
+    : [];
+  const selfStudyQuizQuestionCount = selfStudyQuizDecks.reduce(
+    (sum, deck) => sum + deck._count._all,
+    0
+  );
 
   const lessons = [...vocabStore.lessons].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   const selectedLessonId =
@@ -224,6 +255,66 @@ export default async function SelfStudyPage(props: { searchParams: SearchParams 
           </div>
         </article>
       </div>
+
+      {isAdmin ? (
+        <article className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-2xl font-extrabold text-slate-900">Quiz JSON (Admin)</h2>
+              <p className="mt-1 text-sm text-slate-600">
+                Import bo cau hoi + dap an de tao khu on rieng trong Tu hoc.
+              </p>
+            </div>
+            <Link
+              href="/self-study/quiz"
+              className="rounded-full bg-sky-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-sky-500"
+            >
+              Vao trang on quiz ({selfStudyQuizQuestionCount})
+            </Link>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-sky-100 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+            Meo: Moi bo import se duoc tach rieng theo "Ten bo quiz", khong tron vao quiz he thong.
+          </div>
+
+          {selfStudyQuizDecks.length > 0 ? (
+            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+              <p className="text-xs font-bold uppercase text-slate-500">
+                Bo quiz da import ({selfStudyQuizDecks.length})
+              </p>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {selfStudyQuizDecks.map((deck) => (
+                  <div
+                    key={deck.category}
+                    className="flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2"
+                  >
+                    <Link
+                      href={`/self-study/quiz?category=${encodeURIComponent(deck.category)}`}
+                      className="min-w-0 flex-1 truncate text-sm font-semibold text-slate-800 hover:text-sky-700"
+                    >
+                      {toQuizDeckLabel(deck.category)} ({deck._count._all})
+                    </Link>
+                    <form action={deleteSelfStudyQuizDeckAction}>
+                      <input type="hidden" name="category" value={deck.category} />
+                      <input type="hidden" name="returnTo" value="/self-study" />
+                      <button
+                        type="submit"
+                        className="rounded-lg bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 transition hover:bg-rose-100"
+                      >
+                        Xoa
+                      </button>
+                    </form>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="mt-4">
+            <SelfStudyQuizImportForm />
+          </div>
+        </article>
+      ) : null}
     </section>
   );
 }

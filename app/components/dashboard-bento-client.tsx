@@ -151,6 +151,23 @@ function modeLabel(mode: string): string {
   return "Flashcard";
 }
 
+function kindLabel(kind: LearningProgressSnapshot["kind"]): string {
+  if (kind === "kanji") {
+    return "Kanji";
+  }
+  if (kind === "quiz") {
+    return "Tự học";
+  }
+  return "Từ vựng";
+}
+
+function hardCountLabel(item: LearningProgressSnapshot): string {
+  if (item.hardCount <= 0) {
+    return "";
+  }
+  return item.kind === "quiz" ? ` · ${item.hardCount} câu sai` : ` · ${item.hardCount} từ khó`;
+}
+
 function ProgressRing({ value }: { value: number }) {
   const safeValue = Math.max(0, Math.min(100, value));
   const sweep = `${safeValue * 3.6}deg`;
@@ -222,7 +239,7 @@ function LearningResumeCard({
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-extrabold text-emerald-800">
-              {item.kind === "kanji" ? "Kanji" : "Từ vựng"}
+              {kindLabel(item.kind)}
             </span>
             <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">
               {modeLabel(item.mode)}
@@ -251,7 +268,7 @@ function LearningResumeCard({
       </div>
       <div className="mt-3 flex items-center justify-between gap-2">
         <span className="text-xs font-semibold text-slate-500">
-          {item.percent}% {item.hardCount > 0 ? `· ${item.hardCount} từ khó` : ""}
+          {item.percent}%{hardCountLabel(item)}
         </span>
         <Link
           href={item.href}
