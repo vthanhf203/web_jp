@@ -6,16 +6,25 @@ function normalize(value: string | null): string {
   return (value ?? "").trim().toLowerCase();
 }
 
+function normalizeText(value: string | null): string {
+  return (value ?? "").trim();
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const level = normalize(url.searchParams.get("level"));
   const query = normalize(url.searchParams.get("q"));
+  const lessonId = normalizeText(url.searchParams.get("lesson"));
 
   const library = await loadAdminVocabLibrary();
   let lessons = [...library.lessons];
 
   if (level) {
     lessons = lessons.filter((lesson) => lesson.jlptLevel.toLowerCase() === level);
+  }
+
+  if (lessonId) {
+    lessons = lessons.filter((lesson) => lesson.id === lessonId);
   }
 
   if (query) {

@@ -1,11 +1,12 @@
 .card {
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  border: 1px solid #ebe9ff;
   background: #ffffff;
-  padding: 20px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  box-shadow: 0 12px 28px rgba(50, 45, 120, 0.06);
 }
 
 .header {
@@ -23,28 +24,30 @@
 }
 
 .order {
-  min-width: 32px;
-  height: 32px;
+  min-width: 36px;
+  height: 36px;
   border-radius: 999px;
-  background: #e0e7ff;
-  color: #3730a3;
-  font-size: 0.85rem;
-  font-weight: 700;
+  background: linear-gradient(135deg, #9b7cff 0%, #6f55f2 100%);
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 900;
   display: inline-grid;
   place-items: center;
+  box-shadow: 0 10px 20px rgba(124, 92, 255, 0.22);
 }
 
 .title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #101735;
+  line-height: 1.35;
 }
 
 .bookmarkButton {
-  border: 1px solid #cbd5e1;
+  border: 1px solid #e3defc;
   background: #ffffff;
-  color: #334155;
-  border-radius: 999px;
+  color: #6b55dc;
+  border-radius: 12px;
   height: 36px;
   padding: 0 14px;
   display: inline-flex;
@@ -58,8 +61,9 @@
 }
 
 .bookmarkButton:hover {
-  border-color: #818cf8;
-  color: #4338ca;
+  border-color: #8b6cff;
+  background: #f7f4ff;
+  color: #5b43e9;
 }
 
 .bookmarkIcon {
@@ -74,9 +78,9 @@
 }
 
 .bookmarkActive {
-  border-color: #6366f1;
-  background: rgba(99, 102, 241, 0.1);
-  color: #4338ca;
+  border-color: #8b6cff;
+  background: #f1edff;
+  color: #5b43e9;
 }
 
 .bookmarkActive .bookmarkIcon {
@@ -86,17 +90,16 @@
 
 .block {
   border-radius: 14px;
-  border: 1px solid #eef2ff;
-  background: #f8fafc;
+  border: 1px solid #f0edff;
+  background: linear-gradient(135deg, #fbf9ff 0%, #f8fbff 100%);
   padding: 14px;
 }
 
 .blockTitle {
-  font-size: 0.86rem;
-  letter-spacing: 0.03em;
+  font-size: 0.78rem;
   text-transform: uppercase;
-  color: #64748b;
-  font-weight: 700;
+  color: #7c5cff;
+  font-weight: 900;
   margin-bottom: 8px;
 }
 
@@ -126,10 +129,11 @@
 }
 
 .exampleCard {
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  border: 1px solid #e8eaf4;
   background: #ffffff;
-  padding: 12px;
+  padding: 13px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
 }
 
 .exampleTop {
@@ -141,10 +145,10 @@
 
 .jpText {
   margin: 0;
-  color: #0f172a;
+  color: #101735;
   font-size: 1rem;
   line-height: 1.6;
-  font-weight: 600;
+  font-weight: 800;
 }
 
 .jpText ruby {
@@ -160,9 +164,9 @@
   width: 34px;
   height: 34px;
   border-radius: 999px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #e3defc;
   background: #ffffff;
-  color: #334155;
+  color: #7c5cff;
   display: inline-grid;
   place-items: center;
   cursor: pointer;
@@ -174,9 +178,9 @@
 }
 
 .speakButton:hover {
-  border-color: #6366f1;
-  color: #4338ca;
-  background: rgba(99, 102, 241, 0.07);
+  border-color: #8b6cff;
+  color: #5b43e9;
+  background: #f7f4ff;
 }
 
 .viText {
@@ -222,7 +226,5 @@
 }
 
 .quizButton:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  box-shadow: none;
+  display: none;
 }

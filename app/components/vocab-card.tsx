@@ -64,7 +64,9 @@ export function VocabCard({
     }
 
     const previous = optimisticInDeck;
-    setOptimisticInDeck(nextInDeck);
+    startTransition(() => {
+      setOptimisticInDeck(nextInDeck);
+    });
 
     const payload = new FormData();
     payload.set("word", item.word);
@@ -78,19 +80,21 @@ export function VocabCard({
     payload.set("targetDeck", selectedDeckId);
     payload.set("returnTo", returnTo);
 
-    startTransition(async () => {
-      try {
-        const result = nextInDeck
-          ? await addLibraryVocabToReviewAction(payload)
-          : await removeLibraryVocabFromReviewAction(payload);
+    try {
+      const result = nextInDeck
+        ? await addLibraryVocabToReviewAction(payload)
+        : await removeLibraryVocabFromReviewAction(payload);
 
-        if (!result?.ok) {
+      if (!result?.ok) {
+        startTransition(() => {
           setOptimisticInDeck(previous);
-        }
-      } catch {
-        setOptimisticInDeck(previous);
+        });
       }
-    });
+    } catch {
+      startTransition(() => {
+        setOptimisticInDeck(previous);
+      });
+    }
   }
 
   const deckButtonClass = optimisticInDeck
@@ -167,11 +171,11 @@ export function VocabCard({
         </div>
 
         {!selectedDeckId ? (
-          <p className="text-xs font-semibold text-amber-700">Tạo bộ flashcard trước để thêm nhanh</p>
+          <p className="text-xs font-semibold text-amber-700">Tạo bộ flashcard trước để thêm vào SRS</p>
         ) : optimisticInDeck ? (
-          <p className="text-xs font-semibold text-emerald-700">Đã trong flashcard đang chọn</p>
+          <p className="text-xs font-semibold text-emerald-700">Đã thêm vào flashcard, sẽ xuất hiện ở SRS</p>
         ) : (
-          <p className="text-xs font-semibold text-blue-700">Bấm dấu cộng để thêm vào flashcard</p>
+          <p className="text-xs font-semibold text-blue-700">Bấm dấu cộng để thêm vào flashcard + hàng đợi SRS</p>
         )}
       </div>
 
@@ -179,20 +183,20 @@ export function VocabCard({
         type="button"
         disabled={!selectedDeckId || isPending}
         onClick={() => void toggleDeckMembership(!optimisticInDeck)}
-        title={
-          !selectedDeckId
-            ? "Tạo flashcard trước"
-            : optimisticInDeck
-              ? "Xóa khỏi flashcard"
-              : "Thêm vào flashcard"
-        }
-        aria-label={
-          !selectedDeckId
-            ? "Tạo flashcard trước"
-            : optimisticInDeck
-              ? "Xóa khỏi flashcard"
-              : "Thêm vào flashcard"
-        }
+          title={
+            !selectedDeckId
+              ? "Tạo flashcard trước"
+              : optimisticInDeck
+                ? "Xóa khỏi flashcard và hàng đợi SRS"
+                : "Thêm vào flashcard và hàng đợi SRS"
+          }
+          aria-label={
+            !selectedDeckId
+              ? "Tạo flashcard trước"
+              : optimisticInDeck
+                ? "Xóa khỏi flashcard và hàng đợi SRS"
+                : "Thêm vào flashcard và hàng đợi SRS"
+          }
         className={`absolute bottom-4 right-4 inline-flex h-9 w-9 items-center justify-center rounded-full border shadow-sm transition ${deckButtonClass} ${
           !selectedDeckId || isPending ? "cursor-not-allowed opacity-50" : "hover:scale-105"
         }`}

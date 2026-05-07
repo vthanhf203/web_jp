@@ -74,6 +74,11 @@ model Review {
   repetitions    Int      @default(0)
   easeFactor     Float    @default(2.5)
   intervalDays   Int      @default(0)
+  fsrsState      Int      @default(0)
+  fsrsStability  Float    @default(0)
+  fsrsDifficulty Float    @default(0)
+  fsrsLearningSteps Int   @default(0)
+  fsrsLapses     Int      @default(0)
   dueAt          DateTime @default(now())
   lastReviewedAt DateTime?
   createdAt      DateTime @default(now())

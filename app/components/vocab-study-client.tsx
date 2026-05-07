@@ -331,7 +331,13 @@ function convertRomajiTokenToHiragana(token: string): string {
         continue;
       }
       if (!next) {
-        result += "ん";
+        // Keep a single standalone "n" as-is while typing, so "ni" can become "に"
+        // on the next keystroke instead of being stuck as "んい".
+        if (source.length === 1 && index === 0) {
+          result += "n";
+        } else {
+          result += "ん";
+        }
         index += 1;
         continue;
       }

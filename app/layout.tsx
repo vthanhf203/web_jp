@@ -43,7 +43,7 @@ export default function RootLayout({
       >
         <NavBar />
         <StreakBanner />
-        <main className="mx-auto w-full max-w-[1240px] px-4 pb-12 pt-7 lg:pl-[120px] lg:pr-6">
+        <main className="mx-auto w-full max-w-[1420px] px-4 pb-12 pt-7 lg:pl-[120px] lg:pr-6">
           {children}
         </main>
       </body>

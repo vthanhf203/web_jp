@@ -26,6 +26,7 @@ const privateLinks: NavLinkItem[] = [
   { href: "/dashboard", label: "Tổng quan", iconPath: "M3 12l9-8 9 8M5 10v10h14V10" },
   { href: "/personal", label: "Lộ trình", iconPath: "M3 6h18M6 12h12M9 18h6" },
   { href: "/study-timer", label: "Bấm giờ học", iconPath: "M12 8v4l3 3M5 4l2 2M19 4l-2 2M12 22a9 9 0 100-18 9 9 0 000 18z" },
+  { href: "/schedule", label: "Lịch học", iconPath: "M7 3v4M17 3v4M4 9h16M6 5h12a2 2 0 012 2v12H4V7a2 2 0 012-2z" },
   { href: "/search", label: "Search", iconPath: "M11 4a7 7 0 105.3 11.6L20 19" },
   { href: "/shadowing", label: "Shadowing", iconPath: "M4 12a8 8 0 0116 0v5a2 2 0 01-2 2h-2v-6h4M4 12v5a2 2 0 002 2h2v-6H4" },
   { href: "/kanji", label: "Kanji", iconPath: "M5 6h14M5 12h14M5 18h14M12 6v12" },
@@ -48,7 +49,7 @@ export async function NavBar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/70 bg-[#edf4ff]/78 backdrop-blur-xl">
-      <div className="mx-auto w-full max-w-[1240px] px-4 py-3 lg:px-6">
+      <div className="mx-auto w-full max-w-[1420px] px-4 py-3 lg:px-6">
         <div className="nav-surface rounded-2xl px-3 py-3 sm:px-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Link href="/" className="group flex items-center gap-3">

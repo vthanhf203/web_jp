@@ -195,7 +195,7 @@ export function KanjiDetail({
 
   return (
     <section
-      className="grid min-w-0 gap-5 scroll-mt-28 lg:scroll-mt-36 xl:grid-cols-[minmax(520px,1.2fr)_minmax(420px,0.8fr)]"
+      className="grid min-w-0 gap-5 scroll-mt-28 lg:scroll-mt-36 xl:grid-cols-[minmax(620px,1.35fr)_minmax(460px,1fr)]"
       id={`kanji-${selectedKanji.id}`}
     >
       <article className="relative min-w-0 overflow-hidden rounded-3xl bg-white/84 p-5 shadow-[0_20px_50px_rgba(15,23,42,0.08)] backdrop-blur-md sm:p-6">
@@ -261,7 +261,7 @@ export function KanjiDetail({
           </div>
         </div>
 
-        <div className="relative mt-5 grid min-w-0 gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(330px,0.62fr)]">
+        <div className="relative mt-5 grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(360px,0.78fr)]">
           <article className="relative min-w-0 overflow-hidden rounded-3xl bg-gradient-to-br from-cyan-50/90 via-white/95 to-indigo-50/70 p-5 shadow-[0_18px_40px_rgba(15,23,42,0.1)] sm:p-6">
             <div className="pointer-events-none absolute -left-10 -top-12 h-28 w-28 rounded-full bg-cyan-200/40 blur-2xl" />
             <div className="pointer-events-none absolute -right-12 top-6 h-24 w-24 rounded-full bg-indigo-200/35 blur-2xl" />

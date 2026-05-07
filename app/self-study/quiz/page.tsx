@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronLeft, Layers3, Trash2 } from "lucide-react";
 
 import { deleteSelfStudyQuizDeckAction } from "@/app/actions/self-study-quiz";
+import { SelfStudyQuizImportForm } from "@/app/components/self-study-quiz-import-form";
 import { SelfStudyQuizSessionForm } from "@/app/components/self-study-quiz-session-form";
 import { isAdminEmail } from "@/lib/admin";
 import { requireUser } from "@/lib/auth";
@@ -208,9 +209,25 @@ export default async function SelfStudyQuizPage(props: { searchParams: SearchPar
         </div>
       ) : null}
 
+      {isAdmin ? (
+        <div className="rounded-[24px] border border-[#dfe6f8] bg-white p-5 shadow-[0_16px_36px_rgba(17,24,57,0.06)]">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-black text-[#101735]">Import quiz JSON</h2>
+              <p className="mt-1 text-sm leading-6 text-[#64708c]">
+                Mỗi bộ import được lưu riêng trong khu tự học.
+              </p>
+            </div>
+          </div>
+          <div className="mt-4">
+            <SelfStudyQuizImportForm />
+          </div>
+        </div>
+      ) : null}
+
       {questions.length === 0 ? (
         <div className="rounded-[24px] border border-[#dfe6f8] bg-white p-6 text-sm font-semibold text-[#64708c] shadow-[0_16px_36px_rgba(17,24,57,0.06)]">
-          Chua co bo quiz tu hoc nao. Admin vao <Link href="/self-study" className="font-extrabold text-[#4458df]">/self-study</Link> de import JSON.
+          Chua co bo quiz tu hoc nao.
         </div>
       ) : (
         <div>

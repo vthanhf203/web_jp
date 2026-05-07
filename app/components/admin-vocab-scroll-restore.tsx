@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 type ScrollPayload = {
   y: number;
@@ -58,6 +59,20 @@ function savePayload() {
   }
 }
 
+function bindContainerScrollListeners(onCapture: () => void): () => void {
+  const elements = Array.from(
+    document.querySelectorAll<HTMLElement>("[data-scroll-restore-key]")
+  );
+  elements.forEach((element) => {
+    element.addEventListener("scroll", onCapture, { passive: true });
+  });
+  return () => {
+    elements.forEach((element) => {
+      element.removeEventListener("scroll", onCapture);
+    });
+  };
+}
+
 function restorePayload(payload: ScrollPayload) {
   const isFresh = Date.now() - payload.ts <= MAX_RESTORE_AGE_MS;
   if (!isFresh) {
@@ -75,6 +90,21 @@ function restorePayload(payload: ScrollPayload) {
 }
 
 export function AdminVocabScrollRestore() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const routeKey = `${pathname}?${searchParams.toString()}`;
+
+  useEffect(() => {
+    const payload = readPayload();
+    if (!payload) {
+      return;
+    }
+    requestAnimationFrame(() => {
+      restorePayload(payload);
+      requestAnimationFrame(() => restorePayload(payload));
+    });
+  }, [routeKey]);
+
   useEffect(() => {
     const payload = readPayload();
     if (payload) {
@@ -86,16 +116,21 @@ export function AdminVocabScrollRestore() {
 
     const onScroll = () => savePayload();
     const onSubmitCapture = () => savePayload();
+    const onClickCapture = () => savePayload();
     const onPageHide = () => savePayload();
 
+    const unbindContainerScroll = bindContainerScrollListeners(onScroll);
     window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("submit", onSubmitCapture, true);
+    document.addEventListener("click", onClickCapture, true);
     window.addEventListener("pagehide", onPageHide);
 
     return () => {
       savePayload();
+      unbindContainerScroll();
       window.removeEventListener("scroll", onScroll);
       document.removeEventListener("submit", onSubmitCapture, true);
+      document.removeEventListener("click", onClickCapture, true);
       window.removeEventListener("pagehide", onPageHide);
     };
   }, []);

@@ -31,6 +31,20 @@ export type PersonalKanjiImportState = {
   message: string;
 };
 
+function optionalInt(min: number, max: number) {
+  return z.preprocess(
+    (value) => (value === null || value === undefined || value === "" ? undefined : value),
+    z.coerce.number().int().min(min).max(max).optional()
+  );
+}
+
+function optionalText(max: number) {
+  return z.preprocess(
+    (value) => (typeof value === "string" ? value : undefined),
+    z.string().trim().max(max).optional()
+  );
+}
+
 const learningPlanSchema = z.object({
   goalLevel: z.string().transform((value) => normalizeJlptLevel(value)),
   targetDate: z.string().min(1),
@@ -46,8 +60,26 @@ const learningPlanSchema = z.object({
   autoStrategy: z.enum(["balanced", "flashcard_first", "kanji_first"]),
   manualFocus: z.string().trim().max(160).optional(),
   dailyDeadlineTime: z.string().regex(/^\d{2}:\d{2}$/),
+  weeklyGoalWeekStart: z.preprocess(
+    (value) => (typeof value === "string" && value.trim() ? value.trim() : undefined),
+    z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()
+  ),
   weeklyDeadlineDay: z.coerce.number().int().min(0).max(6),
   weeklyTargetSessions: z.coerce.number().int().min(1).max(28),
+  weeklyVocabTarget: optionalInt(0, 5000),
+  weeklyKanjiTarget: optionalInt(0, 2000),
+  weeklyGrammarTarget: optionalInt(0, 1000),
+  weeklyReadingTarget: optionalInt(0, 1000),
+  weeklyListeningTarget: optionalInt(0, 1000),
+  weeklyShadowingTarget: optionalInt(0, 1000),
+  weeklyReviewTarget: optionalInt(0, 1000),
+  weeklyVocabList: z.preprocess((value) => (typeof value === "string" ? value : undefined), z.string().trim().max(2000).optional()),
+  weeklyKanjiList: z.preprocess((value) => (typeof value === "string" ? value : undefined), z.string().trim().max(2000).optional()),
+  weeklyGrammarList: z.preprocess((value) => (typeof value === "string" ? value : undefined), z.string().trim().max(2000).optional()),
+  weeklyReadingList: z.preprocess((value) => (typeof value === "string" ? value : undefined), z.string().trim().max(2000).optional()),
+  weeklyListeningList: z.preprocess((value) => (typeof value === "string" ? value : undefined), z.string().trim().max(2000).optional()),
+  weeklyShadowingList: z.preprocess((value) => (typeof value === "string" ? value : undefined), z.string().trim().max(2000).optional()),
+  weeklyReviewList: z.preprocess((value) => (typeof value === "string" ? value : undefined), z.string().trim().max(2000).optional()),
   monthlyDeadlineDay: z.coerce.number().int().min(1).max(31),
   monthlyTargetSessions: z.coerce.number().int().min(4).max(120),
 });
@@ -59,7 +91,7 @@ const boardGenerateSchema = z.object({
 const deadlineTaskUpdateSchema = z.object({
   taskId: z.string().trim().min(1),
   status: z.enum(["pending", "doing", "done", "late_done", "skipped"]).optional(),
-  note: z.string().trim().max(240).optional(),
+  note: optionalText(240),
 });
 
 const manualTaskSchema = z.object({
@@ -70,6 +102,12 @@ const manualTaskSchema = z.object({
   startTime: z.string().regex(/^\d{2}:\d{2}$/),
   deadlineTime: z.string().regex(/^\d{2}:\d{2}$/),
   priority: z.enum(["high", "medium", "low"]),
+});
+
+const deadlineTaskEditSchema = manualTaskSchema.extend({
+  taskId: z.string().trim().min(1),
+  status: z.enum(["pending", "doing", "done", "late_done", "skipped"]),
+  note: z.string().trim().max(240).optional(),
 });
 
 const deleteTaskSchema = z.object({
@@ -83,6 +121,11 @@ const reminderSchema = z.object({
   hour: z.coerce.number().int().min(0).max(23),
   minute: z.coerce.number().int().min(0).max(59),
   timezone: z.string().trim().min(1).max(120).default("Asia/Tokyo"),
+});
+
+const subjectColorSchema = z.object({
+  subject: z.string().trim().min(1).max(80),
+  color: z.string().trim().regex(/^#[0-9a-fA-F]{6}$/),
 });
 
 const bookmarkSchema = z.object({
@@ -286,8 +329,23 @@ export async function saveLearningPlanAction(formData: FormData) {
     autoStrategy: formData.get("autoStrategy"),
     manualFocus: formData.get("manualFocus"),
     dailyDeadlineTime: formData.get("dailyDeadlineTime"),
+    weeklyGoalWeekStart: formData.get("weeklyGoalWeekStart"),
     weeklyDeadlineDay: formData.get("weeklyDeadlineDay"),
     weeklyTargetSessions: formData.get("weeklyTargetSessions"),
+    weeklyVocabTarget: formData.get("weeklyVocabTarget"),
+    weeklyKanjiTarget: formData.get("weeklyKanjiTarget"),
+    weeklyGrammarTarget: formData.get("weeklyGrammarTarget"),
+    weeklyReadingTarget: formData.get("weeklyReadingTarget"),
+    weeklyListeningTarget: formData.get("weeklyListeningTarget"),
+    weeklyShadowingTarget: formData.get("weeklyShadowingTarget"),
+    weeklyReviewTarget: formData.get("weeklyReviewTarget"),
+    weeklyVocabList: formData.get("weeklyVocabList"),
+    weeklyKanjiList: formData.get("weeklyKanjiList"),
+    weeklyGrammarList: formData.get("weeklyGrammarList"),
+    weeklyReadingList: formData.get("weeklyReadingList"),
+    weeklyListeningList: formData.get("weeklyListeningList"),
+    weeklyShadowingList: formData.get("weeklyShadowingList"),
+    weeklyReviewList: formData.get("weeklyReviewList"),
     monthlyDeadlineDay: formData.get("monthlyDeadlineDay"),
     monthlyTargetSessions: formData.get("monthlyTargetSessions"),
   });
@@ -307,6 +365,42 @@ export async function saveLearningPlanAction(formData: FormData) {
   );
 
   const state = await loadUserPersonalState(user.id);
+  const currentPlan = state.plan;
+  const weeklyVocabTarget = Math.max(
+    0,
+    Math.min(5000, Math.round(parsed.data.weeklyVocabTarget ?? currentPlan?.weeklyVocabTarget ?? 0))
+  );
+  const weeklyKanjiTarget = Math.max(
+    0,
+    Math.min(2000, Math.round(parsed.data.weeklyKanjiTarget ?? currentPlan?.weeklyKanjiTarget ?? 0))
+  );
+  const weeklyGrammarTarget = Math.max(
+    0,
+    Math.min(1000, Math.round(parsed.data.weeklyGrammarTarget ?? currentPlan?.weeklyGrammarTarget ?? 0))
+  );
+  const weeklyReadingTarget = Math.max(
+    0,
+    Math.min(1000, Math.round(parsed.data.weeklyReadingTarget ?? currentPlan?.weeklyReadingTarget ?? 0))
+  );
+  const weeklyListeningTarget = Math.max(
+    0,
+    Math.min(1000, Math.round(parsed.data.weeklyListeningTarget ?? currentPlan?.weeklyListeningTarget ?? 0))
+  );
+  const weeklyShadowingTarget = Math.max(
+    0,
+    Math.min(1000, Math.round(parsed.data.weeklyShadowingTarget ?? currentPlan?.weeklyShadowingTarget ?? 0))
+  );
+  const weeklyReviewTarget = Math.max(
+    0,
+    Math.min(1000, Math.round(parsed.data.weeklyReviewTarget ?? currentPlan?.weeklyReviewTarget ?? 0))
+  );
+  const weeklyVocabList = (parsed.data.weeklyVocabList ?? currentPlan?.weeklyVocabList ?? "").trim().slice(0, 2000);
+  const weeklyKanjiList = (parsed.data.weeklyKanjiList ?? currentPlan?.weeklyKanjiList ?? "").trim().slice(0, 2000);
+  const weeklyGrammarList = (parsed.data.weeklyGrammarList ?? currentPlan?.weeklyGrammarList ?? "").trim().slice(0, 2000);
+  const weeklyReadingList = (parsed.data.weeklyReadingList ?? currentPlan?.weeklyReadingList ?? "").trim().slice(0, 2000);
+  const weeklyListeningList = (parsed.data.weeklyListeningList ?? currentPlan?.weeklyListeningList ?? "").trim().slice(0, 2000);
+  const weeklyShadowingList = (parsed.data.weeklyShadowingList ?? currentPlan?.weeklyShadowingList ?? "").trim().slice(0, 2000);
+  const weeklyReviewList = (parsed.data.weeklyReviewList ?? currentPlan?.weeklyReviewList ?? "").trim().slice(0, 2000);
   state.plan = {
     goalLevel: parsed.data.goalLevel,
     targetDate: parsed.data.targetDate,
@@ -318,8 +412,23 @@ export async function saveLearningPlanAction(formData: FormData) {
     autoStrategy: parsed.data.autoStrategy,
     manualFocus: parsed.data.manualFocus ?? "",
     dailyDeadlineTime: parsed.data.dailyDeadlineTime,
+    weeklyGoalWeekStart: parsed.data.weeklyGoalWeekStart ?? currentPlan?.weeklyGoalWeekStart ?? "",
     weeklyDeadlineDay: parsed.data.weeklyDeadlineDay,
     weeklyTargetSessions: parsed.data.weeklyTargetSessions,
+    weeklyVocabTarget,
+    weeklyKanjiTarget,
+    weeklyGrammarTarget,
+    weeklyReadingTarget,
+    weeklyListeningTarget,
+    weeklyShadowingTarget,
+    weeklyReviewTarget,
+    weeklyVocabList,
+    weeklyKanjiList,
+    weeklyGrammarList,
+    weeklyReadingList,
+    weeklyListeningList,
+    weeklyShadowingList,
+    weeklyReviewList,
     monthlyDeadlineDay: parsed.data.monthlyDeadlineDay,
     monthlyTargetSessions: parsed.data.monthlyTargetSessions,
     updatedAt: new Date().toISOString(),
@@ -327,6 +436,7 @@ export async function saveLearningPlanAction(formData: FormData) {
 
   await saveUserPersonalState(user.id, state);
   revalidatePath("/personal");
+  revalidatePath("/schedule");
   revalidatePath("/dashboard");
 }
 
@@ -397,6 +507,7 @@ export async function generateDeadlineBoardAction(formData: FormData) {
 
   await saveUserPersonalState(user.id, nextState);
   revalidatePath("/personal");
+  revalidatePath("/schedule");
 }
 
 export async function updateDeadlineTaskAction(formData: FormData) {
@@ -424,6 +535,8 @@ export async function updateDeadlineTaskAction(formData: FormData) {
 
   await saveUserPersonalState(user.id, nextState);
   revalidatePath("/personal");
+  revalidatePath("/schedule");
+  revalidatePath("/dashboard");
 }
 
 export async function addManualDeadlineTaskAction(formData: FormData) {
@@ -458,6 +571,51 @@ export async function addManualDeadlineTaskAction(formData: FormData) {
 
   await saveUserPersonalState(user.id, nextState);
   revalidatePath("/personal");
+  revalidatePath("/schedule");
+  revalidatePath("/dashboard");
+}
+
+export async function editDeadlineTaskAction(formData: FormData) {
+  const user = await requireUser();
+  const parsed = deadlineTaskEditSchema.safeParse({
+    taskId: formData.get("taskId"),
+    date: formData.get("date"),
+    slot: formData.get("slot"),
+    subject: formData.get("subject"),
+    task: formData.get("task"),
+    startTime: formData.get("startTime"),
+    deadlineTime: formData.get("deadlineTime"),
+    priority: formData.get("priority"),
+    status: formData.get("status"),
+    note: formData.get("note"),
+  });
+  if (!parsed.success) {
+    return;
+  }
+
+  const state = await loadUserPersonalState(user.id);
+  const existing = state.deadlineTasks.find((task) => task.id === parsed.data.taskId);
+  if (!existing) {
+    return;
+  }
+
+  const nextState = upsertDeadlineTask(state, {
+    ...existing,
+    date: parsed.data.date,
+    slot: parsed.data.slot,
+    subject: parsed.data.subject,
+    task: parsed.data.task,
+    startTime: parsed.data.startTime,
+    deadlineTime: parsed.data.deadlineTime,
+    priority: parsed.data.priority as DeadlineTaskPriority,
+    status: parsed.data.status as DeadlineTaskStatus,
+    note: parsed.data.note ?? "",
+  });
+
+  await saveUserPersonalState(user.id, nextState);
+  revalidatePath("/personal");
+  revalidatePath("/schedule");
+  revalidatePath("/dashboard");
 }
 
 export async function deleteDeadlineTaskAction(formData: FormData) {
@@ -473,6 +631,8 @@ export async function deleteDeadlineTaskAction(formData: FormData) {
   const nextState = removeDeadlineTask(state, parsed.data.taskId);
   await saveUserPersonalState(user.id, nextState);
   revalidatePath("/personal");
+  revalidatePath("/schedule");
+  revalidatePath("/dashboard");
 }
 
 export async function saveReminderSettingsAction(formData: FormData) {
@@ -501,6 +661,31 @@ export async function saveReminderSettingsAction(formData: FormData) {
 
   await saveUserPersonalState(user.id, state);
   revalidatePath("/personal");
+  revalidatePath("/schedule");
+  revalidatePath("/dashboard");
+}
+
+export async function saveSubjectColorAction(formData: FormData) {
+  const user = await requireUser();
+  const parsed = subjectColorSchema.safeParse({
+    subject: formData.get("subject"),
+    color: formData.get("color"),
+  });
+  if (!parsed.success) {
+    return;
+  }
+
+  const state = await loadUserPersonalState(user.id);
+  const key = parsed.data.subject.trim().toLowerCase();
+  state.subjectColors = {
+    ...(state.subjectColors ?? {}),
+    [key]: parsed.data.color.trim().toLowerCase(),
+  };
+
+  await saveUserPersonalState(user.id, state);
+  revalidatePath("/schedule");
+  revalidatePath("/personal");
+  revalidatePath("/dashboard");
 }
 
 export async function toggleBookmarkAction(formData: FormData) {

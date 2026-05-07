@@ -155,7 +155,8 @@ export async function createSelfStudyVocabLessonAction() {
 
   revalidatePath("/vocab");
   revalidatePath("/self-study");
-  redirect(`/self-study?lesson=${lesson.id}`);
+  revalidatePath("/self-study/vocab");
+  redirect(`/self-study/vocab?lesson=${lesson.id}`);
 }
 
 export async function importVocabAction(
@@ -212,6 +213,8 @@ export async function importVocabAction(
   await saveUserVocabStore(user.id, store);
 
   revalidatePath("/vocab");
+  revalidatePath("/self-study");
+  revalidatePath("/self-study/vocab");
   return {
     status: "success",
     message: `Đã nhập ${rows.length} từ vựng vào bài.`,

@@ -29,8 +29,23 @@ export type LearningPlan = {
   autoStrategy: "balanced" | "flashcard_first" | "kanji_first";
   manualFocus: string;
   dailyDeadlineTime: string;
+  weeklyGoalWeekStart: string;
   weeklyDeadlineDay: number;
   weeklyTargetSessions: number;
+  weeklyVocabTarget: number;
+  weeklyKanjiTarget: number;
+  weeklyGrammarTarget: number;
+  weeklyReadingTarget: number;
+  weeklyListeningTarget: number;
+  weeklyShadowingTarget: number;
+  weeklyReviewTarget: number;
+  weeklyVocabList: string;
+  weeklyKanjiList: string;
+  weeklyGrammarList: string;
+  weeklyReadingList: string;
+  weeklyListeningList: string;
+  weeklyShadowingList: string;
+  weeklyReviewList: string;
   monthlyDeadlineDay: number;
   monthlyTargetSessions: number;
   updatedAt: string;
@@ -83,6 +98,8 @@ export type GrammarProgress = {
   updatedAt: string;
 };
 
+export type SubjectColorMap = Record<string, string>;
+
 export type UserPersonalState = {
   plan: LearningPlan | null;
   reminders: ReminderSettings;
@@ -90,6 +107,7 @@ export type UserPersonalState = {
   grammarProgress: GrammarProgress;
   deadlineTasks: DeadlineTask[];
   bookmarks: PersonalBookmark[];
+  subjectColors: SubjectColorMap;
 };
 
 const APP_DATA_PREFIX = "user_personal_state:";
@@ -180,6 +198,10 @@ function normalizePlan(input: unknown): LearningPlan | null {
     typeof raw.dailyDeadlineTime === "string" && /^\d{2}:\d{2}$/.test(raw.dailyDeadlineTime)
       ? raw.dailyDeadlineTime
       : "21:30";
+  const weeklyGoalWeekStart =
+    typeof raw.weeklyGoalWeekStart === "string" && /^\d{4}-\d{2}-\d{2}$/.test(raw.weeklyGoalWeekStart)
+      ? raw.weeklyGoalWeekStart
+      : "";
 
   const weeklyDeadlineDay = Math.max(
     0,
@@ -189,6 +211,41 @@ function normalizePlan(input: unknown): LearningPlan | null {
     1,
     Math.min(28, Math.round(normalizeNumber(raw.weeklyTargetSessions, 5)))
   );
+  const weeklyVocabTarget = Math.max(
+    0,
+    Math.min(5000, Math.round(normalizeNumber(raw.weeklyVocabTarget, 0)))
+  );
+  const weeklyKanjiTarget = Math.max(
+    0,
+    Math.min(2000, Math.round(normalizeNumber(raw.weeklyKanjiTarget, 0)))
+  );
+  const weeklyGrammarTarget = Math.max(
+    0,
+    Math.min(1000, Math.round(normalizeNumber(raw.weeklyGrammarTarget, 0)))
+  );
+  const weeklyReadingTarget = Math.max(
+    0,
+    Math.min(1000, Math.round(normalizeNumber(raw.weeklyReadingTarget, 0)))
+  );
+  const weeklyListeningTarget = Math.max(
+    0,
+    Math.min(1000, Math.round(normalizeNumber(raw.weeklyListeningTarget, 0)))
+  );
+  const weeklyShadowingTarget = Math.max(
+    0,
+    Math.min(1000, Math.round(normalizeNumber(raw.weeklyShadowingTarget, 0)))
+  );
+  const weeklyReviewTarget = Math.max(
+    0,
+    Math.min(1000, Math.round(normalizeNumber(raw.weeklyReviewTarget, 0)))
+  );
+  const weeklyVocabList = typeof raw.weeklyVocabList === "string" ? raw.weeklyVocabList.trim().slice(0, 2000) : "";
+  const weeklyKanjiList = typeof raw.weeklyKanjiList === "string" ? raw.weeklyKanjiList.trim().slice(0, 2000) : "";
+  const weeklyGrammarList = typeof raw.weeklyGrammarList === "string" ? raw.weeklyGrammarList.trim().slice(0, 2000) : "";
+  const weeklyReadingList = typeof raw.weeklyReadingList === "string" ? raw.weeklyReadingList.trim().slice(0, 2000) : "";
+  const weeklyListeningList = typeof raw.weeklyListeningList === "string" ? raw.weeklyListeningList.trim().slice(0, 2000) : "";
+  const weeklyShadowingList = typeof raw.weeklyShadowingList === "string" ? raw.weeklyShadowingList.trim().slice(0, 2000) : "";
+  const weeklyReviewList = typeof raw.weeklyReviewList === "string" ? raw.weeklyReviewList.trim().slice(0, 2000) : "";
   const monthlyDeadlineDay = Math.max(
     1,
     Math.min(31, Math.round(normalizeNumber(raw.monthlyDeadlineDay, 28)))
@@ -209,8 +266,23 @@ function normalizePlan(input: unknown): LearningPlan | null {
     autoStrategy,
     manualFocus,
     dailyDeadlineTime: deadlineTimeRaw,
+    weeklyGoalWeekStart,
     weeklyDeadlineDay,
     weeklyTargetSessions,
+    weeklyVocabTarget,
+    weeklyKanjiTarget,
+    weeklyGrammarTarget,
+    weeklyReadingTarget,
+    weeklyListeningTarget,
+    weeklyShadowingTarget,
+    weeklyReviewTarget,
+    weeklyVocabList,
+    weeklyKanjiList,
+    weeklyGrammarList,
+    weeklyReadingList,
+    weeklyListeningList,
+    weeklyShadowingList,
+    weeklyReviewList,
     monthlyDeadlineDay,
     monthlyTargetSessions,
     updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : nowIso(),
@@ -418,6 +490,36 @@ function normalizeGrammarProgress(input: unknown): GrammarProgress {
   };
 }
 
+function normalizeHexColor(value: unknown): string | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const text = value.trim().toLowerCase();
+  if (!/^#[0-9a-f]{6}$/.test(text)) {
+    return null;
+  }
+  return text;
+}
+
+function normalizeSubjectColors(input: unknown): SubjectColorMap {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    return {};
+  }
+  const raw = input as Record<string, unknown>;
+  const next: SubjectColorMap = {};
+  for (const [key, value] of Object.entries(raw)) {
+    const normalizedKey = key.trim().toLowerCase().slice(0, 80);
+    if (!normalizedKey) {
+      continue;
+    }
+    const color = normalizeHexColor(value);
+    if (color) {
+      next[normalizedKey] = color;
+    }
+  }
+  return next;
+}
+
 function normalizeState(input: unknown): UserPersonalState {
   if (!input || typeof input !== "object") {
     return {
@@ -427,6 +529,7 @@ function normalizeState(input: unknown): UserPersonalState {
       grammarProgress: normalizeGrammarProgress(null),
       deadlineTasks: [],
       bookmarks: [],
+      subjectColors: {},
     };
   }
 
@@ -445,6 +548,7 @@ function normalizeState(input: unknown): UserPersonalState {
     grammarProgress: normalizeGrammarProgress(raw.grammarProgress),
     deadlineTasks: normalizeDeadlineTasks(raw.deadlineTasks),
     bookmarks,
+    subjectColors: normalizeSubjectColors(raw.subjectColors),
   };
 }
 

@@ -77,6 +77,19 @@ function levelHref(level: GrammarLevel, lessonId: string | null = null): string 
   return `/admin/grammar?${query.toString()}`;
 }
 
+function grammarExportHref(
+  level: GrammarLevel | "ALL",
+  lessonId: string | null = null
+): string {
+  const query = new URLSearchParams();
+  query.set("level", level);
+  if (lessonId) {
+    query.set("lesson", lessonId);
+  }
+  query.set("download", "1");
+  return `/api/admin/grammar-export?${query.toString()}`;
+}
+
 export default async function AdminGrammarPage(props: { searchParams: SearchParams }) {
   await requireAdmin();
 
@@ -119,6 +132,34 @@ export default async function AdminGrammarPage(props: { searchParams: SearchPara
               {entry} ({levelCounts[entry]})
             </Link>
           ))}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <a
+            href={grammarExportHref(level)}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700 hover:bg-blue-100"
+          >
+            Export JSON {level}
+          </a>
+          {selectedLesson ? (
+            <a
+              href={grammarExportHref(level, selectedLesson.id)}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100"
+            >
+              Export bai dang chon
+            </a>
+          ) : null}
+          <a
+            href={grammarExportHref("ALL")}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-1.5 text-sm font-semibold text-violet-700 hover:bg-violet-100"
+          >
+            Export tat ca
+          </a>
         </div>
       </div>
 

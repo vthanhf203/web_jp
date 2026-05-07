@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 import { updateDeadlineTaskAction } from "@/app/actions/personal";
 
@@ -30,6 +31,7 @@ type DeadlineStatusSelectProps = {
 };
 
 export function DeadlineStatusSelect({ taskId, initialStatus, taskLabel }: DeadlineStatusSelectProps) {
+  const router = useRouter();
   const [status, setStatus] = useState<DeadlineStatus>(initialStatus);
   const [isSaving, startSaving] = useTransition();
 
@@ -38,7 +40,7 @@ export function DeadlineStatusSelect({ taskId, initialStatus, taskLabel }: Deadl
   }, [initialStatus]);
 
   return (
-    <div className="relative">
+    <div className="relative min-w-0 max-w-full">
       <select
         value={status}
         onChange={(event) => {
@@ -52,13 +54,14 @@ export function DeadlineStatusSelect({ taskId, initialStatus, taskLabel }: Deadl
               formData.set("taskId", taskId);
               formData.set("status", nextStatus);
               await updateDeadlineTaskAction(formData);
+              router.refresh();
             } catch {
               setStatus(previousStatus);
             }
           });
         }}
         disabled={isSaving}
-        className={`h-9 w-full appearance-none rounded-full border px-3 pr-8 text-sm font-semibold transition-colors ${STATUS_SELECT_CLASS[status]} ${isSaving ? "opacity-85" : ""}`}
+        className={`block h-9 w-full max-w-full appearance-none rounded-full border px-3 pr-8 text-sm font-semibold transition-colors ${STATUS_SELECT_CLASS[status]} ${isSaving ? "opacity-85" : ""}`}
         aria-label={`Trạng thái task ${taskLabel}`}
       >
         {STATUS_OPTIONS.map((option) => (

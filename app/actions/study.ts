@@ -44,6 +44,10 @@ const reviewSchema = z.object({
   rating: z.enum(["again", "hard", "good", "easy"]),
 });
 
+function normalizeWordKey(value: string): string {
+  return value.trim();
+}
+
 export async function addKanjiToReviewAction(formData: FormData) {
   const user = await requireUser();
 
@@ -174,7 +178,53 @@ export async function addLibraryVocabToReviewAction(formData: FormData) {
     }
   }
 
+  const normalizedWord = normalizeWordKey(parsed.data.word);
+  const readingValue = parsed.data.reading?.trim() || normalizedWord;
+  const meaningValue = parsed.data.meaning.trim();
+  const jlptLevelValue = parsed.data.jlptLevel?.trim() || "N5";
+  const partOfSpeechValue = parsed.data.partOfSpeech?.trim() || "-";
+
+  const vocab = await prisma.vocab.upsert({
+    where: { word: normalizedWord },
+    create: {
+      word: normalizedWord,
+      reading: readingValue,
+      meaning: meaningValue,
+      jlptLevel: jlptLevelValue,
+      partOfSpeech: partOfSpeechValue,
+      exampleSentence: "",
+      exampleMeaning: "",
+    },
+    update: {
+      reading: readingValue,
+      meaning: meaningValue,
+      jlptLevel: jlptLevelValue,
+      partOfSpeech: partOfSpeechValue,
+    },
+    select: { id: true },
+  });
+
+  const existingReview = await prisma.review.findFirst({
+    where: {
+      userId: user.id,
+      vocabId: vocab.id,
+    },
+    select: { id: true },
+  });
+
+  if (!existingReview) {
+    await prisma.review.create({
+      data: {
+        userId: user.id,
+        cardType: CardType.VOCAB,
+        vocabId: vocab.id,
+        dueAt: new Date(),
+      },
+    });
+  }
+
   revalidatePath("/vocab");
+  revalidatePath("/review");
   revalidatePath("/dashboard");
   return { ok: true } as const;
 }
@@ -216,7 +266,28 @@ export async function removeLibraryVocabFromReviewAction(formData: FormData) {
     await saveUserVocabStore(user.id, store);
   }
 
+  const normalizedWord = normalizeWordKey(parsed.data.word);
+  const stillExistsInAnyLesson = store.lessons.some((entry) =>
+    entry.items.some((item) => normalizeWordKey(item.word) === normalizedWord)
+  );
+
+  if (!stillExistsInAnyLesson) {
+    const vocab = await prisma.vocab.findUnique({
+      where: { word: normalizedWord },
+      select: { id: true },
+    });
+    if (vocab) {
+      await prisma.review.deleteMany({
+        where: {
+          userId: user.id,
+          vocabId: vocab.id,
+        },
+      });
+    }
+  }
+
   revalidatePath("/vocab");
+  revalidatePath("/review");
   revalidatePath("/dashboard");
   return { ok: true } as const;
 }
@@ -243,6 +314,13 @@ export async function submitReviewAction(formData: FormData) {
       repetitions: true,
       easeFactor: true,
       intervalDays: true,
+      dueAt: true,
+      lastReviewedAt: true,
+      fsrsState: true,
+      fsrsStability: true,
+      fsrsDifficulty: true,
+      fsrsLearningSteps: true,
+      fsrsLapses: true,
     },
   });
 

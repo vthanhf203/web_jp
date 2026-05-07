@@ -1,7 +1,9 @@
-"use client";
+﻿"use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+
+import { AUDIO_RATE_KEY, AUDIO_VOICE_KEY } from "@/app/components/audio-settings-client";
 import styles from "@/components/GrammarDetail.module.css";
 
 export type GrammarExample = {
@@ -22,7 +24,43 @@ export interface GrammarDetailProps {
 }
 
 const KANJI_FURIGANA_PATTERN =
-  /([\u4e00-\u9fff々〆ヶ]+)[（(]([\u3041-\u3096\u30a1-\u30fa\u30fc\u30fb]+)[)）]/g;
+  /([\u4e00-\u9fff々〆ヶ]+)[（(]([\u3041-\u3096\u30a1-\u30faー・]+)[)）]/g;
+
+const preferredVoiceKeywords = [
+  "haruka online",
+  "nanami online",
+  "otoya online",
+  "natural",
+  "microsoft",
+  "google",
+  "japanese",
+  "nihongo",
+  "nanami",
+  "haruka",
+];
+const SPEAK_DELAY_MS = 70;
+const CLICK_GUARD_MS = 280;
+
+function pickJapaneseVoice(voices: SpeechSynthesisVoice[], preferredName: string): SpeechSynthesisVoice | null {
+  const jpVoices = voices.filter((voice) => voice.lang.toLowerCase().startsWith("ja"));
+  if (jpVoices.length === 0) {
+    return null;
+  }
+
+  if (preferredName) {
+    const selected = jpVoices.find((voice) => voice.name === preferredName);
+    if (selected) {
+      return selected;
+    }
+  }
+
+  const preferred = jpVoices.find((voice) => {
+    const lowerName = voice.name.toLowerCase();
+    return preferredVoiceKeywords.some((keyword) => lowerName.includes(keyword));
+  });
+
+  return preferred ?? jpVoices[0] ?? null;
+}
 
 function escapeHtml(input: string): string {
   return input
@@ -57,6 +95,8 @@ export default function GrammarDetail({
 }: GrammarDetailProps) {
   const router = useRouter();
   const [bookmarked, setBookmarked] = useState<boolean>(initialBookmarked);
+  const lastSpeakRef = useRef<{ text: string; at: number }>({ text: "", at: 0 });
+  const speakTimerRef = useRef<number | null>(null);
 
   const normalizedExamples = useMemo(
     () =>
@@ -69,17 +109,53 @@ export default function GrammarDetail({
     [examples]
   );
 
+  useEffect(() => {
+    return () => {
+      if (speakTimerRef.current !== null && typeof window !== "undefined") {
+        window.clearTimeout(speakTimerRef.current);
+        speakTimerRef.current = null;
+      }
+    };
+  }, []);
+
   const speakJapanese = useCallback((text: string) => {
-    if (typeof window === "undefined" || typeof window.speechSynthesis === "undefined") {
+    const value = text.trim();
+    if (!value || typeof window === "undefined" || typeof window.speechSynthesis === "undefined") {
       return;
     }
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "ja-JP";
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
+    const now = Date.now();
+    if (lastSpeakRef.current.text === value && now - lastSpeakRef.current.at < CLICK_GUARD_MS) {
+      return;
+    }
+    lastSpeakRef.current = { text: value, at: now };
+
+    const synth = window.speechSynthesis;
+    if (speakTimerRef.current !== null) {
+      window.clearTimeout(speakTimerRef.current);
+      speakTimerRef.current = null;
+    }
+
+    synth.cancel();
+
+    const savedRate = Number(window.localStorage.getItem(AUDIO_RATE_KEY) ?? "0.95");
+    const rate = Number.isFinite(savedRate) ? Math.min(1.25, Math.max(0.75, savedRate)) : 0.95;
+    const preferredVoiceName = window.localStorage.getItem(AUDIO_VOICE_KEY) ?? "";
+
+    speakTimerRef.current = window.setTimeout(() => {
+      const utterance = new SpeechSynthesisUtterance(value);
+      utterance.lang = "ja-JP";
+      utterance.rate = rate;
+      utterance.pitch = 1;
+
+      const selectedVoice = pickJapaneseVoice(synth.getVoices(), preferredVoiceName);
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+
+      synth.speak(utterance);
+      speakTimerRef.current = null;
+    }, SPEAK_DELAY_MS);
   }, []);
 
   const handleQuizStart = useCallback(() => {

@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { CloudUpload, FileText, Trash2 } from "lucide-react";
 
 import {
   importAdminVocabLessonBundleAction,
@@ -16,6 +17,37 @@ const initialState: AdminImportState = {
 type Props = {
   defaultJlptLevel: string;
 };
+
+const sampleJson = `[
+  {
+    "categoryKey": "xung_ho_chao_hoi",
+    "categoryName": "Xưng hô & chào hỏi",
+    "items": [
+      {
+        "word": "わたし",
+        "reading": "わたし",
+        "kanji": "私",
+        "hanviet": "Tư",
+        "partOfSpeech": "pronoun",
+        "meaning": "Tôi"
+      }
+    ]
+  },
+  {
+    "categoryKey": "truong_hoc_hoc_tap",
+    "categoryName": "Trường học & học tập",
+    "items": [
+      {
+        "word": "ほん",
+        "reading": "ほん",
+        "kanji": "本",
+        "hanviet": "Bản",
+        "partOfSpeech": "noun",
+        "meaning": "Sách"
+      }
+    ]
+  }
+]`;
 
 export function AdminVocabLessonBundleImportForm({ defaultJlptLevel }: Props) {
   const router = useRouter();
@@ -32,54 +64,62 @@ export function AdminVocabLessonBundleImportForm({ defaultJlptLevel }: Props) {
   }, [router, state.status]);
 
   return (
-    <form action={formAction} className="space-y-3 rounded-xl border border-slate-200 bg-white p-3">
+    <form action={formAction} className="space-y-3">
       <input type="hidden" name="defaultJlptLevel" value={defaultJlptLevel} />
       <textarea
         ref={textareaRef}
         name="rawInput"
-        className="min-h-52 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-sky-400 focus:ring-3 focus:ring-sky-100"
-        placeholder='Dán JSON dạng { "lessons": { "bai_1": [ ... ] } }, dạng theo chủ đề { "xung_ho_chao_hoi": [ ... ], ... }, hoặc mảng [{ "categoryKey":"...", "categoryName":"...", "items":[...] }]. Mẹo: field "word" nên là tiếng Nhật (hiragana/katakana/kanji), không dùng romaji.'
+        className="min-h-36 w-full resize-y rounded-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-50"
+        placeholder='Dán JSON vào đây. Ví dụ: [{"word":"...","reading":"...","kanji":"...","hanviet":"...","meaning":"...","pos":"...","category":"..."}]'
         required
         disabled={pending}
       />
+
+      <div className="rounded-md border border-blue-100 bg-blue-50 px-3 py-2">
+        <p className="text-xs font-bold text-slate-700">Định dạng yêu cầu</p>
+        <p className="mt-1 text-xs text-slate-600">
+          Hỗ trợ JSON lessons, object theo chủ đề hoặc mảng category. Field quan trọng:
+          word, reading, kanji, hanviet, meaning.
+        </p>
+      </div>
 
       {state.message ? (
         <p
           className={
             state.status === "error"
-              ? "rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-              : "rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
+              ? "rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
+              : "rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
           }
         >
           {state.message}
         </p>
       ) : null}
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
         <button
           type="submit"
-          className="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-blue-600 px-4 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           disabled={pending}
         >
-          {pending ? "Đang nhập..." : "Nhập JSON tạo lesson"}
+          <CloudUpload className="h-4 w-4" aria-hidden="true" />
+          {pending ? "Đang nhập..." : "Nhập JSON"}
         </button>
         <button
           type="button"
-          className="rounded-xl border border-fuchsia-200 bg-fuchsia-50 px-4 py-2 text-sm font-semibold text-fuchsia-700"
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-violet-200 bg-white px-4 text-sm font-bold text-violet-700 hover:bg-violet-50"
           onClick={() => {
-            if (!textareaRef.current) {
-              return;
+            if (textareaRef.current) {
+              textareaRef.current.value = sampleJson;
             }
-            textareaRef.current.value =
-              '[\n  {\n    "categoryKey": "xung_ho_chao_hoi",\n    "categoryName": "Xưng hô & chào hỏi",\n    "items": [\n      {\n        "word": "わたし",\n        "reading": "わたし",\n        "kanji": "私",\n        "hanviet": "tư",\n        "partOfSpeech": "pronoun",\n        "meaning": "Tôi"\n      }\n    ]\n  },\n  {\n    "categoryKey": "truong_hoc_hoc_tap",\n    "categoryName": "Trường học & học tập",\n    "items": [\n      {\n        "word": "ほん",\n        "reading": "ほん",\n        "kanji": "本",\n        "hanviet": "bản",\n        "partOfSpeech": "noun",\n        "meaning": "Sách"\n      },\n      {\n        "word": "コーヒー",\n        "reading": "コーヒー",\n        "kanji": "",\n        "hanviet": "",\n        "partOfSpeech": "noun",\n        "meaning": "Cà phê"\n      }\n    ]\n  }\n]';
           }}
           disabled={pending}
         >
-          Mẫu JSON category[]
+          <FileText className="h-4 w-4" aria-hidden="true" />
+          Mẫu JSON category
         </button>
         <button
           type="button"
-          className="ml-auto rounded-xl px-3 py-2 text-sm font-semibold text-slate-500 transition hover:bg-slate-100"
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600 hover:bg-slate-50"
           onClick={() => {
             if (textareaRef.current) {
               textareaRef.current.value = "";
@@ -87,7 +127,8 @@ export function AdminVocabLessonBundleImportForm({ defaultJlptLevel }: Props) {
           }}
           disabled={pending}
         >
-          Xóa nhập
+          <Trash2 className="h-4 w-4" aria-hidden="true" />
+          Xóa nhanh
         </button>
       </div>
     </form>

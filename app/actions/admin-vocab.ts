@@ -157,11 +157,32 @@ function findLesson(lessons: AdminVocabLesson[], lessonId: string): AdminVocabLe
   return lessons.find((lesson) => lesson.id === lessonId) ?? null;
 }
 
-function touchSharedPaths() {
-  revalidatePath("/admin/vocab");
+function touchSharedPaths(options?: { includeAdminPage?: boolean }) {
+  if (options?.includeAdminPage !== false) {
+    revalidatePath("/admin/vocab");
+  }
   revalidatePath("/vocab");
   revalidatePath("/api/vocab-library");
 }
+
+export type UpdateAdminVocabItemInlineResult =
+  | {
+      ok: true;
+      item: {
+        id: string;
+        word: string;
+        reading: string;
+        kanji: string;
+        hanviet: string;
+        partOfSpeech: string;
+        meaning: string;
+        updatedAt: string;
+      };
+    }
+  | {
+      ok: false;
+      message: string;
+    };
 
 async function appendImportHistoryEntry(
   entry: Omit<AdminVocabImportHistoryEntry, "id" | "createdAt">
@@ -203,7 +224,7 @@ export async function createAdminVocabLessonAction(formData: FormData) {
   library.lessons.push(lesson);
   await saveAdminVocabLibrary(library);
   touchSharedPaths();
-  redirect(`/admin/vocab?level=${lesson.jlptLevel}&lesson=${lesson.id}`);
+  redirect(`/admin/vocab?level=${lesson.jlptLevel}&lesson=${lesson.id}&section=lesson`);
 }
 
 export async function updateAdminVocabLessonAction(formData: FormData) {
@@ -232,7 +253,7 @@ export async function updateAdminVocabLessonAction(formData: FormData) {
 
   await saveAdminVocabLibrary(library);
   touchSharedPaths();
-  redirect(`/admin/vocab?level=${lesson.jlptLevel}&lesson=${lesson.id}`);
+  redirect(`/admin/vocab?level=${lesson.jlptLevel}&lesson=${lesson.id}&section=lesson`);
 }
 
 export async function deleteAdminVocabLessonAction(formData: FormData) {
@@ -275,9 +296,9 @@ export async function deleteAdminVocabLessonAction(formData: FormData) {
     lessonsSameLevel[0] ??
     null;
   if (nextLesson) {
-    redirect(`/admin/vocab?level=${deletingLevel}&lesson=${nextLesson.id}`);
+    redirect(`/admin/vocab?level=${deletingLevel}&lesson=${nextLesson.id}&section=lesson`);
   }
-  redirect(`/admin/vocab?level=${deletingLevel}`);
+  redirect(`/admin/vocab?level=${deletingLevel}&section=lesson`);
 }
 
 export async function importAdminVocabItemsAction(
@@ -777,7 +798,74 @@ export async function updateAdminVocabItemAction(formData: FormData) {
 
   await saveAdminVocabLibrary(library);
   touchSharedPaths();
-  redirect(`/admin/vocab?level=${lesson.jlptLevel}&lesson=${lesson.id}`);
+  redirect(`/admin/vocab?level=${lesson.jlptLevel}&lesson=${lesson.id}&section=items#item-${item.id}`);
+}
+
+export async function updateAdminVocabItemInlineAction(
+  formData: FormData
+): Promise<UpdateAdminVocabItemInlineResult> {
+  await requireAdmin();
+
+  const parsed = updateItemSchema.safeParse({
+    lessonId: formData.get("lessonId"),
+    itemId: formData.get("itemId"),
+    word: formData.get("word"),
+    reading: formData.get("reading"),
+    kanji: formData.get("kanji"),
+    hanviet: formData.get("hanviet"),
+    partOfSpeech: formData.get("partOfSpeech"),
+    meaning: formData.get("meaning"),
+  });
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      message: "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.",
+    };
+  }
+
+  const library = await loadAdminVocabLibrary();
+  const lesson = findLesson(library.lessons, parsed.data.lessonId);
+  if (!lesson) {
+    return {
+      ok: false,
+      message: "Không tìm thấy lesson.",
+    };
+  }
+
+  const item = lesson.items.find((entry) => entry.id === parsed.data.itemId);
+  if (!item) {
+    return {
+      ok: false,
+      message: "Không tìm thấy từ vựng cần sửa.",
+    };
+  }
+
+  item.word = parsed.data.word;
+  item.reading = parsed.data.reading || "";
+  item.kanji = parsed.data.kanji || "";
+  item.hanviet = parsed.data.hanviet || "";
+  item.partOfSpeech = parsed.data.partOfSpeech || "";
+  item.meaning = parsed.data.meaning;
+  item.updatedAt = nowIso();
+  lesson.updatedAt = nowIso();
+
+  await saveAdminVocabLibrary(library);
+  touchSharedPaths({ includeAdminPage: false });
+
+  return {
+    ok: true,
+    item: {
+      id: item.id,
+      word: item.word,
+      reading: item.reading,
+      kanji: item.kanji,
+      hanviet: item.hanviet,
+      partOfSpeech: item.partOfSpeech,
+      meaning: item.meaning,
+      updatedAt: item.updatedAt,
+    },
+  };
 }
 
 export async function moveAdminVocabItemTopicAction(formData: FormData) {
@@ -805,7 +893,7 @@ export async function moveAdminVocabItemTopicAction(formData: FormData) {
   if (sourceLessonId === targetLessonId) {
     const redirectLevel = normalizeJlptLevel(currentLevelRaw);
     const redirectLesson = returnLessonId || sourceLessonId;
-    redirect(`/admin/vocab?level=${redirectLevel}&lesson=${redirectLesson}`);
+    redirect(`/admin/vocab?level=${redirectLevel}&lesson=${redirectLesson}&section=items`);
   }
 
   const library = await loadAdminVocabLibrary();
@@ -836,5 +924,5 @@ export async function moveAdminVocabItemTopicAction(formData: FormData) {
 
   const redirectLevel = normalizeJlptLevel(currentLevelRaw || sourceLesson.jlptLevel);
   const redirectLesson = returnLessonId || sourceLesson.id;
-  redirect(`/admin/vocab?level=${redirectLevel}&lesson=${redirectLesson}`);
+  redirect(`/admin/vocab?level=${redirectLevel}&lesson=${redirectLesson}&section=items`);
 }
