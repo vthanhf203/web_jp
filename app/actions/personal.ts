@@ -21,10 +21,12 @@ import {
 } from "@/lib/user-personal-data";
 import { buildKanjiImportReport, formatKanjiImportReport } from "@/lib/kanji-import-report";
 import {
+  DEFAULT_USER_KANJI_DECK_NAME,
   loadUserKanjiStore,
   saveUserKanjiStore,
   upsertUserKanjiRows,
 } from "@/lib/user-kanji-store";
+import type { ImportedKanjiRow } from "@/lib/kanji-import";
 
 export type PersonalKanjiImportState = {
   status: "idle" | "success" | "error";
@@ -151,11 +153,60 @@ const applyLevelSchema = z.object({
 });
 
 const importPersonalKanjiSchema = z.object({
-  rawInput: z.string().min(1),
+  rawInput: z.preprocess(
+    (value) => (typeof value === "string" ? value : ""),
+    z.string()
+  ),
+  deckName: z.preprocess(
+    (value) => (typeof value === "string" ? value.trim() : ""),
+    z.string().min(1).max(90)
+  ),
+  levelOverride: z.preprocess(
+    (value) => (typeof value === "string" ? value.trim().toUpperCase() : "AUTO"),
+    z.enum(["AUTO", "N5", "N4", "N3", "N2", "N1"])
+  ),
+});
+
+const manualPersonalKanjiSchema = z.object({
+  deckName: z.preprocess(
+    (value) => (typeof value === "string" ? value.trim() : ""),
+    z.string().max(90)
+  ),
+  character: z.preprocess(
+    (value) => (typeof value === "string" ? value.trim() : ""),
+    z.string().min(1).max(8)
+  ),
+  meaning: z.preprocess(
+    (value) => (typeof value === "string" ? value.trim() : ""),
+    z.string().min(1).max(160)
+  ),
+  onReading: z.preprocess(
+    (value) => (typeof value === "string" ? value.trim() : ""),
+    z.string().max(120)
+  ),
+  kunReading: z.preprocess(
+    (value) => (typeof value === "string" ? value.trim() : ""),
+    z.string().max(120)
+  ),
+  jlptLevel: z.preprocess(
+    (value) => (typeof value === "string" ? value.trim().toUpperCase() : "N5"),
+    z.enum(["N5", "N4", "N3", "N2", "N1"])
+  ),
 });
 
 const deletePersonalKanjiSchema = z.object({
   id: z.string().trim().min(1),
+});
+
+const deletePersonalKanjiDeckSchema = z.object({
+  deckName: z.string().trim().min(1).max(90),
+});
+
+const createPersonalKanjiDeckSchema = z.object({
+  deckName: z.preprocess(
+    (value) => (typeof value === "string" ? value.trim() : ""),
+    z.string().min(1).max(90)
+  ),
 });
 
 function parsePlacementAnswers(formData: FormData): Array<{ questionId: string; selected: QuizOption }> {
@@ -843,8 +894,17 @@ export async function importPersonalKanjiAction(
   formData: FormData
 ): Promise<PersonalKanjiImportState> {
   const user = await requireUser();
+  const rawDeckName = typeof formData.get("deckName") === "string" ? String(formData.get("deckName")) : "";
+  if (!rawDeckName.trim()) {
+    return {
+      status: "error",
+      message: "Hay tao/chon muc import truoc, roi moi dan hoac upload JSON.",
+    };
+  }
   const parsed = importPersonalKanjiSchema.safeParse({
     rawInput: formData.get("rawInput"),
+    deckName: rawDeckName,
+    levelOverride: formData.get("levelOverride"),
   });
 
   if (!parsed.success) {
@@ -854,7 +914,37 @@ export async function importPersonalKanjiAction(
     };
   }
 
-  const { rows: parsedRows, report } = buildKanjiImportReport(parsed.data.rawInput);
+  const uploadedFile = formData.get("jsonFile");
+  let uploadedText = "";
+  if (
+    uploadedFile &&
+    typeof uploadedFile === "object" &&
+    "size" in uploadedFile &&
+    "text" in uploadedFile
+  ) {
+    const file = uploadedFile as File;
+    if (file.size > 0) {
+      if (file.size > 5_000_000) {
+        return {
+          status: "error",
+          message: "File JSON quá lớn. Hãy chia nhỏ dưới 5MB rồi import lại.",
+        };
+      }
+      uploadedText = await file.text();
+    }
+  }
+
+  const rawInput = parsed.data.rawInput.trim() || uploadedText.trim();
+  if (!rawInput) {
+    return {
+      status: "error",
+      message: "Hãy dán JSON hoặc chọn file .json để upload.",
+    };
+  }
+
+  const overrideDeckName = parsed.data.deckName.trim();
+  const forcedLevel = parsed.data.levelOverride === "AUTO" ? null : parsed.data.levelOverride;
+  const { rows: parsedRows, report } = buildKanjiImportReport(rawInput);
   const rows = parsedRows.slice(0, 1000);
   if (rows.length === 0) {
     return {
@@ -863,7 +953,18 @@ export async function importPersonalKanjiAction(
     };
   }
 
-  const { createdCount, updatedCount } = await upsertUserKanjiRows(user.id, rows);
+  const rowsWithOverrides = rows.map((row) => {
+    return {
+      ...row,
+      deckName: overrideDeckName,
+      jlptLevel: forcedLevel ?? row.jlptLevel,
+    };
+  });
+
+  const { createdCount, updatedCount, skippedExistingCount } = await upsertUserKanjiRows(user.id, rowsWithOverrides, {
+    deckName: overrideDeckName,
+    updateExisting: true,
+  });
 
   touchPersonalKanjiPaths();
 
@@ -876,16 +977,126 @@ export async function importPersonalKanjiAction(
 
   return {
     status: "success",
-    message: `Đã lưu ${rows.length} Kanji cá nhân (${createdCount} mới, ${updatedCount} cập nhật).${reportSummary}`,
+    message: `Đã lưu ${rows.length} Kanji vào bộ "${overrideDeckName}" (${createdCount} mới, ${updatedCount} cập nhật).${
+      forcedLevel ? ` JLPT đã ép về ${forcedLevel}.` : " JLPT giữ theo từng mục JSON."
+    }${
+      skippedExistingCount > 0
+        ? ` Bỏ qua ${skippedExistingCount} mục đã tồn tại trong cùng bộ.`
+        : ""
+    }${reportSummary}`,
+  };
+}
+
+export async function addManualPersonalKanjiAction(
+  _prevState: PersonalKanjiImportState,
+  formData: FormData
+): Promise<PersonalKanjiImportState> {
+  const user = await requireUser();
+  const parsed = manualPersonalKanjiSchema.safeParse({
+    deckName: formData.get("manualDeckName"),
+    character: formData.get("manualCharacter"),
+    meaning: formData.get("manualMeaning"),
+    onReading: formData.get("manualOnReading"),
+    kunReading: formData.get("manualKunReading"),
+    jlptLevel: formData.get("manualJlptLevel"),
+  });
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "Mục thủ công chưa hợp lệ. Cần ít nhất chữ Kanji và nghĩa.",
+    };
+  }
+
+  const now = new Date().toISOString();
+  const deckName = parsed.data.deckName || DEFAULT_USER_KANJI_DECK_NAME;
+  const manualRow: ImportedKanjiRow = {
+    id: `manual-${parsed.data.character}`,
+    character: parsed.data.character,
+    deckName,
+    hanviet: "",
+    meaning: parsed.data.meaning,
+    onReading: parsed.data.onReading || "-",
+    kunReading: parsed.data.kunReading || "-",
+    strokeHint: "",
+    strokeImage: "",
+    radical: null,
+    radicalHint: "",
+    mnemonic: "",
+    components: [],
+    structure: null,
+    strokeCount: 1,
+    jlptLevel: parsed.data.jlptLevel,
+    order: null,
+    category: "",
+    tags: [],
+    createdAt: now,
+    updatedAt: now,
+    exampleWord: parsed.data.character,
+    exampleMeaning: parsed.data.meaning,
+    relatedWords: [],
+    relatedWordsProvided: false,
+    metadataProvided: true,
+  };
+
+  const { createdCount, updatedCount } = await upsertUserKanjiRows(user.id, [manualRow], {
+    deckName,
+    updateExisting: true,
+  });
+  touchPersonalKanjiPaths();
+
+  return {
+    status: "success",
+    message: `Đã lưu thủ công "${parsed.data.character}" vào bộ "${deckName}" (${parsed.data.jlptLevel}) - ${createdCount} mới, ${updatedCount} cập nhật.`,
   };
 }
 
 function touchPersonalKanjiPaths() {
   revalidatePath("/self-study");
+  revalidatePath("/self-study/vocab");
   revalidatePath("/kanji");
   revalidatePath("/kanji/worksheet");
   revalidatePath("/kanji/learn");
   revalidatePath("/kanji/words/learn");
+}
+
+export async function createPersonalKanjiDeckAction(
+  _prevState: PersonalKanjiImportState,
+  formData: FormData
+): Promise<PersonalKanjiImportState> {
+  const user = await requireUser();
+  const parsed = createPersonalKanjiDeckSchema.safeParse({
+    deckName: formData.get("createDeckName") ?? formData.get("deckName"),
+  });
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "Ten muc chua hop le.",
+    };
+  }
+
+  const nextDeckName = parsed.data.deckName.trim() || DEFAULT_USER_KANJI_DECK_NAME;
+  const store = await loadUserKanjiStore(user.id);
+  const deckSet = new Set(store.decks.map((deck) => deck.trim()).filter(Boolean));
+  deckSet.add(nextDeckName);
+  for (const item of store.items) {
+    deckSet.add(item.deckName.trim() || DEFAULT_USER_KANJI_DECK_NAME);
+  }
+  const nextDecks = Array.from(deckSet);
+  const alreadyExisted = store.decks.some((deck) => deck === nextDeckName);
+
+  await saveUserKanjiStore(user.id, {
+    updatedAt: new Date().toISOString(),
+    decks: nextDecks,
+    items: store.items,
+  });
+  touchPersonalKanjiPaths();
+
+  return {
+    status: "success",
+    message: alreadyExisted
+      ? `Muc "${nextDeckName}" da ton tai.`
+      : `Da tao muc "${nextDeckName}".`,
+  };
 }
 
 export async function deletePersonalKanjiAction(formData: FormData) {
@@ -905,6 +1116,32 @@ export async function deletePersonalKanjiAction(formData: FormData) {
 
   await saveUserKanjiStore(user.id, {
     updatedAt: new Date().toISOString(),
+    decks: store.decks,
+    items: nextItems,
+  });
+  touchPersonalKanjiPaths();
+}
+
+export async function deletePersonalKanjiDeckAction(formData: FormData) {
+  const user = await requireUser();
+  const parsed = deletePersonalKanjiDeckSchema.safeParse({
+    deckName: formData.get("deckName"),
+  });
+  if (!parsed.success) {
+    return;
+  }
+
+  const targetDeckName = parsed.data.deckName;
+  const store = await loadUserKanjiStore(user.id);
+  const nextItems = store.items.filter((item) => item.deckName !== targetDeckName);
+  const nextDecks = store.decks.filter((deck) => deck !== targetDeckName);
+  if (nextItems.length === store.items.length && nextDecks.length === store.decks.length) {
+    return;
+  }
+
+  await saveUserKanjiStore(user.id, {
+    updatedAt: new Date().toISOString(),
+    decks: nextDecks,
     items: nextItems,
   });
   touchPersonalKanjiPaths();
@@ -914,6 +1151,7 @@ export async function clearPersonalKanjiAction() {
   const user = await requireUser();
   await saveUserKanjiStore(user.id, {
     updatedAt: new Date().toISOString(),
+    decks: [],
     items: [],
   });
   touchPersonalKanjiPaths();

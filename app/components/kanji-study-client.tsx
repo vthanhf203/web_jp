@@ -39,7 +39,7 @@ type StudyKanjiItem = {
   }>;
 };
 
-export type StudyMode = "flashcard" | "quiz";
+export type StudyMode = "flashcard" | "quiz" | "recall";
 
 type Props = {
   title: string;
@@ -49,11 +49,13 @@ type Props = {
   relatedVocabCount?: number;
   relatedVocabFlashcardHref?: string;
   relatedVocabQuizHref?: string;
+  relatedVocabRecallHref?: string;
 };
 
 type Direction = "jp-vi" | "vi-jp";
 type QuizPromptMode = "meaning_to_kanji" | "kanji_to_meaning" | "kanji_to_hiragana" | "mixed";
 const HARD_ITEMS_PAGE_SIZE = 8;
+const RELATED_WORD_PREVIEW_LIMIT = 8;
 
 const preferredJaVoiceKeywords = [
   "haruka online",
@@ -166,6 +168,10 @@ function compactWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
 }
 
+function normalizeRecallInput(value: string): string {
+  return value.trim().replace(/\s+/g, "").toLowerCase();
+}
+
 function buildRelatedWordLabel(input: {
   word: string;
   reading: string;
@@ -199,6 +205,7 @@ export function KanjiStudyClient({
   relatedVocabCount = 0,
   relatedVocabFlashcardHref,
   relatedVocabQuizHref,
+  relatedVocabRecallHref,
 }: Props) {
   const router = useRouter();
   const [order, setOrder] = useState<number[]>(() => items.map((_, index) => index));
@@ -216,6 +223,10 @@ export function KanjiStudyClient({
   const [selectedOptionId, setSelectedOptionId] = useState("");
   const [checkedQuiz, setCheckedQuiz] = useState(false);
   const [quizCorrect, setQuizCorrect] = useState(false);
+  const [recallInput, setRecallInput] = useState("");
+  const [recallMessage, setRecallMessage] = useState("");
+  const [recallSuccess, setRecallSuccess] = useState(false);
+  const [recallHintCount, setRecallHintCount] = useState(0);
   const [speechVoices, setSpeechVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedJaVoiceName, setSelectedJaVoiceName] = useState(() => {
     if (typeof window === "undefined") {
@@ -231,6 +242,7 @@ export function KanjiStudyClient({
   });
 
   const flashRef = useRef<HTMLDivElement | null>(null);
+  const recallInputRef = useRef<HTMLInputElement | null>(null);
   const addDeckFormRef = useRef<HTMLFormElement | null>(null);
   const restoredProgressRef = useRef(false);
   const [sessionHref, setSessionHref] = useState("");
@@ -248,7 +260,9 @@ export function KanjiStudyClient({
     [effectiveOrder, hardIdSet, items]
   );
   const activeOrder =
-    mode === "flashcard" && isHardReview && hardOrder.length > 0 ? hardOrder : effectiveOrder;
+    (mode === "flashcard" || mode === "recall") && isHardReview && hardOrder.length > 0
+      ? hardOrder
+      : effectiveOrder;
   const activeCount = activeOrder.length;
   const normalizedIndex = index >= 0 && index < activeCount ? index : 0;
   const currentOrderIndex = activeOrder[normalizedIndex] ?? activeOrder[0] ?? 0;
@@ -310,9 +324,19 @@ export function KanjiStudyClient({
       })
     )
     .filter(Boolean);
+  const relatedWordPreviewVisible = relatedWordPreview.slice(0, RELATED_WORD_PREVIEW_LIMIT);
+  const relatedWordPreviewOverflow = Math.max(
+    0,
+    relatedWordPreview.length - relatedWordPreviewVisible.length
+  );
+  const compactBackSub = [hanvietSub, exampleSub].filter(Boolean).join(" | ");
+  const shouldScrollBackPanel =
+    relatedWordPreview.length > 4 ||
+    onReadingParts.length + kunReadingParts.length > 8 ||
+    compactBackSub.length > 140;
 
   const activeRelatedKanji = useMemo(() => {
-    if (mode === "flashcard" && isHardReview && hardOrder.length > 0) {
+    if ((mode === "flashcard" || mode === "recall") && isHardReview && hardOrder.length > 0) {
       return hardOrder
         .map((orderIndex) => items[orderIndex])
         .filter((item): item is StudyKanjiItem => Boolean(item));
@@ -342,10 +366,15 @@ export function KanjiStudyClient({
   }, [activeRelatedKanji]);
 
   const buildRelatedHref = useCallback(
-    (nextMode: "flashcard" | "quiz"): string => {
+    (nextMode: "flashcard" | "quiz" | "recall"): string => {
       const seed =
         nextMode === "quiz"
           ? relatedVocabQuizHref || relatedVocabFlashcardHref || "/kanji/learn"
+          : nextMode === "recall"
+            ? relatedVocabRecallHref ||
+              relatedVocabFlashcardHref ||
+              relatedVocabQuizHref ||
+              "/kanji/learn"
           : relatedVocabFlashcardHref || relatedVocabQuizHref || "/kanji/learn";
       const url = new URL(seed, "https://local.app");
       const params = new URLSearchParams(url.search);
@@ -353,6 +382,8 @@ export function KanjiStudyClient({
       params.set("related", "vocab");
       if (nextMode === "quiz") {
         params.set("mode", "quiz");
+      } else if (nextMode === "recall") {
+        params.set("mode", "recall");
       } else {
         params.delete("mode");
       }
@@ -364,7 +395,7 @@ export function KanjiStudyClient({
       const queryString = params.toString();
       return queryString ? `/kanji/learn?${queryString}` : "/kanji/learn";
     },
-    [activeRelatedKanjiIds, relatedVocabFlashcardHref, relatedVocabQuizHref]
+    [activeRelatedKanjiIds, relatedVocabFlashcardHref, relatedVocabQuizHref, relatedVocabRecallHref]
   );
 
   const activeRelatedVocabFlashcardHref = useMemo(
@@ -372,10 +403,12 @@ export function KanjiStudyClient({
     [buildRelatedHref]
   );
   const activeRelatedVocabQuizHref = useMemo(() => buildRelatedHref("quiz"), [buildRelatedHref]);
+  const activeRelatedVocabRecallHref = useMemo(() => buildRelatedHref("recall"), [buildRelatedHref]);
   const hasRelatedVocabDeck =
     activeRelatedVocabCount > 0 &&
     Boolean(activeRelatedVocabFlashcardHref) &&
-    Boolean(activeRelatedVocabQuizHref);
+    Boolean(activeRelatedVocabQuizHref) &&
+    Boolean(activeRelatedVocabRecallHref);
 
   const jpFrontMain = current.character;
   const jpFrontSub = "";
@@ -419,6 +452,10 @@ export function KanjiStudyClient({
     setSelectedOptionId("");
     setCheckedQuiz(false);
     setQuizCorrect(false);
+    setRecallInput("");
+    setRecallMessage("");
+    setRecallSuccess(false);
+    setRecallHintCount(0);
   }, []);
 
   const goNext = useCallback(() => {
@@ -491,6 +528,39 @@ export function KanjiStudyClient({
     }
     setUnknownCount((prev) => prev + 1);
   }, [current.id, selectedOptionId]);
+
+  const submitRecall = useCallback(() => {
+    if (recallSuccess) {
+      goNext();
+      return;
+    }
+
+    const candidate = normalizeRecallInput(recallInput);
+    const answer = normalizeRecallInput(current.character);
+    const isCorrect = candidate.length > 0 && candidate === answer;
+    if (isCorrect) {
+      setRecallMessage("Đúng rồi!");
+      setRecallSuccess(true);
+      setKnownCount((prev) => prev + 1);
+      return;
+    }
+
+    setRecallMessage("Chưa đúng, thử lại nhé.");
+    setRecallSuccess(false);
+    setUnknownCount((prev) => prev + 1);
+    setHardItemIds((prev) => (prev.includes(current.id) ? prev : [...prev, current.id]));
+  }, [current.character, current.id, goNext, recallInput, recallSuccess]);
+
+  const useRecallHint = useCallback(() => {
+    setRecallHintCount((prev) => Math.min(prev + 1, 2));
+  }, []);
+
+  const recallHintText =
+    recallHintCount === 0
+      ? "Gợi ý (0/2)"
+      : recallHintCount === 1
+        ? `Số nét: ${current.strokeCount}${current.hanviet ? ` · Hán Việt: ${current.hanviet}` : ""}`
+        : `On: ${current.onReading.trim() || "-"} · Kun: ${current.kunReading.trim() || "-"}`;
 
   const changeJaVoice = useCallback((voiceName: string) => {
     setSelectedJaVoiceName(voiceName);
@@ -695,6 +765,13 @@ export function KanjiStudyClient({
   }, [autoPlay, mode, normalizedIndex, speakCurrent]);
 
   useEffect(() => {
+    if (mode !== "recall") {
+      return;
+    }
+    recallInputRef.current?.focus({ preventScroll: true });
+  }, [current.id, mode]);
+
+  useEffect(() => {
     focusFlashcardArea();
 
     function onKeyDown(event: KeyboardEvent) {
@@ -787,6 +864,21 @@ export function KanjiStudyClient({
         return;
       }
 
+      if (mode === "recall") {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          submitRecall();
+          recallInputRef.current?.focus({ preventScroll: true });
+          return;
+        }
+        if (key === "h") {
+          event.preventDefault();
+          useRecallHint();
+          recallInputRef.current?.focus({ preventScroll: true });
+        }
+        return;
+      }
+
       if (isSpaceKey(event)) {
         event.preventDefault();
         event.stopPropagation();
@@ -820,11 +912,13 @@ export function KanjiStudyClient({
     mode,
     quizOptions,
     speakCurrent,
+    submitRecall,
     submitAddToDeck,
+    useRecallHint,
   ]);
 
   const detailHref = `/kanji?q=${encodeURIComponent(current.character)}#kanji-${current.id}`;
-  const modeLabel = mode === "quiz" ? "Trắc nghiệm" : "Flashcard";
+  const modeLabel = mode === "quiz" ? "Trắc nghiệm" : mode === "recall" ? "Nhồi nhét" : "Flashcard";
   const handleGoBack = useCallback(() => {
     if (typeof window !== "undefined" && window.history.length > 1) {
       router.back();
@@ -1126,6 +1220,238 @@ export function KanjiStudyClient({
     );
   }
 
+  if (mode === "recall") {
+    return (
+      <section className="mx-auto w-full max-w-[980px] rounded-2xl border border-slate-300 bg-[#2f3c66] text-slate-100 shadow-[0_24px_60px_rgba(15,23,42,0.55)]">
+        <div className="relative border-b border-slate-500/20 px-4 py-4">
+          <div className="flex items-center justify-between text-slate-300">
+            <Link href={detailHref} className="inline-flex items-center gap-2 text-xl">
+              <span className="text-lg">&#8599;</span>
+              <span>Xem chi tiết</span>
+            </Link>
+            <div className="inline-flex items-center gap-2">
+              <span className="rounded-full bg-slate-700 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">
+                {modeLabel}
+              </span>
+              <button
+                type="button"
+                onClick={handleGoBack}
+                className="text-3xl leading-none text-slate-400 hover:text-white"
+              >
+                x
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-5">
+          <div className="rounded-2xl bg-[#32416d] p-6">
+            <div className="mb-5 text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
+                Nhập đúng chữ Kanji
+              </p>
+              <h2 className="mt-3 text-5xl font-bold leading-tight text-white sm:text-6xl">
+                {current.meaning}
+              </h2>
+              <div className="mx-auto mt-3 flex max-w-2xl flex-wrap items-center justify-center gap-2 text-sm text-slate-200">
+                {current.hanviet ? (
+                  <span className="rounded-full bg-slate-700 px-3 py-1">
+                    Hán Việt: {current.hanviet}
+                  </span>
+                ) : null}
+                <span className="rounded-full bg-slate-700 px-3 py-1">
+                  {current.jlptLevel} · {current.strokeCount} nét
+                </span>
+                {current.exampleWord ? (
+                  <span className="rounded-full bg-slate-700 px-3 py-1">
+                    VD: {current.exampleWord}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="mx-auto max-w-xl rounded-xl border-2 border-slate-300 bg-[#33425f] p-2">
+              <input
+                ref={recallInputRef}
+                className="w-full rounded-lg bg-transparent px-4 py-3 text-center text-4xl font-semibold text-white outline-none placeholder:text-base placeholder:font-medium placeholder:text-slate-400"
+                placeholder="Gõ chữ Kanji"
+                value={recallInput}
+                onChange={(event) => {
+                  setRecallInput(event.target.value);
+                  if (recallSuccess) {
+                    setRecallSuccess(false);
+                    setRecallMessage("");
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    submitRecall();
+                  }
+                }}
+              />
+            </div>
+
+            <div className="mx-auto mt-4 grid max-w-xl gap-2.5 sm:grid-cols-2">
+              <button
+                type="button"
+                className="rounded-xl bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 disabled:opacity-60"
+                onClick={useRecallHint}
+                disabled={recallHintCount >= 2}
+                onMouseDown={(event) => event.preventDefault()}
+              >
+                {recallHintText}
+              </button>
+              <button
+                type="button"
+                className="rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white"
+                onClick={submitRecall}
+                onMouseDown={(event) => event.preventDefault()}
+              >
+                {recallSuccess ? "Câu tiếp theo" : "Kiểm tra"}
+              </button>
+            </div>
+
+            <p
+              className={`mt-3 min-h-7 text-center text-base ${
+                recallSuccess ? "text-emerald-300" : "text-slate-300"
+              }`}
+            >
+              {recallMessage || "Nhấn Enter để kiểm tra nhanh"}
+            </p>
+
+            {recallSuccess ? (
+              <div className="mx-auto mt-3 max-w-2xl rounded-xl border border-emerald-300/40 bg-emerald-500/12 px-4 py-3 text-center">
+                <p className="text-6xl font-bold text-white">{current.character}</p>
+                <p className="mt-2 text-sm text-emerald-100">
+                  On: {current.onReading.trim() || "-"} · Kun: {current.kunReading.trim() || "-"}
+                </p>
+              </div>
+            ) : null}
+
+            {hasRelatedVocabDeck ? (
+              <div className="mt-5 flex flex-wrap justify-center gap-2">
+                <Link
+                  href={activeRelatedVocabFlashcardHref}
+                  className="rounded-full border border-emerald-300/50 bg-emerald-400/20 px-3 py-1.5 text-xs font-semibold text-emerald-50 hover:bg-emerald-400/30"
+                >
+                  Flashcard {activeRelatedVocabCount} từ liên quan
+                </Link>
+                <Link
+                  href={activeRelatedVocabQuizHref}
+                  className="rounded-full border border-sky-300/50 bg-sky-400/20 px-3 py-1.5 text-xs font-semibold text-sky-50 hover:bg-sky-400/30"
+                >
+                  Quiz nhanh
+                </Link>
+                <Link
+                  href={activeRelatedVocabRecallHref}
+                  className="rounded-full border border-orange-300/50 bg-orange-400/20 px-3 py-1.5 text-xs font-semibold text-orange-50 hover:bg-orange-400/30"
+                >
+                  Nhồi từ liên quan
+                </Link>
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="border-y border-slate-500/35 bg-[#44517a] px-4 py-2 text-base text-slate-200 sm:text-lg">
+          Phím tắt: <span className="rounded-md bg-slate-500/55 px-1.5 py-0.5 text-sm font-semibold">Enter</span> kiểm tra
+          <span className="ml-2 rounded-md bg-slate-500/55 px-1.5 py-0.5 text-sm font-semibold">H</span> gợi ý
+          <span className="ml-2 rounded-md bg-slate-500/55 px-1.5 py-0.5 text-sm font-semibold">R</span> phát âm
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-[#1f2848] px-5 py-4">
+          <form ref={addDeckFormRef} action={addKanjiToReviewAction}>
+            <input type="hidden" name="kanjiId" value={current.id} />
+            <button
+              type="submit"
+              onMouseDown={(event) => event.preventDefault()}
+              className={`inline-flex h-11 w-11 items-center justify-center rounded-full border text-3xl ${
+                canAddToReview
+                  ? "border-slate-500 bg-slate-700 text-slate-200"
+                  : "cursor-not-allowed border-slate-600 bg-slate-800/60 text-slate-500"
+              }`}
+              title={canAddToReview ? "Lưu để ôn tập" : "Kanji cá nhân chưa hỗ trợ lưu vào review"}
+              disabled={!canAddToReview}
+            >
+              +
+            </button>
+          </form>
+
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              className="rounded-full bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-200"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={goPrev}
+            >
+              {"<"} Câu trước
+            </button>
+            <span className="text-3xl font-semibold">
+              {normalizedIndex + 1} / {activeCount}
+            </span>
+            <button
+              type="button"
+              className="rounded-full bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-200"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={goNext}
+            >
+              Câu sau {">"}
+            </button>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className="rounded-full bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-200"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => {
+                toggleShuffle();
+                recallInputRef.current?.focus({ preventScroll: true });
+              }}
+            >
+              {isShuffled ? "Thứ tự gốc" : "Đảo"}
+            </button>
+            <button
+              type="button"
+              className={`rounded-full px-4 py-2 text-sm font-semibold ${
+                hardItems.length === 0
+                  ? "cursor-not-allowed bg-slate-700/60 text-slate-400"
+                  : isHardReview
+                    ? "bg-rose-500/30 text-rose-100"
+                    : "bg-slate-700 text-slate-200"
+              }`}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => {
+                toggleHardReview();
+                recallInputRef.current?.focus({ preventScroll: true });
+              }}
+              disabled={hardItems.length === 0}
+            >
+              {isHardReview ? `Xem tất cả (${items.length})` : `Ôn chữ khó (${hardItems.length})`}
+            </button>
+            <button
+              type="button"
+              className="rounded-full bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-200"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={speakCurrent}
+            >
+              Loa
+            </button>
+          </div>
+        </div>
+
+        <div className="h-2 overflow-hidden rounded-b-2xl bg-slate-700/70">
+          <div className="h-2 bg-emerald-400 transition-all" style={{ width: `${progressPercent}%` }} />
+        </div>
+
+        <div className="px-5 py-3 text-sm text-slate-300">
+          Đúng: {knownCount} | Sai: {unknownCount} | Chủ đề: {title}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="mx-auto w-full max-w-[980px] rounded-2xl border border-slate-300 bg-[#2f3c66] text-slate-100 shadow-[0_24px_60px_rgba(15,23,42,0.55)]">
       <div className="relative border-b border-slate-500/20 px-4 py-4">
@@ -1218,7 +1544,13 @@ export function KanjiStudyClient({
                   transform: "rotateY(180deg)",
                 }}
               >
-                <div className="flex min-h-[420px] flex-col items-center justify-center py-1 text-center sm:min-h-[450px]">
+                <div
+                  className={`flex min-h-[420px] flex-col items-center text-center sm:min-h-[450px] ${
+                    shouldScrollBackPanel
+                      ? "max-h-[420px] justify-start overflow-y-auto py-3 scrollbar-subtle sm:max-h-[450px]"
+                      : "justify-center py-1"
+                  }`}
+                >
                   <p className="text-sm uppercase tracking-[0.24em] text-slate-300">
                     {direction === "jp-vi" ? "JP -> VI" : "VI -> JP"}
                   </p>
@@ -1268,13 +1600,24 @@ export function KanjiStudyClient({
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-300">
                         Từ vựng liên quan
                       </p>
-                      <ul className="mt-2 space-y-1">
-                        {relatedWordPreview.map((entry) => (
+                      <ul
+                        className={`mt-2 space-y-1 ${
+                          relatedWordPreview.length > 4
+                            ? "max-h-48 overflow-y-auto pr-1 scrollbar-subtle"
+                            : ""
+                        }`}
+                      >
+                        {relatedWordPreviewVisible.map((entry) => (
                           <li key={entry} className="text-sm leading-snug text-slate-100">
                             • {entry}
                           </li>
                         ))}
                       </ul>
+                      {relatedWordPreviewOverflow > 0 ? (
+                        <p className="mt-2 text-xs font-semibold text-slate-300">
+                          +{relatedWordPreviewOverflow} mục khác. Dùng nút từ liên quan để học toàn bộ.
+                        </p>
+                      ) : null}
                       {hasRelatedVocabDeck ? (
                         <div className="mt-3 flex flex-wrap gap-2">
                           <Link
@@ -1288,6 +1631,12 @@ export function KanjiStudyClient({
                             className="rounded-full border border-sky-300/50 bg-sky-400/20 px-3 py-1.5 text-xs font-semibold text-sky-50 hover:bg-sky-400/30"
                           >
                             Quiz nhanh
+                          </Link>
+                          <Link
+                            href={activeRelatedVocabRecallHref}
+                            className="rounded-full border border-orange-300/50 bg-orange-400/20 px-3 py-1.5 text-xs font-semibold text-orange-50 hover:bg-orange-400/30"
+                          >
+                            Nhồi từ liên quan
                           </Link>
                         </div>
                       ) : null}
@@ -1421,6 +1770,12 @@ export function KanjiStudyClient({
                 className="rounded-full bg-sky-500/25 px-4 py-2 font-semibold text-sky-100 ring-1 ring-sky-300/35 hover:bg-sky-500/35"
               >
                 Quiz từ liên quan
+              </Link>
+              <Link
+                href={activeRelatedVocabRecallHref}
+                className="rounded-full bg-orange-500/25 px-4 py-2 font-semibold text-orange-100 ring-1 ring-orange-300/35 hover:bg-orange-500/35"
+              >
+                Nhồi từ liên quan
               </Link>
             </>
           ) : null}

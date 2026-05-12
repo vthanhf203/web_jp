@@ -69,6 +69,7 @@ type Props = {
   returnToHref: string;
   selectedFlashcardHref: string;
   relatedFlashcardHref: string;
+  relatedRecallHref: string;
   jsonRelatedWords: RelatedWord[];
   adminRelatedWords: RelatedWord[];
   coreRelatedWords: RelatedWord[];
@@ -176,6 +177,7 @@ export function KanjiDetail({
   togglePickedHref,
   returnToHref,
   relatedFlashcardHref,
+  relatedRecallHref,
   jsonRelatedWords,
   adminRelatedWords,
   coreRelatedWords,
@@ -423,9 +425,14 @@ export function KanjiDetail({
         <article className="relative overflow-hidden rounded-3xl bg-white/84 p-5 shadow-[0_18px_44px_rgba(15,23,42,0.08)] backdrop-blur-md">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-xl font-black text-orange-500">Từ vựng liên quan</h3>
-            <Link href={relatedFlashcardHref} className="text-sm font-bold text-sky-600 hover:text-sky-700">
-              Flashcard -&gt;
-            </Link>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <Link href={relatedFlashcardHref} className="text-sm font-bold text-sky-600 hover:text-sky-700">
+                Flashcard -&gt;
+              </Link>
+              <Link href={relatedRecallHref} className="text-sm font-bold text-orange-600 hover:text-orange-700">
+                Nhồi -&gt;
+              </Link>
+            </div>
           </div>
 
           <div className="mt-3 rounded-2xl bg-slate-50/80 p-3">

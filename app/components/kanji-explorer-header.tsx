@@ -20,10 +20,13 @@ type Props = {
   worksheetHref: string;
   allFlashcardHref: string;
   allQuizHref: string;
+  allRecallHref: string;
   pickedFlashcardHref: string;
   pickedQuizHref: string;
+  pickedRecallHref: string;
   pickedRelatedVocabFlashcardHref: string;
   pickedRelatedVocabQuizHref: string;
+  pickedRelatedVocabRecallHref: string;
   clearPickedHref?: string;
   pickedCount: number;
   pickedPreview?: string;
@@ -37,10 +40,13 @@ export function KanjiExplorerHeader({
   worksheetHref,
   allFlashcardHref,
   allQuizHref,
+  allRecallHref,
   pickedFlashcardHref,
   pickedQuizHref,
+  pickedRecallHref,
   pickedRelatedVocabFlashcardHref,
   pickedRelatedVocabQuizHref,
+  pickedRelatedVocabRecallHref,
   clearPickedHref,
   pickedCount,
   pickedPreview,
@@ -125,6 +131,12 @@ export function KanjiExplorerHeader({
             Trắc nghiệm
           </Link>
           <Link
+            href={allRecallHref}
+            className="rounded-full bg-orange-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-orange-500"
+          >
+            Nhồi nhét
+          </Link>
+          <Link
             href={pickedFlashcardHref}
             className={`rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 ${
               pickedCount > 0
@@ -145,6 +157,16 @@ export function KanjiExplorerHeader({
             Quiz đã chọn
           </Link>
           <Link
+            href={pickedRecallHref}
+            className={`rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 ${
+              pickedCount > 0
+                ? "bg-orange-100 text-orange-700 hover:-translate-y-0.5 hover:bg-orange-200"
+                : "pointer-events-none cursor-not-allowed bg-slate-100 text-slate-400"
+            }`}
+          >
+            Nhồi đã chọn
+          </Link>
+          <Link
             href={pickedRelatedVocabFlashcardHref}
             className={`rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 ${
               pickedCount > 0
@@ -163,6 +185,16 @@ export function KanjiExplorerHeader({
             }`}
           >
             Quiz từ liên quan
+          </Link>
+          <Link
+            href={pickedRelatedVocabRecallHref}
+            className={`rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 ${
+              pickedCount > 0
+                ? "bg-rose-100 text-rose-700 hover:-translate-y-0.5 hover:bg-rose-200"
+                : "pointer-events-none cursor-not-allowed bg-slate-100 text-slate-400"
+            }`}
+          >
+            Nhồi từ liên quan
           </Link>
           {pickedCount > 0 && clearPickedHref ? (
             <Link

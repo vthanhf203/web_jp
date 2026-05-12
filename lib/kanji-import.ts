@@ -1,6 +1,7 @@
 type ParsedKanjiInput = {
   id: string;
   character: string;
+  deckName: string;
   hanviet: string;
   meaning: string;
   onReading: string;
@@ -515,6 +516,15 @@ function rowFromObject(source: Record<string, unknown>): ParsedKanjiInput | null
     return null;
   }
   const jlptLevel = normalizeJlpt(source.jlptLevel ?? source.level ?? source.jlpt);
+  const deckName = pickString(source, [
+    "deckName",
+    "batchName",
+    "collectionName",
+    "groupName",
+    "lessonName",
+    "lessonTitle",
+    "title",
+  ]);
   const related = parseRelatedWords(source, jlptLevel);
   const radical = parseRadical(source);
   const components = parseComponents(source.components ?? source.parts ?? source.compositionParts);
@@ -595,6 +605,7 @@ function rowFromObject(source: Record<string, unknown>): ParsedKanjiInput | null
   return {
     id,
     character,
+    deckName,
     hanviet: pickString(source, ["hanviet", "hanViet", "sinoVietnamese"]),
     meaning,
     onReading: pickStringOrArray(source, ["onReading", "on", "onyomi"]),
@@ -654,6 +665,7 @@ function rowFromLine(line: string): ParsedKanjiInput | null {
   return {
     id: `kanji-${parts[0]}`,
     character: parts[0],
+    deckName: "",
     hanviet: "",
     meaning: parts[1],
     onReading: parts[2] ?? "",

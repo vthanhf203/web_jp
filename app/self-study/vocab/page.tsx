@@ -38,13 +38,19 @@ export default async function SelfStudyVocabPage(props: { searchParams: SearchPa
   const selectedLesson =
     selectedLessonId ? lessons.find((lesson) => lesson.id === selectedLessonId) ?? null : null;
   const totalVocabItems = lessons.reduce((sum, lesson) => sum + lesson.items.length, 0);
-  const personalKanjiCountByLevel = userKanjiStore.items.reduce(
-    (acc, item) => {
-      const level = item.jlptLevel;
-      acc[level] = (acc[level] ?? 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>
+  const personalKanjiDeckCountMap = new Map<string, number>();
+  for (const deckName of userKanjiStore.decks) {
+    const normalized = deckName.trim();
+    if (normalized) {
+      personalKanjiDeckCountMap.set(normalized, 0);
+    }
+  }
+  for (const item of userKanjiStore.items) {
+    const deckName = item.deckName?.trim() || "Chua phan loai";
+    personalKanjiDeckCountMap.set(deckName, (personalKanjiDeckCountMap.get(deckName) ?? 0) + 1);
+  }
+  const personalKanjiDeckGroups = Array.from(personalKanjiDeckCountMap.entries()).sort(
+    (a, b) => b[1] - a[1] || a[0].localeCompare(b[0])
   );
 
   return (
@@ -138,32 +144,49 @@ export default async function SelfStudyVocabPage(props: { searchParams: SearchPa
             >
               Quiz Kanji
             </Link>
+            <Link
+              href={userKanjiStore.items.length > 0 ? "/kanji/learn?scope=personal&mode=recall" : "#"}
+              className={`rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.12em] transition ${
+                userKanjiStore.items.length > 0
+                  ? "bg-orange-600 text-white hover:bg-orange-500"
+                  : "pointer-events-none bg-slate-100 text-slate-400"
+              }`}
+            >
+              Nhồi Kanji
+            </Link>
           </div>
 
-          <div className="mt-3 flex flex-wrap gap-2">
-            {["N5", "N4", "N3", "N2", "N1"].map((level) => {
-              const count = personalKanjiCountByLevel[level] ?? 0;
-              return (
-                <Link
-                  key={level}
-                  href={count > 0 ? `/kanji/learn?scope=personal&level=${level}` : "#"}
-                  className={`rounded-full border px-3 py-1.5 text-xs font-black transition ${
-                    count > 0
-                      ? "border-[#bdd7ff] bg-[#f1f6ff] text-[#2557a7] hover:bg-[#e7f0ff]"
-                      : "pointer-events-none border-slate-200 bg-slate-50 text-slate-400"
-                  }`}
-                >
-                  {level} ({count})
-                </Link>
-              );
-            })}
+          <div className="mt-3 space-y-2">
+            <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[#5f7293]">
+              Muc tu tao ({personalKanjiDeckGroups.length})
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {personalKanjiDeckGroups.length > 0 ? (
+                personalKanjiDeckGroups.map(([deckName, count]) => (
+                  <Link
+                    key={deckName}
+                    href={`/kanji/learn?scope=personal&deck=${encodeURIComponent(deckName)}`}
+                    className="rounded-full border border-[#bdd7ff] bg-[#f1f6ff] px-3 py-1.5 text-xs font-black text-[#2557a7] transition hover:bg-[#e7f0ff]"
+                    title={deckName}
+                  >
+                    {deckName} ({count})
+                  </Link>
+                ))
+              ) : (
+                <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-400">
+                  Chua co muc
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="mt-4">
             <PersonalKanjiImportForm
+              deckNames={userKanjiStore.decks}
               items={userKanjiStore.items.map((item) => ({
                 id: item.id,
                 character: item.character,
+                deckName: item.deckName,
                 meaning: item.meaning,
                 jlptLevel: item.jlptLevel,
                 relatedWords: item.relatedWords.map((word) => ({

@@ -302,6 +302,9 @@ export default async function PersonalPage(props: { searchParams: SearchParams }
             <Link href="/kanji?scope=personal" className="btn-primary text-sm">
               Flashcard Kanji
             </Link>
+            <Link href="/kanji/learn?scope=personal&mode=recall" className="btn-soft text-sm">
+              Nhồi Kanji
+            </Link>
             <Link href="/kanji/personal" className="btn-soft text-sm">
               Thư viện Kanji cá nhân
             </Link>

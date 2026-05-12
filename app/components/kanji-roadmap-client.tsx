@@ -704,6 +704,12 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
   const flashcardHref = dayIds
     ? `/kanji/learn?level=${activeLevel}&ids=${encodeURIComponent(dayIds)}`
     : `/kanji/learn?level=${activeLevel}`;
+  const recallHref = dayIds
+    ? `/kanji/learn?level=${activeLevel}&mode=recall&ids=${encodeURIComponent(dayIds)}`
+    : `/kanji/learn?level=${activeLevel}&mode=recall`;
+  const relatedRecallHref = dayIds
+    ? `/kanji/learn?level=${activeLevel}&mode=recall&related=vocab&ids=${encodeURIComponent(dayIds)}`
+    : `/kanji/learn?level=${activeLevel}&mode=recall&related=vocab`;
 
   const drawBoard = useCallback(() => {
     const canvas = writeCanvasRef.current;
@@ -993,6 +999,12 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
               <Link href={flashcardHref} className="btn-primary text-sm">
                 Học bằng Flashcard
               </Link>
+              <Link href={recallHref} className="btn-soft text-sm">
+                Nhồi Kanji
+              </Link>
+              <Link href={relatedRecallHref} className="btn-soft text-sm">
+                Nhồi từ liên quan
+              </Link>
               <button type="button" className="btn-soft text-sm" onClick={markCurrentDayCompleted}>
                 Đánh dấu đã học
               </button>
@@ -1036,6 +1048,12 @@ export function KanjiRoadmapClient({ items, initialLevel, dailyTarget = 10 }: Pr
           <div className="flex flex-wrap gap-2 rounded-full border border-slate-200/80 bg-white/80 p-1.5 shadow-sm">
             <Link href={flashcardHref} className="btn-tab text-sm">
               Học bằng Flashcard
+            </Link>
+            <Link href={recallHref} className="btn-tab text-sm">
+              Nhồi Kanji
+            </Link>
+            <Link href={relatedRecallHref} className="btn-tab text-sm">
+              Nhồi từ liên quan
             </Link>
             <button
               type="button"

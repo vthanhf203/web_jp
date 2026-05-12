@@ -42,10 +42,14 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const level = parseExportLevel(url.searchParams.get("level"));
   const shouldDownload = url.searchParams.get("download") === "1";
+  const deckName = (url.searchParams.get("deck") ?? "").trim();
 
   const store = await loadUserKanjiStore(user.id);
-  const filteredItems =
+  const levelFilteredItems =
     level === "ALL" ? store.items : store.items.filter((item) => item.jlptLevel === level);
+  const filteredItems = deckName
+    ? levelFilteredItems.filter((item) => item.deckName === deckName)
+    : levelFilteredItems;
   const sortedItems = sortKanjiByLearningOrder(filteredItems, {
     getOrder: (item) => item.order,
   });
@@ -53,6 +57,7 @@ export async function GET(request: Request) {
   const payload = sortedItems.map((item) => ({
     id: item.id,
     character: item.character,
+    deckName: item.deckName,
     hanviet: item.hanviet,
     meaning: item.meaning,
     onReading: splitReading(item.onReading),
@@ -88,7 +93,10 @@ export async function GET(request: Request) {
 
   const dateKey = new Date().toISOString().slice(0, 10);
   const fileLevel = level.toLowerCase();
-  const filename = `personal-kanji-export-${fileLevel}-${dateKey}.json`;
+  const fileDeck = deckName
+    ? `-${deckName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "deck"}`
+    : "";
+  const filename = `personal-kanji-export-${fileLevel}${fileDeck}-${dateKey}.json`;
 
   return new Response(JSON.stringify(payload, null, 2), {
     status: 200,
@@ -103,4 +111,3 @@ export async function GET(request: Request) {
     },
   });
 }
-

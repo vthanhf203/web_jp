@@ -34,6 +34,7 @@ type SearchParams = Promise<{
   page?: string | string[];
   scope?: string | string[];
   deck?: string | string[];
+  personalDeck?: string | string[];
   deckView?: string | string[];
   pickReset?: string | string[];
 }>;
@@ -53,6 +54,7 @@ type RelatedWord = {
 type KanjiListItem = {
   id: string;
   character: string;
+  deckName?: string;
   hanviet: string;
   meaning: string;
   onReading: string;
@@ -139,8 +141,9 @@ function buildKanjiLearnHref(options: {
   rawQuery?: string;
   level: JlptLevel | null;
   pickedIds?: string[];
-  mode?: "flashcard" | "quiz";
+  mode?: "flashcard" | "quiz" | "recall";
   scope?: "all" | "personal";
+  personalDeckName?: string;
   relatedVocab?: boolean;
 }): string {
   const query = (options.rawQuery ?? "").trim();
@@ -153,6 +156,8 @@ function buildKanjiLearnHref(options: {
   }
   if (options.mode === "quiz") {
     params.set("mode", "quiz");
+  } else if (options.mode === "recall") {
+    params.set("mode", "recall");
   }
   const picked = serializePickedIds(options.pickedIds ?? []);
   if (picked) {
@@ -160,6 +165,10 @@ function buildKanjiLearnHref(options: {
   }
   if (options.scope === "personal") {
     params.set("scope", "personal");
+    const personalDeckName = (options.personalDeckName ?? "").trim();
+    if (personalDeckName) {
+      params.set("deck", personalDeckName);
+    }
   }
   if (options.relatedVocab) {
     params.set("related", "vocab");
@@ -228,6 +237,7 @@ function buildKanjiPageHref(options: {
   pickMode?: boolean;
   scope?: "all" | "personal";
   deckId?: string;
+  personalDeckName?: string;
   deckView?: boolean;
   pickReset?: boolean;
 }): string {
@@ -238,6 +248,10 @@ function buildKanjiPageHref(options: {
   }
   if (options.scope === "personal") {
     params.set("scope", "personal");
+    const personalDeckName = (options.personalDeckName ?? "").trim();
+    if (personalDeckName) {
+      params.set("personalDeck", personalDeckName);
+    }
   }
   if (query) {
     params.set("q", query);
@@ -430,11 +444,12 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
   const rawPickMode = pickSingle(params.pickMode).trim();
   const rawPage = pickSingle(params.page).trim();
   const rawDeckId = pickSingle(params.deck).trim();
+  const rawPersonalDeck = pickSingle(params.personalDeck).trim();
   const rawDeckView = pickSingle(params.deckView).trim();
   const rawPickReset = pickSingle(params.pickReset).trim();
   const scope: "all" | "personal" = rawScope === "personal" ? "personal" : "all";
   const isPersonalScope = scope === "personal";
-  const selectedLevel = rawLevel ? normalizeJlptLevel(rawLevel) : null;
+  const selectedLevel = !isPersonalScope && rawLevel ? normalizeJlptLevel(rawLevel) : null;
   const query = rawQuery.trim().toLowerCase();
 
   const [
@@ -505,6 +520,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     userKanjiStore.items.map((item) => ({
       id: item.id,
       character: item.character,
+      deckName: item.deckName,
       hanviet: pickHanvietForKanji(item.character, item.hanviet, item.relatedWords ?? []),
       meaning: item.meaning,
       onReading: item.onReading,
@@ -526,6 +542,26 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     }
   );
   const kanjiList = isPersonalScope ? personalKanjiList : dbKanjiList;
+  const personalDeckCountMap = new Map<string, number>();
+  for (const deckName of userKanjiStore.decks) {
+    const normalizedDeckName = deckName.trim();
+    if (normalizedDeckName) {
+      personalDeckCountMap.set(normalizedDeckName, 0);
+    }
+  }
+  for (const item of personalKanjiList) {
+    const deckName = item.deckName?.trim() || "Chua phan loai";
+    personalDeckCountMap.set(deckName, (personalDeckCountMap.get(deckName) ?? 0) + 1);
+  }
+  const personalDeckTabs = Array.from(personalDeckCountMap.entries()).sort(
+    (a, b) => b[1] - a[1] || a[0].localeCompare(b[0])
+  );
+  const selectedPersonalDeck =
+    isPersonalScope && rawPersonalDeck && personalDeckCountMap.has(rawPersonalDeck) ? rawPersonalDeck : "";
+  const deckFilteredKanji =
+    isPersonalScope && selectedPersonalDeck
+      ? kanjiList.filter((kanji) => (kanji.deckName?.trim() || "Chua phan loai") === selectedPersonalDeck)
+      : kanjiList;
   const reviewByKanjiId = new Map(
     reviewList
       .filter((review): review is { kanjiId: string; dueAt: Date } => !!review.kanjiId)
@@ -538,9 +574,11 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     },
     {} as Record<JlptLevel, number>
   );
-  const levelFilteredKanji = selectedLevel
-    ? kanjiList.filter((kanji) => kanji.jlptLevel === selectedLevel)
-    : kanjiList;
+  const levelFilteredKanji = isPersonalScope
+    ? deckFilteredKanji
+    : selectedLevel
+      ? kanjiList.filter((kanji) => kanji.jlptLevel === selectedLevel)
+      : kanjiList;
 
   const filteredKanji = query
     ? levelFilteredKanji.filter((kanji) => {
@@ -592,7 +630,14 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
       : fallbackPickedIds;
   const buildScopedKanjiPageHref = (
     options: Omit<Parameters<typeof buildKanjiPageHref>[0], "scope">
-  ) => buildKanjiPageHref({ ...options, scope });
+  ) =>
+    buildKanjiPageHref({
+      ...options,
+      scope,
+      personalDeckName: isPersonalScope
+        ? ((options.personalDeckName ?? selectedPersonalDeck) || undefined)
+        : undefined,
+    });
   const filteredIds = new Set(filteredKanji.map((item) => item.id));
   const activePickedIds = pickedIds.filter((id) => filteredIds.has(id));
   const pickedIdSet = new Set(activePickedIds);
@@ -791,6 +836,20 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
           mode: "flashcard",
           scope,
         });
+  const relatedRecallHref = selectedKanji
+    ? buildKanjiWordLearnHref({
+        level: compoundLevel,
+        mode: "recall",
+        selectedChar: selectedKanji.character,
+        source: "related",
+        scope,
+      })
+    : buildKanjiWordLearnHref({
+        level: compoundLevel,
+        mode: "recall",
+        source: "related",
+        scope,
+      });
   const selectedModeKanjiWordFlashcardHref = selectedKanji
     ? buildKanjiWordLearnHref({
         level: compoundLevel,
@@ -799,16 +858,33 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
         scope,
       })
     : undefined;
+  const selectedModeKanjiWordRecallHref = selectedKanji
+    ? buildKanjiWordLearnHref({
+        level: compoundLevel,
+        mode: "recall",
+        selectedChar: selectedKanji.character,
+        scope,
+      })
+    : undefined;
   const allFilteredFlashcardHref = buildKanjiLearnHref({
     rawQuery,
     level: selectedLevel,
     scope: flashcardScope,
+    personalDeckName: selectedPersonalDeck || undefined,
   });
   const allFilteredQuizHref = buildKanjiLearnHref({
     rawQuery,
     level: selectedLevel,
     mode: "quiz",
     scope: flashcardScope,
+    personalDeckName: selectedPersonalDeck || undefined,
+  });
+  const allFilteredRecallHref = buildKanjiLearnHref({
+    rawQuery,
+    level: selectedLevel,
+    mode: "recall",
+    scope: flashcardScope,
+    personalDeckName: selectedPersonalDeck || undefined,
   });
   const worksheetHref = buildKanjiWorksheetHref({
     level: selectedLevel,
@@ -820,17 +896,27 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     level: selectedLevel,
     pickedIds: orderedPickedIds,
     scope: flashcardScope,
+    personalDeckName: selectedPersonalDeck || undefined,
   });
   const pickedQuizHref = buildKanjiLearnHref({
     level: selectedLevel,
     pickedIds: orderedPickedIds,
     mode: "quiz",
     scope: flashcardScope,
+    personalDeckName: selectedPersonalDeck || undefined,
+  });
+  const pickedRecallHref = buildKanjiLearnHref({
+    level: selectedLevel,
+    pickedIds: orderedPickedIds,
+    mode: "recall",
+    scope: flashcardScope,
+    personalDeckName: selectedPersonalDeck || undefined,
   });
   const pickedRelatedVocabFlashcardHref = buildKanjiLearnHref({
     level: selectedLevel,
     pickedIds: orderedPickedIds,
     scope: flashcardScope,
+    personalDeckName: selectedPersonalDeck || undefined,
     relatedVocab: true,
   });
   const pickedRelatedVocabQuizHref = buildKanjiLearnHref({
@@ -838,6 +924,15 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     pickedIds: orderedPickedIds,
     mode: "quiz",
     scope: flashcardScope,
+    personalDeckName: selectedPersonalDeck || undefined,
+    relatedVocab: true,
+  });
+  const pickedRelatedVocabRecallHref = buildKanjiLearnHref({
+    level: selectedLevel,
+    pickedIds: orderedPickedIds,
+    mode: "recall",
+    scope: flashcardScope,
+    personalDeckName: selectedPersonalDeck || undefined,
     relatedVocab: true,
   });
   const selectedIndex = selectedKanji
@@ -889,38 +984,72 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     rawQuery,
     selectedChar: rawSelected,
     scope: "personal",
+    personalDeckName: selectedPersonalDeck || undefined,
     page: 1,
   });
-  const headerTabs = [
-    {
-      key: "ALL",
-      label: "TAT CA",
-      count: kanjiList.length,
-      href: buildScopedKanjiPageHref({
-        level: null,
-        rawQuery,
-        pickedIds: activePickedIds,
-        selectedChar: rawSelected,
-        page: 1,
-        pickMode: isPickMode,
-      }),
-      active: selectedLevel === null,
-    },
-    ...JLPT_LEVELS.map((level) => ({
-      key: level,
-      label: level,
-      count: countByLevel[level],
-      href: buildScopedKanjiPageHref({
-        level,
-        rawQuery,
-        pickedIds: activePickedIds,
-        selectedChar: rawSelected,
-        page: 1,
-        pickMode: isPickMode,
-      }),
-      active: selectedLevel === level,
-    })),
-  ];
+  const headerTabs = isPersonalScope
+    ? [
+        {
+          key: "ALL",
+          label: "TAT CA",
+          count: kanjiList.length,
+          href: buildScopedKanjiPageHref({
+            level: null,
+            rawQuery,
+            pickedIds: activePickedIds,
+            selectedChar: rawSelected,
+            page: 1,
+            pickMode: isPickMode,
+            personalDeckName: "",
+          }),
+          active: !selectedPersonalDeck,
+        },
+        ...personalDeckTabs.map(([deckName, count]) => ({
+          key: `DECK:${deckName}`,
+          label: deckName,
+          count,
+          href: buildScopedKanjiPageHref({
+            level: null,
+            rawQuery,
+            pickedIds: activePickedIds,
+            selectedChar: rawSelected,
+            page: 1,
+            pickMode: isPickMode,
+            personalDeckName: deckName,
+          }),
+          active: selectedPersonalDeck === deckName,
+        })),
+      ]
+    : [
+        {
+          key: "ALL",
+          label: "TAT CA",
+          count: kanjiList.length,
+          href: buildScopedKanjiPageHref({
+            level: null,
+            rawQuery,
+            pickedIds: activePickedIds,
+            selectedChar: rawSelected,
+            page: 1,
+            pickMode: isPickMode,
+          }),
+          active: selectedLevel === null,
+        },
+        ...JLPT_LEVELS.map((level) => ({
+          key: level,
+          label: level,
+          count: countByLevel[level],
+          href: buildScopedKanjiPageHref({
+            level,
+            rawQuery,
+            pickedIds: activePickedIds,
+            selectedChar: rawSelected,
+            page: 1,
+            pickMode: isPickMode,
+          }),
+          active: selectedLevel === level,
+        })),
+      ];
   const pickedPreview =
     selectedFlashcardKanji.length > 0
       ? `Da chon: ${selectedFlashcardKanji
@@ -990,10 +1119,11 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
       deckId,
       deckView: true,
     });
-  const buildDeckFlashcardHref = (deckPickedIds: string[]) =>
+  const buildDeckStudyHref = (deckPickedIds: string[], mode: "flashcard" | "quiz" | "recall" = "flashcard") =>
     buildKanjiLearnHref({
       level: null,
       pickedIds: deckPickedIds,
+      mode,
       scope: flashcardScope,
     });
 
@@ -1001,16 +1131,19 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
     <section className="space-y-6">
       <KanjiExplorerHeader
         tabs={headerTabs}
-        selectedLabel={selectedLevel ?? "Tat ca"}
+        selectedLabel={isPersonalScope ? selectedPersonalDeck || "Tat ca" : selectedLevel ?? "Tat ca"}
         filteredCount={filteredKanji.length}
         roadmapHref={selectedLevel ? `/kanji/roadmap?level=${selectedLevel}` : "/kanji/roadmap"}
         worksheetHref={worksheetHref}
         allFlashcardHref={allFilteredFlashcardHref}
         allQuizHref={allFilteredQuizHref}
+        allRecallHref={allFilteredRecallHref}
         pickedFlashcardHref={pickedFlashcardHref}
         pickedQuizHref={pickedQuizHref}
+        pickedRecallHref={pickedRecallHref}
         pickedRelatedVocabFlashcardHref={pickedRelatedVocabFlashcardHref}
         pickedRelatedVocabQuizHref={pickedRelatedVocabQuizHref}
+        pickedRelatedVocabRecallHref={pickedRelatedVocabRecallHref}
         clearPickedHref={activePickedIds.length > 0 ? clearPickedHref : undefined}
         pickedCount={activePickedIds.length}
         pickedPreview={pickedPreview}
@@ -1126,7 +1259,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
               href={compoundRecallHref}
               className="rounded-full bg-orange-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-orange-500"
             >
-              Nhoi nhet
+              Nhồi nhét
             </Link>
             {selectedModeKanjiWordFlashcardHref ? (
               <Link
@@ -1134,6 +1267,14 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
                 className="rounded-full bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-700 shadow-[0_8px_16px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-50"
               >
                 Flashcard chu nay
+              </Link>
+            ) : null}
+            {selectedModeKanjiWordRecallHref ? (
+              <Link
+                href={selectedModeKanjiWordRecallHref}
+                className="rounded-full bg-orange-100 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-orange-700 shadow-[0_8px_16px_rgba(249,115,22,0.12)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-orange-200"
+              >
+                Nhồi chữ này
               </Link>
             ) : null}
           </div>
@@ -1183,6 +1324,7 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
             scope: isUserKanjiId(selectedKanji.id) ? "personal" : flashcardScope,
           })}
           relatedFlashcardHref={relatedFlashcardHref}
+          relatedRecallHref={relatedRecallHref}
           jsonRelatedWords={importedRelatedWords}
           adminRelatedWords={adminRelatedWords}
           coreRelatedWords={coreRelatedWords}
@@ -1215,6 +1357,12 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
                 Trac nghiem bo loc
               </Link>
               <Link
+                href={allFilteredRecallHref}
+                className="rounded-full bg-orange-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-orange-500"
+              >
+                Nhồi bộ lọc
+              </Link>
+              <Link
                 href={pickedFlashcardHref}
                 className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 ${
                   activePickedIds.length > 0
@@ -1235,6 +1383,16 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
                 Quiz da chon ({activePickedIds.length})
               </Link>
               <Link
+                href={pickedRecallHref}
+                className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 ${
+                  activePickedIds.length > 0
+                    ? "bg-orange-100 text-orange-700 hover:-translate-y-0.5 hover:bg-orange-200"
+                    : "pointer-events-none cursor-not-allowed bg-slate-100 text-slate-400"
+                }`}
+              >
+                Nhồi đã chọn ({activePickedIds.length})
+              </Link>
+              <Link
                 href={pickedRelatedVocabFlashcardHref}
                 className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 ${
                   activePickedIds.length > 0
@@ -1253,6 +1411,16 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
                 }`}
               >
                 Quiz tu lien quan
+              </Link>
+              <Link
+                href={pickedRelatedVocabRecallHref}
+                className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-all duration-300 ${
+                  activePickedIds.length > 0
+                    ? "bg-rose-100 text-rose-700 hover:-translate-y-0.5 hover:bg-rose-200"
+                    : "pointer-events-none cursor-not-allowed bg-slate-100 text-slate-400"
+                }`}
+              >
+                Nhồi từ liên quan
               </Link>
               <Link
                 href={disablePickModeHref}
@@ -1328,11 +1496,18 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
                         </div>
                         <div className="mt-2 flex items-center justify-between gap-2">
                           <Link
-                            href={buildDeckFlashcardHref(deck.pickedIds)}
+                            href={buildDeckStudyHref(deck.pickedIds)}
                             scroll={false}
                             className="rounded-full bg-sky-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-700 hover:bg-sky-200"
                           >
                             Dung bo
+                          </Link>
+                          <Link
+                            href={buildDeckStudyHref(deck.pickedIds, "recall")}
+                            scroll={false}
+                            className="rounded-full bg-orange-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-orange-700 hover:bg-orange-200"
+                          >
+                            Nhồi
                           </Link>
                           <form action={deleteKanjiPickDeckAction}>
                             <input type="hidden" name="deckId" value={deck.id} />

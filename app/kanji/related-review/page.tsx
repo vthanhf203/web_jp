@@ -47,7 +47,9 @@ function pickSingle(value?: string | string[]): string {
 
 function parseMode(value: string): RelatedReviewMode | null {
   const normalized = value.trim().toLowerCase();
-  return normalized === "flashcard" || normalized === "quiz" ? normalized : null;
+  return normalized === "flashcard" || normalized === "quiz" || normalized === "recall"
+    ? normalized
+    : null;
 }
 
 function parseSource(value: string): RelatedReviewSource {

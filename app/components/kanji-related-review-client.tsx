@@ -18,7 +18,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { VocabStudyClient, type StudyMode } from "@/app/components/vocab-study-client";
 
-export type RelatedReviewMode = Extract<StudyMode, "flashcard" | "quiz">;
+export type RelatedReviewMode = Extract<StudyMode, "flashcard" | "quiz" | "recall">;
 export type RelatedReviewSource = "system" | "json";
 
 type RawRecord = Record<string, unknown>;
@@ -411,6 +411,7 @@ export function KanjiRelatedReviewClient({
       <VocabStudyClient
         lessonTitle={`Từ liên quan Kanji | ${titleSource} | ${studyItems.length} từ`}
         mode={initialMode}
+        recallPromptMode="word_to_reading"
         backHref={backHref}
         items={studyItems.map((item) => ({
           id: item.id,
@@ -851,6 +852,15 @@ export function KanjiRelatedReviewClient({
               >
                 <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
                 Trắc nghiệm nhanh
+              </button>
+              <button
+                type="button"
+                onClick={() => startStudy("recall")}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-base font-extrabold text-orange-800 hover:bg-orange-100 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={studyItems.length === 0}
+              >
+                <Sparkles className="h-5 w-5" aria-hidden="true" />
+                Nhồi nhét từ liên quan
               </button>
             </div>
           </div>

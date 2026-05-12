@@ -217,6 +217,7 @@ export default async function KanjiWordLearnPage(props: { searchParams: SearchPa
       <VocabStudyClient
         lessonTitle={titleParts.join(" | ")}
         mode={mode}
+        recallPromptMode="word_to_reading"
         items={relatedWords.map((item) => ({
           id: item.id,
           word: item.word,

@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import type { ImportedKanjiLinkedWord, ImportedKanjiRow } from "@/lib/kanji-import";
 
 export const USER_KANJI_ID_PREFIX = "user-kanji:";
+export const DEFAULT_USER_KANJI_DECK_NAME = "Chua phan loai";
 
 export type UserKanjiLinkedWord = {
   id: string;
@@ -28,6 +29,7 @@ export type UserKanjiLinkedWord = {
 export type UserKanjiItem = {
   id: string;
   character: string;
+  deckName: string;
   hanviet: string;
   meaning: string;
   onReading: string;
@@ -48,6 +50,7 @@ export type UserKanjiItem = {
 
 export type UserKanjiStore = {
   updatedAt: string;
+  decks: string[];
   items: UserKanjiItem[];
 };
 
@@ -61,6 +64,25 @@ function nowIso(): string {
 
 function normalizeText(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeDeckName(value: unknown): string {
+  const text = normalizeText(value);
+  return text || DEFAULT_USER_KANJI_DECK_NAME;
+}
+
+function normalizeDeckNames(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return Array.from(
+    new Set(
+      value
+        .map((item) => normalizeText(item))
+        .filter(Boolean)
+        .slice(0, 300)
+    )
+  );
 }
 
 function normalizeDate(value: unknown, fallback: string): string {
@@ -197,18 +219,26 @@ function encodeValueForId(value: string): string {
     .join("");
 }
 
-function buildUserKanjiIdFromCharacter(character: string): string {
-  const encodedCharacter = encodeValueForId(character);
+function buildDeckCharacterKey(deckName: string, character: string): string {
+  return `${normalizeDeckName(deckName)}\u0000${normalizeText(character)}`;
+}
+
+function buildUserKanjiId(deckName: string, character: string): string {
+  const encodedDeck = encodeValueForId(normalizeDeckName(deckName));
+  const encodedCharacter = encodeValueForId(normalizeText(character));
   if (!encodedCharacter) {
     return "";
   }
-  return `${USER_KANJI_ID_PREFIX}${encodedCharacter}`;
+  if (!encodedDeck) {
+    return `${USER_KANJI_ID_PREFIX}${encodedCharacter}`;
+  }
+  return `${USER_KANJI_ID_PREFIX}${encodedDeck}:${encodedCharacter}`;
 }
 
-function safeUserKanjiId(value: string, fallback = ""): string {
-  const byCharacter = buildUserKanjiIdFromCharacter(fallback);
-  if (byCharacter) {
-    return byCharacter;
+function safeUserKanjiId(value: string, deckName: string, character: string): string {
+  const byDeckAndCharacter = buildUserKanjiId(deckName, character);
+  if (byDeckAndCharacter) {
+    return byDeckAndCharacter;
   }
 
   const encoded = encodeValueForId(value);
@@ -230,6 +260,10 @@ function normalizeItem(input: unknown): UserKanjiItem | null {
     return null;
   }
 
+  const deckName = normalizeDeckName(
+    (raw as Partial<UserKanjiItem> & { batchName?: unknown }).deckName ||
+      (raw as { batchName?: unknown }).batchName
+  );
   const jlptLevel = normalizeJlptLevel(raw.jlptLevel || "N5");
   const now = nowIso();
   const createdAt = normalizeDate(raw.createdAt, now);
@@ -238,8 +272,9 @@ function normalizeItem(input: unknown): UserKanjiItem | null {
   const exampleMeaning = normalizeText(raw.exampleMeaning) || meaning;
 
   return {
-    id: safeUserKanjiId(normalizeText(raw.id), character),
+    id: safeUserKanjiId(normalizeText(raw.id), deckName, character),
     character,
+    deckName,
     hanviet: normalizeText(raw.hanviet),
     meaning,
     onReading: normalizeText(raw.onReading) || "-",
@@ -263,6 +298,7 @@ function normalizeStore(input: unknown): UserKanjiStore {
   if (!input || typeof input !== "object") {
     return {
       updatedAt: "",
+      decks: [],
       items: [],
     };
   }
@@ -273,9 +309,16 @@ function normalizeStore(input: unknown): UserKanjiStore {
         .map((entry) => normalizeItem(entry))
         .filter((entry): entry is UserKanjiItem => !!entry)
     : [];
+  const decks = Array.from(
+    new Set([
+      ...normalizeDeckNames((raw as { decks?: unknown }).decks),
+      ...items.map((item) => normalizeDeckName(item.deckName)),
+    ])
+  );
 
   return {
     updatedAt: normalizeText(raw.updatedAt),
+    decks,
     items,
   };
 }
@@ -305,9 +348,11 @@ function convertImportedRelatedWord(
 
 function convertImportedRow(
   row: ImportedKanjiRow,
-  existing: UserKanjiItem | undefined
+  existing: UserKanjiItem | undefined,
+  deckName: string
 ): UserKanjiItem {
   const now = nowIso();
+  const normalizedDeckName = normalizeDeckName(deckName || row.deckName || existing?.deckName);
   const jlptLevel = normalizeJlptLevel(row.jlptLevel || existing?.jlptLevel || "N5");
   const existingRelatedWords = existing?.relatedWords ?? [];
   const nextRelatedWords = row.relatedWordsProvided
@@ -317,8 +362,9 @@ function convertImportedRow(
     : existingRelatedWords;
 
   return {
-    id: safeUserKanjiId(row.id || existing?.id || "", row.character),
+    id: safeUserKanjiId(row.id || existing?.id || "", normalizedDeckName, row.character),
     character: row.character,
+    deckName: normalizedDeckName,
     hanviet: row.hanviet || existing?.hanviet || "",
     meaning: row.meaning,
     onReading: row.onReading || existing?.onReading || "-",
@@ -355,9 +401,11 @@ export async function loadUserKanjiStore(userId: string): Promise<UserKanjiStore
 }
 
 export async function saveUserKanjiStore(userId: string, store: UserKanjiStore): Promise<void> {
+  const normalizedStore = normalizeStore(store);
   const payload = {
     updatedAt: nowIso(),
-    items: normalizeStore(store).items,
+    decks: normalizedStore.decks,
+    items: normalizedStore.items,
   };
 
   await prisma.appData.upsert({
@@ -374,14 +422,21 @@ export async function saveUserKanjiStore(userId: string, store: UserKanjiStore):
 
 export async function upsertUserKanjiRows(
   userId: string,
-  rows: ImportedKanjiRow[]
-): Promise<{ createdCount: number; updatedCount: number }> {
+  rows: ImportedKanjiRow[],
+  options: { deckName?: string; updateExisting?: boolean } = {}
+): Promise<{ createdCount: number; updatedCount: number; skippedExistingCount: number }> {
   const store = await loadUserKanjiStore(userId);
-  const byCharacter = new Map(store.items.map((item) => [item.character, item]));
-  const importedCharacters: string[] = [];
-  const importedCharacterSet = new Set<string>();
+  const byDeckAndCharacter = new Map(
+    store.items.map((item) => [buildDeckCharacterKey(item.deckName, item.character), item])
+  );
+  const importedKeys: string[] = [];
+  const importedKeySet = new Set<string>();
   let createdCount = 0;
   let updatedCount = 0;
+  let skippedExistingCount = 0;
+  const updateExisting = options.updateExisting === true;
+  const forcedDeckName = options.deckName ? normalizeDeckName(options.deckName) : "";
+  const nextDeckSet = new Set(store.decks.map((deck) => normalizeDeckName(deck)));
 
   for (const row of rows) {
     const character = normalizeText(row.character);
@@ -389,40 +444,55 @@ export async function upsertUserKanjiRows(
     if (!character || !meaning) {
       continue;
     }
-    const existing = byCharacter.get(character);
+    const rowDeckName = forcedDeckName || normalizeDeckName(row.deckName);
+    nextDeckSet.add(rowDeckName);
+    const key = buildDeckCharacterKey(rowDeckName, character);
+    const existing = byDeckAndCharacter.get(key);
+    if (existing && !updateExisting) {
+      skippedExistingCount += 1;
+      continue;
+    }
     const next = convertImportedRow(
       {
         ...row,
         character,
         meaning,
       },
-      existing
+      existing,
+      rowDeckName
     );
     if (existing) {
       updatedCount += 1;
     } else {
       createdCount += 1;
     }
-    byCharacter.set(character, next);
-    if (!importedCharacterSet.has(character)) {
-      importedCharacterSet.add(character);
-      importedCharacters.push(character);
+    byDeckAndCharacter.set(key, next);
+    if (!importedKeySet.has(key)) {
+      importedKeySet.add(key);
+      importedKeys.push(key);
     }
   }
 
-  const importedItems = importedCharacters
-    .map((character) => byCharacter.get(character))
+  const importedItems = importedKeys
+    .map((key) => byDeckAndCharacter.get(key))
     .filter((item): item is UserKanjiItem => Boolean(item));
-  const remainingItems = store.items.filter((item) => !importedCharacterSet.has(item.character));
+  const remainingItems = store.items.filter(
+    (item) => !importedKeySet.has(buildDeckCharacterKey(item.deckName, item.character))
+  );
   const nextItems = [...importedItems, ...remainingItems];
+  for (const item of nextItems) {
+    nextDeckSet.add(normalizeDeckName(item.deckName));
+  }
 
   await saveUserKanjiStore(userId, {
     updatedAt: nowIso(),
+    decks: Array.from(nextDeckSet),
     items: nextItems,
   });
 
   return {
     createdCount,
     updatedCount,
+    skippedExistingCount,
   };
 }

@@ -12,6 +12,7 @@ import { isUserKanjiId, loadUserKanjiStore } from "@/lib/user-kanji-store";
 type SearchParams = Promise<{
   q?: string | string[];
   level?: string | string[];
+  deck?: string | string[];
   ids?: string | string[];
   mode?: string | string[];
   scope?: string | string[];
@@ -67,9 +68,12 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
   const query = rawQuery.toLowerCase();
   const levelRaw = pickSingle(params.level).trim();
   const level = levelRaw ? normalizeJlptLevel(levelRaw) : null;
+  const deckName = pickSingle(params.deck).trim();
   const modeRaw = pickSingle(params.mode).trim().toLowerCase();
-  const mode: KanjiStudyMode = modeRaw === "quiz" ? "quiz" : "flashcard";
-  const vocabMode: VocabStudyMode = modeRaw === "quiz" ? "quiz" : "flashcard";
+  const mode: KanjiStudyMode =
+    modeRaw === "quiz" ? "quiz" : modeRaw === "recall" ? "recall" : "flashcard";
+  const vocabMode: VocabStudyMode =
+    modeRaw === "quiz" ? "quiz" : modeRaw === "recall" ? "recall" : "flashcard";
   const scopeRaw = pickSingle(params.scope).trim().toLowerCase();
   const scope: "all" | "personal" = scopeRaw === "personal" ? "personal" : "all";
   const relatedRaw = pickSingle(params.related).trim().toLowerCase();
@@ -122,7 +126,7 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
   const metadataEntryMap = new Map(kanjiMetadata.entries.map((entry) => [entry.character, entry]));
 
   const personalKanji = userKanjiStore.items
-    .filter((item) => !level || item.jlptLevel === level)
+    .filter((item) => (!level || item.jlptLevel === level) && (!deckName || item.deckName === deckName))
     .map((item) => ({
       id: item.id,
       character: item.character,
@@ -202,6 +206,9 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
   if (scope === "personal") {
     backQuery.set("scope", "personal");
   }
+  if (scope === "personal" && deckName) {
+    backQuery.set("deck", deckName);
+  }
   if (selectedIds.length > 0) {
     backQuery.set("pick", selectedIds.join(","));
   }
@@ -273,7 +280,7 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
     }
 
     const relatedTitleParts = [
-      vocabMode === "quiz" ? "Quiz nhanh" : "Flashcard",
+      vocabMode === "quiz" ? "Quiz nhanh" : vocabMode === "recall" ? "Nhồi nhét" : "Flashcard",
       "Từ vựng liên quan Kanji",
       selectedIds.length > 0 ? `${selectedIds.length} Kanji` : `${filteredKanji.length} Kanji`,
       `${relatedVocabItems.length} từ`,
@@ -283,6 +290,7 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
       <VocabStudyClient
         lessonTitle={relatedTitleParts.join(" | ")}
         mode={vocabMode}
+        recallPromptMode="word_to_reading"
         items={relatedVocabItems}
         backHref={backHref}
       />
@@ -290,8 +298,9 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
   }
 
   const titleParts = [
-    mode === "quiz" ? "Trắc nghiệm" : "Flashcard",
+    mode === "quiz" ? "Trắc nghiệm" : mode === "recall" ? "Nhồi nhét" : "Flashcard",
     scope === "personal" ? "Kanji cá nhân" : level ? `${level} Kanji` : "Kanji",
+    scope === "personal" && deckName ? `Bộ: ${deckName}` : "",
     selectedIds.length > 0 ? `Bộ đã chọn: ${selectedIds.length} chữ` : "",
     rawQuery ? `Lọc: ${rawQuery}` : `${filteredKanji.length} thẻ`,
   ].filter(Boolean);
@@ -310,8 +319,13 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
     if (scope === "personal") {
       params.set("scope", "personal");
     }
+    if (scope === "personal" && deckName) {
+      params.set("deck", deckName);
+    }
     if (nextMode === "quiz") {
       params.set("mode", "quiz");
+    } else if (nextMode === "recall") {
+      params.set("mode", "recall");
     }
     params.set("related", "vocab");
     return `/kanji/learn?${params.toString()}`;
@@ -325,6 +339,7 @@ export default async function KanjiLearnPage(props: { searchParams: SearchParams
       relatedVocabCount={relatedVocabItems.length}
       relatedVocabFlashcardHref={buildRelatedVocabHref("flashcard")}
       relatedVocabQuizHref={buildRelatedVocabHref("quiz")}
+      relatedVocabRecallHref={buildRelatedVocabHref("recall")}
       items={filteredKanji.map((kanji) => ({
         id: kanji.id,
         character: kanji.character,
