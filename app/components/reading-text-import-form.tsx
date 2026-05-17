@@ -15,6 +15,7 @@ const initialState: ReadingTextImportState = {
 
 const sampleReadingJson = [
   {
+    deckName: "Bài đọc gia đình",
     title: "家族(かぞく)との短(みじか)い旅(たび)",
     jlptLevel: "N5-N4",
     topic: "Gia đình / Du lịch / Đời sống hằng ngày",
@@ -67,6 +68,22 @@ export function ReadingTextImportForm() {
 
   return (
     <form action={formAction} className="space-y-3">
+      <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+        <label className="block">
+          <span className="text-sm font-black text-[#172033]">Tên mục bài đọc</span>
+          <input
+            name="deckName"
+            type="text"
+            className="mt-2 h-12 w-full rounded-2xl border border-[#d7e0ef] bg-white px-4 text-sm font-bold text-[#18223b] outline-none transition placeholder:text-[#98a2b3] focus:border-[#22a6a1] focus:ring-4 focus:ring-[#d7f4f1]"
+            placeholder="Ví dụ: Bài 1, Đời sống hằng ngày, Du lịch N5..."
+            disabled={pending}
+          />
+        </label>
+        <p className="rounded-2xl border border-[#d7e0ef] bg-[#f8fcff] px-4 py-3 text-xs font-semibold leading-5 text-[#667085]">
+          Nhập tên mục ở đây thì mọi bài trong JSON sẽ được đưa vào đúng mục này.
+        </p>
+      </div>
+
       <textarea
         ref={textareaRef}
         name="rawInput"

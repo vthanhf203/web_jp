@@ -1057,6 +1057,7 @@ function touchPersonalKanjiPaths() {
   revalidatePath("/kanji/worksheet");
   revalidatePath("/kanji/learn");
   revalidatePath("/kanji/words/learn");
+  revalidatePath("/kanji/write-flashcard");
 }
 
 export async function createPersonalKanjiDeckAction(

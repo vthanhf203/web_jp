@@ -577,48 +577,6 @@ function buildReadingAliases(candidates: string[]): string[] {
   return Array.from(new Set(expanded));
 }
 
-function isOneEditAway(a: string, b: string): boolean {
-  if (a === b) {
-    return true;
-  }
-  const lenA = a.length;
-  const lenB = b.length;
-  if (Math.abs(lenA - lenB) > 1) {
-    return false;
-  }
-
-  let i = 0;
-  let j = 0;
-  let edits = 0;
-
-  while (i < lenA && j < lenB) {
-    if (a[i] === b[j]) {
-      i += 1;
-      j += 1;
-      continue;
-    }
-
-    edits += 1;
-    if (edits > 1) {
-      return false;
-    }
-
-    if (lenA > lenB) {
-      i += 1;
-    } else if (lenB > lenA) {
-      j += 1;
-    } else {
-      i += 1;
-      j += 1;
-    }
-  }
-
-  if (i < lenA || j < lenB) {
-    edits += 1;
-  }
-  return edits <= 1;
-}
-
 function makeQuizOptions(items: StudyItem[], current: StudyItem): StudyItem[] {
   const others = items
     .filter((item) => item.id !== current.id);
@@ -1010,7 +968,7 @@ export function VocabStudyClient({
       );
       const isCorrect =
         candidate.length > 0 &&
-        readingCandidates.some((expected) => expected === candidate || isOneEditAway(candidate, expected));
+        readingCandidates.some((expected) => expected === candidate);
       if (isCorrect) {
         setRecallMessage("Đúng rồi!");
         setRecallSuccess(true);
@@ -1904,7 +1862,7 @@ export function VocabStudyClient({
           <div className={`flex items-center justify-center ${isCompactRecallLayout ? "mb-2 min-h-[72px]" : "mb-3 min-h-[96px]"}`}>
             <h2
               className={`text-center font-semibold leading-tight text-white ${
-                isCompactRecallLayout ? "text-4xl sm:text-[2.6rem]" : "text-5xl"
+                isCompactRecallLayout ? "text-5xl sm:text-[3.1rem]" : "text-5xl"
               }`}
             >
               {isWordToMeaningRecall || isWordToReadingRecall ? currentDisplayWordPlain : current.meaning}
@@ -2052,7 +2010,7 @@ export function VocabStudyClient({
             {recallMessage || "Nhấn Enter để kiểm tra nhanh"}
           </p>
 
-          <div className={`${isCompactRecallLayout ? "mt-2 min-h-[90px]" : "mt-3 min-h-[118px]"}`}>
+          <div className={`${isCompactRecallLayout ? "mt-2 min-h-[96px]" : "mt-3 min-h-[118px]"}`}>
             <div
               aria-hidden={!recallSuccess}
               className={`border text-left transition-all duration-200 ${
@@ -2063,44 +2021,44 @@ export function VocabStudyClient({
                   : "pointer-events-none translate-y-1 border-transparent bg-transparent opacity-0"
               }`}
             >
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-200">Đáp án</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-200">Đáp án</p>
               <div className="mt-1.5 flex flex-wrap items-end gap-x-2.5 gap-y-1.5 text-white">
-                <span className="text-xs font-semibold text-slate-300">Từ:</span>
+                <span className="text-sm font-semibold text-slate-300">Từ:</span>
                 {hasJapaneseChars(recallAnswerWord) &&
                 recallAnswerReading &&
                 recallAnswerReading !== recallAnswerWord ? (
                   <ruby className="font-kanji leading-none [ruby-position:over]">
                     <span
                       className={`font-kanji font-semibold leading-none ${
-                        isCompactRecallLayout ? "text-[1.45rem]" : "text-[1.7rem]"
+                        isCompactRecallLayout ? "text-[1.58rem]" : "text-[1.7rem]"
                       }`}
                     >
                       {recallAnswerWord}
                     </span>
-                    <rt className="relative top-[0.08em] text-[0.48em] leading-none font-semibold text-slate-200/95">
+                    <rt className="relative top-[0.08em] text-[0.52em] leading-none font-semibold text-slate-200/95">
                       {recallAnswerReading}
                     </rt>
                   </ruby>
                 ) : (
                   <span
                     className={`font-kanji font-semibold leading-none ${
-                      isCompactRecallLayout ? "text-[1.45rem]" : "text-[1.7rem]"
+                      isCompactRecallLayout ? "text-[1.58rem]" : "text-[1.7rem]"
                     }`}
                   >
                     {recallAnswerWord}
                   </span>
                 )}
               </div>
-              <p className="mt-1.5 text-sm text-slate-100">
+              <p className={`${isCompactRecallLayout ? "mt-1.5 text-[15px]" : "mt-1.5 text-sm"} text-slate-100`}>
                 <span className="font-semibold text-slate-200">Nghĩa:</span> {meaningMain || "-"}
               </p>
               {hanvietMain ? (
-                <p className="mt-0.5 text-sm text-slate-100">
+                <p className={`${isCompactRecallLayout ? "mt-0.5 text-[15px]" : "mt-0.5 text-sm"} text-slate-100`}>
                   <span className="font-semibold text-slate-200">Hán Việt:</span> {hanvietMain}
                 </p>
               ) : null}
               {recallRadicalSummary ? (
-                <p className="mt-0.5 text-sm text-slate-100">
+                <p className={`${isCompactRecallLayout ? "mt-0.5 text-[15px]" : "mt-0.5 text-sm"} text-slate-100`}>
                   <span className="font-semibold text-slate-200">Bộ thủ:</span> {recallRadicalSummary}
                 </p>
               ) : null}

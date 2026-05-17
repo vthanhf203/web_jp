@@ -6,14 +6,14 @@ import { z } from "zod";
 
 import { requireUser } from "@/lib/auth";
 import {
-  DEFAULT_READING_DECK_NAME,
-  loadReadingPracticeStore,
-  saveReadingPracticeStore,
-  type ReadingTextItem,
-} from "@/lib/reading-practice-store";
-import { parseReadingTextInput } from "@/lib/reading-text-import";
+  DEFAULT_LISTENING_DECK_NAME,
+  loadListeningPracticeStore,
+  saveListeningPracticeStore,
+  type ListeningPracticeItem,
+} from "@/lib/listening-practice-store";
+import { parseListeningTextInput } from "@/lib/listening-text-import";
 
-export type ReadingTextImportState = {
+export type ListeningImportState = {
   status: "idle" | "success" | "error";
   message: string;
 };
@@ -24,24 +24,23 @@ const importSchema = z.object({
 });
 
 const deleteSchema = z.object({
-  textId: z.string().min(1),
+  itemId: z.string().min(1),
 });
 
 function nowIso(): string {
   return new Date().toISOString();
 }
 
-function touchReadingPaths() {
+function touchListeningPaths() {
   revalidatePath("/self-study");
-  revalidatePath("/self-study/reading");
+  revalidatePath("/self-study/listening");
 }
 
-export async function importReadingTextsAction(
-  _prevState: ReadingTextImportState,
+export async function importListeningTextsAction(
+  _prevState: ListeningImportState,
   formData: FormData
-): Promise<ReadingTextImportState> {
+): Promise<ListeningImportState> {
   const user = await requireUser();
-
   const parsed = importSchema.safeParse({
     rawInput: formData.get("rawInput"),
     deckName: formData.get("deckName"),
@@ -50,40 +49,41 @@ export async function importReadingTextsAction(
   if (!parsed.success) {
     return {
       status: "error",
-      message: "Vui lòng nhập JSON văn bản tiếng Nhật.",
+      message: "Vui long nhap JSON bai nghe.",
     };
   }
 
-  const rows = parseReadingTextInput(parsed.data.rawInput).slice(0, 200);
+  const rows = parseListeningTextInput(parsed.data.rawInput).slice(0, 200);
   if (rows.length === 0) {
     return {
       status: "error",
-      message: "Không parse được JSON. Cần có title và content/paragraphs.",
+      message: "Khong parse duoc JSON. Can co title va script/scriptRaw (questions la tuy chon).",
     };
   }
 
-  const store = await loadReadingPracticeStore(user.id);
   const now = nowIso();
   const selectedDeckName = parsed.data.deckName?.trim();
-  const nextItems: ReadingTextItem[] = rows.map((row) => ({
+  const nextItems: ListeningPracticeItem[] = rows.map((row) => ({
     id: row.id?.trim() || crypto.randomUUID(),
     title: row.title,
-    deckName: selectedDeckName || row.deckName || row.topic || DEFAULT_READING_DECK_NAME,
+    deckName: selectedDeckName || row.deckName || row.topic || DEFAULT_LISTENING_DECK_NAME,
     jlptLevel: row.jlptLevel,
     topic: row.topic,
+    situation: row.situation,
+    keyPoint: row.keyPoint,
+    meta: row.meta,
     difficulty: row.difficulty,
     estimatedMinutes: row.estimatedMinutes,
-    paragraphs: row.paragraphs,
+    script: row.script,
+    scriptRaw: row.scriptRaw,
     translation: row.translation,
-    vocabulary: row.vocabulary,
-    grammarCoverage: row.grammarCoverage,
+    tts: row.tts,
     questions: row.questions,
-    postReadingQuiz: row.postReadingQuiz,
-    sentenceRecallPractice: row.sentenceRecallPractice,
     createdAt: now,
     updatedAt: now,
   }));
 
+  const store = await loadListeningPracticeStore(user.id);
   const existingById = new Map(store.items.map((item) => [item.id, item]));
   for (const item of nextItems) {
     existingById.set(item.id, {
@@ -94,33 +94,30 @@ export async function importReadingTextsAction(
     });
   }
 
-  await saveReadingPracticeStore(user.id, {
+  await saveListeningPracticeStore(user.id, {
     updatedAt: now,
     items: Array.from(existingById.values()).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
   });
-  touchReadingPaths();
+  touchListeningPaths();
 
   return {
     status: "success",
-    message: `Đã import ${nextItems.length} bài đọc vào mục "${
-      selectedDeckName || nextItems[0]?.deckName || DEFAULT_READING_DECK_NAME
-    }".`,
+    message: `Da import ${nextItems.length} bai nghe vao muc "${selectedDeckName || nextItems[0]?.deckName || DEFAULT_LISTENING_DECK_NAME}".`,
   };
 }
 
-export async function deleteReadingTextAction(formData: FormData) {
+export async function deleteListeningItemAction(formData: FormData) {
   const user = await requireUser();
   const parsed = deleteSchema.safeParse({
-    textId: formData.get("textId"),
+    itemId: formData.get("itemId"),
   });
-
   if (!parsed.success) {
-    redirect("/self-study/reading");
+    redirect("/self-study/listening");
   }
 
-  const store = await loadReadingPracticeStore(user.id);
-  store.items = store.items.filter((item) => item.id !== parsed.data.textId);
-  await saveReadingPracticeStore(user.id, store);
-  touchReadingPaths();
-  redirect("/self-study/reading");
+  const store = await loadListeningPracticeStore(user.id);
+  store.items = store.items.filter((item) => item.id !== parsed.data.itemId);
+  await saveListeningPracticeStore(user.id, store);
+  touchListeningPaths();
+  redirect("/self-study/listening");
 }

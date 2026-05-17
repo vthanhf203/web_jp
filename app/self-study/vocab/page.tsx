@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { BookMarked, ChevronLeft, Layers3, Plus, Sparkles } from "lucide-react";
 
 import { createSelfStudyVocabLessonAction } from "@/app/actions/vocab-manager";
@@ -154,27 +154,45 @@ export default async function SelfStudyVocabPage(props: { searchParams: SearchPa
             >
               Nhồi Kanji
             </Link>
+            <Link
+              href={userKanjiStore.items.length > 0 ? "/kanji/write-flashcard?scope=personal" : "#"}
+              className={`rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.12em] transition ${
+                userKanjiStore.items.length > 0
+                  ? "bg-sky-600 text-white hover:bg-sky-500"
+                  : "pointer-events-none bg-slate-100 text-slate-400"
+              }`}
+            >
+              Luyện viết Kanji
+            </Link>
           </div>
 
           <div className="mt-3 space-y-2">
             <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[#5f7293]">
-              Muc tu tao ({personalKanjiDeckGroups.length})
+              Mục tự tạo ({personalKanjiDeckGroups.length})
             </p>
             <div className="flex flex-wrap gap-2">
               {personalKanjiDeckGroups.length > 0 ? (
                 personalKanjiDeckGroups.map(([deckName, count]) => (
-                  <Link
-                    key={deckName}
-                    href={`/kanji/learn?scope=personal&deck=${encodeURIComponent(deckName)}`}
-                    className="rounded-full border border-[#bdd7ff] bg-[#f1f6ff] px-3 py-1.5 text-xs font-black text-[#2557a7] transition hover:bg-[#e7f0ff]"
-                    title={deckName}
-                  >
-                    {deckName} ({count})
-                  </Link>
+                  <span key={deckName} className="inline-flex overflow-hidden rounded-full border border-[#bdd7ff] bg-[#f1f6ff]">
+                    <Link
+                      href={`/kanji/learn?scope=personal&deck=${encodeURIComponent(deckName)}`}
+                      className="px-3 py-1.5 text-xs font-black text-[#2557a7] transition hover:bg-[#e7f0ff]"
+                      title={deckName}
+                    >
+                      {deckName} ({count})
+                    </Link>
+                    <Link
+                      href={`/kanji/write-flashcard?scope=personal&deck=${encodeURIComponent(deckName)}`}
+                      className="border-l border-[#bdd7ff] bg-white/70 px-3 py-1.5 text-xs font-black text-[#0f766e] transition hover:bg-[#e8fbf8]"
+                      title={`Luyện viết ${deckName}`}
+                    >
+                      Viết
+                    </Link>
+                  </span>
                 ))
               ) : (
                 <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-400">
-                  Chua co muc
+                  Chưa có mục
                 </span>
               )}
             </div>

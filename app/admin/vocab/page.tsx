@@ -234,6 +234,7 @@ function buildVocabPrintHref(level: ExportLevel, lessonId?: string): string {
 
 function buildVocabJsonHref(level: ExportLevel, lessonId?: string): string {
   const query = new URLSearchParams();
+  query.set("download", "1");
   if (level !== "ALL") {
     query.set("level", level);
   }
@@ -1140,7 +1141,8 @@ export default async function AdminVocabPage(props: { searchParams: SearchParams
                     </button>
                   </form>
 
-                  <form action="/api/vocab-library" method="get" target="_blank" className="flex items-center gap-1.5">
+                  <form action="/api/vocab-library" method="get" className="flex items-center gap-1.5">
+                    <input type="hidden" name="download" value="1" />
                     <input type="hidden" name="level" value={selectedLevel} />
                     <select
                       name="lesson"
@@ -1165,12 +1167,29 @@ export default async function AdminVocabPage(props: { searchParams: SearchParams
 
                   <Link
                     href={buildVocabJsonHref("ALL")}
-                    target="_blank"
                     className="inline-flex h-9 items-center gap-2 rounded-md border border-violet-200 bg-violet-50 px-3 text-xs font-bold text-violet-700"
                   >
                     <Download className="h-4 w-4" aria-hidden="true" />
                     Xuat JSON tat ca
                   </Link>
+
+                  <div className="flex flex-wrap items-center gap-1.5 rounded-md border border-slate-200 bg-slate-50 px-2 py-1">
+                    {JLPT_LEVELS.map((level) => (
+                      <Link
+                        key={`json-export-${level}`}
+                        href={buildVocabJsonHref(level)}
+                        className={`inline-flex h-7 items-center gap-1 rounded-md border px-2 text-[11px] font-black transition ${
+                          level === selectedLevel
+                            ? "border-blue-200 bg-blue-100 text-blue-800"
+                            : "border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:text-blue-700"
+                        }`}
+                        title={`Xuat JSON rieng ${level}`}
+                      >
+                        <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                        {level}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               }
             />
