@@ -30,6 +30,7 @@ const privateLinks: NavLinkItem[] = [
   { href: "/search", label: "Search", iconPath: "M11 4a7 7 0 105.3 11.6L20 19" },
   { href: "/shadowing", label: "Shadowing", iconPath: "M4 12a8 8 0 0116 0v5a2 2 0 01-2 2h-2v-6h4M4 12v5a2 2 0 002 2h2v-6H4" },
   { href: "/self-study/listening", label: "Nghe chu dong", iconPath: "M4 12a8 8 0 0116 0v4a3 3 0 01-3 3h-1v-7h4M4 12v4a3 3 0 003 3h1v-7H4M10 19h4" },
+  { href: "/self-study/grammar", label: "Luyen ngu phap", iconPath: "M5 4h14v16H5zM8 8h8M8 12h8M8 16h5" },
   { href: "/kanji", label: "Kanji", iconPath: "M5 6h14M5 12h14M5 18h14M12 6v12" },
   { href: "/kanji/write-flashcard", label: "Flashcard luyện viết Kanji", iconPath: "M4 20h16M5 16l10-10 3 3L8 19H5zM14 7l3 3" },
   { href: "/kanji/related-review", label: "Ôn từ Kanji", iconPath: "M5 5h14v14H5zM8 9h8M8 13h5M16 16l3 3M19 16v3" },

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Headphones, Loader2, RotateCcw, Sparkles, Volume2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -42,6 +42,7 @@ type TimelineEntry = {
   duration: number;
 };
 type TokenRunState = "idle" | "passed" | "active";
+type PracticeMode = "study" | "jlpt";
 
 const VOICE_OPTIONS = [
   { value: "ja-JP-NanamiNeural", label: "Nanami (nu, mem)" },
@@ -57,7 +58,8 @@ const VOICE_OPTIONS = [
 const DEFAULT_MAIN_VOICE = "ja-JP-NanamiNeural";
 const DEFAULT_MALE_VOICE = "ja-JP-KeitaNeural";
 const DEFAULT_FEMALE_VOICE = "ja-JP-NanamiNeural";
-const VOICE_VALUE_SET = new Set(VOICE_OPTIONS.map((option) => option.value));
+const EXAM_CHOICE_LABELS = ["A", "B", "C", "D"] as const;
+const EXAM_CHOICE_SPEECH_LABELS = ["エー", "ビー", "シー", "ディー"] as const;
 
 const TOKEN_PATTERN =
   /[\u3400-\u9fff\u3005\u3006\u30f5\u30f6]+[\uff08(][\u3041-\u3096\u30a1-\u30fa\u30fc\u30fb\s]+[\uff09)]|[\u3041-\u3096\u30a1-\u30fa\u30fc]+|[\u30a1-\u30fa\u30fc]+|[\u3400-\u9fff\u3005\u3006\u30f5\u30f6]+|[A-Za-z0-9]+|[^\s]/gu;
@@ -69,13 +71,13 @@ const INLINE_RUBY_PATTERN =
 
 const FURI_PART = "(?:[\\uff08(][^\\uff09)]+[\\uff09)])?";
 const MALE_PLAIN_PREFIX = /^(?:男の人|男|男性|おとこのひと)\s*[：:]\s*/u;
-const FEMALE_PLAIN_PREFIX = /^(?:女の人|女|女性|おんなのひと)\s*[：:]\s*/u;
+const FEMALE_PLAIN_PREFIX = /^(?:女の人|女|女性|おんなのひと|駅の人|駅員|店の人|店員)\s*[：:]\s*/u;
 const MALE_DISPLAY_PREFIX = new RegExp(
   `^(?:男${FURI_PART}の人${FURI_PART}|男|男性|おとこのひと)\\s*[：:]\\s*`,
   "u"
 );
 const FEMALE_DISPLAY_PREFIX = new RegExp(
-  `^(?:女${FURI_PART}の人${FURI_PART}|女|女性|おんなのひと)\\s*[：:]\\s*`,
+  `^(?:女${FURI_PART}の人${FURI_PART}|女|女性|おんなのひと|駅${FURI_PART}の人${FURI_PART}|駅員|店${FURI_PART}の人${FURI_PART}|店員)\\s*[：:]\\s*`,
   "u"
 );
 
@@ -88,10 +90,6 @@ function normalizeBooleanLabel(value: string): boolean | null {
     return false;
   }
   return null;
-}
-
-function resolveVoiceValue(value: string | undefined, fallback: string): string {
-  return value && VOICE_VALUE_SET.has(value) ? value : fallback;
 }
 
 function stripInlineRuby(value: string): string {
@@ -181,6 +179,27 @@ function parseSpeakerRole(plainSpeechLine: string): SpeakerRole {
   return "none";
 }
 
+function parseSpeakerRoleFromDialogueTurn(
+  turn: NonNullable<ListeningPracticeItem["dialogue"]>[number]
+): SpeakerRole {
+  const gender = (turn.speakerGender || "").toLowerCase();
+  if (gender.includes("female") || gender.includes("woman") || /女|おんな/u.test(gender)) {
+    return "female";
+  }
+  if (gender.includes("male") || gender.includes("man") || /男|おとこ/u.test(gender)) {
+    return "male";
+  }
+
+  const display = `${turn.displayName || ""} ${turn.speakerRole || ""} ${turn.speakerKey || ""}`.trim();
+  if (/男|おとこ|男性/u.test(display)) {
+    return "male";
+  }
+  if (/女|おんな|女性/u.test(display)) {
+    return "female";
+  }
+  return "none";
+}
+
 function removeSpeakerPrefix(text: string, role: SpeakerRole, isDisplay: boolean): string {
   if (role === "male") {
     return text.replace(isDisplay ? MALE_DISPLAY_PREFIX : MALE_PLAIN_PREFIX, "").trim();
@@ -191,7 +210,54 @@ function removeSpeakerPrefix(text: string, role: SpeakerRole, isDisplay: boolean
   return text.trim();
 }
 
-function buildScriptLines(displayScript: string, rawScript?: string): ScriptLine[] {
+function buildScriptLinesFromDialogue(
+  dialogue?: ListeningPracticeItem["dialogue"]
+): ScriptLine[] {
+  if (!dialogue || dialogue.length === 0) {
+    return [];
+  }
+
+  const output: ScriptLine[] = [];
+  for (const turn of dialogue) {
+    const displaySource = (turn.text || "").trim();
+    const speechSource = (turn.textRaw || turn.text || "").trim();
+    if (!displaySource || !speechSource) {
+      continue;
+    }
+    const role = parseSpeakerRoleFromDialogueTurn(turn);
+    const speakerLabel = role === "male" ? "Nam" : role === "female" ? "Nu" : "";
+    const normalizedDisplay = removeSpeakerPrefix(displaySource, role, true) || displaySource;
+    const normalizedSpeech = applySpeechPronunciationOverrides(
+      cleanJapaneseSpeechText(removeSpeakerPrefix(speechSource, role, false) || speechSource)
+    );
+    if (!normalizedDisplay || !normalizedSpeech) {
+      continue;
+    }
+
+    output.push({
+      index: output.length,
+      speakerRole: role,
+      speakerLabel,
+      displayText: normalizedDisplay,
+      speechText: normalizedSpeech,
+      speechLength: compactSpeechCursorText(normalizedSpeech).length,
+      tokens: buildListeningTokens(normalizedDisplay),
+    });
+  }
+
+  return output;
+}
+
+function buildScriptLines(
+  displayScript: string,
+  rawScript?: string,
+  dialogue?: ListeningPracticeItem["dialogue"]
+): ScriptLine[] {
+  const fromDialogue = buildScriptLinesFromDialogue(dialogue);
+  if (fromDialogue.length > 0) {
+    return fromDialogue;
+  }
+
   const displayLines = (displayScript || "").split(/\r?\n/);
   const rawLines = (rawScript || "").split(/\r?\n/);
   const maxCount = Math.max(displayLines.length, rawLines.length);
@@ -290,11 +356,59 @@ function questionOptions(question: ListeningPracticeItem["questions"][number]): 
   return [];
 }
 
+function examChoiceLabel(index: number): string {
+  return EXAM_CHOICE_LABELS[index] ?? String(index + 1);
+}
+
+function examChoiceSpeechLabel(index: number): string {
+  return EXAM_CHOICE_SPEECH_LABELS[index] ?? String(index + 1);
+}
+
+function questionOptionEntries(
+  question: ListeningPracticeItem["questions"][number],
+  examMode?: ListeningPracticeItem["examMode"]
+) {
+  const labels = question.optionLabels?.length
+    ? question.optionLabels
+    : examMode?.labels.length
+      ? examMode.labels
+      : EXAM_CHOICE_LABELS;
+  const audioLabels = question.audioChoiceLabels?.length
+    ? question.audioChoiceLabels
+    : examMode?.audioChoiceLabels.length
+      ? examMode.audioChoiceLabels
+      : [];
+  return questionOptions(question)
+    .slice(0, EXAM_CHOICE_LABELS.length)
+    .map((option, index) => ({
+      label: labels[index] ?? examChoiceLabel(index),
+      speechLabel:
+        audioLabels[index] ??
+        examMode?.labelMap?.[labels[index] ?? ""] ??
+        examChoiceSpeechLabel(index),
+      value: option,
+    }));
+}
+
 function questionAnswerLabel(value: string | boolean): string {
   if (typeof value === "boolean") {
     return value ? "Dung" : "Sai";
   }
   return value;
+}
+
+function questionCorrectAnswerLabel(
+  question: ListeningPracticeItem["questions"][number],
+  examMode?: ListeningPracticeItem["examMode"]
+): string {
+  if (typeof question.correctAnswer === "boolean") {
+    return questionAnswerLabel(question.correctAnswer);
+  }
+
+  const matchingEntry = questionOptionEntries(question, examMode).find((entry) => entry.value === question.correctAnswer);
+  return matchingEntry
+    ? `${matchingEntry.label} - ${matchingEntry.value}`
+    : questionAnswerLabel(question.correctAnswer);
 }
 
 function isQuestionCorrect(
@@ -309,6 +423,63 @@ function isQuestionCorrect(
     return parsed === question.correctAnswer;
   }
   return selectedValue === question.correctAnswer;
+}
+
+function cleanExamSpeechText(value: string): string {
+  return applySpeechPronunciationOverrides(cleanJapaneseSpeechText(stripInlineRuby(value)))
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function buildExamQuestionSegments(
+  questions: ListeningPracticeItem["questions"],
+  voice: string,
+  rate: string,
+  pitch: string,
+  examMode?: ListeningPracticeItem["examMode"]
+): TtsSegmentPayload[] {
+  return questions.flatMap((question, questionIndex) => {
+    const explicitExamAudio = cleanExamSpeechText(question.examAudioRaw || question.examAudio || "");
+    if (explicitExamAudio) {
+      return [
+        {
+          text: explicitExamAudio,
+          voice,
+          rate,
+          pitch,
+        },
+      ];
+    }
+
+    const prompt = cleanExamSpeechText(question.promptRaw || question.prompt);
+    const options = questionOptionEntries(question, examMode)
+      .map((entry) => {
+        const optionText = cleanExamSpeechText(entry.value);
+        return optionText
+          ? {
+              text: `${entry.speechLabel}、${optionText}`,
+              voice,
+              rate,
+              pitch,
+            }
+          : null;
+      })
+      .filter((entry): entry is TtsSegmentPayload => Boolean(entry));
+
+    const questionText = prompt
+      ? `問題${questionIndex + 1}。${prompt}`
+      : `問題${questionIndex + 1}。`;
+
+    return [
+      {
+        text: questionText,
+        voice,
+        rate,
+        pitch,
+      },
+      ...options,
+    ];
+  });
 }
 
 function resolveTokenRunState(
@@ -373,6 +544,8 @@ function speakerBadgeTheme(role: SpeakerRole): string {
 
 export function ListeningPracticeClient({ item }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const examAudioRef = useRef<HTMLAudioElement | null>(null);
+  const scriptContainerRef = useRef<HTMLDivElement | null>(null);
   const lineRefs = useRef(new Map<number, HTMLDivElement>());
   const tickerRef = useRef<number | null>(null);
   const activeLineIndexRef = useRef(-1);
@@ -381,8 +554,10 @@ export function ListeningPracticeClient({ item }: Props) {
   const browserTimerRef = useRef<number | null>(null);
   const browserStartedAtRef = useRef(0);
   const generatedUrlRef = useRef<string | null>(null);
+  const generatedExamUrlRef = useRef<string | null>(null);
 
-  const [voice, setVoice] = useState(resolveVoiceValue(item.tts.voice, DEFAULT_MAIN_VOICE));
+  const [practiceMode, setPracticeMode] = useState<PracticeMode>("study");
+  const [voice, setVoice] = useState(DEFAULT_MAIN_VOICE);
   const [maleVoice, setMaleVoice] = useState(DEFAULT_MALE_VOICE);
   const [femaleVoice, setFemaleVoice] = useState(DEFAULT_FEMALE_VOICE);
   const [rate, setRate] = useState(item.tts.rate || "-5%");
@@ -390,8 +565,11 @@ export function ListeningPracticeClient({ item }: Props) {
   const [rolePlayback, setRolePlayback] = useState(true);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [audioUrl, setAudioUrl] = useState("");
+  const [examAudioUrl, setExamAudioUrl] = useState("");
   const [state, setState] = useState<GenerateState>("idle");
+  const [examState, setExamState] = useState<GenerateState>("idle");
   const [error, setError] = useState("");
+  const [examError, setExamError] = useState("");
   const [showTranscript, setShowTranscript] = useState(true);
   const [showTranslation, setShowTranslation] = useState(true);
   const [followScript, setFollowScript] = useState(true);
@@ -399,10 +577,14 @@ export function ListeningPracticeClient({ item }: Props) {
   const [activeTokenIndex, setActiveTokenIndex] = useState(-1);
   const [audioCurrentTime, setAudioCurrentTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
+  const [isPlaybackActive, setIsPlaybackActive] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [checked, setChecked] = useState(false);
 
-  const scriptLines = useMemo(() => buildScriptLines(item.script, item.scriptRaw), [item.script, item.scriptRaw]);
+  const scriptLines = useMemo(
+    () => buildScriptLines(item.script, item.scriptRaw, item.dialogue),
+    [item.dialogue, item.script, item.scriptRaw]
+  );
   const translationLines = useMemo(
     () =>
       (item.translation || "")
@@ -441,6 +623,42 @@ export function ListeningPracticeClient({ item }: Props) {
       segments,
     };
   }, [scriptLines, voice, maleVoice, femaleVoice, rolePlayback, rate, pitch]);
+  const examPlan = useMemo(() => {
+    const questionVoice = voice;
+    const instruction = cleanExamSpeechText(
+      item.examMode?.instructionRaw ||
+        item.examMode?.instruction ||
+        "これから、問題を聞きます。会話を聞いて、A、B、C、Dから選んでください。"
+    );
+    const introSegment: TtsSegmentPayload = {
+      text: instruction,
+      voice: questionVoice,
+      rate,
+      pitch,
+    };
+    const scriptSegments =
+      hasDialogueMarkers && rolePlayback
+        ? scriptPlan.segments
+        : scriptPlan.cleanedText
+          ? [
+              {
+                text: scriptPlan.cleanedText,
+                voice,
+                rate,
+                pitch,
+              },
+            ]
+          : [];
+    const questionSegments = buildExamQuestionSegments(item.questions, questionVoice, rate, pitch, item.examMode);
+    const segments = [introSegment, ...scriptSegments, ...questionSegments].filter((segment) =>
+      Boolean(segment.text.trim())
+    );
+
+    return {
+      cleanedText: segments.map((segment) => segment.text).join("\n"),
+      segments,
+    };
+  }, [hasDialogueMarkers, item.examMode, item.questions, pitch, rate, rolePlayback, scriptPlan, voice]);
 
   const clearTicker = useCallback(() => {
     if (tickerRef.current !== null) {
@@ -463,11 +681,19 @@ export function ListeningPracticeClient({ item }: Props) {
     }
   }, []);
 
+  const revokeGeneratedExamAudioUrl = useCallback(() => {
+    if (generatedExamUrlRef.current) {
+      URL.revokeObjectURL(generatedExamUrlRef.current);
+      generatedExamUrlRef.current = null;
+    }
+  }, []);
+
   const stopBrowserSpeech = useCallback(
     (resetHighlight = false) => {
       if (typeof window !== "undefined" && "speechSynthesis" in window) {
         window.speechSynthesis.cancel();
       }
+      setIsPlaybackActive(false);
       browserSessionRef.current += 1;
       clearBrowserTimer();
       if (resetHighlight) {
@@ -551,6 +777,11 @@ export function ListeningPracticeClient({ item }: Props) {
 
   const handleAudioPlay = useCallback(() => {
     stopBrowserSpeech();
+    const examAudio = examAudioRef.current;
+    if (examAudio) {
+      examAudio.pause();
+    }
+    setIsPlaybackActive(true);
     if (activeLineIndexRef.current < 0 && scriptLinesRef.current.length > 0) {
       const firstLine = scriptLinesRef.current[0];
       setActiveLineIndex(firstLine.index);
@@ -560,7 +791,17 @@ export function ListeningPracticeClient({ item }: Props) {
     startTicker();
   }, [startTicker, stopBrowserSpeech, syncFromAudioElement]);
 
+  const handleExamAudioPlay = useCallback(() => {
+    stopBrowserSpeech(true);
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+    }
+    clearTicker();
+  }, [clearTicker, stopBrowserSpeech]);
+
   const handleAudioPause = useCallback(() => {
+    setIsPlaybackActive(false);
     clearTicker();
     syncFromAudioElement();
   }, [clearTicker, syncFromAudioElement]);
@@ -571,6 +812,7 @@ export function ListeningPracticeClient({ item }: Props) {
 
   const handleAudioEnded = useCallback(() => {
     const audio = audioRef.current;
+    setIsPlaybackActive(false);
     clearTicker();
     setActiveLineIndex(-1);
     setActiveTokenIndex(-1);
@@ -588,20 +830,25 @@ export function ListeningPracticeClient({ item }: Props) {
   }, [scriptLines]);
 
   useEffect(() => {
-    setVoice(resolveVoiceValue(item.tts.voice, DEFAULT_MAIN_VOICE));
+    setVoice(DEFAULT_MAIN_VOICE);
     setMaleVoice(DEFAULT_MALE_VOICE);
     setFemaleVoice(DEFAULT_FEMALE_VOICE);
     setRate(item.tts.rate || "-5%");
     setPitch(item.tts.pitch || "+0Hz");
     setRolePlayback(true);
+    setPracticeMode("study");
     setAudioUrl("");
+    setExamAudioUrl("");
     setError("");
+    setExamError("");
     setState("idle");
+    setExamState("idle");
     setShowTranscript(true);
     setShowTranslation(true);
     setFollowScript(true);
     setActiveLineIndex(-1);
     setActiveTokenIndex(-1);
+    setIsPlaybackActive(false);
     setAudioCurrentTime(0);
     setAudioDuration(0);
     setAnswers({});
@@ -609,23 +856,36 @@ export function ListeningPracticeClient({ item }: Props) {
     clearTicker();
     stopBrowserSpeech();
     revokeGeneratedAudioUrl();
-  }, [clearTicker, item.id, item.tts.pitch, item.tts.rate, item.tts.voice, revokeGeneratedAudioUrl, stopBrowserSpeech]);
+    revokeGeneratedExamAudioUrl();
+  }, [
+    clearTicker,
+    item.id,
+    item.tts.pitch,
+    item.tts.rate,
+    revokeGeneratedAudioUrl,
+    revokeGeneratedExamAudioUrl,
+    stopBrowserSpeech,
+  ]);
 
   useEffect(() => {
     return () => {
       clearTicker();
       stopBrowserSpeech();
       revokeGeneratedAudioUrl();
+      revokeGeneratedExamAudioUrl();
     };
-  }, [clearTicker, revokeGeneratedAudioUrl, stopBrowserSpeech]);
+  }, [clearTicker, revokeGeneratedAudioUrl, revokeGeneratedExamAudioUrl, stopBrowserSpeech]);
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) {
-      return;
+    if (audio) {
+      audio.playbackRate = playbackRate;
     }
-    audio.playbackRate = playbackRate;
-  }, [audioUrl, playbackRate]);
+    const examAudio = examAudioRef.current;
+    if (examAudio) {
+      examAudio.playbackRate = playbackRate;
+    }
+  }, [audioUrl, examAudioUrl, playbackRate]);
 
   useEffect(() => {
     if (!audioUrl) {
@@ -644,15 +904,33 @@ export function ListeningPracticeClient({ item }: Props) {
   }, [audioUrl, startTicker, syncFromAudioElement]);
 
   useEffect(() => {
-    if (!followScript || activeLineIndex < 0) {
+    if (!followScript || !isPlaybackActive || activeLineIndex < 0) {
       return;
     }
-    lineRefs.current.get(activeLineIndex)?.scrollIntoView({
+    const container = scriptContainerRef.current;
+    const activeLineNode = lineRefs.current.get(activeLineIndex);
+    if (!container || !activeLineNode) {
+      return;
+    }
+
+    const containerRect = container.getBoundingClientRect();
+    const lineRect = activeLineNode.getBoundingClientRect();
+    const currentScrollTop = container.scrollTop;
+    const lineTopInContainer = lineRect.top - containerRect.top + currentScrollTop;
+    const centerOffset = (container.clientHeight - lineRect.height) / 2;
+    const targetScrollTop = lineTopInContainer - centerOffset;
+    const maxScrollTop = Math.max(0, container.scrollHeight - container.clientHeight);
+    const nextScrollTop = Math.max(0, Math.min(maxScrollTop, targetScrollTop));
+
+    if (Math.abs(nextScrollTop - currentScrollTop) < 4) {
+      return;
+    }
+
+    container.scrollTo({
+      top: nextScrollTop,
       behavior: "smooth",
-      block: "center",
-      inline: "nearest",
     });
-  }, [activeLineIndex, followScript]);
+  }, [activeLineIndex, followScript, isPlaybackActive]);
 
   const correctCount = useMemo(() => {
     return item.questions.filter((question) => {
@@ -700,6 +978,52 @@ export function ListeningPracticeClient({ item }: Props) {
     }
   };
 
+  const generateExamAudio = async () => {
+    if (item.questions.length === 0 || examPlan.segments.length === 0) {
+      setExamState("error");
+      setExamError("Bai nay chua co cau hoi de tao audio thi JLPT.");
+      return;
+    }
+
+    setExamState("generating");
+    setExamError("");
+    stopBrowserSpeech(true);
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+    }
+    clearTicker();
+
+    try {
+      const response = await fetch("/api/listening-tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: examPlan.cleanedText,
+          voice,
+          rate,
+          pitch,
+          segments: examPlan.segments,
+          allowFallbackDemo: false,
+        }),
+      });
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => ({}))) as { error?: string; hint?: string };
+        throw new Error([payload.error, payload.hint].filter(Boolean).join(" "));
+      }
+
+      const blob = await response.blob();
+      const nextUrl = URL.createObjectURL(blob);
+      revokeGeneratedExamAudioUrl();
+      generatedExamUrlRef.current = nextUrl;
+      setExamAudioUrl(nextUrl);
+      setExamState("ready");
+    } catch (nextError) {
+      setExamState("error");
+      setExamError(nextError instanceof Error ? nextError.message : "Khong tao duoc audio thi JLPT.");
+    }
+  };
+
   const speakWithBrowser = () => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
       setError("Trinh duyet nay khong ho tro speechSynthesis.");
@@ -724,6 +1048,7 @@ export function ListeningPracticeClient({ item }: Props) {
     clearTicker();
 
     stopBrowserSpeech();
+    setIsPlaybackActive(true);
     const synth = window.speechSynthesis;
     const sessionId = browserSessionRef.current + 1;
     browserSessionRef.current = sessionId;
@@ -753,6 +1078,7 @@ export function ListeningPracticeClient({ item }: Props) {
       const line = scriptLines[lineIdx];
       if (!line) {
         clearBrowserTimer();
+        setIsPlaybackActive(false);
         setAudioCurrentTime(estimatedDuration);
         setActiveLineIndex(-1);
         setActiveTokenIndex(-1);
@@ -783,6 +1109,7 @@ export function ListeningPracticeClient({ item }: Props) {
         }
         if (lineIdx >= scriptLines.length - 1) {
           clearBrowserTimer();
+          setIsPlaybackActive(false);
           setAudioCurrentTime(estimatedDuration);
           setActiveLineIndex(-1);
           setActiveTokenIndex(-1);
@@ -796,6 +1123,7 @@ export function ListeningPracticeClient({ item }: Props) {
           return;
         }
         clearBrowserTimer();
+        setIsPlaybackActive(false);
       };
 
       synth.speak(utterance);
@@ -805,6 +1133,20 @@ export function ListeningPracticeClient({ item }: Props) {
   };
 
   const resetQuiz = () => {
+    setAnswers({});
+    setChecked(false);
+  };
+
+  const enterStudyMode = () => {
+    setPracticeMode("study");
+    setAnswers({});
+    setChecked(false);
+  };
+
+  const enterJlptMode = () => {
+    setPracticeMode("jlpt");
+    setShowTranscript(false);
+    setShowTranslation(false);
     setAnswers({});
     setChecked(false);
   };
@@ -1004,7 +1346,7 @@ export function ListeningPracticeClient({ item }: Props) {
 
           {!audioUrl ? (
             <p className="mt-3 text-sm font-semibold leading-6 text-[#667085]">
-              Bam "Tao audio bai nay" de sinh file nghe tu script.
+              Bam &quot;Tao audio bai nay&quot; de sinh file nghe tu script.
             </p>
           ) : null}
 
@@ -1098,7 +1440,7 @@ export function ListeningPracticeClient({ item }: Props) {
                   </p>
                 </div>
 
-                <div className="mt-3 max-h-[460px] space-y-2 overflow-y-auto pr-1">
+                <div ref={scriptContainerRef} className="mt-3 max-h-[460px] space-y-2 overflow-y-auto pr-1">
                 {scriptLines.map((line) => {
                   const lineActive = line.index === activeLineIndex;
                   return (
@@ -1210,10 +1552,179 @@ export function ListeningPracticeClient({ item }: Props) {
             </button>
           </div>
 
+          <div className="mt-4 grid gap-2 rounded-2xl border border-[#edf1f6] bg-[#fbfdff] p-2 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={enterStudyMode}
+              className={`rounded-xl px-4 py-3 text-sm font-black transition ${
+                practiceMode === "study"
+                  ? "bg-[#123c69] text-white shadow-[0_10px_24px_rgba(18,60,105,0.18)]"
+                  : "bg-white text-[#526070] hover:bg-[#f3f7fb]"
+              }`}
+            >
+              Luyen co chu
+            </button>
+            <button
+              type="button"
+              onClick={enterJlptMode}
+              className={`rounded-xl px-4 py-3 text-sm font-black transition ${
+                practiceMode === "jlpt"
+                  ? "bg-[#ff6b00] text-white shadow-[0_10px_24px_rgba(255,107,0,0.2)]"
+                  : "bg-white text-[#526070] hover:bg-[#fff7ed]"
+              }`}
+            >
+              Thi JLPT: nghe cau hoi + A/B/C/D
+            </button>
+          </div>
+
           {item.questions.length === 0 ? (
             <p className="mt-4 rounded-2xl border border-dashed border-[#d8e2ee] bg-[#f8fcff] px-4 py-4 text-sm font-semibold text-[#667085]">
               Bai nay chua co cau hoi. Hay import JSON co truong questions.
             </p>
+          ) : practiceMode === "jlpt" ? (
+            <div className="mt-4 space-y-4">
+              <div className="rounded-[24px] border border-[#ffd3aa] bg-[linear-gradient(135deg,#fff7ed,#fff_46%,#eef7ff)] p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.16em] text-[#b45309]">
+                      De thi nghe
+                    </p>
+                    <h4 className="mt-1 text-xl font-black text-[#111827]">Chi nghe audio, chon A/B/C/D</h4>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-[#667085]">
+                      {item.examMode?.uiInstructionVi ||
+                        "Audio se doc bai nghe, sau do doc tung cau hoi va cac lua chon. Truoc khi kiem tra, app chi hien nut A/B/C/D de tranh nhin dap an."}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={generateExamAudio}
+                    disabled={examState === "generating"}
+                    className="inline-flex h-11 items-center gap-2 rounded-full bg-[#ff6b00] px-4 text-sm font-black text-white transition hover:bg-[#e85f00] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {examState === "generating" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Volume2 className="h-4 w-4" />
+                    )}
+                    {examState === "generating" ? "Dang tao audio thi..." : "Tao audio thi JLPT"}
+                  </button>
+                </div>
+
+                <audio
+                  ref={examAudioRef}
+                  src={examAudioUrl || undefined}
+                  controls
+                  preload="metadata"
+                  className="mt-4 w-full"
+                  onPlay={handleExamAudioPlay}
+                />
+
+                {!examAudioUrl ? (
+                  <p className="mt-2 text-xs font-bold text-[#8a5a2c]">
+                    Bam tao audio thi de nghe de theo format: hoi thoai → cau hoi → A/B/C/D.
+                  </p>
+                ) : null}
+                {examState === "ready" ? (
+                  <p className="mt-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-700">
+                    Da tao xong audio thi.
+                  </p>
+                ) : null}
+                {examState === "error" ? (
+                  <p className="mt-2 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-bold text-rose-700">
+                    {examError}
+                  </p>
+                ) : null}
+              </div>
+
+              {item.questions.map((question, index) => {
+                const optionEntries = questionOptionEntries(question, item.examMode);
+                return (
+                  <section key={question.id} className="rounded-2xl border border-[#edf1f6] bg-[#fbfdff] p-4">
+                    <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="rounded-full bg-[#123c69] px-3 py-1 text-xs font-black text-white">
+                          Cau {index + 1}
+                        </span>
+                        {question.questionType ? (
+                          <span className="rounded-full bg-[#fff4e5] px-2.5 py-1 text-xs font-black text-[#b75a07]">
+                            {question.questionType}
+                          </span>
+                        ) : null}
+                      </div>
+                      <span className="text-xs font-black uppercase tracking-[0.14em] text-[#64748b]">
+                        Nghe audio de biet noi dung
+                      </span>
+                    </div>
+
+                    {optionEntries.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                        {optionEntries.map((entry) => {
+                          const selected = answers[question.id] === entry.value;
+                          const isCorrect = checked && isQuestionCorrect(question, entry.value);
+                          const isWrong = checked && selected && !isQuestionCorrect(question, entry.value);
+                          return (
+                            <button
+                              key={`${question.id}-${entry.label}-${entry.value}`}
+                              type="button"
+                              onClick={() => {
+                                setAnswers((current) => ({ ...current, [question.id]: entry.value }));
+                                setChecked(false);
+                              }}
+                              className={`min-h-20 rounded-2xl border text-2xl font-black transition ${
+                                isCorrect
+                                  ? "border-[#8ce4bd] bg-[#ecfff5] text-[#087443]"
+                                  : isWrong
+                                    ? "border-[#fecdd3] bg-[#fff1f2] text-[#be123c]"
+                                    : selected
+                                      ? "border-[#ff6b00] bg-[#fff3e8] text-[#b45309]"
+                                      : "border-[#d8e2ee] bg-white text-[#123c69] hover:bg-[#f8fcff]"
+                              }`}
+                            >
+                              {entry.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="mt-3 text-sm font-semibold text-[#667085]">Cau nay khong co options hop le.</p>
+                    )}
+
+                    {checked ? (
+                      <div className="mt-4 space-y-2 text-sm font-semibold leading-7 text-[#526070]">
+                        <p>Dap an: {questionCorrectAnswerLabel(question, item.examMode)}</p>
+                        {optionEntries.length > 0 ? (
+                          <div className="grid gap-2 sm:grid-cols-2">
+                            {optionEntries.map((entry) => (
+                              <p
+                                key={`review-${question.id}-${entry.label}`}
+                                className={`rounded-xl border px-3 py-2 ${
+                                  isQuestionCorrect(question, entry.value)
+                                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                                    : "border-[#d8e2ee] bg-white text-[#526070]"
+                                }`}
+                              >
+                                <span className="mr-2 font-black">{entry.label}.</span>
+                                <span className="font-[var(--font-jp)]">{entry.value}</span>
+                              </p>
+                            ))}
+                          </div>
+                        ) : null}
+                        {question.explanation ? (
+                          <p>
+                            <span className="font-black text-[#0f5132]">Giai thich:</span> {question.explanation}
+                          </p>
+                        ) : null}
+                        {question.explanationTraps ? (
+                          <p>
+                            <span className="font-black text-[#8a3e0d]">Bay sai de nham:</span> {question.explanationTraps}
+                          </p>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </section>
+                );
+              })}
+            </div>
           ) : (
             <div className="mt-4 space-y-4">
               {item.questions.map((question, index) => {
@@ -1271,7 +1782,7 @@ export function ListeningPracticeClient({ item }: Props) {
                     )}
                     {checked ? (
                       <div className="mt-3 text-sm font-semibold leading-7 text-[#526070]">
-                        <p>Dap an: {questionAnswerLabel(question.correctAnswer)}</p>
+                        <p>Dap an: {questionCorrectAnswerLabel(question, item.examMode)}</p>
                         {question.explanation ? (
                           <p>
                             <span className="font-black text-[#0f5132]">Giai thich:</span> {question.explanation}
@@ -1294,7 +1805,9 @@ export function ListeningPracticeClient({ item }: Props) {
             <p className="text-sm font-bold text-[#667085]">
               {checked
                 ? `Ket qua: ${correctCount}/${item.questions.length}`
-                : "Chon dap an roi bam kiem tra."}
+                : practiceMode === "jlpt"
+                  ? "Nghe audio thi, chon A/B/C/D roi bam kiem tra."
+                  : "Chon dap an roi bam kiem tra."}
             </p>
             <button
               type="button"
@@ -1310,3 +1823,4 @@ export function ListeningPracticeClient({ item }: Props) {
     </div>
   );
 }
+

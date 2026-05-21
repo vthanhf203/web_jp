@@ -7,9 +7,11 @@ import {
   FileText,
   Headphones,
   LibraryBig,
+  NotebookPen,
   Sparkles,
 } from "lucide-react";
 
+import { loadGrammarPracticeStore } from "@/lib/grammar-practice-store";
 import { requireUser } from "@/lib/auth";
 import { loadListeningPracticeStore } from "@/lib/listening-practice-store";
 import { prisma } from "@/lib/prisma";
@@ -57,12 +59,13 @@ function StudyCard({
 export default async function SelfStudyPage() {
   const user = await requireUser();
 
-  const [userKanjiStore, vocabStore, readingStore, listeningStore, selfStudyQuizQuestionCount] =
+  const [userKanjiStore, vocabStore, readingStore, listeningStore, grammarStore, selfStudyQuizQuestionCount] =
     await Promise.all([
       loadUserKanjiStore(user.id),
       loadUserVocabStore(user.id),
       loadReadingPracticeStore(user.id),
       loadListeningPracticeStore(user.id),
+      loadGrammarPracticeStore(user.id),
       prisma.quizQuestion.count({
         where: {
           category: {
@@ -76,6 +79,7 @@ export default async function SelfStudyPage() {
   const totalReadingWords = readingStore.items.reduce((sum, item) => sum + item.vocabulary.length, 0);
   const totalListeningQuestions = listeningStore.items.reduce((sum, item) => sum + item.questions.length, 0);
   const totalListeningMinutes = listeningStore.items.reduce((sum, item) => sum + item.estimatedMinutes, 0);
+  const totalGrammarPatterns = grammarStore.items.length;
 
   return (
     <section className="mx-auto max-w-[1240px] space-y-6 pb-10">
@@ -109,7 +113,7 @@ export default async function SelfStudyPage() {
         </div>
       </div>
 
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         <StudyCard
           href="/self-study/vocab"
           title="Tu vung & Kanji"
@@ -141,6 +145,14 @@ export default async function SelfStudyPage() {
           stat={`${selfStudyQuizQuestionCount} cau hoi`}
           accent="bg-[#eef3ff] text-[#3554a8]"
           icon={<BrainCircuit className="h-6 w-6" />}
+        />
+        <StudyCard
+          href="/self-study/grammar"
+          title="Ngu phap JSON"
+          description="Import bo ngu phap rieng, luyen nhanh theo kieu mau -> nghia hoac nghia -> mau."
+          stat={`${totalGrammarPatterns} mau ngu phap`}
+          accent="bg-[#fff3df] text-[#b45b10]"
+          icon={<NotebookPen className="h-6 w-6" />}
         />
         <StudyCard
           href="/kanji/personal"

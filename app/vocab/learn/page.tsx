@@ -23,6 +23,49 @@ function isMode(value: string | null): value is StudyMode {
   return value === "flashcard" || value === "quiz" || value === "recall";
 }
 
+const VOCAB_USAGE_CONTEXT_PATTERN = /^[［\[\(（【][^］\]\)）】]*[〜～~][^］\]\)）】]*[］\]\)）】]\s*/u;
+
+function stripVocabUsageContext(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return "";
+  }
+  const withoutContext = trimmed.replace(VOCAB_USAGE_CONTEXT_PATTERN, "").trim();
+  return withoutContext || trimmed;
+}
+
+function toStudyItem(
+  item: {
+    id: string;
+    word: string;
+    reading: string;
+    kanji: string;
+    hanviet: string;
+    meaning: string;
+  },
+  mode: StudyMode
+) {
+  if (mode !== "recall") {
+    return {
+      id: item.id,
+      word: item.word,
+      reading: item.reading,
+      kanji: item.kanji,
+      hanviet: item.hanviet,
+      meaning: item.meaning,
+    };
+  }
+
+  return {
+    id: item.id,
+    word: stripVocabUsageContext(item.word),
+    reading: stripVocabUsageContext(item.reading),
+    kanji: stripVocabUsageContext(item.kanji),
+    hanviet: item.hanviet,
+    meaning: item.meaning,
+  };
+}
+
 export default async function VocabLearnPage(props: { searchParams: SearchParams }) {
   const user = await requireUser();
   const params = await props.searchParams;
@@ -77,14 +120,7 @@ export default async function VocabLearnPage(props: { searchParams: SearchParams
         lessonTitle={`${group.jlptLevel} | ${formatVocabLabel(group.title)}`}
         mode={mode}
         alwaysShowQuizFurigana
-        items={group.items.map((item) => ({
-          id: item.id,
-          word: item.word,
-          reading: item.reading,
-          kanji: item.kanji,
-          hanviet: item.hanviet,
-          meaning: item.meaning,
-        }))}
+        items={group.items.map((item) => toStudyItem(item, mode))}
       />
     );
   }
@@ -119,14 +155,7 @@ export default async function VocabLearnPage(props: { searchParams: SearchParams
       lessonTitle={formatVocabLabel(lesson.title)}
       mode={mode}
       alwaysShowQuizFurigana
-      items={lesson.items.map((item) => ({
-        id: item.id,
-        word: item.word,
-        reading: item.reading,
-        kanji: item.kanji,
-        hanviet: item.hanviet,
-        meaning: item.meaning,
-      }))}
+      items={lesson.items.map((item) => toStudyItem(item, mode))}
     />
   );
 }

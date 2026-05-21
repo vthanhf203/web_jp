@@ -502,18 +502,10 @@ export async function POST(request: Request) {
   let title = "";
   let phase: "parse" | "youtube-download" | "media-convert" | "groq-transcribe" = "parse";
   let sourceType: "youtube" | "mp4" | null = null;
+  let youtubeUrl = "";
   const groqApiKey = (process.env.GROQ_API_KEY ?? process.env.GROQ_API_Key ?? "").trim();
 
   try {
-    if (!groqApiKey) {
-      return NextResponse.json(
-        {
-          message: "Chưa cài đặt GROQ_API_KEY (hay GROQ_API_Key) trong .env.local",
-        },
-        { status: 500 }
-      );
-    }
-
     const formData = await request.formData();
     const rawType = formData.get("type");
     const type = rawType === "youtube" || rawType === "mp4" ? rawType : null;
@@ -529,9 +521,35 @@ export async function POST(request: Request) {
       phase = "youtube-download";
       const rawUrl = formData.get("url");
       const url = normalizeYoutubeUrl(typeof rawUrl === "string" ? rawUrl.trim() : "");
+      youtubeUrl = url;
 
       if (!url || !isYoutubeUrl(url) || !ytdl.validateURL(url)) {
         return NextResponse.json({ message: "Link YouTube không hợp lệ" }, { status: 400 });
+      }
+
+      if (!groqApiKey) {
+        const transcriptSegments = await fetchYoutubeTranscriptFallback(url);
+        if (transcriptSegments.length > 0) {
+          return NextResponse.json({
+            segments: transcriptSegments,
+            title: title || "YouTube Transcript",
+          });
+        }
+        const timedTextSegments = await fetchYoutubeTimedTextFallback(url);
+        if (timedTextSegments.length > 0) {
+          return NextResponse.json({
+            segments: timedTextSegments,
+            title: title || "YouTube Transcript",
+          });
+        }
+        return NextResponse.json(
+          {
+            message:
+              "Chua cai GROQ_API_KEY. O che do mien phi, chi dung duoc video YouTube co transcript public.",
+            detail: "Them GROQ_API_KEY de transcribe audio khi video khong co transcript.",
+          },
+          { status: 400 }
+        );
       }
 
       try {
@@ -566,6 +584,16 @@ export async function POST(request: Request) {
         throw youtubeDownloadError;
       }
     } else {
+      if (!groqApiKey) {
+        return NextResponse.json(
+          {
+            message: "Chua cai GROQ_API_KEY (hay GROQ_API_Key) trong .env.local",
+            detail: "Mode mp4 can API de chuyen audio thanh text.",
+          },
+          { status: 400 }
+        );
+      }
+
       const rawFile = formData.get("file");
       if (!(rawFile instanceof File)) {
         return NextResponse.json({ message: "Bạn chưa tải file" }, { status: 400 });
@@ -595,6 +623,31 @@ export async function POST(request: Request) {
     const audioStat = await fsp.stat(audioPath);
     if (audioStat.size > MAX_FILE_BYTES) {
       return NextResponse.json({ message: "File qua lon, toi da 25MB" }, { status: 400 });
+    }
+
+    if (!groqApiKey) {
+      if (sourceType === "youtube" && youtubeUrl) {
+        const transcriptSegments = await fetchYoutubeTranscriptFallback(youtubeUrl);
+        if (transcriptSegments.length > 0) {
+          return NextResponse.json({
+            segments: transcriptSegments,
+            title: title || "YouTube Transcript",
+          });
+        }
+        const timedTextSegments = await fetchYoutubeTimedTextFallback(youtubeUrl);
+        if (timedTextSegments.length > 0) {
+          return NextResponse.json({
+            segments: timedTextSegments,
+            title: title || "YouTube Transcript",
+          });
+        }
+      }
+      return NextResponse.json(
+        {
+          message: "Chua cai GROQ_API_KEY (hay GROQ_API_Key) trong .env.local",
+        },
+        { status: 400 }
+      );
     }
 
     phase = "groq-transcribe";

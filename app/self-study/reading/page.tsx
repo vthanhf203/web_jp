@@ -4,6 +4,7 @@ import {
   ChevronLeft,
   ChevronDown,
   Clock3,
+  Download,
   FileText,
   Layers3,
   Trash2,
@@ -89,6 +90,24 @@ function readingHref({
   }
   const query = search.toString();
   return query ? `/self-study/reading?${query}` : "/self-study/reading";
+}
+
+function readingExportHref({
+  level,
+  deck,
+}: {
+  level?: string;
+  deck?: string;
+}): string {
+  const search = new URLSearchParams();
+  if (level && level !== "ALL") {
+    search.set("level", level);
+  }
+  if (deck) {
+    search.set("deck", deck);
+  }
+  search.set("download", "1");
+  return `/api/personal/reading-export?${search.toString()}`;
 }
 
 function readingDataRoleLabel(role?: string): string {
@@ -692,7 +711,19 @@ export default async function SelfStudyReadingPage(props: { searchParams: Search
       </div>
 
       <div className="rounded-[24px] border border-[#d8e2ee] bg-white p-5 shadow-[0_18px_42px_rgba(18,60,105,0.08)]">
-        <h2 className="text-xl font-black text-[#111827]">Import JSON văn bản</h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-xl font-black text-[#111827]">Import JSON văn bản</h2>
+          <a
+            href={readingExportHref({
+              level: requestedLevel && requestedLevel !== "ALL" ? requestedLevel : undefined,
+              deck: requestedDeckName || undefined,
+            })}
+            className="inline-flex items-center gap-2 rounded-xl border border-[#cbd8e7] bg-[#f8fcff] px-4 py-2 text-sm font-black text-[#123c69] transition hover:bg-white"
+          >
+            <Download className="h-4 w-4" />
+            Export JSON
+          </a>
+        </div>
         <p className="mt-1 text-sm text-[#667085]">
           Dán JSON hoặc tải file để thêm/cập nhật bài đọc. Hỗ trợ cả dữ liệu có trường dịch tiếng Việt.
         </p>

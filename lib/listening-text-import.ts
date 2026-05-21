@@ -14,13 +14,21 @@ function toImportedRow(item: ListeningPracticeItem): ImportedListeningText {
     deckName: item.deckName,
     jlptLevel: item.jlptLevel,
     topic: item.topic,
+    situation: item.situation,
+    keyPoint: item.keyPoint,
+    meta: item.meta,
     difficulty: item.difficulty,
     estimatedMinutes: item.estimatedMinutes,
+    examMode: item.examMode,
     script: item.script,
     scriptRaw: item.scriptRaw,
+    dialogue: item.dialogue,
     translation: item.translation,
+    scriptTranslation: item.scriptTranslation,
     tts: item.tts,
     questions: item.questions,
+    answerKey: item.answerKey,
+    usefulExpressions: item.usefulExpressions,
   };
 }
 

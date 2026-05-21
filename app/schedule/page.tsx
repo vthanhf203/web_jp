@@ -119,9 +119,7 @@ const WEEKLY_GOAL_CATEGORIES = [
   },
 ] as const;
 
-type ScheduleItem = DeadlineTask & {
-  isDemo?: boolean;
-};
+type ScheduleItem = DeadlineTask;
 
 function toIsoDateLocal(date: Date): string {
   const year = date.getFullYear();
@@ -428,43 +426,6 @@ function taskSurfaceTone(task: Pick<DeadlineTask, "status" | "subject">, subject
   };
 }
 
-function makeDemoTasks(weekStart: Date): ScheduleItem[] {
-  const specs: Array<[number, string, string, string, string, string, DeadlineTaskStatus]> = [
-    [0, "Tiếng Nhật", "Ôn flashcard + 12 kanji", "07:00", "07:45", "Sáng", "done"],
-    [0, "Toán", "Làm 20 bài đạo hàm", "09:00", "10:00", "Sáng", "doing"],
-    [0, "English", "Nghe podcast 20 phút", "16:00", "16:30", "Chiều", "pending"],
-    [1, "Lập trình", "Hoàn thành bài React", "07:00", "08:00", "Sáng", "done"],
-    [1, "Tiếng Nhật", "Đọc hiểu N5 một bài", "09:00", "09:45", "Sáng", "pending"],
-    [1, "Thể chất", "Đi bộ nhanh", "19:30", "20:15", "Tối", "pending"],
-    [2, "Toán", "Ôn tích phân cơ bản", "07:00", "09:00", "Sáng", "pending"],
-    [2, "English", "Viết 1 đoạn journal", "11:00", "11:45", "Trưa", "pending"],
-    [3, "Tiếng Nhật", "Ôn nhóm từ khó", "07:00", "07:30", "Sáng", "pending"],
-    [3, "Lập trình", "Sửa bug project cá nhân", "14:00", "15:00", "Chiều", "pending"],
-    [4, "Đọc sách", "Đọc 25 trang", "09:00", "09:30", "Sáng", "pending"],
-    [4, "English", "Shadowing 3 đoạn", "19:30", "20:15", "Tối", "pending"],
-    [5, "Toán", "Làm đề luyện tập", "07:30", "08:30", "Sáng", "pending"],
-    [5, "Tiếng Nhật", "Ôn 30 từ mới", "10:00", "10:30", "Sáng", "pending"],
-    [6, "Tổng kết", "Review tuần + lên kế hoạch mới", "14:00", "15:00", "Chiều", "pending"],
-  ];
-
-  return specs.map(([dayOffset, subject, task, startTime, deadlineTime, slot, status], index) => ({
-    id: `demo-${index}`,
-    date: toIsoDateLocal(addDays(weekStart, dayOffset)),
-    slot,
-    subject,
-    task,
-    startTime,
-    deadlineTime,
-    priority: index % 3 === 0 ? "high" : index % 3 === 1 ? "medium" : "low",
-    status,
-    note: "",
-    mode: index % 2 === 0 ? "auto" : "manual",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    isDemo: true,
-  }));
-}
-
 function buildCalendarDays(monthDate: Date, taskDates: Set<string>) {
   const firstDay = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
   const lastDay = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
@@ -604,9 +565,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Sea
   const selectedTask = selectedTaskId ? storedTasks.find((task) => task.id === selectedTaskId) ?? null : null;
 
   const weekTasks = storedTasks.filter((task) => task.date >= weekStartIso && task.date <= weekEndIso);
-  const visibleTasks: ScheduleItem[] =
-    weekTasks.length > 0 ? weekTasks : allStoredTasks.length === 0 && !searchText ? makeDemoTasks(weekStart) : [];
-  const isDemoSchedule = allStoredTasks.length === 0 && !searchText;
+  const visibleTasks: ScheduleItem[] = weekTasks;
   const managementTasks = selectedTask
     ? [selectedTask, ...storedTasks.filter((task) => task.id !== selectedTask.id).slice(0, 11)]
     : storedTasks.slice(0, 12);
@@ -615,8 +574,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Sea
   const doneToday = todayTasks.filter((task) => isCompleted(task.status)).length;
   const doneWeek = visibleTasks.filter((task) => isCompleted(task.status)).length;
   const weeklyProgress = completionPercent(doneWeek, visibleTasks.length);
-  const weeklySummarySource: ScheduleItem[] =
-    weekTasks.length > 0 ? weekTasks : isDemoSchedule ? visibleTasks : [];
+  const weeklySummarySource: ScheduleItem[] = weekTasks;
   const weeklySummaryTotal = weeklySummarySource.length;
   const weeklySummaryDone = weeklySummarySource.filter((task) => task.status === "done").length;
   const weeklySummaryLateDone = weeklySummarySource.filter((task) => task.status === "late_done").length;
@@ -1043,7 +1001,6 @@ export default async function SchedulePage({ searchParams }: { searchParams: Sea
                 <h2 className="text-xl font-black text-slate-950">Lịch học tuần này</h2>
                 <p className="text-xs font-semibold text-slate-500">
                   {formatDayMonth(weekStartIso)} - {formatDayMonth(weekEndIso)}
-                  {isDemoSchedule ? " · lịch mẫu khi chưa tạo kế hoạch" : ""}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-3 text-xs font-black text-slate-500">
@@ -1097,22 +1054,15 @@ export default async function SchedulePage({ searchParams }: { searchParams: Sea
                             const tone = taskSurfaceTone(task, personalState.subjectColors ?? {});
                             const cardClassName = `block rounded-lg border px-1.5 py-1 transition ${tone.bg} ${tone.border}`;
                             return (
-                              task.isDemo ? (
-                                <div key={task.id} className={cardClassName} style={tone.style}>
-                                  <p className={`truncate text-[11px] font-black ${tone.text}`} style={tone.subjectStyle}>{task.subject}</p>
-                                  <p className={`truncate text-[10px] font-semibold ${tone.meta}`}>{timeRange(task)}</p>
-                                </div>
-                              ) : (
-                                <Link
-                                  key={task.id}
-                                  href={`${scheduleHref({ month: monthDate, q: searchText, edit: task.id })}#schedule-manager`}
-                                  className={`${cardClassName} hover:shadow-sm hover:ring-1 hover:ring-indigo-200`}
-                                  style={tone.style}
-                                >
-                                  <p className={`truncate text-[11px] font-black ${tone.text}`} style={tone.subjectStyle}>{task.subject}</p>
-                                  <p className={`truncate text-[10px] font-semibold ${tone.meta}`}>{timeRange(task)}</p>
-                                </Link>
-                              )
+                              <Link
+                                key={task.id}
+                                href={`${scheduleHref({ month: monthDate, q: searchText, edit: task.id })}#schedule-manager`}
+                                className={`${cardClassName} hover:shadow-sm hover:ring-1 hover:ring-indigo-200`}
+                                style={tone.style}
+                              >
+                                <p className={`truncate text-[11px] font-black ${tone.text}`} style={tone.subjectStyle}>{task.subject}</p>
+                                <p className={`truncate text-[10px] font-semibold ${tone.meta}`}>{timeRange(task)}</p>
+                              </Link>
                             );
                           })}
                         </div>
@@ -1367,13 +1317,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Sea
                           </div>
                         </div>
                       </div>
-                      {task.isDemo ? (
-                        <span className={`w-fit rounded-full border px-2 py-1 text-[11px] font-black ${statusTone(task.status)}`}>
-                          {STATUS_LABEL[task.status]}
-                        </span>
-                      ) : (
-                        <DeadlineStatusSelect taskId={task.id} initialStatus={task.status} taskLabel={task.task} />
-                      )}
+                      <DeadlineStatusSelect taskId={task.id} initialStatus={task.status} taskLabel={task.task} />
                     </div>
                   ))}
                 </div>

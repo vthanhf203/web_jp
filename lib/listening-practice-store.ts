@@ -9,9 +9,17 @@ export type ListeningQuestion = {
   type: string;
   questionType?: string;
   level?: number;
+  examDisplayMode?: string;
+  promptRaw?: string;
   prompt: string;
+  examAudioRaw?: string;
+  examAudio?: string;
   options: string[];
+  optionLabels?: string[];
+  audioChoiceLabels?: string[];
   correctAnswer: string | boolean;
+  correctOptionLabel?: string;
+  correctAudioChoiceLabel?: string;
   explanation?: string;
   explanationTraps?: string;
   points: number;
@@ -19,8 +27,54 @@ export type ListeningQuestion = {
 
 export type ListeningTtsConfig = {
   voice: string;
+  passageVoice?: string;
+  questionVoice?: string;
   rate: string;
   pitch: string;
+  pauseBetweenTurnsMs?: number;
+  pauseBetweenQuestionAndChoicesMs?: number;
+  pauseBetweenChoicesMs?: number;
+};
+
+export type ListeningExamModeConfig = {
+  enabled: boolean;
+  instructionRaw?: string;
+  instruction?: string;
+  uiInstructionVi?: string;
+  displayOnlyLabels: boolean;
+  labels: string[];
+  audioChoiceLabels: string[];
+  labelMap?: Record<string, string>;
+};
+
+export type ListeningScriptTranslationLine = {
+  speaker?: string;
+  jp: string;
+  vi: string;
+};
+
+export type ListeningDialogueTurn = {
+  turn: number;
+  speakerKey?: string;
+  speakerGender?: string;
+  speakerRole?: string;
+  displayName?: string;
+  text: string;
+  textRaw?: string;
+  translationVi?: string;
+};
+
+export type ListeningAnswerKeyEntry = {
+  questionId: string;
+  correctOptionLabel?: string;
+  correctAudioChoiceLabel?: string;
+  correctAnswer: string;
+};
+
+export type ListeningUsefulExpression = {
+  expression: string;
+  meaning: string;
+  note?: string;
 };
 
 export const DEFAULT_LISTENING_DECK_NAME = "Chua phan loai";
@@ -37,14 +91,25 @@ export type ListeningPracticeItem = {
     level?: string;
     type?: string;
     durationEstimate?: string;
+    questionCount?: number;
+    supportsStudyMode?: boolean;
+    supportsExamMode?: boolean;
+    examDisplayRule?: string;
+    choiceDisplayStyle?: string;
+    choiceAudioStyle?: string;
   };
   difficulty: string;
   estimatedMinutes: number;
+  examMode?: ListeningExamModeConfig;
   script: string;
   scriptRaw?: string;
+  dialogue?: ListeningDialogueTurn[];
   translation?: string;
+  scriptTranslation?: ListeningScriptTranslationLine[];
   tts: ListeningTtsConfig;
   questions: ListeningQuestion[];
+  answerKey?: ListeningAnswerKeyEntry[];
+  usefulExpressions?: ListeningUsefulExpression[];
   createdAt: string;
   updatedAt: string;
 };
@@ -79,6 +144,23 @@ function normalizeNestedString(value: unknown): string {
     }
   }
   return "";
+}
+
+function normalizeStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.map((entry) => normalizeString(entry)).filter(Boolean);
+}
+
+function normalizeStringRecord(value: unknown): Record<string, string> | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+  const entries = Object.entries(value as Record<string, unknown>)
+    .map(([key, entry]) => [key.trim(), normalizeString(entry)] as const)
+    .filter(([key, entry]) => Boolean(key && entry));
+  return entries.length > 0 ? Object.fromEntries(entries) : undefined;
 }
 
 function normalizeOptionalNumber(value: unknown): number | undefined {
@@ -151,9 +233,17 @@ function normalizeQuestion(input: unknown, index: number): ListeningQuestion | n
     type,
     questionType: normalizeString(raw.questionType ?? raw.skill ?? raw.category) || undefined,
     level: normalizeOptionalNumber(raw.level),
+    examDisplayMode: normalizeString(raw.examDisplayMode) || undefined,
+    promptRaw: normalizeString(raw.promptRaw ?? raw.rawPrompt) || undefined,
     prompt,
+    examAudioRaw: normalizeString(raw.examAudioRaw ?? raw.rawExamAudio) || undefined,
+    examAudio: normalizeString(raw.examAudio) || undefined,
     options,
+    optionLabels: normalizeStringList(raw.optionLabels ?? raw.labels),
+    audioChoiceLabels: normalizeStringList(raw.audioChoiceLabels ?? raw.choiceAudioLabels),
     correctAnswer: isTrueFalse ? normalizeBoolean(correctRaw) : normalizeString(correctRaw),
+    correctOptionLabel: normalizeString(raw.correctOptionLabel ?? raw.correctLabel) || undefined,
+    correctAudioChoiceLabel: normalizeString(raw.correctAudioChoiceLabel) || undefined,
     explanation: explanation || undefined,
     explanationTraps: explanationTraps || undefined,
     points: normalizeOptionalNumber(raw.points) ?? 1,
@@ -169,11 +259,165 @@ function normalizeTtsConfig(input: unknown): ListeningTtsConfig {
     };
   }
   const raw = input as Record<string, unknown>;
+  const passageVoice = normalizeString(raw.passageVoice);
+  const questionVoice = normalizeString(raw.questionVoice);
   return {
-    voice: normalizeString(raw.voice) || "ja-JP-NanamiNeural",
+    voice: normalizeString(raw.voice) || passageVoice || "ja-JP-NanamiNeural",
+    passageVoice: passageVoice || undefined,
+    questionVoice: questionVoice || undefined,
     rate: normalizeString(raw.rate) || "-5%",
     pitch: normalizeString(raw.pitch) || "+0Hz",
+    pauseBetweenTurnsMs: normalizeOptionalNumber(raw.pauseBetweenTurnsMs),
+    pauseBetweenQuestionAndChoicesMs: normalizeOptionalNumber(raw.pauseBetweenQuestionAndChoicesMs),
+    pauseBetweenChoicesMs: normalizeOptionalNumber(raw.pauseBetweenChoicesMs),
   };
+}
+
+function normalizeExamModeConfig(input: unknown): ListeningExamModeConfig | undefined {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    return undefined;
+  }
+  const raw = input as Record<string, unknown>;
+  const labels = normalizeStringList(raw.labels);
+  const audioChoiceLabels = normalizeStringList(raw.audioChoiceLabels);
+  const hasConfig =
+    typeof raw.enabled !== "undefined" ||
+    labels.length > 0 ||
+    audioChoiceLabels.length > 0 ||
+    normalizeString(raw.instructionRaw ?? raw.instruction);
+  if (!hasConfig) {
+    return undefined;
+  }
+
+  return {
+    enabled: normalizeBoolean(raw.enabled, true),
+    instructionRaw: normalizeString(raw.instructionRaw) || undefined,
+    instruction: normalizeString(raw.instruction) || undefined,
+    uiInstructionVi: normalizeString(raw.uiInstructionVi ?? raw.uiInstruction) || undefined,
+    displayOnlyLabels: normalizeBoolean(raw.displayOnlyLabels, true),
+    labels,
+    audioChoiceLabels,
+    labelMap: normalizeStringRecord(raw.labelMap),
+  };
+}
+
+function normalizeScriptTranslation(input: unknown): ListeningScriptTranslationLine[] | undefined {
+  if (!Array.isArray(input)) {
+    return undefined;
+  }
+  const rows = input
+    .map((entry) => {
+      if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+        return null;
+      }
+      const raw = entry as Record<string, unknown>;
+      const jp = normalizeString(raw.jp ?? raw.ja ?? raw.text);
+      const vi = normalizeString(raw.vi ?? raw.vn ?? raw.translation ?? raw.meaning);
+      if (!jp && !vi) {
+        return null;
+      }
+      const speaker = normalizeString(raw.speaker ?? raw.role);
+      return {
+        ...(speaker ? { speaker } : {}),
+        jp,
+        vi,
+      } satisfies ListeningScriptTranslationLine;
+    })
+    .filter((entry): entry is ListeningScriptTranslationLine => Boolean(entry));
+  return rows.length > 0 ? rows : undefined;
+}
+
+function normalizeDialogue(input: unknown): ListeningDialogueTurn[] | undefined {
+  if (!Array.isArray(input)) {
+    return undefined;
+  }
+  const rows = input
+    .map((entry, index) => {
+      if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+        return null;
+      }
+      const raw = entry as Record<string, unknown>;
+      const textRaw = normalizeString(raw.textRaw ?? raw.rawText ?? raw.raw);
+      const text = normalizeString(raw.text ?? raw.jp ?? raw.line ?? textRaw);
+      if (!text) {
+        return null;
+      }
+      const turn = normalizeOptionalNumber(raw.turn) ?? index;
+      const speakerKey = normalizeString(raw.speakerKey ?? raw.speaker_id ?? raw.speakerId);
+      const speakerGender = normalizeString(raw.speakerGender ?? raw.gender);
+      const speakerRole = normalizeString(raw.speakerRole ?? raw.role);
+      const displayName = normalizeString(raw.displayName ?? raw.speaker ?? raw.name);
+      const translationVi = normalizeString(raw.translationVi ?? raw.vi ?? raw.translation);
+
+      return {
+        turn,
+        ...(speakerKey ? { speakerKey } : {}),
+        ...(speakerGender ? { speakerGender } : {}),
+        ...(speakerRole ? { speakerRole } : {}),
+        ...(displayName ? { displayName } : {}),
+        text,
+        ...(textRaw ? { textRaw } : {}),
+        ...(translationVi ? { translationVi } : {}),
+      } satisfies ListeningDialogueTurn;
+    })
+    .filter((entry): entry is ListeningDialogueTurn => Boolean(entry))
+    .sort((left, right) => left.turn - right.turn);
+
+  return rows.length > 0 ? rows : undefined;
+}
+
+function normalizeAnswerKey(input: unknown): ListeningAnswerKeyEntry[] | undefined {
+  if (!Array.isArray(input)) {
+    return undefined;
+  }
+  const rows = input
+    .map((entry) => {
+      if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+        return null;
+      }
+      const raw = entry as Record<string, unknown>;
+      const questionId = normalizeString(raw.questionId ?? raw.id);
+      const correctAnswer = normalizeString(raw.correctAnswer ?? raw.answer);
+      if (!questionId || !correctAnswer) {
+        return null;
+      }
+      const correctOptionLabel = normalizeString(raw.correctOptionLabel);
+      const correctAudioChoiceLabel = normalizeString(raw.correctAudioChoiceLabel);
+      return {
+        questionId,
+        ...(correctOptionLabel ? { correctOptionLabel } : {}),
+        ...(correctAudioChoiceLabel ? { correctAudioChoiceLabel } : {}),
+        correctAnswer,
+      } satisfies ListeningAnswerKeyEntry;
+    })
+    .filter((entry): entry is ListeningAnswerKeyEntry => Boolean(entry));
+  return rows.length > 0 ? rows : undefined;
+}
+
+function normalizeUsefulExpressions(input: unknown): ListeningUsefulExpression[] | undefined {
+  if (!Array.isArray(input)) {
+    return undefined;
+  }
+  const rows = input
+    .map((entry) => {
+      if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+        return null;
+      }
+      const raw = entry as Record<string, unknown>;
+      const expression = normalizeString(raw.expression ?? raw.jp ?? raw.text);
+      const meaning = normalizeString(raw.meaning ?? raw.vi ?? raw.vn);
+      if (!expression || !meaning) {
+        return null;
+      }
+      const note = normalizeString(raw.note);
+      return {
+        expression,
+        meaning,
+        ...(note ? { note } : {}),
+      } satisfies ListeningUsefulExpression;
+    })
+    .filter((entry): entry is ListeningUsefulExpression => Boolean(entry));
+  return rows.length > 0 ? rows : undefined;
 }
 
 function normalizeListeningItem(input: unknown): ListeningPracticeItem | null {
@@ -201,7 +445,29 @@ function normalizeListeningItem(input: unknown): ListeningPracticeItem | null {
   const metaLevel = normalizeString(metaRaw?.level);
   const metaType = normalizeString(metaRaw?.type);
   const metaDurationEstimate = normalizeString(metaRaw?.duration_estimate ?? metaRaw?.durationEstimate);
-  const hasMeta = Boolean(metaLevel || metaType || metaDurationEstimate);
+  const metaQuestionCount = normalizeOptionalNumber(metaRaw?.questionCount);
+  const metaSupportsStudyMode =
+    typeof metaRaw?.supportsStudyMode !== "undefined"
+      ? normalizeBoolean(metaRaw.supportsStudyMode)
+      : undefined;
+  const metaSupportsExamMode =
+    typeof metaRaw?.supportsExamMode !== "undefined"
+      ? normalizeBoolean(metaRaw.supportsExamMode)
+      : undefined;
+  const metaExamDisplayRule = normalizeString(metaRaw?.examDisplayRule);
+  const metaChoiceDisplayStyle = normalizeString(metaRaw?.choiceDisplayStyle);
+  const metaChoiceAudioStyle = normalizeString(metaRaw?.choiceAudioStyle);
+  const hasMeta = Boolean(
+    metaLevel ||
+      metaType ||
+      metaDurationEstimate ||
+      metaQuestionCount ||
+      typeof metaSupportsStudyMode !== "undefined" ||
+      typeof metaSupportsExamMode !== "undefined" ||
+      metaExamDisplayRule ||
+      metaChoiceDisplayStyle ||
+      metaChoiceAudioStyle
+  );
 
   return {
     id: normalizeString(raw.id) || crypto.randomUUID(),
@@ -219,15 +485,26 @@ function normalizeListeningItem(input: unknown): ListeningPracticeItem | null {
           level: metaLevel || undefined,
           type: metaType || undefined,
           durationEstimate: metaDurationEstimate || undefined,
+          questionCount: metaQuestionCount,
+          supportsStudyMode: metaSupportsStudyMode,
+          supportsExamMode: metaSupportsExamMode,
+          examDisplayRule: metaExamDisplayRule || undefined,
+          choiceDisplayStyle: metaChoiceDisplayStyle || undefined,
+          choiceAudioStyle: metaChoiceAudioStyle || undefined,
         }
       : undefined,
     difficulty: normalizeString(raw.difficulty ?? raw.length) || "Trung binh",
     estimatedMinutes: normalizeMinutes(raw.estimatedMinutes ?? raw.minutes ?? raw.duration),
+    examMode: normalizeExamModeConfig(raw.examMode),
     script,
     scriptRaw: scriptRaw || undefined,
+    dialogue: normalizeDialogue(raw.dialogue),
     translation: normalizeString(raw.translation ?? raw.vi ?? raw.meaning),
+    scriptTranslation: normalizeScriptTranslation(raw.scriptTranslation),
     tts: normalizeTtsConfig(raw.tts),
     questions,
+    answerKey: normalizeAnswerKey(raw.answerKey),
+    usefulExpressions: normalizeUsefulExpressions(raw.usefulExpressions),
     createdAt: normalizeString(raw.createdAt) || now,
     updatedAt: normalizeString(raw.updatedAt) || now,
   };

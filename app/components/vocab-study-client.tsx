@@ -178,6 +178,49 @@ function stripInlineReading(value: string): string {
   return stripped || trimmed;
 }
 
+const LEADING_USAGE_CONTEXT_PATTERN = /^[［\[\(（【][^］\]\)）】]*[〜～~][^］\]\)）】*[］\]\)）】]\s*/u;
+
+function stripLeadingUsageContext(value: string): string {
+  let output = value.trim();
+  while (output && LEADING_USAGE_CONTEXT_PATTERN.test(output)) {
+    output = output.replace(LEADING_USAGE_CONTEXT_PATTERN, "").trim();
+  }
+  return output;
+}
+
+function extractCoreJapaneseTerm(value: string): string {
+  const stripped = stripLeadingUsageContext(stripInlineReading(value));
+  if (!stripped) {
+    return "";
+  }
+  const parts = stripped
+    .split(/[\s,，、/／|;；・]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  if (parts.length === 0) {
+    return stripped;
+  }
+  const japaneseParts = parts.filter((part) => hasJapaneseChars(part));
+  if (japaneseParts.length > 0) {
+    return japaneseParts[japaneseParts.length - 1] ?? stripped;
+  }
+  return parts[parts.length - 1] ?? stripped;
+}
+
+function collectRecallAnswerCandidates(value: string): string[] {
+  const stripped = stripInlineReading(value).trim();
+  if (!stripped) {
+    return [];
+  }
+  const withoutContext = stripLeadingUsageContext(stripped);
+  const parts = withoutContext
+    .split(/[\s,，、/／|;；・]+/)
+    .map((item) => stripLeadingUsageContext(item).trim())
+    .filter(Boolean);
+  const core = extractCoreJapaneseTerm(stripped);
+  return Array.from(new Set([withoutContext, ...parts, core].filter(Boolean)));
+}
+
 function formatRadicalSummary(radical: StudyItem["radical"]): string {
   if (!radical) {
     return "";
@@ -494,23 +537,26 @@ function displayReadingMain(item: StudyItem): string {
   return item.reading || item.word || item.kanji;
 }
 
-function pickPrimaryReading(value: string): string {
-  return value
-    .split(/[,\u3001\u30fb/]/)
-    .map((entry) => entry.trim())
-    .filter(Boolean)[0] ?? "";
-}
-
 function collectReadingCandidates(item: StudyItem): string[] {
   const primaryReading = item.reading.trim();
-  if (primaryReading) {
-    return [primaryReading];
-  }
-
+  const inlineFromReading = extractInlineReading(primaryReading);
+  const strippedPrimaryReading = stripInlineReading(primaryReading);
+  const corePrimaryReading = extractCoreJapaneseTerm(primaryReading);
   const inlineFromWord = extractInlineReading(item.word || "");
   const inlineFromKanji = extractInlineReading(item.kanji || "");
   const kanaWord = isKanaOnly(item.word) ? item.word : "";
-  const rawCandidates = [inlineFromWord, inlineFromKanji, kanaWord]
+  const kanaKanji = isKanaOnly(item.kanji) ? item.kanji : "";
+  const kanaPrimaryReading = isKanaOnly(strippedPrimaryReading) ? strippedPrimaryReading : "";
+  const rawCandidates = [
+    corePrimaryReading,
+    inlineFromReading,
+    primaryReading,
+    kanaPrimaryReading,
+    inlineFromWord,
+    inlineFromKanji,
+    kanaWord,
+    kanaKanji,
+  ]
     .map((value) => value.trim())
     .filter(Boolean);
   return Array.from(new Set(rawCandidates));
@@ -544,6 +590,12 @@ function pickBestReadingCandidate(candidates: string[]): string {
   return sorted[0] ?? "";
 }
 
+function pickBestReadingForItem(item: StudyItem): string {
+  return pickBestReadingCandidate(
+    expandReadingCandidates(buildReadingAliases(collectReadingCandidates(item)))
+  );
+}
+
 function collapseRepeatedPattern(value: string): string {
   const text = value.trim();
   if (!text) {
@@ -575,6 +627,23 @@ function buildReadingAliases(candidates: string[]): string[] {
     expanded.push(trimmed);
   }
   return Array.from(new Set(expanded));
+}
+
+function toHiraganaOnly(value: string): string {
+  const normalized = katakanaToHiragana(convertRomajiToHiraganaInput(value)).trim();
+  return normalized.replace(/[^\u3040-\u309fー]/gu, "");
+}
+
+function pickPrimaryHiraganaForQuiz(item: StudyItem): string {
+  const candidates = expandReadingCandidates(buildReadingAliases(collectReadingCandidates(item)));
+  for (const candidate of candidates) {
+    const inlineReading = extractInlineReading(candidate);
+    const normalized = toHiraganaOnly(inlineReading || candidate);
+    if (normalized) {
+      return normalized;
+    }
+  }
+  return "";
 }
 
 function makeQuizOptions(items: StudyItem[], current: StudyItem): StudyItem[] {
@@ -676,7 +745,10 @@ export function VocabStudyClient({
     return hardItems.slice(start, start + HARD_ITEMS_PAGE_SIZE);
   }, [hardItems, hardPageSafe]);
   const currentDisplayWord = displayJapanese(current);
-  const currentDisplayWordPlain = stripInlineReading(currentDisplayWord) || currentDisplayWord;
+  const currentDisplayWordPlain =
+    extractCoreJapaneseTerm(currentDisplayWord) ||
+    stripInlineReading(currentDisplayWord) ||
+    currentDisplayWord;
   const isWordToMeaningRecall = recallPromptMode === "word_to_meaning";
   const isWordToReadingRecall = recallPromptMode === "word_to_reading";
   const isCompactRecallLayout = isWordToMeaningRecall || isWordToReadingRecall;
@@ -843,6 +915,23 @@ export function VocabStudyClient({
     goNext();
   }, [current.id, goNext]);
 
+  const markCurrentAsHard = useCallback(() => {
+    const alreadyMarked = hardIdSet.has(current.id);
+    if (alreadyMarked) {
+      setHardItemIds((prev) => prev.filter((id) => id !== current.id));
+    } else {
+      setHardItemIds((prev) => [...prev, current.id]);
+    }
+    if (mode === "recall") {
+      setRecallSuccess(false);
+      setRecallMessage(
+        alreadyMarked
+          ? "Đã bỏ khỏi mục chưa thuộc."
+          : "Đã thêm vào mục chưa thuộc."
+      );
+    }
+  }, [current.id, hardIdSet, mode]);
+
   const flipCard = useCallback(() => {
     setIsFlipped((prev) => !prev);
   }, []);
@@ -986,13 +1075,18 @@ export function VocabStudyClient({
       normalizeInput(katakanaToHiragana(convertRomajiToHiraganaInput(value)));
 
     const candidate = normalizeRecall(recallInput);
-    const word = normalizeRecall(current.word);
-    const reading = normalizeRecall(current.reading);
-    const kanji = normalizeRecall(current.kanji);
+    const recallCandidates = Array.from(
+      new Set(
+        [current.word, current.reading, current.kanji]
+          .flatMap((value) => collectRecallAnswerCandidates(value))
+          .map((value) => normalizeRecall(value))
+          .filter(Boolean)
+      )
+    );
 
     const isCorrect =
       candidate.length > 0 &&
-      (candidate === word || candidate === reading || (kanji && candidate === kanji));
+      recallCandidates.some((expected) => expected === candidate);
     if (isCorrect) {
       setRecallMessage("Đúng rồi!");
       setRecallSuccess(true);
@@ -1029,38 +1123,47 @@ export function VocabStudyClient({
             })()
           : isWordToReadingRecall
             ? (() => {
-                const readingHint = pickBestReadingCandidate(
-                  expandReadingCandidates(buildReadingAliases(collectReadingCandidates(current)))
-                );
+                const readingHint = pickBestReadingForItem(current);
                 return readingHint ? `Gợi ý: ${readingHint.slice(0, 1)}...` : "Gợi ý: chưa có";
               })()
-          : `Gợi ý: bắt đầu bằng "${currentDisplayWord.slice(0, 1)}" (1/2)`
+          : (() => {
+              const readingHint = pickBestReadingForItem(current);
+              const firstHint = readingHint || currentDisplayWordPlain;
+              return firstHint
+                ? `Gợi ý: bắt đầu bằng "${firstHint.slice(0, 1)}" (1/2)`
+                : "Gợi ý: chưa có";
+            })()
         : isWordToMeaningRecall
           ? `Gợi ý: ${current.meaning.trim()} | Đọc: ${current.reading.trim() || "-"}`
           : isWordToReadingRecall
             ? (() => {
-                const readingHint = pickBestReadingCandidate(
-                  expandReadingCandidates(buildReadingAliases(collectReadingCandidates(current)))
-                );
+                const readingHint = pickBestReadingForItem(current);
                 return readingHint ? `Gợi ý: ${readingHint}` : "Gợi ý: chưa có";
               })()
-          : `Gợi ý: cách đọc là "${current.reading}" (2/2)`;
+          : (() => {
+              const readingHint = pickBestReadingForItem(current);
+              return `Gợi ý: cách đọc là "${readingHint || current.reading}" (2/2)`;
+            })();
+  const hintButtonLabel =
+    hintCount === 0 ? "Gợi ý (0/2)" : hintCount === 1 ? "Gợi ý (1/2)" : "Gợi ý (2/2)";
+  const hintDetailText = hintCount > 0 ? hintText : "";
+  const hintDetailBody = hintDetailText.replace(/^Gợi ý:\s*/u, "");
+  const isHardListRecallFeedback = /mục chưa thuộc/u.test(recallMessage);
+  const currentIsHard = hardIdSet.has(current.id);
 
   const japaneseMain = (current.reading || current.word || currentDisplayWord).trim();
   const japaneseSub = currentDisplayWord && currentDisplayWord !== japaneseMain ? currentDisplayWord : "";
   const meaningMain = current.meaning.trim();
   const hanvietMain = current.hanviet.trim();
   const kanjiRaw = (current.kanji || current.word || japaneseMain).trim();
-  const kanjiMain = stripInlineReading(kanjiRaw);
+  const kanjiMain = extractCoreJapaneseTerm(kanjiRaw) || stripInlineReading(kanjiRaw);
   const kanjiHint = current.reading.trim();
   const inlineReading = extractInlineReading(current.word || current.kanji || "");
   const fallbackKanaReading = isKanaOnly(japaneseMain) ? japaneseMain : "";
   const kanjiFurigana = kanjiHint || inlineReading || fallbackKanaReading;
   const hasRealKanji = /[\u4e00-\u9fff]/u.test(kanjiMain);
   const recallAnswerWord = currentDisplayWordPlain || kanjiMain || japaneseMain;
-  const recallAnswerReading = pickBestReadingCandidate(
-    expandReadingCandidates(buildReadingAliases(collectReadingCandidates(current)))
-  );
+  const recallAnswerReading = pickBestReadingForItem(current);
   const recallRadicalSummary = formatRadicalSummary(current.radical);
 
   let flashFrontMain = japaneseMain;
@@ -1595,110 +1698,6 @@ export function VocabStudyClient({
         </div>
       ) : null}
 
-      {mode === "flashcard" ? (
-        <div className="mt-4 rounded-2xl border border-slate-500/40 bg-[#25315a] p-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-slate-100">
-                Danh sách từ chưa thuộc ({hardItems.length})
-              </h3>
-              <p className="mt-1 text-xs text-slate-300">
-                Từ nào bấm <span className="font-semibold text-rose-300">X</span> sẽ vào đây để ôn lại.
-                {hardItems.length > 0 ? ` Trang ${hardPageSafe}/${hardTotalPages}.` : ""}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="rounded-full border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
-                onClick={() => setShowHardPanel((prev) => !prev)}
-              >
-                {showHardPanel ? "Ẩn danh sách" : "Hiện danh sách"}
-              </button>
-              <button
-                type="button"
-                className="rounded-full border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
-                onClick={toggleHardReview}
-                disabled={hardItems.length === 0}
-              >
-                {isHardReview ? "Đang ôn từ khó" : "Ôn nhóm từ khó"}
-              </button>
-              <button
-                type="button"
-                className="rounded-full border border-rose-300/70 px-3 py-1 text-xs font-semibold text-rose-100 hover:bg-rose-500/20"
-                onClick={clearHardItems}
-                disabled={hardItems.length === 0}
-              >
-                Xóa danh sách
-              </button>
-            </div>
-          </div>
-
-          {!showHardPanel ? (
-            <p className="mt-3 rounded-lg border border-slate-500/40 bg-[#1f2a4f] px-3 py-2 text-sm text-slate-300">
-              Danh sách đang được thu gọn. Bấm{" "}
-              <span className="font-semibold text-sky-300">Hiện danh sách</span> để xem lại.
-            </p>
-          ) : hardItems.length === 0 ? (
-            <p className="mt-3 rounded-lg border border-slate-500/40 bg-[#243056] px-3 py-2 text-sm text-slate-300">
-              Chưa có từ khó. Bấm nút <span className="font-bold text-rose-300">X</span> để đánh dấu từ cần ôn lại.
-            </p>
-          ) : (
-            <>
-              <div className="mt-3 grid gap-2 md:grid-cols-2">
-                {hardPageItems.map((item) => (
-                  <article
-                    key={item.id}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-slate-400/50 bg-[#23305a] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate text-lg font-semibold text-white">
-                        {item.reading || item.word}
-                      </p>
-                      <p className="truncate text-sm text-slate-300">
-                        {item.kanji ? `${item.kanji} · ` : ""}
-                        {item.meaning}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      className="shrink-0 rounded-full border border-slate-300/80 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
-                      onClick={() => removeHardItem(item.id)}
-                    >
-                      Bỏ
-                    </button>
-                  </article>
-                ))}
-              </div>
-
-              {hardItems.length > HARD_ITEMS_PAGE_SIZE ? (
-                <div className="mt-3 flex items-center justify-between rounded-lg border border-slate-500/40 bg-[#1f2a4f] px-3 py-2 text-xs">
-                  <button
-                    type="button"
-                    className="rounded-full border border-slate-400 px-3 py-1 font-semibold text-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
-                    onClick={() => setHardPage((prev) => Math.max(1, prev - 1))}
-                    disabled={hardPageSafe <= 1}
-                  >
-                    ← Trang trước
-                  </button>
-                  <span className="font-semibold text-slate-200">
-                    Trang {hardPageSafe} / {hardTotalPages}
-                  </span>
-                  <button
-                    type="button"
-                    className="rounded-full border border-slate-400 px-3 py-1 font-semibold text-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
-                    onClick={() => setHardPage((prev) => Math.min(hardTotalPages, prev + 1))}
-                    disabled={hardPageSafe >= hardTotalPages}
-                  >
-                    Trang sau →
-                  </button>
-                </div>
-              ) : null}
-            </>
-          )}
-        </div>
-      ) : null}
-
       {mode === "quiz" ? (
         <div className="rounded-2xl bg-[#32416d] p-8">
           <div className="mb-8 flex flex-wrap items-center justify-end gap-3">
@@ -1779,7 +1778,7 @@ export function VocabStudyClient({
               const wrong = checkedQuiz && selected && option.id !== current.id;
               const optionMain =
                 quizPromptMode === "kanji_to_hiragana"
-                  ? pickPrimaryReading(option.reading) || displayReadingMain(option).trim()
+                  ? pickPrimaryHiraganaForQuiz(option) || "-"
                   : quizPromptMode === "kanji_to_vi"
                     ? option.meaning.trim() || displayJapanese(option).trim()
                   : displayJapanese(option).trim() || displayReadingMain(option).trim();
@@ -1902,6 +1901,10 @@ export function VocabStudyClient({
               className={`w-full rounded-lg bg-transparent text-white outline-none placeholder:text-slate-400 ${
                 isCompactRecallLayout ? "px-3.5 py-2 text-lg sm:text-xl" : "px-4 py-2.5 text-xl"
               }`}
+              lang={isWordToMeaningRecall ? "vi" : "ja"}
+              spellCheck={isWordToMeaningRecall}
+              autoCapitalize="off"
+              autoCorrect="off"
               placeholder={
                 isWordToMeaningRecall
                   ? "Gõ nghĩa tiếng Việt"
@@ -1972,22 +1975,49 @@ export function VocabStudyClient({
                 : "Gõ romaji sẽ tự chuyển sang hiragana."}
           </p>
 
-          <div className={`grid md:grid-cols-2 ${isCompactRecallLayout ? "gap-2" : "gap-2.5"}`}>
+          {currentIsHard ? (
+            <p
+              className={`mb-2 text-center ${
+                isCompactRecallLayout ? "text-sm" : "text-base"
+              }`}
+            >
+              <span className="inline-flex items-center gap-2 rounded-full border border-rose-200/85 bg-gradient-to-r from-rose-500/30 to-pink-500/25 px-4 py-1.5 font-bold text-rose-50 shadow-[0_8px_20px_rgba(244,63,94,0.24)]">
+                <span aria-hidden className="text-sm leading-none">★</span>
+                <span>Từ này đã nằm trong mục chưa thuộc</span>
+              </span>
+            </p>
+          ) : null}
+
+          <div className={`grid md:grid-cols-3 ${isCompactRecallLayout ? "gap-2" : "gap-2.5"}`}>
             <button
               type="button"
-              className={`rounded-xl bg-slate-200 px-4 font-semibold text-slate-500 disabled:opacity-60 ${
-                isCompactRecallLayout ? "py-2 text-base" : "py-2.5 text-lg"
+              className={`flex items-center justify-center rounded-xl px-4 font-semibold ${
+                currentIsHard
+                  ? "border border-rose-200/85 bg-rose-500/25 text-rose-50"
+                  : "bg-rose-500 text-white"
+              } ${isCompactRecallLayout ? "h-12 text-base" : "h-14 text-lg"}`}
+              title={currentIsHard ? "Bấm để bỏ khỏi mục chưa thuộc" : "Thêm từ này vào mục chưa thuộc"}
+              onClick={markCurrentAsHard}
+              onMouseDown={(event) => event.preventDefault()}
+            >
+              {currentIsHard ? "Đã thêm (bấm để bỏ)" : "Chưa thuộc"}
+            </button>
+            <button
+              type="button"
+              className={`flex items-center justify-center rounded-xl bg-slate-200 px-4 font-semibold text-slate-500 disabled:opacity-60 ${
+                isCompactRecallLayout ? "h-12 text-base" : "h-14 text-lg"
               }`}
               onClick={useHint}
               disabled={hintCount >= 2}
               onMouseDown={(event) => event.preventDefault()}
+              title={hintText}
             >
-              {hintText}
+              {hintButtonLabel}
             </button>
             <button
               type="button"
-              className={`rounded-xl bg-orange-500 px-4 font-semibold text-white ${
-                isCompactRecallLayout ? "py-2 text-base" : "py-2.5 text-lg"
+              className={`flex items-center justify-center rounded-xl bg-orange-500 px-4 font-semibold text-white ${
+                isCompactRecallLayout ? "h-12 text-base" : "h-14 text-lg"
               }`}
               onClick={() => {
                 if (recallSuccess) {
@@ -2002,12 +2032,36 @@ export function VocabStudyClient({
             </button>
           </div>
 
+          {hintDetailText ? (
+            <p
+              className={`mt-2 rounded-lg border border-amber-200/75 bg-gradient-to-r from-amber-300/25 via-yellow-200/20 to-amber-300/25 px-3 py-2 text-center font-semibold text-white shadow-[0_8px_20px_rgba(252,211,77,0.18)] ${
+                isCompactRecallLayout ? "text-sm" : "text-base"
+              }`}
+            >
+              <span className="mr-1.5 rounded-full border border-amber-100/80 bg-amber-300/25 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-amber-100">
+                Gợi ý
+              </span>
+              <span className="align-middle text-white">{hintDetailBody || hintDetailText}</span>
+            </p>
+          ) : null}
+
           <p
             className={`${isCompactRecallLayout ? "mt-2 min-h-[22px] text-sm" : "mt-3 min-h-[28px] text-base"} text-center ${
-              recallSuccess ? "text-emerald-300" : "text-slate-300"
+              isHardListRecallFeedback ? "text-rose-100" : recallSuccess ? "text-emerald-300" : "text-slate-300"
             }`}
           >
-            {recallMessage || "Nhấn Enter để kiểm tra nhanh"}
+            {recallMessage ? (
+              isHardListRecallFeedback ? (
+                <span className="inline-flex items-center gap-2 rounded-full border border-rose-200/85 bg-gradient-to-r from-rose-500/30 to-pink-500/25 px-4 py-1.5 font-bold text-rose-50 shadow-[0_8px_20px_rgba(244,63,94,0.28)]">
+                  <span aria-hidden className="text-sm leading-none">★</span>
+                  <span>{recallMessage}</span>
+                </span>
+              ) : (
+                recallMessage
+              )
+            ) : (
+              "Nhấn Enter để kiểm tra nhanh"
+            )}
           </p>
 
           <div className={`${isCompactRecallLayout ? "mt-2 min-h-[96px]" : "mt-3 min-h-[118px]"}`}>
@@ -2091,6 +2145,31 @@ export function VocabStudyClient({
               →
             </button>
           </div>
+
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+            <button
+              type="button"
+              className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+                hardItems.length === 0
+                  ? "cursor-not-allowed border border-slate-500 bg-slate-700/60 text-slate-400"
+                  : isHardReview
+                    ? "border border-rose-300 bg-rose-500/30 text-rose-100"
+                    : "border border-slate-300/80 bg-slate-700/45 text-slate-100"
+              }`}
+              onClick={toggleHardReview}
+              onMouseDown={(event) => event.preventDefault()}
+              disabled={hardItems.length === 0}
+            >
+              {isHardReview
+                ? `Xem tất cả (${items.length})`
+                : `Ôn mục chưa thuộc (${hardItems.length})`}
+            </button>
+            {isHardReview ? (
+              <span className="rounded-full border border-rose-300/70 bg-rose-500/15 px-2.5 py-1 text-xs font-semibold text-rose-100">
+                Đang ôn mục chưa thuộc
+              </span>
+            ) : null}
+          </div>
         </div>
       ) : null}
 
@@ -2108,6 +2187,126 @@ export function VocabStudyClient({
           style={{ width: `${progressPercent}%` }}
         />
       </div>
+
+      {mode === "flashcard" || mode === "recall" ? (
+        <div className="mt-4 rounded-2xl border border-slate-500/40 bg-[#25315a] p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-slate-100">
+                Danh sách từ chưa thuộc ({hardItems.length})
+              </h3>
+              <p className="mt-1 text-xs text-slate-300">
+                {mode === "flashcard" ? (
+                  <>
+                    Từ nào bấm <span className="font-semibold text-rose-300">X</span> sẽ vào đây để ôn lại.
+                  </>
+                ) : (
+                  <>
+                    Từ nào bấm <span className="font-semibold text-rose-300">Chưa thuộc</span> sẽ vào đây để ôn lại.
+                  </>
+                )}
+                {hardItems.length > 0 ? ` Trang ${hardPageSafe}/${hardTotalPages}.` : ""}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="rounded-full border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
+                onClick={() => setShowHardPanel((prev) => !prev)}
+              >
+                {showHardPanel ? "Ẩn danh sách" : "Hiện danh sách"}
+              </button>
+              <button
+                type="button"
+                className="rounded-full border border-slate-400 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
+                onClick={toggleHardReview}
+                disabled={hardItems.length === 0}
+              >
+                {isHardReview ? "Đang ôn từ khó" : "Ôn nhóm từ khó"}
+              </button>
+              <button
+                type="button"
+                className="rounded-full border border-rose-300/70 px-3 py-1 text-xs font-semibold text-rose-100 hover:bg-rose-500/20"
+                onClick={clearHardItems}
+                disabled={hardItems.length === 0}
+              >
+                Xóa danh sách
+              </button>
+            </div>
+          </div>
+
+          {!showHardPanel ? (
+            <p className="mt-3 rounded-lg border border-slate-500/40 bg-[#1f2a4f] px-3 py-2 text-sm text-slate-300">
+              Danh sách đang được thu gọn. Bấm{" "}
+              <span className="font-semibold text-sky-300">Hiện danh sách</span> để xem lại.
+            </p>
+          ) : hardItems.length === 0 ? (
+            <p className="mt-3 rounded-lg border border-slate-500/40 bg-[#243056] px-3 py-2 text-sm text-slate-300">
+              {mode === "flashcard" ? (
+                <>
+                  Chưa có từ khó. Bấm nút <span className="font-bold text-rose-300">X</span> để đánh dấu từ cần ôn lại.
+                </>
+              ) : (
+                <>
+                  Chưa có từ khó. Bấm nút <span className="font-bold text-rose-300">Chưa thuộc</span> để đánh dấu từ cần ôn lại.
+                </>
+              )}
+            </p>
+          ) : (
+            <>
+              <div className="mt-3 grid gap-2 md:grid-cols-2">
+                {hardPageItems.map((item) => (
+                  <article
+                    key={item.id}
+                    className="flex items-center justify-between gap-3 rounded-lg border border-slate-400/50 bg-[#23305a] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-lg font-semibold text-white">
+                        {item.reading || item.word}
+                      </p>
+                      <p className="truncate text-sm text-slate-300">
+                        {item.kanji ? `${item.kanji} · ` : ""}
+                        {item.meaning}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="shrink-0 rounded-full border border-slate-300/80 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
+                      onClick={() => removeHardItem(item.id)}
+                    >
+                      Bỏ
+                    </button>
+                  </article>
+                ))}
+              </div>
+
+              {hardItems.length > HARD_ITEMS_PAGE_SIZE ? (
+                <div className="mt-3 flex items-center justify-between rounded-lg border border-slate-500/40 bg-[#1f2a4f] px-3 py-2 text-xs">
+                  <button
+                    type="button"
+                    className="rounded-full border border-slate-400 px-3 py-1 font-semibold text-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    onClick={() => setHardPage((prev) => Math.max(1, prev - 1))}
+                    disabled={hardPageSafe <= 1}
+                  >
+                    ← Trang trước
+                  </button>
+                  <span className="font-semibold text-slate-200">
+                    Trang {hardPageSafe} / {hardTotalPages}
+                  </span>
+                  <button
+                    type="button"
+                    className="rounded-full border border-slate-400 px-3 py-1 font-semibold text-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    onClick={() => setHardPage((prev) => Math.min(hardTotalPages, prev + 1))}
+                    disabled={hardPageSafe >= hardTotalPages}
+                  >
+                    Trang sau →
+                  </button>
+                </div>
+              ) : null}
+            </>
+          )}
+        </div>
+      ) : null}
     </section>
   );
 }
