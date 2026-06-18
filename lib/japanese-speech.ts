@@ -1,20 +1,24 @@
 const FURIGANA_META_PATTERN = /\n?\[\[furigana:[\s\S]*?\]\]\s*$/;
 const RUBY_RT_PATTERN = /<rt[\s\S]*?<\/rt>/gi;
 const HTML_TAG_PATTERN = /<[^>]+>/g;
-const AOZORA_RUBY_PATTERN = /(?:\|)?([\u3400-\u9fff々〆ヵヶ]+)《[ぁ-ゖァ-ヺー・\s]+》/g;
+const AOZORA_RUBY_PATTERN = /(?:[|｜])?([\u3400-\u9fff々〆ヵヶ]+)《([ぁ-ゖァ-ヺー・\s]+)》/g;
 const BRACKETED_KANA_AFTER_KANJI_PATTERN =
-  /([\u3400-\u9fff々〆ヵヶ]+)\s*[（(［\[]\s*[ぁ-ゖァ-ヺー・\s]+\s*[）)\］\]]/g;
+  /([\u3400-\u9fff々〆ヵヶ]+)\s*[（(［\[]\s*([ぁ-ゖァ-ヺー・\s]+)\s*[）)\］\]]/g;
 const WHITESPACE_PATTERN = /[ \t\u3000]+/g;
 const SENTENCE_BOUNDARY_PATTERN = /[^。！？!?]+[。！？!?]?/g;
 const MAX_CHUNK_LENGTH = 110;
+
+function compactRubyReading(_match: string, _kanji: string, reading: string): string {
+  return reading.replace(/\s+/g, "");
+}
 
 function compactSpeechText(value: string): string {
   return value
     .replace(FURIGANA_META_PATTERN, "")
     .replace(RUBY_RT_PATTERN, "")
     .replace(HTML_TAG_PATTERN, "")
-    .replace(AOZORA_RUBY_PATTERN, "$1")
-    .replace(BRACKETED_KANA_AFTER_KANJI_PATTERN, "$1")
+    .replace(AOZORA_RUBY_PATTERN, compactRubyReading)
+    .replace(BRACKETED_KANA_AFTER_KANJI_PATTERN, compactRubyReading)
     .replace(WHITESPACE_PATTERN, " ")
     .replace(/\s*\n+\s*/g, "\n")
     .trim();

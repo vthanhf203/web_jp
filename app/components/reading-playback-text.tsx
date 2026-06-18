@@ -3,9 +3,12 @@
 import { Loader2, Pause, Play, Square, Volume2 } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { buildJapaneseLookupTextCandidates, normalizeJapaneseLookupText } from "@/lib/japanese-lookup-text";
+
 const TOKEN_PATTERN =
   /[\u3400-\u9fff\u3005\u3006\u30f5\u30f6]+[\uff08(][\u3041-\u3096\u30a1-\u30fa\u30fc\u30fb\s]+[\uff09)]|[\u3041-\u3096\u30a1-\u30fa\u30fc]+|[\u30a1-\u30fa\u30fc]+|[\u3400-\u9fff\u3005\u3006\u30f5\u30f6]+|[A-Za-z0-9]+|[^\s]/gu;
 const SPEAKABLE_TOKEN_PATTERN = /[\u3040-\u30ff\u3400-\u9fffA-Za-z0-9]/u;
+const KANJI_TEXT_PATTERN = /[\u3400-\u9fff\u3005\u3006\u30f5\u30f6]/u;
 const RUBY_TOKEN_PATTERN =
   /^([\u3400-\u9fff\u3005\u3006\u30f5\u30f6]+)[\uff08(]\s*([\u3041-\u3096\u30a1-\u30fa\u30fc\u30fb\s]+)\s*[\uff09)]$/u;
 const INLINE_RUBY_PATTERN =
@@ -16,6 +19,20 @@ const PLAYBACK_SYNC_INTERVAL_MS = 160;
 
 type Props = {
   paragraphs: string[];
+  vocabulary?: ReadingVocabularyLookupItem[];
+};
+
+type ReadingVocabularyLookupItem = {
+  word: string;
+  reading?: string;
+  meaning?: string;
+};
+
+type VocabularyLookupEntry = {
+  surface: string;
+  reading: string;
+  label: string;
+  length: number;
 };
 
 type TokenRunState = "idle" | "passed" | "active";
@@ -25,6 +42,10 @@ type ReadingToken = {
   speechStart: number;
   speechEnd: number;
   speakable: boolean;
+  lookupSurface: string;
+  lookupReading: string;
+  isVocabulary?: boolean;
+  vocabularyLabel?: string;
   kanji?: string;
   reading?: string;
 };
@@ -77,9 +98,13 @@ function formatClock(seconds: number): string {
   return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }
 
+function compactRubyReading(_match: string, _kanji: string, reading: string): string {
+  return reading.replace(/\s+/g, "");
+}
+
 function stripInlineRubyForSpeech(value: string): string {
   return value
-    .replace(INLINE_RUBY_PATTERN, "$1")
+    .replace(INLINE_RUBY_PATTERN, compactRubyReading)
     .replace(/[ \t\u3000]+/g, " ")
     .replace(/\r/g, "")
     .trim();
@@ -100,6 +125,44 @@ function parseRubyToken(text: string): Pick<ReadingToken, "kanji" | "reading"> |
   };
 }
 
+function lookupText(value: string): string {
+  return normalizeJapaneseLookupText(value);
+}
+
+function buildVocabularyLookupEntries(vocabulary: ReadingVocabularyLookupItem[] = []): VocabularyLookupEntry[] {
+  const seen = new Set<string>();
+  const entries: VocabularyLookupEntry[] = [];
+
+  for (const item of vocabulary) {
+    const word = lookupText(item.word);
+    const reading = lookupText(item.reading ?? "");
+    const label = [item.word, item.reading ? `(${item.reading})` : "", item.meaning].filter(Boolean).join(" ");
+    const surfaces = new Set([
+      word,
+      ...buildJapaneseLookupTextCandidates(item.word).map((candidate) => lookupText(candidate)),
+    ]);
+
+    for (const surface of surfaces) {
+      if (!surface) {
+        continue;
+      }
+      const key = `${surface}|${reading}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      entries.push({
+        surface,
+        reading,
+        label,
+        length: Math.max(surface.length, reading.length),
+      });
+    }
+  }
+
+  return entries.sort((left, right) => right.length - left.length || left.surface.localeCompare(right.surface, "ja"));
+}
+
 function pushToken(tokens: ReadingToken[], text: string, speechCursor: number): number {
   if (!text) {
     return speechCursor;
@@ -115,6 +178,8 @@ function pushToken(tokens: ReadingToken[], text: string, speechCursor: number): 
     speechStart,
     speechEnd,
     speakable,
+    lookupSurface: lookupText(ruby?.kanji ?? text),
+    lookupReading: lookupText(ruby?.reading ?? speechText),
     ...(ruby ?? {}),
   });
   return speechEnd;
@@ -147,12 +212,83 @@ function buildTokens(text: string): ReadingToken[] {
           speechStart: 0,
           speechEnd: compactSpeechCursorText(text).length,
           speakable: true,
+          lookupSurface: lookupText(parseRubyToken(text)?.kanji ?? text),
+          lookupReading: lookupText(parseRubyToken(text)?.reading ?? compactSpeechCursorText(text)),
           ...(parseRubyToken(text) ?? {}),
         },
       ];
 }
 
-function buildReadingSentences(paragraphs: string[]): ReadingSentence[] {
+function matchTokenSequence(tokens: ReadingToken[], startIndex: number, target: string, key: "lookupSurface" | "lookupReading"): number {
+  if (!target) {
+    return -1;
+  }
+
+  let joined = "";
+  for (let index = startIndex; index < tokens.length; index += 1) {
+    const value = tokens[index]?.[key] ?? "";
+    if (!value) {
+      break;
+    }
+    joined += value;
+    if (joined === target) {
+      return index + 1;
+    }
+    if (!target.startsWith(joined)) {
+      break;
+    }
+  }
+
+  return -1;
+}
+
+function tokenRangeHasKanji(tokens: ReadingToken[], startIndex: number, endIndex: number): boolean {
+  return tokens
+    .slice(startIndex, endIndex)
+    .some((token) => KANJI_TEXT_PATTERN.test(token.lookupSurface));
+}
+
+function markVocabularyRange(tokens: ReadingToken[], startIndex: number, endIndex: number, entry: VocabularyLookupEntry): void {
+  for (let index = startIndex; index < endIndex; index += 1) {
+    if (!tokens[index]?.isVocabulary) {
+      tokens[index] = {
+        ...tokens[index],
+        isVocabulary: true,
+        vocabularyLabel: entry.label,
+      };
+    }
+  }
+}
+
+function annotateVocabularyTokens(tokens: ReadingToken[], entries: VocabularyLookupEntry[]): ReadingToken[] {
+  if (entries.length === 0 || tokens.length === 0) {
+    return tokens;
+  }
+
+  const output = tokens.map((token) => ({ ...token }));
+  for (let startIndex = 0; startIndex < output.length; startIndex += 1) {
+    for (const entry of entries) {
+      const surfaceEnd = matchTokenSequence(output, startIndex, entry.surface, "lookupSurface");
+      if (surfaceEnd > startIndex) {
+        markVocabularyRange(output, startIndex, surfaceEnd, entry);
+        break;
+      }
+
+      const readingEnd = matchTokenSequence(output, startIndex, entry.reading, "lookupReading");
+      const canMatchReading =
+        readingEnd > startIndex &&
+        (!KANJI_TEXT_PATTERN.test(entry.surface) || !tokenRangeHasKanji(output, startIndex, readingEnd));
+      if (canMatchReading) {
+        markVocabularyRange(output, startIndex, readingEnd, entry);
+        break;
+      }
+    }
+  }
+
+  return output;
+}
+
+function buildReadingSentences(paragraphs: string[], vocabularyEntries: VocabularyLookupEntry[]): ReadingSentence[] {
   const output: ReadingSentence[] = [];
   let sentenceCursor = 0;
   for (let paragraphIndex = 0; paragraphIndex < paragraphs.length; paragraphIndex += 1) {
@@ -170,6 +306,7 @@ function buildReadingSentences(paragraphs: string[]): ReadingSentence[] {
       if (!speechText) {
         continue;
       }
+      const tokens = annotateVocabularyTokens(buildTokens(displayText), vocabularyEntries);
       output.push({
         id: `${paragraphIndex}-${sentenceCursor}`,
         paragraphIndex,
@@ -177,7 +314,7 @@ function buildReadingSentences(paragraphs: string[]): ReadingSentence[] {
         displayText,
         speechText,
         speechLength: compactSpeechCursorText(speechText).length,
-        tokens: buildTokens(displayText),
+        tokens,
       });
       sentenceCursor += 1;
     }
@@ -257,11 +394,16 @@ const ReadingTokenText = memo(function ReadingTokenText({ state, token }: { stat
       : state === "passed"
         ? "text-[#123c69]"
         : "text-[#111827]";
+  const vocabClass = token.isVocabulary
+    ? "underline decoration-[#ff6b00] decoration-2 underline-offset-[6px]"
+    : "";
 
   if (token.kanji && token.reading) {
     return (
       <ruby className="align-baseline whitespace-nowrap px-0.5 [ruby-position:over]">
-        <span className={`${kanjiClass} transition-colors duration-100`}>{token.kanji}</span>
+        <span className={`${kanjiClass} ${vocabClass} transition-colors duration-100`} title={token.vocabularyLabel}>
+          {token.kanji}
+        </span>
         <rt className="pointer-events-none select-none text-[0.5em] font-black leading-none tracking-wide text-[#64748b]">
           {token.reading}
         </rt>
@@ -269,10 +411,14 @@ const ReadingTokenText = memo(function ReadingTokenText({ state, token }: { stat
     );
   }
 
-  return <span className={`${kanjiClass} transition-colors duration-100`}>{token.text}</span>;
+  return (
+    <span className={`${kanjiClass} ${vocabClass} transition-colors duration-100`} title={token.vocabularyLabel}>
+      {token.text}
+    </span>
+  );
 });
 
-export function ReadingPlaybackText({ paragraphs }: Props) {
+export function ReadingPlaybackText({ paragraphs, vocabulary = [] }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const textContainerRef = useRef<HTMLDivElement | null>(null);
   const sentenceRefs = useRef(new Map<number, HTMLSpanElement>());
@@ -294,7 +440,11 @@ export function ReadingPlaybackText({ paragraphs }: Props) {
   const [activeSentenceIndex, setActiveSentenceIndex] = useState(-1);
   const [activeTokenIndex, setActiveTokenIndex] = useState(-1);
 
-  const sentences = useMemo(() => buildReadingSentences(paragraphs), [paragraphs]);
+  const vocabularyEntries = useMemo(() => buildVocabularyLookupEntries(vocabulary), [vocabulary]);
+  const sentences = useMemo(
+    () => buildReadingSentences(paragraphs, vocabularyEntries),
+    [paragraphs, vocabularyEntries]
+  );
   const timeline = useMemo(() => buildTimeline(sentences, audioDuration), [sentences, audioDuration]);
   const rawText = useMemo(() => sentences.map((sentence) => sentence.speechText).join("\n"), [sentences]);
 

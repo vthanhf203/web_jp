@@ -39,6 +39,8 @@ export type GrammarPracticeQuizPrompt = {
   jp?: string;
   jpWithReading?: string;
   vi?: string;
+  highlight?: string;
+  parts: string[];
 };
 
 export type GrammarPracticeQuizOption = {
@@ -46,18 +48,39 @@ export type GrammarPracticeQuizOption = {
   text: string;
 };
 
+export type GrammarPracticeQuizPairItem = {
+  id: string;
+  text: string;
+};
+
+export type GrammarPracticeQuizPairs = {
+  left: GrammarPracticeQuizPairItem[];
+  right: GrammarPracticeQuizPairItem[];
+};
+
+export type GrammarPracticeQuizFullSentence = {
+  jp?: string;
+  jpWithReading?: string;
+  vi?: string;
+};
+
 export type GrammarPracticeQuizItem = {
   id: string;
   type: string;
   skill?: string;
   difficulty?: number;
+  targetPattern?: string;
   question: string;
   prompt?: GrammarPracticeQuizPrompt;
   options: GrammarPracticeQuizOption[];
   acceptedAnswers: string[];
   answer: string;
+  answerParts: string[];
+  answerMap: Record<string, string>;
   explanation?: string;
   wrongAnswerExplanations: Record<string, string>;
+  fullSentence?: GrammarPracticeQuizFullSentence;
+  pairs?: GrammarPracticeQuizPairs;
 };
 
 export type GrammarPracticeReview = {
@@ -89,11 +112,40 @@ export type GrammarPracticeItem = {
   updatedAt: string;
 };
 
-export const DEFAULT_GRAMMAR_DECK_NAME = "Chua phan loai";
+export const DEFAULT_GRAMMAR_DECK_NAME = "Chưa phân loại";
+
+export type GrammarPracticeQuizWeakPointRule = {
+  condition: string;
+  messageVi: string;
+};
+
+export type GrammarPracticeQuizReviewConfig = {
+  shuffleItems: boolean;
+  shuffleOptions: boolean;
+  passScorePercent: number;
+  recommendedNextReviewDays: number[];
+  weakPointRules: GrammarPracticeQuizWeakPointRule[];
+};
+
+export type GrammarPracticeQuizDeck = {
+  id: string;
+  deckName: string;
+  jlptLevel: string;
+  quizType?: string;
+  topic: string;
+  estimatedMinutes?: number;
+  sourceGrammarIds: string[];
+  instructionsVi?: string;
+  items: GrammarPracticeQuizItem[];
+  reviewConfig: GrammarPracticeQuizReviewConfig;
+  createdAt: string;
+  updatedAt: string;
+};
 
 export type GrammarPracticeStore = {
   updatedAt: string;
   items: GrammarPracticeItem[];
+  quizDecks: GrammarPracticeQuizDeck[];
 };
 
 function getStoreKey(userId: string): string {
@@ -341,12 +393,15 @@ function normalizeQuizPrompt(value: unknown): GrammarPracticeQuizPrompt | undefi
     return undefined;
   }
   const raw = value as Record<string, unknown>;
+  const parts = normalizeStringArray(raw.parts);
   const prompt: GrammarPracticeQuizPrompt = {
     jp: pickString(raw, ["jp", "ja"]) || undefined,
     jpWithReading: pickString(raw, ["jpWithReading", "japaneseWithReading"]) || undefined,
     vi: pickString(raw, ["vi", "vn", "translation"]) || undefined,
+    highlight: pickString(raw, ["highlight", "target", "focus"]) || undefined,
+    parts,
   };
-  if (!prompt.jp && !prompt.jpWithReading && !prompt.vi) {
+  if (!prompt.jp && !prompt.jpWithReading && !prompt.vi && prompt.parts.length === 0) {
     return undefined;
   }
   return prompt;
@@ -400,14 +455,126 @@ function normalizeWrongAnswerExplanations(value: unknown): Record<string, string
   return output;
 }
 
+function normalizeAnswerParts(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value
+    .map((entry) => (typeof entry === "string" ? entry.trim() : normalizeNestedString(entry)))
+    .filter(Boolean);
+}
+
+function normalizeAnswerMap(value: unknown): Record<string, string> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+  const output: Record<string, string> = {};
+  for (const [key, raw] of Object.entries(value as Record<string, unknown>)) {
+    const text = typeof raw === "string" ? raw.trim() : normalizeNestedString(raw);
+    if (key && text) {
+      output[key] = text;
+    }
+  }
+  return output;
+}
+
+function normalizeQuizAnswer(value: unknown): {
+  answer: string;
+  answerParts: string[];
+  answerMap: Record<string, string>;
+} {
+  if (typeof value === "string") {
+    return {
+      answer: value.trim(),
+      answerParts: [],
+      answerMap: {},
+    };
+  }
+
+  const answerParts = normalizeAnswerParts(value);
+  if (answerParts.length > 0) {
+    return {
+      answer: answerParts.join(""),
+      answerParts,
+      answerMap: {},
+    };
+  }
+
+  const answerMap = normalizeAnswerMap(value);
+  if (Object.keys(answerMap).length > 0) {
+    return {
+      answer: Object.entries(answerMap)
+        .map(([key, mapped]) => `${key}:${mapped}`)
+        .join("|"),
+      answerParts: [],
+      answerMap,
+    };
+  }
+
+  return {
+    answer: "",
+    answerParts: [],
+    answerMap: {},
+  };
+}
+
+function normalizeQuizPairItem(value: unknown): GrammarPracticeQuizPairItem | null {
+  if (typeof value === "string") {
+    const text = value.trim();
+    return text ? { id: text, text } : null;
+  }
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+  const raw = value as Record<string, unknown>;
+  const text = pickString(raw, ["text", "value", "label", "content"]);
+  if (!text) {
+    return null;
+  }
+  return {
+    id: pickString(raw, ["id", "key"]) || text,
+    text,
+  };
+}
+
+function normalizeQuizPairs(value: unknown): GrammarPracticeQuizPairs | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+  const raw = value as Record<string, unknown>;
+  const left = Array.isArray(raw.left)
+    ? raw.left.map((entry) => normalizeQuizPairItem(entry)).filter((entry): entry is GrammarPracticeQuizPairItem => Boolean(entry))
+    : [];
+  const right = Array.isArray(raw.right)
+    ? raw.right.map((entry) => normalizeQuizPairItem(entry)).filter((entry): entry is GrammarPracticeQuizPairItem => Boolean(entry))
+    : [];
+  if (left.length === 0 || right.length === 0) {
+    return undefined;
+  }
+  return { left, right };
+}
+
+function normalizeQuizFullSentence(value: unknown): GrammarPracticeQuizFullSentence | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+  const raw = value as Record<string, unknown>;
+  const fullSentence = {
+    jp: pickString(raw, ["jp", "ja"]) || undefined,
+    jpWithReading: pickString(raw, ["jpWithReading", "japaneseWithReading"]) || undefined,
+    vi: pickString(raw, ["vi", "vn", "translation"]) || undefined,
+  };
+  return fullSentence.jp || fullSentence.jpWithReading || fullSentence.vi ? fullSentence : undefined;
+}
+
 function normalizeQuizItem(value: unknown, index: number): GrammarPracticeQuizItem | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return null;
   }
   const raw = value as Record<string, unknown>;
   const question = pickString(raw, ["question", "title", "promptText"]);
-  const answer = pickString(raw, ["answer", "correctAnswer", "correctOption"]);
-  if (!question || !answer) {
+  const normalizedAnswer = normalizeQuizAnswer(raw.answer ?? raw.correctAnswer ?? raw.correctOption);
+  if (!question || !normalizedAnswer.answer) {
     return null;
   }
   return {
@@ -415,13 +582,18 @@ function normalizeQuizItem(value: unknown, index: number): GrammarPracticeQuizIt
     type: pickString(raw, ["type"]) || "multiple_choice",
     skill: pickString(raw, ["skill"]) || undefined,
     difficulty: normalizeOptionalNumber(raw.difficulty),
+    targetPattern: pickString(raw, ["targetPattern", "pattern", "grammar"]) || undefined,
     question,
     prompt: normalizeQuizPrompt(raw.prompt),
     options: normalizeQuizOptions(raw.options),
-    acceptedAnswers: normalizeStringArray(raw.acceptedAnswers),
-    answer,
-    explanation: pickString(raw, ["explanation", "note", "reason"]) || undefined,
+    acceptedAnswers: normalizeStringArray(raw.acceptedAnswers ?? raw.acceptableAnswers),
+    answer: normalizedAnswer.answer,
+    answerParts: normalizedAnswer.answerParts,
+    answerMap: normalizedAnswer.answerMap,
+    explanation: pickString(raw, ["explanation", "explanationVi", "note", "reason"]) || undefined,
     wrongAnswerExplanations: normalizeWrongAnswerExplanations(raw.wrongAnswerExplanations),
+    fullSentence: normalizeQuizFullSentence(raw.fullSentence),
+    pairs: normalizeQuizPairs(raw.pairs),
   };
 }
 
@@ -456,6 +628,100 @@ function normalizeReview(value: unknown): GrammarPracticeReview | undefined {
   };
 }
 
+function normalizeWeakPointRule(value: unknown): GrammarPracticeQuizWeakPointRule | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+  const raw = value as Record<string, unknown>;
+  const condition = pickString(raw, ["condition", "rule", "when"]);
+  const messageVi = pickString(raw, ["messageVi", "message", "vi"]);
+  if (!condition || !messageVi) {
+    return null;
+  }
+  return { condition, messageVi };
+}
+
+function normalizeBoolean(value: unknown, fallback: boolean): boolean {
+  if (typeof value === "boolean") {
+    return value;
+  }
+  const text = normalizeString(value).toLowerCase();
+  if (["true", "1", "yes", "co", "có"].includes(text)) {
+    return true;
+  }
+  if (["false", "0", "no", "khong", "không"].includes(text)) {
+    return false;
+  }
+  return fallback;
+}
+
+function normalizeQuizReviewConfig(value: unknown): GrammarPracticeQuizReviewConfig {
+  const raw = value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+  const passScorePercent = normalizeOptionalNumber(raw.passScorePercent ?? raw.passPercent ?? raw.passScore) ?? 80;
+  const weakPointRules = Array.isArray(raw.weakPointRules)
+    ? raw.weakPointRules
+        .map((entry) => normalizeWeakPointRule(entry))
+        .filter((entry): entry is GrammarPracticeQuizWeakPointRule => Boolean(entry))
+    : [];
+
+  return {
+    shuffleItems: normalizeBoolean(raw.shuffleItems, true),
+    shuffleOptions: normalizeBoolean(raw.shuffleOptions, true),
+    passScorePercent: Math.min(100, Math.max(0, passScorePercent)),
+    recommendedNextReviewDays: normalizeNumberArray(raw.recommendedNextReviewDays),
+    weakPointRules,
+  };
+}
+
+function isQuizDeckLike(raw: Record<string, unknown>): boolean {
+  const list = raw.items ?? raw.questions ?? raw.quizItems;
+  if (!Array.isArray(list) || list.length === 0) {
+    return false;
+  }
+  if (normalizeString(raw.quizType) || normalizeString(raw.instructionsVi) || raw.reviewConfig) {
+    return true;
+  }
+  return list.some(
+    (entry) =>
+      Boolean(entry) &&
+      typeof entry === "object" &&
+      !Array.isArray(entry) &&
+      Boolean(pickString(entry as Record<string, unknown>, ["question", "promptText"]))
+  );
+}
+
+function normalizeQuizDeck(value: unknown): GrammarPracticeQuizDeck | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+  const raw = value as Record<string, unknown>;
+  if (!isQuizDeckLike(raw)) {
+    return null;
+  }
+  const list = raw.items ?? raw.questions ?? raw.quizItems;
+  const items = normalizeQuizItems(list);
+  if (items.length === 0) {
+    return null;
+  }
+  const now = nowIso();
+  const deckName = pickString(raw, ["deckName", "deck", "title", "name", "collection"]) || "Quiz ôn ngữ pháp";
+  const topic = pickString(raw, ["topic", "category", "theme"]) || "Tổng hợp";
+  return {
+    id: pickString(raw, ["id"]) || crypto.randomUUID(),
+    deckName,
+    jlptLevel: normalizeLevel(raw.jlptLevel ?? raw.level ?? raw.jlpt),
+    quizType: pickString(raw, ["quizType", "type"]) || undefined,
+    topic,
+    estimatedMinutes: normalizeOptionalNumber(raw.estimatedMinutes ?? raw.minutes),
+    sourceGrammarIds: normalizeStringArray(raw.sourceGrammarIds ?? raw.grammarIds ?? raw.patternIds),
+    instructionsVi: pickString(raw, ["instructionsVi", "instructions", "description", "guide"]) || undefined,
+    items,
+    reviewConfig: normalizeQuizReviewConfig(raw.reviewConfig),
+    createdAt: normalizeString(raw.createdAt) || now,
+    updatedAt: normalizeString(raw.updatedAt) || now,
+  };
+}
+
 function normalizeItem(value: unknown): GrammarPracticeItem | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return null;
@@ -467,7 +733,7 @@ function normalizeItem(value: unknown): GrammarPracticeItem | null {
     return null;
   }
 
-  const topic = pickString(raw, ["topic", "category", "theme"]) || "Tong hop";
+  const topic = pickString(raw, ["topic", "category", "theme"]) || "Tổng hợp";
   const now = nowIso();
   const structureDetail = normalizeStructureDetail(raw.structure);
   const nuanceDetail = normalizeNuanceDetail(raw.nuance);
@@ -517,6 +783,7 @@ function normalizeStore(value: unknown): GrammarPracticeStore {
     return {
       updatedAt: "",
       items: [],
+      quizDecks: [],
     };
   }
 
@@ -526,10 +793,16 @@ function normalizeStore(value: unknown): GrammarPracticeStore {
         .map((entry) => normalizeItem(entry))
         .filter((entry): entry is GrammarPracticeItem => Boolean(entry))
     : [];
+  const quizDecks = Array.isArray(raw.quizDecks)
+    ? raw.quizDecks
+        .map((entry) => normalizeQuizDeck(entry))
+        .filter((entry): entry is GrammarPracticeQuizDeck => Boolean(entry))
+    : [];
 
   return {
     updatedAt: normalizeString(raw.updatedAt),
     items: items.sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    quizDecks: quizDecks.sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
   };
 }
 
@@ -541,7 +814,7 @@ export async function loadGrammarPracticeStore(userId: string): Promise<GrammarP
     });
     return normalizeStore(record?.value);
   } catch {
-    return { updatedAt: "", items: [] };
+    return { updatedAt: "", items: [], quizDecks: [] };
   }
 }
 
@@ -549,6 +822,7 @@ export async function saveGrammarPracticeStore(userId: string, store: GrammarPra
   const payload: GrammarPracticeStore = {
     updatedAt: nowIso(),
     items: store.items,
+    quizDecks: store.quizDecks,
   };
 
   await prisma.appData.upsert({
@@ -571,6 +845,9 @@ export function normalizeGrammarPracticeJsonRows(input: unknown): GrammarPractic
   }
   if (input && typeof input === "object" && !Array.isArray(input)) {
     const raw = input as Record<string, unknown>;
+    if (isQuizDeckLike(raw)) {
+      return [];
+    }
     const list = raw.items ?? raw.data ?? raw.grammar ?? raw.points ?? raw.patterns;
     if (Array.isArray(list)) {
       return list
@@ -578,6 +855,26 @@ export function normalizeGrammarPracticeJsonRows(input: unknown): GrammarPractic
         .filter((entry): entry is GrammarPracticeItem => Boolean(entry));
     }
     const single = normalizeItem(raw);
+    return single ? [single] : [];
+  }
+  return [];
+}
+
+export function normalizeGrammarPracticeQuizDeckJsonRows(input: unknown): GrammarPracticeQuizDeck[] {
+  if (Array.isArray(input)) {
+    return input
+      .map((entry) => normalizeQuizDeck(entry))
+      .filter((entry): entry is GrammarPracticeQuizDeck => Boolean(entry));
+  }
+  if (input && typeof input === "object" && !Array.isArray(input)) {
+    const raw = input as Record<string, unknown>;
+    const list = raw.quizDecks ?? raw.decks ?? raw.quizDeck ?? raw.deck;
+    if (Array.isArray(list)) {
+      return list
+        .map((entry) => normalizeQuizDeck(entry))
+        .filter((entry): entry is GrammarPracticeQuizDeck => Boolean(entry));
+    }
+    const single = normalizeQuizDeck(raw);
     return single ? [single] : [];
   }
   return [];

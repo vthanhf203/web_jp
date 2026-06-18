@@ -7,6 +7,7 @@ import {
   importAdminVocabItemsAction,
   type AdminImportState,
 } from "@/app/actions/admin-vocab";
+import { OpenDictionaryQuickFill } from "@/app/components/open-dictionary-quick-fill";
 
 const initialState: AdminImportState = {
   status: "idle",
@@ -31,9 +32,33 @@ export function AdminVocabImportForm({ lessonId }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const hasLesson = Boolean(lessonId);
 
+  function appendJsonLine(payload: Record<string, unknown>) {
+    if (!textareaRef.current) {
+      return;
+    }
+
+    const line = JSON.stringify(payload);
+    const current = textareaRef.current.value.trim();
+    textareaRef.current.value = current ? `${current}\n${line}` : line;
+    textareaRef.current.focus();
+  }
+
   return (
     <form action={formAction} className="space-y-3">
       <input type="hidden" name="lessonId" value={lessonId ?? ""} />
+      <OpenDictionaryQuickFill
+        mode="word"
+        onPickWord={(entry) => {
+          appendJsonLine({
+            word: entry.word,
+            reading: entry.reading,
+            kanji: entry.kanji,
+            hanviet: "",
+            partOfSpeech: entry.partsOfSpeech[0] ?? "",
+            meaning: entry.meanings.join("; "),
+          });
+        }}
+      />
       <textarea
         ref={textareaRef}
         name="rawInput"

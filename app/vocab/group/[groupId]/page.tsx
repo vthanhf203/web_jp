@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Layers3, Sparkles } from "lucide-react";
+import { ArrowLeft, Gamepad2, Layers3, Sparkles } from "lucide-react";
 
 import { ActionSection } from "@/app/components/action-section";
 import { DeckManagerHub } from "@/app/components/deck-manager-hub";
@@ -333,10 +333,20 @@ export default async function VocabGroupDetailPage(props: {
 
         <div className="mt-4 rounded-xl bg-violet-50/80 px-3 py-2 text-xs text-violet-700">
           <Sparkles className="mr-1 inline h-3.5 w-3.5" />
-          Mẹo: Bấm phân trang sẽ tự nhảy về khu "Danh sách từ vựng" để học liên tục.
+          Mẹo: Bấm phân trang sẽ tự nhảy về khu &quot;Danh sách từ vựng&quot; để học liên tục.
         </div>
 
         <div className="mt-5">
+          <Link
+            href={`/vocab/match?group=${groupId}`}
+            className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-emerald-100 bg-gradient-to-r from-emerald-50 to-cyan-50 px-4 py-3 text-sm font-black text-emerald-800 transition hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <span className="flex items-center gap-2">
+              <Gamepad2 className="h-4 w-4" />
+              Chơi game nối từ với chủ đề này
+            </span>
+            <span aria-hidden="true">→</span>
+          </Link>
           <ActionSection
             title="Học nhanh chủ đề này"
             subtitle="Luôn mở theo chủ đề đang xem"

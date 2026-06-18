@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, CheckCircle2, Circle, RotateCcw, Trophy, XCircle
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 
+import { SpeakJpButton } from "@/app/components/speak-jp-button";
 import type { ReadingPostReadingQuiz, ReadingPostReadingQuizQuestion } from "@/lib/reading-practice-store";
 
 type Props = {
@@ -16,6 +17,7 @@ type CheckedMap = Record<string, boolean | undefined>;
 
 const RUBY_TEXT_PATTERN =
   /([\u3400-\u9fff\u3005\u3006\u30f5\u30f6]+)[\uff08(]\s*([\u3041-\u3096\u30a1-\u30fa\u30fc\u30fb\s]+)\s*[\uff09)]/gu;
+const HAS_JAPANESE_PATTERN = /[\u3040-\u30ff\u3400-\u9fff]/u;
 
 function hashText(value: string): number {
   let hash = 2166136261;
@@ -78,6 +80,21 @@ function normalizeAnswer(value: string | boolean | undefined): string {
     return String(value);
   }
   return (value ?? "").trim().toLowerCase();
+}
+
+function optionSpeechText(option: string): string {
+  const label = answerLabel(option);
+  return label
+    .replace(
+      /([\u3400-\u9fff\u3005\u3006\u30f5\u30f6]+)[\uff08(]\s*([\u3041-\u3096\u30a1-\u30fa\u30fc\u30fb\s]+)\s*[\uff09)]/gu,
+      "$1"
+    )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function shouldShowSpeakButton(option: string): boolean {
+  return HAS_JAPANESE_PATTERN.test(optionSpeechText(option));
 }
 
 function questionOptions(question: ReadingPostReadingQuizQuestion): string[] {
@@ -221,24 +238,42 @@ export function ReadingPostQuiz({ quiz, textId }: Props) {
             const isCorrectOption = normalizeAnswer(option) === normalizeAnswer(current.correctAnswer);
             const showCorrect = checked && isCorrectOption;
             const showWrong = checked && isSelected && !isCorrectOption;
+            const speakText = optionSpeechText(option);
+            const canSpeak = shouldShowSpeakButton(option);
             return (
-              <button
-                type="button"
-                key={`${current.id}-${option}`}
-                onClick={() => handleSelect(option)}
-                className={`flex min-h-14 items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left text-sm font-black transition ${
-                  showCorrect
-                    ? "border-[#34c759] bg-[#ecfff4] text-[#087443]"
-                    : showWrong
-                      ? "border-[#fda4af] bg-[#fff1f2] text-[#be123c]"
-                      : isSelected
-                        ? "border-[#123c69] bg-[#eef7ff] text-[#123c69]"
-                        : "border-[#d8e2ee] bg-white text-[#172033] hover:border-[#9dc3f5]"
-                }`}
-              >
-                <span className="font-[var(--font-jp)] leading-7">{renderRubyText(answerLabel(option))}</span>
-                {showCorrect ? <CheckCircle2 className="h-5 w-5 shrink-0" /> : showWrong ? <XCircle className="h-5 w-5 shrink-0" /> : <Circle className="h-5 w-5 shrink-0 text-[#aab7c8]" />}
-              </button>
+              <div key={`${current.id}-${option}`} className="flex min-h-14 items-stretch gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSelect(option)}
+                  className={`flex flex-1 items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left text-sm font-black transition ${
+                    showCorrect
+                      ? "border-[#34c759] bg-[#ecfff4] text-[#087443]"
+                      : showWrong
+                        ? "border-[#fda4af] bg-[#fff1f2] text-[#be123c]"
+                        : isSelected
+                          ? "border-[#123c69] bg-[#eef7ff] text-[#123c69]"
+                          : "border-[#d8e2ee] bg-white text-[#172033] hover:border-[#9dc3f5]"
+                  }`}
+                >
+                  <span className="font-[var(--font-jp)] leading-7">{renderRubyText(answerLabel(option))}</span>
+                  {showCorrect ? (
+                    <CheckCircle2 className="h-5 w-5 shrink-0" />
+                  ) : showWrong ? (
+                    <XCircle className="h-5 w-5 shrink-0" />
+                  ) : (
+                    <Circle className="h-5 w-5 shrink-0 text-[#aab7c8]" />
+                  )}
+                </button>
+                {canSpeak ? (
+                  <div className="flex items-center">
+                    <SpeakJpButton
+                      text={speakText}
+                      title="Phat am dap an"
+                      className="h-10 w-10 border-[#cbd8e7] bg-[#f8fcff] text-[#123c69] hover:bg-[#ecf4ff]"
+                    />
+                  </div>
+                ) : null}
+              </div>
             );
           })}
         </div>

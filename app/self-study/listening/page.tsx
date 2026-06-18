@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronLeft, Clock3, Headphones, Layers3, Trash2 } from "lucide-react";
 
 import { deleteListeningItemAction } from "@/app/actions/listening-practice";
+import { ListeningDeckExamClient } from "@/app/components/listening-deck-exam-client";
 import { ListeningImportForm } from "@/app/components/listening-import-form";
 import { ListeningPracticeClient } from "@/app/components/listening-practice-client";
 import { requireUser } from "@/lib/auth";
@@ -44,6 +45,35 @@ function getDeckName(item: Pick<ListeningPracticeItem, "deckName" | "topic">): s
   return item.deckName?.trim() || item.topic?.trim() || DEFAULT_LISTENING_DECK_NAME;
 }
 
+function normalizeHalfWidthDigits(value: string): string {
+  return value.replace(/[０-９]/g, (char) => String(char.charCodeAt(0) - 0xff10));
+}
+
+function getListeningItemOrder(item: ListeningPracticeItem): number {
+  const explicitOrder = item.meta?.order ?? item.meta?.miniItemNumber;
+  if (typeof explicitOrder === "number" && Number.isFinite(explicitOrder)) {
+    return explicitOrder;
+  }
+
+  const title = normalizeHalfWidthDigits(item.title);
+  const matched = title.match(/(?:問題|問|Q|No\.?|#)\s*(\d+)/i);
+  if (matched?.[1]) {
+    return Number(matched[1]);
+  }
+
+  return Number.MAX_SAFE_INTEGER;
+}
+
+function sortListeningDeckItems(items: ListeningPracticeItem[]): ListeningPracticeItem[] {
+  return [...items].sort((left, right) => {
+    const orderDiff = getListeningItemOrder(left) - getListeningItemOrder(right);
+    if (orderDiff !== 0) {
+      return orderDiff;
+    }
+    return left.title.localeCompare(right.title, "ja");
+  });
+}
+
 function listeningHref({
   level,
   deck,
@@ -84,6 +114,10 @@ export default async function SelfStudyListeningPage(props: { searchParams: Sear
     ? levelFilteredItems.filter((item) => getDeckName(item) === requestedDeckName)
     : levelFilteredItems;
   const selectedItem = filteredItems.find((item) => item.id === requestedItemId) ?? filteredItems[0] ?? null;
+  const activeDeckName = selectedItem ? getDeckName(selectedItem) : requestedDeckName;
+  const activeDeckItems = activeDeckName
+    ? sortListeningDeckItems(levelFilteredItems.filter((item) => getDeckName(item) === activeDeckName))
+    : [];
 
   const levelCounts = ["N5", "N4", "N3", "N2", "N1"].map((level) => ({
     level,
@@ -224,6 +258,10 @@ export default async function SelfStudyListeningPage(props: { searchParams: Sear
             </div>
           </div>
 
+          {activeDeckItems.length > 1 ? (
+            <ListeningDeckExamClient deckName={activeDeckName} items={activeDeckItems} />
+          ) : null}
+
           <ListeningPracticeClient item={selectedItem} />
         </>
       ) : (
@@ -277,4 +315,3 @@ export default async function SelfStudyListeningPage(props: { searchParams: Sear
     </section>
   );
 }
-

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Noto_Sans_JP, Noto_Serif_JP } from "next/font/google";
 
 import { NavBar } from "@/app/components/nav-bar";
+import { SelectionDictionaryPopover } from "@/app/components/selection-dictionary-popover";
 import StreakBanner from "@/components/StreakBanner";
 
 import "./globals.css";
@@ -43,9 +44,10 @@ export default function RootLayout({
       >
         <NavBar />
         <StreakBanner />
-        <main className="mx-auto w-full max-w-[1420px] px-4 pb-12 pt-7 lg:pl-[120px] lg:pr-6">
+        <main className="mx-auto w-full max-w-[1420px] px-4 pb-12 pt-7 lg:pl-[196px] lg:pr-6">
           {children}
         </main>
+        <SelectionDictionaryPopover />
       </body>
     </html>
   );

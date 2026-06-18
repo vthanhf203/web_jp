@@ -8,7 +8,7 @@ import {
   renameVocabLessonAction,
   updateVocabItemAction,
 } from "@/app/actions/vocab-manager";
-import { ArrowRight, BookOpenText, Flower2, UserRound, WandSparkles, Zap } from "lucide-react";
+import { ArrowRight, BookOpenText, Flower2, Gamepad2, UserRound, WandSparkles, Zap } from "lucide-react";
 import { VocabLibraryBento } from "@/app/components/vocab-library-bento";
 import { VocabImportForm } from "@/app/components/vocab-import-form";
 import { requireUser } from "@/lib/auth";
@@ -159,6 +159,10 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
 
   const studyLessonId =
     selectedLesson && selectedLesson.items.length > 0 ? selectedLesson.id : null;
+  const matchGameHref =
+    activeMode === "self" && studyLessonId
+      ? `/vocab/match?lesson=${studyLessonId}`
+      : `/vocab/match?level=${selectedLevel}`;
 
   const personalCountsByTitle = new Map<string, number>();
   for (const lesson of lessons) {
@@ -224,7 +228,7 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
             Luyện tập nhanh
           </Link>
         </div>
-        <div className="mt-5 grid gap-4 md:grid-cols-3">
+        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <Link
             href={levelHref(selectedLevel)}
             className={`group relative overflow-hidden rounded-[22px] border px-5 py-4 transition hover:-translate-y-0.5 ${
@@ -282,6 +286,24 @@ export default async function VocabPage(props: { searchParams: SearchParams }) {
                 <p className="text-base font-black text-[#171934]">Tự học chủ động</p>
                 <p className="mt-1 text-xs font-semibold text-[#737894]">
                   Gom import Kanji + Từ vựng ở một nơi.
+                </p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-[#8a8fab] transition group-hover:translate-x-1" />
+            </div>
+          </Link>
+          <Link
+            href={matchGameHref}
+            className="group relative overflow-hidden rounded-[22px] border border-[#c9f0df] bg-[#f4fff9] px-5 py-4 transition hover:-translate-y-0.5 hover:bg-[#ecfff5]"
+          >
+            <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#c9f5df]/75" />
+            <div className="relative flex items-center gap-4">
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-[#12b981] to-[#5ee6af] text-white shadow-[0_10px_18px_rgba(18,185,129,0.2)]">
+                <Gamepad2 className="h-5 w-5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-base font-black text-[#171934]">Game nối từ</p>
+                <p className="mt-1 text-xs font-semibold text-[#737894]">
+                  Ghép từ Nhật với nghĩa đúng, ghi điểm combo.
                 </p>
               </div>
               <ArrowRight className="h-4 w-4 text-[#8a8fab] transition group-hover:translate-x-1" />

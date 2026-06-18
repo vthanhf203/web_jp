@@ -6,7 +6,8 @@ type AdminSection =
   | "grammar"
   | "conjugation"
   | "kanji"
-  | "quiz";
+  | "quiz"
+  | "tts";
 
 const links: Array<{ id: AdminSection; href: string; label: string }> = [
   { id: "home", href: "/admin", label: "Tổng quan" },
@@ -15,6 +16,7 @@ const links: Array<{ id: AdminSection; href: string; label: string }> = [
   { id: "conjugation", href: "/admin/conjugation", label: "Chia thể" },
   { id: "kanji", href: "/admin/kanji", label: "Kanji" },
   { id: "quiz", href: "/admin/quiz", label: "Bài tập" },
+  { id: "tts", href: "/admin/tts", label: "Gemini TTS" },
 ];
 
 type Props = {
@@ -40,4 +42,3 @@ export function AdminNav({ active }: Props) {
     </div>
   );
 }
-

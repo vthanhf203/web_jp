@@ -1,0 +1,211 @@
+.pageWrap {
+  min-height: calc(100vh - 160px);
+  padding-bottom: 2rem;
+}
+
+.toolbar {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.paper {
+  margin: 0 auto;
+  width: min(210mm, 100%);
+  border: 1px solid #d7dde8;
+  border-radius: 0.5rem;
+  background: #fff;
+  padding: 8mm;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+.titleBand {
+  border: 1px solid #07045f;
+  background: #09007d;
+  padding: 0.38rem 0.5rem 0.48rem;
+  text-align: center;
+  color: #fff;
+}
+
+.titleBand h1 {
+  font-size: 1.55rem;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  border-right: 1px solid #1f2937;
+  border-bottom: 1px solid #1f2937;
+  border-left: 1px solid #1f2937;
+  padding: 0.25rem 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.vocabTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  border-right: 1px solid #1f2937;
+  border-left: 1px solid #1f2937;
+}
+
+.vocabTable thead {
+  display: table-header-group;
+}
+
+.vocabTable th {
+  border-right: 1px solid #1f2937;
+  border-bottom: 1px solid #1f2937;
+  background: #fff;
+  padding: 0.22rem 0.35rem;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 950;
+  line-height: 1.15;
+  color: #0f172a;
+}
+
+.vocabTable th:last-child,
+.vocabTable td:last-child {
+  border-right: none;
+}
+
+.vocabTable td {
+  border-right: 1px solid #1f2937;
+  border-bottom: 1px dashed #b7bdc7;
+  padding: 0.22rem 0.42rem;
+  vertical-align: middle;
+  color: #111827;
+}
+
+.vocabTable tr {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.colIndex {
+  width: 10mm;
+}
+
+.colKanji {
+  width: 38mm;
+}
+
+.colHanviet {
+  width: 44mm;
+}
+
+.colReading {
+  width: 44mm;
+}
+
+.colMeaning {
+  width: auto;
+}
+
+.indexCell {
+  text-align: right;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.kanjiCell {
+  min-height: 8mm;
+}
+
+.kanjiSurface {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.08rem 0.12rem;
+  font-size: 1.08rem;
+  font-weight: 850;
+  line-height: 1.15;
+  color: #0f172a;
+}
+
+.sourceHint {
+  margin-top: 0.06rem;
+  font-size: 0.48rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #94a3b8;
+}
+
+.hanvietCell {
+  font-size: 0.82rem;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.readingCell {
+  font-size: 1.02rem;
+  font-weight: 850;
+  line-height: 1.15;
+}
+
+.meaningCell {
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.legend {
+  margin-top: 0.55rem;
+  font-size: 0.62rem;
+  color: #64748b;
+}
+
+@media print {
+  :global(body) {
+    background: #fff !important;
+  }
+
+  :global(header),
+  :global(aside),
+  :global([role="status"][aria-live="polite"]) {
+    display: none !important;
+  }
+
+  :global(main) {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .toolbar {
+    display: none !important;
+  }
+
+  .paper {
+    width: 100%;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .pageWrap {
+    padding: 0;
+    min-height: auto;
+  }
+}
+
+@page {
+  size: A4 portrait;
+  margin: 10mm;
+}

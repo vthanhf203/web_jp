@@ -515,7 +515,7 @@ export default async function SelfStudyReadingPage(props: { searchParams: Search
 
               <div className="space-y-5 px-6 py-6">
                 <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.72fr)_minmax(320px,0.96fr)]">
-                  <ReadingPlaybackText paragraphs={selectedText.paragraphs} />
+                  <ReadingPlaybackText paragraphs={selectedText.paragraphs} vocabulary={selectedText.vocabulary} />
 
                   <div className="space-y-3">
                     <h3 className="text-xl font-black text-[#111827]">Dữ liệu trong bài</h3>

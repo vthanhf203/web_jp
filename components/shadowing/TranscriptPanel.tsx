@@ -206,9 +206,12 @@ export default function TranscriptPanel({ onSeek }: TranscriptPanelProps) {
         return;
       }
 
+      const containerRect = container.getBoundingClientRect();
+      const currentRect = current.getBoundingClientRect();
+      const currentTop = currentRect.top - containerRect.top + container.scrollTop;
       const targetTop = Math.max(
         0,
-        current.offsetTop - (container.clientHeight - current.offsetHeight) / 2
+        currentTop - (container.clientHeight - currentRect.height) / 2
       );
       const maxTop = Math.max(0, container.scrollHeight - container.clientHeight);
       const safeTop = Math.min(maxTop, targetTop);

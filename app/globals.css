@@ -49,8 +49,21 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-.font-kanji {
-  font-family: var(--font-jp), "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", sans-serif;
+.font-kanji,
+.jp-text,
+:lang(ja) {
+  font-family:
+    var(--font-jp),
+    "Noto Sans JP",
+    "Yu Gothic",
+    "Yu Gothic UI",
+    "Meiryo",
+    "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",
+    "MS Gothic",
+    sans-serif;
+  font-feature-settings: "palt" 0;
+  font-variant-east-asian: normal;
 }
 
 .font-kanji-art {
@@ -59,7 +72,9 @@ body {
     "Noto Serif JP",
     "Yu Mincho",
     "Hiragino Mincho ProN",
+    "MS Mincho",
     serif;
+  font-variant-east-asian: normal;
 }
 
 .kanji-dot-grid {

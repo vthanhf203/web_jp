@@ -37,7 +37,7 @@ export default async function AdminHomePage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
         <article className="rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm">
           <p className="text-sm text-slate-500">Kho từ vựng admin</p>
           <p className="mt-2 text-3xl font-bold text-slate-800">
@@ -88,8 +88,16 @@ export default async function AdminHomePage() {
             Quản lý bài tập
           </Link>
         </article>
+
+        <article className="rounded-2xl border border-violet-200 bg-white/95 p-5 shadow-sm">
+          <p className="text-sm text-slate-500">Giọng nghe biểu cảm</p>
+          <p className="mt-2 text-3xl font-bold text-violet-700">TTS</p>
+          <p className="text-sm text-slate-600">quản lý Gemini API key</p>
+          <Link href="/admin/tts" className="btn-primary mt-4">
+            Quản lý API key
+          </Link>
+        </article>
       </div>
     </section>
   );
 }
-

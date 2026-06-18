@@ -26,11 +26,15 @@ export type ListeningQuestion = {
 };
 
 export type ListeningTtsConfig = {
+  provider?: "auto" | "edge";
   voice: string;
   passageVoice?: string;
   questionVoice?: string;
   rate: string;
   pitch: string;
+  volume?: string;
+  expressive?: boolean;
+  performanceDirection?: string;
   pauseBetweenTurnsMs?: number;
   pauseBetweenQuestionAndChoicesMs?: number;
   pauseBetweenChoicesMs?: number;
@@ -62,6 +66,11 @@ export type ListeningDialogueTurn = {
   text: string;
   textRaw?: string;
   translationVi?: string;
+  emotion?: string;
+  voice?: string;
+  rate?: string;
+  pitch?: string;
+  volume?: string;
 };
 
 export type ListeningAnswerKeyEntry = {
@@ -94,9 +103,13 @@ export type ListeningPracticeItem = {
     questionCount?: number;
     supportsStudyMode?: boolean;
     supportsExamMode?: boolean;
+    supportsMultiSpeakerAudio?: boolean;
     examDisplayRule?: string;
     choiceDisplayStyle?: string;
     choiceAudioStyle?: string;
+    order?: number;
+    miniItemNumber?: number;
+    testType?: string;
   };
   difficulty: string;
   estimatedMinutes: number;
@@ -261,12 +274,21 @@ function normalizeTtsConfig(input: unknown): ListeningTtsConfig {
   const raw = input as Record<string, unknown>;
   const passageVoice = normalizeString(raw.passageVoice);
   const questionVoice = normalizeString(raw.questionVoice);
+  const provider = normalizeString(raw.provider).toLowerCase() === "edge" ? "edge" : "auto";
   return {
+    provider,
     voice: normalizeString(raw.voice) || passageVoice || "ja-JP-NanamiNeural",
     passageVoice: passageVoice || undefined,
     questionVoice: questionVoice || undefined,
     rate: normalizeString(raw.rate) || "-5%",
     pitch: normalizeString(raw.pitch) || "+0Hz",
+    volume: normalizeString(raw.volume) || "+0%",
+    expressive:
+      typeof raw.expressive !== "undefined"
+        ? normalizeBoolean(raw.expressive, true)
+        : true,
+    performanceDirection:
+      normalizeString(raw.performanceDirection ?? raw.directorNotes ?? raw.performance) || undefined,
     pauseBetweenTurnsMs: normalizeOptionalNumber(raw.pauseBetweenTurnsMs),
     pauseBetweenQuestionAndChoicesMs: normalizeOptionalNumber(raw.pauseBetweenQuestionAndChoicesMs),
     pauseBetweenChoicesMs: normalizeOptionalNumber(raw.pauseBetweenChoicesMs),
@@ -348,6 +370,11 @@ function normalizeDialogue(input: unknown): ListeningDialogueTurn[] | undefined 
       const speakerRole = normalizeString(raw.speakerRole ?? raw.role);
       const displayName = normalizeString(raw.displayName ?? raw.speaker ?? raw.name);
       const translationVi = normalizeString(raw.translationVi ?? raw.vi ?? raw.translation);
+      const emotion = normalizeString(raw.emotion ?? raw.style ?? raw.mood);
+      const voice = normalizeString(raw.voice);
+      const rate = normalizeString(raw.rate);
+      const pitch = normalizeString(raw.pitch);
+      const volume = normalizeString(raw.volume);
 
       return {
         turn,
@@ -358,6 +385,11 @@ function normalizeDialogue(input: unknown): ListeningDialogueTurn[] | undefined 
         text,
         ...(textRaw ? { textRaw } : {}),
         ...(translationVi ? { translationVi } : {}),
+        ...(emotion ? { emotion } : {}),
+        ...(voice ? { voice } : {}),
+        ...(rate ? { rate } : {}),
+        ...(pitch ? { pitch } : {}),
+        ...(volume ? { volume } : {}),
       } satisfies ListeningDialogueTurn;
     })
     .filter((entry): entry is ListeningDialogueTurn => Boolean(entry))
@@ -457,6 +489,17 @@ function normalizeListeningItem(input: unknown): ListeningPracticeItem | null {
   const metaExamDisplayRule = normalizeString(metaRaw?.examDisplayRule);
   const metaChoiceDisplayStyle = normalizeString(metaRaw?.choiceDisplayStyle);
   const metaChoiceAudioStyle = normalizeString(metaRaw?.choiceAudioStyle);
+  const metaSupportsMultiSpeakerAudio =
+    typeof metaRaw?.supportsMultiSpeakerAudio !== "undefined"
+      ? normalizeBoolean(metaRaw.supportsMultiSpeakerAudio)
+      : typeof raw.supportsMultiSpeakerAudio !== "undefined"
+        ? normalizeBoolean(raw.supportsMultiSpeakerAudio)
+        : undefined;
+  const metaMiniItemNumber = normalizeOptionalNumber(
+    raw.miniItemNumber ?? raw.problemNumber ?? metaRaw?.miniItemNumber
+  );
+  const metaOrder = normalizeOptionalNumber(raw.order ?? raw.sortOrder ?? metaRaw?.order) ?? metaMiniItemNumber;
+  const metaTestType = normalizeString(raw.testType ?? metaRaw?.testType);
   const hasMeta = Boolean(
     metaLevel ||
       metaType ||
@@ -464,9 +507,13 @@ function normalizeListeningItem(input: unknown): ListeningPracticeItem | null {
       metaQuestionCount ||
       typeof metaSupportsStudyMode !== "undefined" ||
       typeof metaSupportsExamMode !== "undefined" ||
+      typeof metaSupportsMultiSpeakerAudio !== "undefined" ||
       metaExamDisplayRule ||
       metaChoiceDisplayStyle ||
-      metaChoiceAudioStyle
+      metaChoiceAudioStyle ||
+      metaOrder ||
+      metaMiniItemNumber ||
+      metaTestType
   );
 
   return {
@@ -488,9 +535,13 @@ function normalizeListeningItem(input: unknown): ListeningPracticeItem | null {
           questionCount: metaQuestionCount,
           supportsStudyMode: metaSupportsStudyMode,
           supportsExamMode: metaSupportsExamMode,
+          supportsMultiSpeakerAudio: metaSupportsMultiSpeakerAudio,
           examDisplayRule: metaExamDisplayRule || undefined,
           choiceDisplayStyle: metaChoiceDisplayStyle || undefined,
           choiceAudioStyle: metaChoiceAudioStyle || undefined,
+          order: metaOrder,
+          miniItemNumber: metaMiniItemNumber,
+          testType: metaTestType || undefined,
         }
       : undefined,
     difficulty: normalizeString(raw.difficulty ?? raw.length) || "Trung binh",
@@ -507,6 +558,65 @@ function normalizeListeningItem(input: unknown): ListeningPracticeItem | null {
     usefulExpressions: normalizeUsefulExpressions(raw.usefulExpressions),
     createdAt: normalizeString(raw.createdAt) || now,
     updatedAt: normalizeString(raw.updatedAt) || now,
+  };
+}
+
+function mergeObjectDefaults(defaultValue: unknown, itemValue: unknown): unknown {
+  const hasDefault = defaultValue && typeof defaultValue === "object" && !Array.isArray(defaultValue);
+  const hasItem = itemValue && typeof itemValue === "object" && !Array.isArray(itemValue);
+  if (hasDefault && hasItem) {
+    return {
+      ...(defaultValue as Record<string, unknown>),
+      ...(itemValue as Record<string, unknown>),
+    };
+  }
+  return typeof itemValue !== "undefined" ? itemValue : defaultValue;
+}
+
+function buildListeningItemDefaults(raw: Record<string, unknown>): Record<string, unknown> {
+  const defaults: Record<string, unknown> = {};
+  const keys = [
+    "deckName",
+    "deck",
+    "collection",
+    "groupName",
+    "group",
+    "jlptLevel",
+    "level",
+    "jlpt",
+    "topic",
+    "category",
+    "theme",
+    "difficulty",
+    "estimatedMinutes",
+    "minutes",
+    "duration",
+    "examMode",
+    "tts",
+    "meta",
+  ];
+
+  for (const key of keys) {
+    if (typeof raw[key] !== "undefined") {
+      defaults[key] = raw[key];
+    }
+  }
+
+  return defaults;
+}
+
+function applyListeningItemDefaults(input: unknown, defaults: Record<string, unknown>): unknown {
+  if (!input || typeof input !== "object" || Array.isArray(input) || Object.keys(defaults).length === 0) {
+    return input;
+  }
+
+  const raw = input as Record<string, unknown>;
+  return {
+    ...defaults,
+    ...raw,
+    meta: mergeObjectDefaults(defaults.meta, raw.meta),
+    tts: mergeObjectDefaults(defaults.tts, raw.tts),
+    examMode: mergeObjectDefaults(defaults.examMode, raw.examMode),
   };
 }
 
@@ -571,8 +681,9 @@ export function normalizeListeningJsonRows(input: unknown): ListeningPracticeIte
     const raw = input as Record<string, unknown>;
     const list = raw.items ?? raw.data ?? raw.lessons ?? raw.listening ?? raw.audios;
     if (Array.isArray(list)) {
+      const defaults = buildListeningItemDefaults(raw);
       return list
-        .map((entry) => normalizeListeningItem(entry))
+        .map((entry) => normalizeListeningItem(applyListeningItemDefaults(entry, defaults)))
         .filter((entry): entry is ListeningPracticeItem => Boolean(entry));
     }
     const single = normalizeListeningItem(raw);

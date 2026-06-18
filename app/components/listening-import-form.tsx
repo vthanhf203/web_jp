@@ -53,6 +53,110 @@ const sampleListeningJson = [
       "これから、駅で男の人と女の人が話しています。\n\n男の人：すみません。電車に傘を忘れました。\n女の人：はい。どんな傘ですか。\n男の人：黒い傘です。小さい白いシールがあります。\n女の人：シールに名前がありますか。\n男の人：はい。田中です。さっきの電車の中に忘れました。\n女の人：ちょっと待ってください。あ、同じ傘が名古屋駅にありますよ。\n男の人：そうですか。今から取りに行ってもいいですか。\n女の人：今日はもう遅いですから、明日の朝、行ってください。\n男の人：わかりました。明日の朝、名古屋駅へ行きます。今日はコンビニで安い傘を買います。",
     script:
       "これから、駅(えき)で男(おとこ)の人(ひと)と女(おんな)の人(ひと)が話(はな)しています。\n\n男(おとこ)の人(ひと)：すみません。電車(でんしゃ)に傘(かさ)を忘(わす)れました。\n女(おんな)の人(ひと)：はい。どんな傘(かさ)ですか。\n男(おとこ)の人(ひと)：黒(くろ)い傘(かさ)です。小(ちい)さい白(しろ)いシールがあります。\n女(おんな)の人(ひと)：シールに名前(なまえ)がありますか。\n男(おとこ)の人(ひと)：はい。田中(たなか)です。さっきの電車(でんしゃ)の中(なか)に忘(わす)れました。\n女(おんな)の人(ひと)：ちょっと待(ま)ってください。あ、同(おな)じ傘(かさ)が名古屋駅(なごやえき)にありますよ。\n男(おとこ)の人(ひと)：そうですか。今(いま)から取(と)りに行(い)ってもいいですか。\n女(おんな)の人(ひと)：今日(きょう)はもう遅(おそ)いですから、明日(あした)の朝(あさ)、行(い)ってください。\n男(おとこ)の人(ひと)：わかりました。明日(あした)の朝(あさ)、名古屋駅(なごやえき)へ行(い)きます。今日(きょう)はコンビニで安(やす)い傘(かさ)を買(か)います。",
+    dialogue: [
+      {
+        turn: 1,
+        speakerKey: "narrator",
+        speakerRole: "narrator",
+        displayName: "Người dẫn",
+        textRaw: "これから、駅で男の人と女の人が話しています。",
+        text: "これから、駅(えき)で男(おとこ)の人(ひと)と女(おんな)の人(ひと)が話(はな)しています。",
+        translationVi: "Sau đây, một nam sinh và một nữ nhân viên nhà ga đang nói chuyện ở nhà ga.",
+      },
+      {
+        turn: 2,
+        speakerKey: "male-student",
+        speakerGender: "male",
+        speakerRole: "student",
+        displayName: "Nam sinh",
+        textRaw: "すみません。電車に傘を忘れました。",
+        text: "すみません。電車(でんしゃ)に傘(かさ)を忘(わす)れました。",
+        translationVi: "Xin lỗi. Tôi đã để quên ô trên tàu.",
+        emotion: "worried",
+      },
+      {
+        turn: 3,
+        speakerKey: "female-staff",
+        speakerGender: "female",
+        speakerRole: "station-staff",
+        displayName: "Nữ nhân viên",
+        textRaw: "はい。どんな傘ですか。",
+        text: "はい。どんな傘(かさ)ですか。",
+        translationVi: "Vâng. Đó là chiếc ô như thế nào?",
+      },
+      {
+        turn: 4,
+        speakerKey: "male-student",
+        speakerGender: "male",
+        speakerRole: "student",
+        displayName: "Nam sinh",
+        textRaw: "黒い傘です。小さい白いシールがあります。",
+        text: "黒(くろ)い傘(かさ)です。小(ちい)さい白(しろ)いシールがあります。",
+        translationVi: "Là chiếc ô màu đen. Có một miếng dán nhỏ màu trắng.",
+      },
+      {
+        turn: 5,
+        speakerKey: "female-staff",
+        speakerGender: "female",
+        speakerRole: "station-staff",
+        displayName: "Nữ nhân viên",
+        textRaw: "シールに名前がありますか。",
+        text: "シールに名前(なまえ)がありますか。",
+        translationVi: "Trên miếng dán có tên không?",
+      },
+      {
+        turn: 6,
+        speakerKey: "male-student",
+        speakerGender: "male",
+        speakerRole: "student",
+        displayName: "Nam sinh",
+        textRaw: "はい。田中です。さっきの電車の中に忘れました。",
+        text: "はい。田中(たなか)です。さっきの電車(でんしゃ)の中(なか)に忘(わす)れました。",
+        translationVi: "Có. Là Tanaka. Tôi đã để quên trong chuyến tàu lúc nãy.",
+      },
+      {
+        turn: 7,
+        speakerKey: "female-staff",
+        speakerGender: "female",
+        speakerRole: "station-staff",
+        displayName: "Nữ nhân viên",
+        textRaw: "ちょっと待ってください。あ、同じ傘が名古屋駅にありますよ！",
+        text: "ちょっと待(ま)ってください。あ、同(おな)じ傘(かさ)が名古屋駅(なごやえき)にありますよ！",
+        translationVi: "Xin hãy đợi một chút. À, có một chiếc ô giống như vậy ở ga Nagoya!",
+        emotion: "surprised",
+      },
+      {
+        turn: 8,
+        speakerKey: "male-student",
+        speakerGender: "male",
+        speakerRole: "student",
+        displayName: "Nam sinh",
+        textRaw: "そうですか。今から取りに行ってもいいですか。",
+        text: "そうですか。今(いま)から取(と)りに行(い)ってもいいですか。",
+        translationVi: "Vậy à. Bây giờ tôi đi lấy có được không?",
+        emotion: "relieved",
+      },
+      {
+        turn: 9,
+        speakerKey: "female-staff",
+        speakerGender: "female",
+        speakerRole: "station-staff",
+        displayName: "Nữ nhân viên",
+        textRaw: "今日はもう遅いですから、明日の朝、行ってください。",
+        text: "今日(きょう)はもう遅(おそ)いですから、明日(あした)の朝(あさ)、行(い)ってください。",
+        translationVi: "Hôm nay đã muộn rồi, nên sáng mai hãy đi.",
+      },
+      {
+        turn: 10,
+        speakerKey: "male-student",
+        speakerGender: "male",
+        speakerRole: "student",
+        displayName: "Nam sinh",
+        textRaw: "わかりました。明日の朝、名古屋駅へ行きます。今日はコンビニで安い傘を買います。",
+        text: "わかりました。明日(あした)の朝(あさ)、名古屋駅(なごやえき)へ行(い)きます。今日(きょう)はコンビニで安(やす)い傘(かさ)を買(か)います。",
+        translationVi: "Tôi hiểu rồi. Sáng mai tôi sẽ đến ga Nagoya. Hôm nay tôi sẽ mua một chiếc ô rẻ ở cửa hàng tiện lợi.",
+      },
+    ],
     translation:
       "Người dẫn: Sau đây, một nam sinh và một nữ nhân viên nhà ga đang nói chuyện ở nhà ga.\n\nNam sinh: Xin lỗi. Tôi đã để quên ô trên tàu.\nNữ nhân viên nhà ga: Vâng. Đó là chiếc ô như thế nào?\nNam sinh: Là chiếc ô màu đen. Có một miếng dán nhỏ màu trắng.\nNữ nhân viên nhà ga: Trên miếng dán có tên không?\nNam sinh: Có. Là Tanaka. Tôi đã để quên trong chuyến tàu lúc nãy.\nNữ nhân viên nhà ga: Xin hãy đợi một chút. À, có một chiếc ô giống như vậy ở ga Nagoya đấy.\nNam sinh: Vậy à. Bây giờ tôi đi lấy có được không?\nNữ nhân viên nhà ga: Hôm nay đã muộn rồi, nên sáng mai hãy đi.\nNam sinh: Tôi hiểu rồi. Sáng mai tôi sẽ đến ga Nagoya. Hôm nay tôi sẽ mua một chiếc ô rẻ ở cửa hàng tiện lợi.",
     scriptTranslation: [
@@ -78,8 +182,13 @@ const sampleListeningJson = [
       },
     ],
     tts: {
-      rate: "-5%",
+      provider: "auto",
+      rate: "+0%",
       pitch: "+0Hz",
+      volume: "+0%",
+      expressive: true,
+      performanceDirection:
+        "Nam sinh hơi lo lắng nhưng vẫn nói lịch sự và tiết chế. Nữ nhân viên bình tĩnh, chuyên nghiệp, thân thiện. Cảm xúc chuyển nhẹ từ lo lắng sang ngạc nhiên rồi nhẹ nhõm; không diễn quá mức.",
       pauseBetweenTurnsMs: 600,
       pauseBetweenQuestionAndChoicesMs: 700,
       pauseBetweenChoicesMs: 500,
@@ -220,10 +329,20 @@ export function ListeningImportForm() {
         ref={textareaRef}
         name="rawInput"
         className="min-h-72 max-h-[520px] w-full resize-y overflow-y-auto rounded-2xl border border-[#d7e0ef] bg-white px-4 py-3 font-[var(--font-jp)] text-sm leading-7 text-[#18223b] outline-none transition focus:border-[#22a6a1] focus:ring-4 focus:ring-[#d7f4f1]"
-        placeholder="Dán JSON bài nghe: title, scriptRaw (không furigana), script (có furigana), meta/situation/key_point, tts, questions..."
+        placeholder="Dán JSON bài nghe hoặc array nhiều mini bài cùng deckName: title, scriptRaw, script, dialogue, tts, questions..."
         disabled={pending}
         required
       />
+      <p className="text-xs font-semibold leading-5 text-[#667085]">
+        Nếu dán nhiều mini bài có cùng deckName, trang nghe sẽ tự hiện chế độ làm cả deck như một bộ JLPT mini.
+      </p>
+      <p className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-semibold leading-5 text-violet-800">
+        Đặt <code>tts.provider</code> là <code>auto</code> để ưu tiên Gemini biểu cảm và tự chuyển sang Edge TTS
+        khi hết quota. Dùng <code>tts.performanceDirection</code> để mô tả cách diễn toàn cảnh. Chỉ thêm
+        <code> emotion</code> ở những điểm chuyển cảm xúc rõ như <code>worried</code>, <code>surprised</code> hoặc
+        <code> relieved</code>; để trống các câu bình thường cho giọng tự nhiên hơn. <code>rate</code>,
+        <code>pitch</code> và <code>volume</code> chủ yếu dùng khi fallback sang Edge TTS.
+      </p>
 
       <div className="rounded-2xl border border-[#d7e0ef] bg-[#f7fafc] p-3">
         <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-[#bdd2e8] bg-white px-4 py-3 text-sm font-bold text-[#263750] transition hover:bg-[#f3fbfa]">
@@ -286,7 +405,7 @@ export function ListeningImportForm() {
           }}
         >
           <Wand2 className="h-4 w-4" />
-          Mẫu JSON
+          Mẫu JSON có cảm xúc
         </button>
       </div>
     </form>

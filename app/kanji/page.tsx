@@ -850,6 +850,15 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
         source: "related",
         scope,
       });
+  const kanjiMatchGameHref =
+    isPersonalScope && selectedPersonalDeck
+      ? `/vocab/match?kanjiDeck=${encodeURIComponent(selectedPersonalDeck)}`
+      : `/vocab/match?kanjiLevel=${compoundLevel}`;
+  const relatedMatchGameHref = selectedKanji
+    ? `/vocab/match?relatedKanji=${encodeURIComponent(selectedKanji.character)}`
+    : isPersonalScope && selectedPersonalDeck
+      ? `/vocab/match?relatedDeck=${encodeURIComponent(selectedPersonalDeck)}`
+      : `/vocab/match?relatedLevel=${compoundLevel}`;
   const selectedModeKanjiWordFlashcardHref = selectedKanji
     ? buildKanjiWordLearnHref({
         level: compoundLevel,
@@ -1260,6 +1269,18 @@ export default async function KanjiPage(props: { searchParams: SearchParams }) {
               className="rounded-full bg-orange-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-orange-500"
             >
               Nhồi nhét
+            </Link>
+            <Link
+              href={kanjiMatchGameHref}
+              className="rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-violet-500"
+            >
+              Game Kanji
+            </Link>
+            <Link
+              href={relatedMatchGameHref}
+              className="rounded-full bg-fuchsia-100 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-fuchsia-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-fuchsia-200"
+            >
+              Game từ liên quan
             </Link>
             {selectedModeKanjiWordFlashcardHref ? (
               <Link

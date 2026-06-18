@@ -1,0 +1,729 @@
+[
+{
+"id": "vocab-review-n4-lessons-001-005-mcq-001",
+"title": "Ôn tập từ vựng N4 - Bài 1 đến Bài 5 - Trắc nghiệm 01",
+"level": "N4",
+"minutes": 35,
+"tags": [
+"語彙",
+"文脈語彙",
+"trắc nghiệm",
+"Bài 1-5",
+"furigana",
+"detailed-explanation"
+],
+"questionMode": "multipleChoiceOnly",
+"sourceLessons": [
+"Bài 1 - 寮(りょう)で親子(おやこ)どんぶりを作(つく)る",
+"Bài 2 - 週末(しゅうまつ)に友達(ともだち)を映画館(えいがかん)へ誘(さそ)う",
+"Bài 3 - 教室(きょうしつ)に忘(わす)れ物(もの)をした日(ひ)",
+"Bài 4 - 胃(い)が痛(いた)くて病院(びょういん)へ行(い)く",
+"Bài 5 - バスが遅(おく)れて学校(がっこう)に遅刻(ちこく)する"
+],
+"furiganaPolicy": {
+"prompt": "Kanji trong câu hỏi có furigana",
+"choices": "Kanji trong đáp án có furigana",
+"explanation": "Giải thích có furigana cho từ quan trọng"
+},
+"sections": [
+{
+"id": "vocabulary-mcq",
+"title": "Trắc nghiệm từ vựng",
+"kind": "vocabulary",
+"description": "Chọn đáp án đúng nhất để hoàn thành câu. Mỗi câu đều có giải thích chi tiết cho cả đáp án đúng và sai.",
+"questions": [
+{
+"id": "q001",
+"number": 1,
+"type": "vocabularyContext",
+"targetWord": "調味料",
+"sourceLesson": "Bài 1",
+"difficulty": "easy",
+"prompt": "しょうゆ、砂糖(さとう)、塩(しお)などの（　）を入(い)れて、味(あじ)を確(たし)かめます。",
+"choices": [
+"材料(ざいりょう)",
+"調味料(ちょうみりょう)",
+"書類(しょるい)",
+"置(お)き場(ば)"
+],
+"correctAnswer": "調味料(ちょうみりょう)",
+"explanation": "Câu này nói đến しょうゆ, 砂糖(さとう), 塩(しお). Đây là các thứ dùng để nêm vị, nên đáp án đúng là 調味料(ちょうみりょう), nghĩa là gia vị.",
+"choiceExplanations": {
+"材料(ざいりょう)": "Sai. 材料(ざいりょう) là nguyên liệu nói chung như 米(こめ), 鳥肉(とりにく), たまねぎ. しょうゆ, 砂糖(さとう), 塩(しお) là nhóm hẹp hơn: gia vị.",
+"調味料(ちょうみりょう)": "Đúng. 調味料(ちょうみりょう) nghĩa là gia vị, dùng để điều chỉnh 味(あじ).",
+"書類(しょるい)": "Sai. 書類(しょるい) là giấy tờ/tài liệu, không liên quan đến nấu ăn.",
+"置(お)き場(ば)": "Sai. 置(お)き場(ば) là nơi để đồ, không phải đồ dùng để nêm món ăn."
+}
+},
+{
+"id": "q002",
+"number": 2,
+"type": "vocabularyContext",
+"targetWord": "量ります",
+"sourceLesson": "Bài 1",
+"difficulty": "easy",
+"prompt": "親子(おやこ)どんぶりを作(つく)る前(まえ)に、米(こめ)と水(みず)の量(りょう)を（　）。",
+"choices": [
+"量(はか)ります",
+"混(ま)ぜます",
+"冷(ひ)やします",
+"探(さが)します"
+],
+"correctAnswer": "量(はか)ります",
+"explanation": "米(こめ)と水(みず)の量(りょう)を確認(かくにん)する場面なので、量(はか)りますが正しいです。",
+"choiceExplanations": {
+"量(はか)ります": "Đúng. 量(はか)ります nghĩa là đo/cân lượng. 米(こめ)と水(みず)の量(りょう)を量(はか)ります = đo lượng gạo và nước.",
+"混(ま)ぜます": "Sai. 混(ま)ぜます là trộn/khuấy. Có thể dùng với 卵(たまご) và 調味料(ちょうみりょう), nhưng không hợp với 量(りょう)を.",
+"冷(ひ)やします": "Sai. 冷(ひ)やします là làm lạnh. Không dùng để nói đo lượng gạo và nước.",
+"探(さが)します": "Sai. 探(さが)します là tìm kiếm. Dùng khi tìm 財布(さいふ), 忘(わす)れ物(もの), không dùng với lượng nước/gạo."
+}
+},
+{
+"id": "q003",
+"number": 3,
+"type": "vocabularyContext",
+"targetWord": "混ぜます",
+"sourceLesson": "Bài 1",
+"difficulty": "easy",
+"prompt": "卵(たまご)と調味料(ちょうみりょう)をよく（　）から、なべに入(い)れます。",
+"choices": [
+"混(ま)ぜます",
+"片(かた)づけます",
+"向(む)かいます",
+"遅(おく)れます"
+],
+"correctAnswer": "混(ま)ぜます",
+"explanation": "卵(たまご) và 調味料(ちょうみりょう) là hai thứ có thể trộn với nhau, nên chọn 混(ま)ぜます.",
+"choiceExplanations": {
+"混(ま)ぜます": "Đúng. 混(ま)ぜます nghĩa là trộn/khuấy. 卵(たまご)と調味料(ちょうみりょう)を混(ま)ぜます là cách dùng tự nhiên.",
+"片(かた)づけます": "Sai. 片(かた)づけます là dọn dẹp. Dùng với 机(つくえ)の上(うえ) hoặc 部屋(へや), không dùng với trứng và gia vị.",
+"向(む)かいます": "Sai. 向(む)かいます là đi/hướng về phía nào đó, ví dụ 学校(がっこう)へ向(む)かいます.",
+"遅(おく)れます": "Sai. 遅(おく)れます là bị trễ, thường dùng với バス, 電車(でんしゃ), 時間(じかん)."
+}
+},
+{
+"id": "q004",
+"number": 4,
+"type": "vocabularyContext",
+"targetWord": "合います",
+"sourceLesson": "Bài 1",
+"difficulty": "normal",
+"prompt": "この味(あじ)はご飯(はん)にとても（　）。",
+"choices": [
+"合(あ)います",
+"集(あつ)まります",
+"続(つづ)きます",
+"出発(しゅっぱつ)します"
+],
+"correctAnswer": "合(あ)います",
+"explanation": "Nに合(あ)います nghĩa là hợp với N. 味(あじ)がご飯(はん)に合(あ)います = vị này hợp với cơm.",
+"choiceExplanations": {
+"合(あ)います": "Đúng. 合(あ)います diễn tả sự phù hợp. 味(あじ)はご飯(はん)に合(あ)います là câu tự nhiên.",
+"集(あつ)まります": "Sai. 集(あつ)まります là tụ tập/tập trung, thường dùng với người: 駅前(えきまえ)に集(あつ)まります.",
+"続(つづ)きます": "Sai. 続(つづ)きます là tiếp tục/kéo dài. Dùng với 熱(ねつ) hoặc 痛(いた)み, không hợp với 味(あじ) và ご飯(はん).",
+"出発(しゅっぱつ)します": "Sai. 出発(しゅっぱつ)します là xuất phát, dùng với việc rời khỏi một nơi."
+}
+},
+{
+"id": "q005",
+"number": 5,
+"type": "vocabularyContext",
+"targetWord": "食欲",
+"sourceLesson": "Bài 1",
+"difficulty": "normal",
+"prompt": "料理(りょうり)のにおいがよくて、食(た)べる前(まえ)から（　）が出(で)ました。",
+"choices": [
+"食欲(しょくよく)",
+"予定(よてい)",
+"事故(じこ)",
+"具合(ぐあい)"
+],
+"correctAnswer": "食欲(しょくよく)",
+"explanation": "食欲(しょくよく) nghĩa là cảm giác muốn ăn/khẩu vị. においがよくて食欲(しょくよく)が出(で)る là cách nói tự nhiên.",
+"choiceExplanations": {
+"食欲(しょくよく)": "Đúng. 食欲(しょくよく)が出(で)ます = bắt đầu muốn ăn, thấy thèm ăn.",
+"予定(よてい)": "Sai. 予定(よてい) là kế hoạch/dự định. Không thể nói 予定(よてい)が出(で)る trong ngữ cảnh mùi đồ ăn.",
+"事故(じこ)": "Sai. 事故(じこ) là tai nạn. Không liên quan đến đồ ăn.",
+"具合(ぐあい)": "Sai. 具合(ぐあい) là tình trạng/trạng thái cơ thể. Có thể nói 具合(ぐあい)が悪(わる)い, nhưng không hợp ở đây."
+}
+},
+{
+"id": "q006",
+"number": 6,
+"type": "vocabularyContext",
+"targetWord": "片づけます",
+"sourceLesson": "Bài 1",
+"difficulty": "easy",
+"prompt": "食(た)べたあと、なべとどんぶりを洗(あら)って、机(つくえ)の上(うえ)を（　）。",
+"choices": [
+"片(かた)づけます",
+"量(はか)ります",
+"拾(ひろ)います",
+"ぶつかります"
+],
+"correctAnswer": "片(かた)づけます",
+"explanation": "Ăn xong rồi dọn bàn, nên dùng 片(かた)づけます.",
+"choiceExplanations": {
+"片(かた)づけます": "Đúng. 片(かた)づけます nghĩa là dọn dẹp/sắp xếp. 机(つくえ)の上(うえ)を片(かた)づけます rất tự nhiên.",
+"量(はか)ります": "Sai. 量(はか)ります là đo/cân, dùng với 量(りょう).",
+"拾(ひろ)います": "Sai. 拾(ひろ)います là nhặt đồ rơi, ví dụ 財布(さいふ)を拾(ひろ)います.",
+"ぶつかります": "Sai. ぶつかります là va chạm/đâm vào, dùng cho tai nạn hoặc vật va vào nhau."
+}
+},
+{
+"id": "q007",
+"number": 7,
+"type": "vocabularyContext",
+"targetWord": "予定",
+"sourceLesson": "Bài 2",
+"difficulty": "easy",
+"prompt": "週末(しゅうまつ)の（　）を見(み)て、友達(ともだち)を映画館(えいがかん)へ誘(さそ)いました。",
+"choices": [
+"予定(よてい)",
+"味(あじ)",
+"汗(あせ)",
+"線(せん)"
+],
+"correctAnswer": "予定(よてい)",
+"explanation": "週末(しゅうまつ)に何をするかを見る場面なので、予定(よてい)が正しいです。",
+"choiceExplanations": {
+"予定(よてい)": "Đúng. 予定(よてい) là kế hoạch/dự định. 週末(しゅうまつ)の予定(よてい) = kế hoạch cuối tuần.",
+"味(あじ)": "Sai. 味(あじ) là vị, dùng trong nấu ăn/đồ ăn.",
+"汗(あせ)": "Sai. 汗(あせ) là mồ hôi, dùng trong sức khỏe/cơ thể.",
+"線(せん)": "Sai. 線(せん) là đường kẻ/đường thẳng, không liên quan đến lịch cuối tuần."
+}
+},
+{
+"id": "q008",
+"number": 8,
+"type": "vocabularyContext",
+"targetWord": "興味",
+"sourceLesson": "Bài 2",
+"difficulty": "easy",
+"prompt": "私は映画(えいが)に（　）があります。",
+"choices": [
+"興味(きょうみ)",
+"食欲(しょくよく)",
+"事故(じこ)",
+"置(お)き場(ば)"
+],
+"correctAnswer": "興味(きょうみ)",
+"explanation": "Nに興味(きょうみ)があります nghĩa là có hứng thú với N. 映画(えいが)に興味(きょうみ)があります là câu đúng.",
+"choiceExplanations": {
+"興味(きょうみ)": "Đúng. 興味(きょうみ) là hứng thú/sự quan tâm. Dùng mẫu Nに興味(きょうみ)があります.",
+"食欲(しょくよく)": "Sai. 食欲(しょくよく) là cảm giác muốn ăn, không dùng với 映画(えいが)に.",
+"事故(じこ)": "Sai. 事故(じこ) là tai nạn, không hợp nghĩa.",
+"置(お)き場(ば)": "Sai. 置(お)き場(ば) là nơi để đồ, không phải cảm xúc/hứng thú."
+}
+},
+{
+"id": "q009",
+"number": 9,
+"type": "vocabularyContext",
+"targetWord": "直接",
+"sourceLesson": "Bài 2",
+"difficulty": "normal",
+"prompt": "メッセージではなく、友達(ともだち)に（　）話(はな)しました。",
+"choices": [
+"直接(ちょくせつ)",
+"急(きゅう)に",
+"たまに",
+"まだ"
+],
+"correctAnswer": "直接(ちょくせつ)",
+"explanation": "メッセージではなく nói rõ không phải nhắn tin, nên cần 直接(ちょくせつ) = trực tiếp.",
+"choiceExplanations": {
+"直接(ちょくせつ)": "Đúng. 直接(ちょくせつ)話(はな)します = nói trực tiếp.",
+"急(きゅう)に": "Sai. 急(きゅう)に là đột nhiên. Không đối lập với メッセージではなく.",
+"たまに": "Sai. たまに là thỉnh thoảng. Không hợp với ý nói trực tiếp.",
+"まだ": "Sai. まだ là vẫn/chưa, không bổ nghĩa tự nhiên cho 話(はな)しました trong câu này."
+}
+},
+{
+"id": "q010",
+"number": 10,
+"type": "vocabularyContext",
+"targetWord": "都合が悪い",
+"sourceLesson": "Bài 2",
+"difficulty": "normal",
+"prompt": "土曜日(どようび)は仕事(しごと)があります。土曜日(どようび)は（　）です。",
+"choices": [
+"都合(つごう)が悪(わる)い",
+"都合(つごう)がいい",
+"大好(だいす)き",
+"十分(じゅうぶん)"
+],
+"correctAnswer": "都合(つごう)が悪(わる)い",
+"explanation": "仕事(しごと)があって予定(よてい)が合(あ)わないので、都合(つごう)が悪(わる)いが正しいです。",
+"choiceExplanations": {
+"都合(つごう)が悪(わる)い": "Đúng. Nghĩa là không tiện/bận/khó sắp xếp thời gian.",
+"都合(つごう)がいい": "Sai. 都合(つごう)がいい là tiện/có thời gian. Nhưng câu trước nói có công việc.",
+"大好(だいす)き": "Sai. 大好(だいす)き là rất thích, không nói về lịch rảnh hay bận.",
+"十分(じゅうぶん)": "Sai. 十分(じゅうぶん) là đủ/đầy đủ, không hợp với ý bận lịch."
+}
+},
+{
+"id": "q011",
+"number": 11,
+"type": "vocabularyContext",
+"targetWord": "相談します",
+"sourceLesson": "Bài 2",
+"difficulty": "normal",
+"prompt": "映画(えいが)のあとで何(なに)をするか、友達(ともだち)と（　）。",
+"choices": [
+"相談(そうだん)します",
+"到着(とうちゃく)します",
+"治(なお)ります",
+"通(とお)ります"
+],
+"correctAnswer": "相談(そうだん)します",
+"explanation": "何(なに)をするかを友達(ともだち)と話(はな)し合(あ)う場面なので、相談(そうだん)しますが正しいです。",
+"choiceExplanations": {
+"相談(そうだん)します": "Đúng. 相談(そうだん)します là bàn bạc/thảo luận/hỏi ý kiến.",
+"到着(とうちゃく)します": "Sai. 到着(とうちゃく)します là đến nơi, thường dùng với 場所(ばしょ)に.",
+"治(なお)ります": "Sai. 治(なお)ります là khỏi bệnh, dùng với 病気(びょうき) hoặc 風邪(かぜ).",
+"通(とお)ります": "Sai. 通(とお)ります là đi qua, dùng với 道(みち) hoặc 場所(ばしょ)を."
+}
+},
+{
+"id": "q012",
+"number": 12,
+"type": "vocabularyContext",
+"targetWord": "出発します",
+"sourceLesson": "Bài 2",
+"difficulty": "normal",
+"prompt": "10時(じ)に駅前(えきまえ)を（　）、10時半(じはん)に映画館(えいがかん)に着(つ)きました。",
+"choices": [
+"出発(しゅっぱつ)して",
+"到着(とうちゃく)して",
+"遅刻(ちこく)して",
+"退院(たいいん)して"
+],
+"correctAnswer": "出発(しゅっぱつ)して",
+"explanation": "10時(じ)に駅前(えきまえ)を出(で)て、10時半(じはん)に映画館(えいがかん)に着(つ)く流れなので、出発(しゅっぱつ)してが正しいです。",
+"choiceExplanations": {
+"出発(しゅっぱつ)して": "Đúng. 出発(しゅっぱつ)します = xuất phát/rời đi từ một nơi.",
+"到着(とうちゃく)して": "Sai. 到着(とうちゃく)します là đến nơi. 10時半(じはん)に映画館(えいがかん)に着(つ)く mới là ý đến nơi.",
+"遅刻(ちこく)して": "Sai. 遅刻(ちこく)します là đi muộn/đến trễ, không hợp với 駅前(えきまえ)を.",
+"退院(たいいん)して": "Sai. 退院(たいいん)します là xuất viện, không liên quan đến đi xem phim."
+}
+},
+{
+"id": "q013",
+"number": 13,
+"type": "vocabularyContext",
+"targetWord": "気がつきます",
+"sourceLesson": "Bài 3",
+"difficulty": "normal",
+"prompt": "教室(きょうしつ)を出(で)てから、財布(さいふ)がないことに（　）。",
+"choices": [
+"気(き)がつきました",
+"火(ひ)にかけました",
+"無理(むり)をしました",
+"風邪(かぜ)をひきました"
+],
+"correctAnswer": "気(き)がつきました",
+"explanation": "財布(さいふ)がないことを発見(はっけん)した場面なので、気(き)がつきましたが正しいです。",
+"choiceExplanations": {
+"気(き)がつきました": "Đúng. Nに気(き)がつきます / ことに気(き)がつきます = nhận ra/phát hiện ra.",
+"火(ひ)にかけました": "Sai. 火(ひ)にかけます là bắc lên bếp/đặt lên lửa, dùng khi nấu ăn.",
+"無理(むり)をしました": "Sai. 無理(むり)をします là cố quá sức, không phải nhận ra ví bị mất.",
+"風邪(かぜ)をひきました": "Sai. 風邪(かぜ)をひきます là bị cảm."
+}
+},
+{
+"id": "q014",
+"number": 14,
+"type": "vocabularyContext",
+"targetWord": "探します",
+"sourceLesson": "Bài 3",
+"difficulty": "easy",
+"prompt": "財布(さいふ)がありません。ポケットの中(なか)と袋(ふくろ)の中(なか)を（　）。",
+"choices": [
+"探(さが)します",
+"誘(さそ)います",
+"量(はか)ります",
+"冷(ひ)やします"
+],
+"correctAnswer": "探(さが)します",
+"explanation": "なくした財布(さいふ)を見(み)つけたい場面なので、探(さが)しますが正しいです。",
+"choiceExplanations": {
+"探(さが)します": "Đúng. 探(さが)します = tìm kiếm đồ/người.",
+"誘(さそ)います": "Sai. 誘(さそ)います = rủ/mời ai đó đi đâu/làm gì.",
+"量(はか)ります": "Sai. 量(はか)ります = đo/cân lượng.",
+"冷(ひ)やします": "Sai. 冷(ひ)やします = làm lạnh."
+}
+},
+{
+"id": "q015",
+"number": 15,
+"type": "vocabularyContext",
+"targetWord": "お知らせ",
+"sourceLesson": "Bài 3",
+"difficulty": "normal",
+"prompt": "忘(わす)れ物(もの)の（　）を見(み)ると、置(お)き場(ば)がわかりました。",
+"choices": [
+"お知(し)らせ",
+"お見舞(みま)い",
+"調味料(ちょうみりょう)",
+"救急車(きゅうきゅうしゃ)"
+],
+"correctAnswer": "お知(し)らせ",
+"explanation": "忘(わす)れ物(もの)について情報(じょうほう)が書(か)いてあるものなので、お知(し)らせが正しいです。",
+"choiceExplanations": {
+"お知(し)らせ": "Đúng. お知(し)らせ = thông báo. 忘(わす)れ物(もの)のお知(し)らせ = thông báo đồ thất lạc.",
+"お見舞(みま)い": "Sai. お見舞(みま)い = thăm bệnh, dùng trong bệnh viện/sức khỏe.",
+"調味料(ちょうみりょう)": "Sai. 調味料(ちょうみりょう) = gia vị, thuộc chủ đề nấu ăn.",
+"救急車(きゅうきゅうしゃ)": "Sai. 救急車(きゅうきゅうしゃ) = xe cứu thương, thuộc chủ đề tai nạn/sức khỏe."
+}
+},
+{
+"id": "q016",
+"number": 16,
+"type": "vocabularyContext",
+"targetWord": "表",
+"sourceLesson": "Bài 3",
+"difficulty": "normal",
+"prompt": "紙(かみ)の（　）にはマークがあり、裏(うら)には矢印(やじるし)がありました。",
+"choices": [
+"表(おもて)",
+"線(せん)",
+"袋(ふくろ)",
+"会場(かいじょう)"
+],
+"correctAnswer": "表(おもて)",
+"explanation": "裏(うら)と対(つい)になる言葉(ことば)なので、表(おもて)が正しいです。",
+"choiceExplanations": {
+"表(おもて)": "Đúng. 表(おもて) = mặt trước. 裏(うら) = mặt sau.",
+"線(せん)": "Sai. 線(せん) = đường kẻ, không đối lập với 裏(うら).",
+"袋(ふくろ)": "Sai. 袋(ふくろ) = túi/bao.",
+"会場(かいじょう)": "Sai. 会場(かいじょう) = hội trường/địa điểm tổ chức sự kiện."
+}
+},
+{
+"id": "q017",
+"number": 17,
+"type": "vocabularyContext",
+"targetWord": "指します",
+"sourceLesson": "Bài 3",
+"difficulty": "normal",
+"prompt": "矢印(やじるし)は忘(わす)れ物(もの)の置(お)き場(ば)を（　）います。",
+"choices": [
+"指(さ)して",
+"拾(ひろ)って",
+"煮(に)えて",
+"太(ふと)って"
+],
+"correctAnswer": "指(さ)して",
+"explanation": "矢印(やじるし)が場所(ばしょ)を示(しめ)しているので、指(さ)していますが正しいです。",
+"choiceExplanations": {
+"指(さ)して": "Đúng. 指(さ)します = chỉ/trỏ/chỉ hướng.",
+"拾(ひろ)って": "Sai. 拾(ひろ)います = nhặt đồ rơi.",
+"煮(に)えて": "Sai. 煮(に)えます = chín/được nấu chín.",
+"太(ふと)って": "Sai. 太(ふと)ります = béo lên/tăng cân."
+}
+},
+{
+"id": "q018",
+"number": 18,
+"type": "vocabularyContext",
+"targetWord": "戻します",
+"sourceLesson": "Bài 3",
+"difficulty": "normal",
+"prompt": "使(つか)ったファイルを書類(しょるい)と一緒(いっしょ)に元(もと)の所(ところ)へ（　）。",
+"choices": [
+"戻(もど)します",
+"戻(もど)ります",
+"集(あつ)まります",
+"遅(おく)れます"
+],
+"correctAnswer": "戻(もど)します",
+"explanation": "物(もの)を元(もと)の場所(ばしょ)に返(かえ)す場面なので、他動詞(たどうし)の戻(もど)しますが正しいです。",
+"choiceExplanations": {
+"戻(もど)します": "Đúng. 戻(もど)します = đưa/trả cái gì về chỗ cũ. ファイルを戻(もど)します là đúng.",
+"戻(もど)ります": "Sai. 戻(もど)ります là tự quay lại/trở về. Nếu nói người quay về thì 私(わたし)は戻(もど)ります.",
+"集(あつ)まります": "Sai. 集(あつ)まります = tụ tập. Không dùng với ファイルを.",
+"遅(おく)れます": "Sai. 遅(おく)れます = bị trễ. Không hợp với 元(もと)の所(ところ)へ."
+}
+},
+{
+"id": "q019",
+"number": 19,
+"type": "vocabularyContext",
+"targetWord": "胃",
+"sourceLesson": "Bài 4",
+"difficulty": "easy",
+"prompt": "昨日(きのう)の夜(よる)から（　）が痛(いた)いので、病院(びょういん)へ行(い)きました。",
+"choices": [
+"胃(い)",
+"米(こめ)",
+"線(せん)",
+"駅前(えきまえ)"
+],
+"correctAnswer": "胃(い)",
+"explanation": "痛(いた)い cơ quan trong cơ thể ở đây là 胃(い), nghĩa là dạ dày.",
+"choiceExplanations": {
+"胃(い)": "Đúng. 胃(い) = dạ dày. 胃(い)が痛(いた)いです = đau dạ dày.",
+"米(こめ)": "Sai. 米(こめ) = gạo. Không thể dùng với đau cơ thể.",
+"線(せん)": "Sai. 線(せん) = đường kẻ. Không liên quan sức khỏe.",
+"駅前(えきまえ)": "Sai. 駅前(えきまえ) = trước ga, là địa điểm."
+}
+},
+{
+"id": "q020",
+"number": 20,
+"type": "vocabularyContext",
+"targetWord": "汗",
+"sourceLesson": "Bài 4",
+"difficulty": "easy",
+"prompt": "熱(ねつ)があって、夜(よる)にたくさん（　）が出(で)ました。",
+"choices": [
+"汗(あせ)",
+"味(あじ)",
+"袋(ふくろ)",
+"希望(きぼう)"
+],
+"correctAnswer": "汗(あせ)",
+"explanation": "熱(ねつ)があると体(からだ)から出(で)るものなので、汗(あせ)が正しいです。",
+"choiceExplanations": {
+"汗(あせ)": "Đúng. 汗(あせ)が出(で)ます = ra mồ hôi.",
+"味(あじ)": "Sai. 味(あじ) = vị. Vị không 出(で)ます trong ngữ cảnh sốt.",
+"袋(ふくろ)": "Sai. 袋(ふくろ) = túi/bao.",
+"希望(きぼう)": "Sai. 希望(きぼう) = hy vọng/nguyện vọng, không phải thứ xuất hiện khi bị sốt."
+}
+},
+{
+"id": "q021",
+"number": 21,
+"type": "vocabularyContext",
+"targetWord": "具合",
+"sourceLesson": "Bài 4",
+"difficulty": "normal",
+"prompt": "受付(うけつけ)で、今(いま)の（　）を伝(つた)えました。",
+"choices": [
+"具合(ぐあい)",
+"矢印(やじるし)",
+"材料(ざいりょう)",
+"夜行(やこう)バス"
+],
+"correctAnswer": "具合(ぐあい)",
+"explanation": "病院(びょういん)の受付(うけつけ)なので、体(からだ)の状態(じょうたい)を表(あらわ)す具合(ぐあい)が正しいです。",
+"choiceExplanations": {
+"具合(ぐあい)": "Đúng. 具合(ぐあい) = tình trạng/trạng thái cơ thể. 具合(ぐあい)が悪(わる)い = người không khỏe.",
+"矢印(やじるし)": "Sai. 矢印(やじるし) = mũi tên.",
+"材料(ざいりょう)": "Sai. 材料(ざいりょう) = nguyên liệu nấu ăn.",
+"夜行(やこう)バス": "Sai. 夜行(やこう)バス = xe buýt đêm, thuộc giao thông."
+}
+},
+{
+"id": "q022",
+"number": 22,
+"type": "vocabularyContext",
+"targetWord": "治ります",
+"sourceLesson": "Bài 4",
+"difficulty": "normal",
+"prompt": "薬(くすり)を飲(の)んだら、風邪(かぜ)が早(はや)く（　）。",
+"choices": [
+"治(なお)りました",
+"続(つづ)きました",
+"止(と)まりました",
+"集(あつ)まりました"
+],
+"correctAnswer": "治(なお)りました",
+"explanation": "風邪(かぜ)がよくなることを 治(なお)ります と言(い)います。",
+"choiceExplanations": {
+"治(なお)りました": "Đúng. 治(なお)ります = khỏi bệnh/được chữa khỏi. 風邪(かぜ)が治(なお)ります là cách nói chuẩn.",
+"続(つづ)きました": "Sai. 続(つづ)きます = tiếp tục/kéo dài. Nếu dùng câu này thì nghĩa là cảm tiếp tục kéo dài, trái với uống thuốc rồi khỏe.",
+"止(と)まりました": "Sai. 止(と)まります = dừng lại, thường dùng với xe, mưa, chuyển động. Không tự nhiên bằng 治(なお)ります với 風邪(かぜ).",
+"集(あつ)まりました": "Sai. 集(あつ)まります = tụ tập, dùng với người/đồ vật tập trung lại."
+}
+},
+{
+"id": "q023",
+"number": 23,
+"type": "vocabularyContext",
+"targetWord": "無理をします",
+"sourceLesson": "Bài 4",
+"difficulty": "normal",
+"prompt": "夜(よる)遅(おそ)くまで働(はたら)いて、あまり寝(ね)ませんでした。少(すこ)し（　）。",
+"choices": [
+"無理(むり)をしました",
+"相談(そうだん)しました",
+"出発(しゅっぱつ)しました",
+"退院(たいいん)しました"
+],
+"correctAnswer": "無理(むり)をしました",
+"explanation": "体(からだ)に悪(わる)いほど頑張(がんば)っているので、無理(むり)をしましたが正しいです。",
+"choiceExplanations": {
+"無理(むり)をしました": "Đúng. 無理(むり)をします = cố quá sức/làm quá sức.",
+"相談(そうだん)しました": "Sai. 相談(そうだん)します = bàn bạc/hỏi ý kiến, không nói về làm việc quá sức.",
+"出発(しゅっぱつ)しました": "Sai. 出発(しゅっぱつ)します = xuất phát.",
+"退院(たいいん)しました": "Sai. 退院(たいいん)します = xuất viện."
+}
+},
+{
+"id": "q024",
+"number": 24,
+"type": "vocabularyContext",
+"targetWord": "冷やします",
+"sourceLesson": "Bài 4",
+"difficulty": "normal",
+"prompt": "冷(つめ)たい飲(の)み物(もの)で胃(い)を（　）ので、注意(ちゅうい)してください。",
+"choices": [
+"冷(ひ)やします",
+"知(し)らせます",
+"楽(たの)しみます",
+"通(とお)ります"
+],
+"correctAnswer": "冷(ひ)やします",
+"explanation": "冷(つめ)たい飲(の)み物(もの)が胃(い)を冷(つめ)たくするので、冷(ひ)やしますが正しいです。",
+"choiceExplanations": {
+"冷(ひ)やします": "Đúng. 冷(ひ)やします = làm lạnh. 胃(い)を冷(ひ)やします = làm lạnh dạ dày.",
+"知(し)らせます": "Sai. 知(し)らせます = báo cho biết/thông báo.",
+"楽(たの)しみます": "Sai. 楽(たの)しみます = tận hưởng/vui với việc gì.",
+"通(とお)ります": "Sai. 通(とお)ります = đi qua, không dùng với 胃(い)を."
+}
+},
+{
+"id": "q025",
+"number": 25,
+"type": "vocabularyContext",
+"targetWord": "遅れます",
+"sourceLesson": "Bài 5",
+"difficulty": "easy",
+"prompt": "事故(じこ)でバスが（　）、学校(がっこう)に遅刻(ちこく)しました。",
+"choices": [
+"遅(おく)れて",
+"出(で)て",
+"走(はし)って",
+"拾(ひろ)って"
+],
+"correctAnswer": "遅(おく)れて",
+"explanation": "事故(じこ)のせいでバスが予定(よてい)より遅(おそ)くなったので、遅(おく)れてが正しいです。",
+"choiceExplanations": {
+"遅(おく)れて": "Đúng. 遅(おく)れます = bị trễ/chậm.",
+"出(で)て": "Sai. 出(で)ます = ra/khởi hành/xuất hiện. Không diễn tả lý do đi học muộn rõ bằng 遅(おく)れます.",
+"走(はし)って": "Sai. 走(はし)ります = chạy/xe chạy. バスが走(はし)って学校(がっこう)に遅刻(ちこく)した không tự nhiên với ý bị trễ.",
+"拾(ひろ)って": "Sai. 拾(ひろ)います = nhặt, không dùng với バス."
+}
+},
+{
+"id": "q026",
+"number": 26,
+"type": "vocabularyContext",
+"targetWord": "ぶつかります",
+"sourceLesson": "Bài 5",
+"difficulty": "normal",
+"prompt": "細(ほそ)い道(みち)で、トラックとオートバイが（　）。",
+"choices": [
+"ぶつかりました",
+"到着(とうちゃく)しました",
+"入院(にゅういん)しました",
+"量(はか)りました"
+],
+"correctAnswer": "ぶつかりました",
+"explanation": "トラックとオートバイが強(つよ)く当(あ)たった事故(じこ)の場面なので、ぶつかりましたが正しいです。",
+"choiceExplanations": {
+"ぶつかりました": "Đúng. ぶつかります = va chạm/đâm vào.",
+"到着(とうちゃく)しました": "Sai. 到着(とうちゃく)します = đến nơi, không diễn tả tai nạn giữa hai phương tiện.",
+"入院(にゅういん)しました": "Sai. 入院(にゅういん)します = nhập viện. Người có thể nhập viện, nhưng xe tải và xe máy không 入院(にゅういん)します.",
+"量(はか)りました": "Sai. 量(はか)ります = đo/cân lượng, không liên quan tai nạn giao thông."
+}
+},
+{
+"id": "q027",
+"number": 27,
+"type": "vocabularyContext",
+"targetWord": "救急車",
+"sourceLesson": "Bài 5",
+"difficulty": "easy",
+"prompt": "事故(じこ)の近(ちか)くに、パトカーと（　）が止(と)まっていました。",
+"choices": [
+"救急車(きゅうきゅうしゃ)",
+"映画館(えいがかん)",
+"調味料(ちょうみりょう)",
+"引(ひ)き出(だ)し"
+],
+"correctAnswer": "救急車(きゅうきゅうしゃ)",
+"explanation": "事故(じこ)の場面でパトカーと一緒(いっしょ)に来(く)るものなので、救急車(きゅうきゅうしゃ)が正しいです。",
+"choiceExplanations": {
+"救急車(きゅうきゅうしゃ)": "Đúng. 救急車(きゅうきゅうしゃ) = xe cứu thương.",
+"映画館(えいがかん)": "Sai. 映画館(えいがかん) = rạp chiếu phim.",
+"調味料(ちょうみりょう)": "Sai. 調味料(ちょうみりょう) = gia vị.",
+"引(ひ)き出(だ)し": "Sai. 引(ひ)き出(だ)し = ngăn kéo."
+}
+},
+{
+"id": "q028",
+"number": 28,
+"type": "vocabularyContext",
+"targetWord": "通ります",
+"sourceLesson": "Bài 5",
+"difficulty": "normal",
+"prompt": "バスは毎日(まいにち)、学校(がっこう)の近(ちか)くを（　）。",
+"choices": [
+"通(とお)ります",
+"冷(ひ)やします",
+"混(ま)ぜます",
+"退院(たいいん)します"
+],
+"correctAnswer": "通(とお)ります",
+"explanation": "学校(がっこう)の近(ちか)くを通過(つうか)する意味(いみ)なので、通(とお)りますが正しいです。",
+"choiceExplanations": {
+"通(とお)ります": "Đúng. Nを通(とお)ります = đi qua N.",
+"冷(ひ)やします": "Sai. 冷(ひ)やします = làm lạnh, dùng với 胃(い), 水(みず), 飲(の)み物(もの).",
+"混(ま)ぜます": "Sai. 混(ま)ぜます = trộn/khuấy, dùng trong nấu ăn.",
+"退院(たいいん)します": "Sai. 退院(たいいん)します = xuất viện."
+}
+},
+{
+"id": "q029",
+"number": 29,
+"type": "vocabularyContext",
+"targetWord": "向かいます",
+"sourceLesson": "Bài 5",
+"difficulty": "normal",
+"prompt": "バスを降(お)りてから、学校(がっこう)へ急(いそ)いで（　）。",
+"choices": [
+"向(む)かいました",
+"片(かた)づけました",
+"確(たし)かめました",
+"知(し)らせました"
+],
+"correctAnswer": "向(む)かいました",
+"explanation": "学校(がっこう)の方向(ほうこう)へ行(い)く場面なので、向(む)かいましたが正しいです。",
+"choiceExplanations": {
+"向(む)かいました": "Đúng. Nへ向(む)かいます = đi/hướng về phía N.",
+"片(かた)づけました": "Sai. 片(かた)づけます = dọn dẹp, không dùng với 学校(がっこう)へ.",
+"確(たし)かめました": "Sai. 確(たし)かめます = kiểm tra/xác nhận. Cần tân ngữ như 味(あじ)を確(たし)かめます.",
+"知(し)らせました": "Sai. 知(し)らせます = báo cho biết, thường dùng với người nhận thông tin."
+}
+},
+{
+"id": "q030",
+"number": 30,
+"type": "vocabularyContext",
+"targetWord": "入口",
+"sourceLesson": "Bài 5",
+"difficulty": "easy",
+"prompt": "バスの（　）から乗(の)って、出口(でぐち)から降(お)ります。",
+"choices": [
+"入口(いりぐち)",
+"表(おもて)",
+"線(せん)",
+"汗(あせ)"
+],
+"correctAnswer": "入口(いりぐち)",
+"explanation": "乗(の)るところは入口(いりぐち)、降(お)りるところは出口(でぐち)です。",
+"choiceExplanations": {
+"入口(いりぐち)": "Đúng. 入口(いりぐち) = cửa vào/lối vào.",
+"表(おもて)": "Sai. 表(おもて) = mặt trước, thường đi với 裏(うら).",
+"線(せん)": "Sai. 線(せん) = đường kẻ/đường thẳng.",
+"汗(あせ)": "Sai. 汗(あせ) = mồ hôi."
+}
+}
+]
+}
+]
+}
+]

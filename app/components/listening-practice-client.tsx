@@ -1,9 +1,10 @@
 ﻿"use client";
 
-import { Headphones, Loader2, RotateCcw, Sparkles, Volume2 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Download, Headphones, Loader2, MoreVertical, Pause, Play, RotateCcw, Sparkles, Volume2 } from "lucide-react";
+import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { cleanJapaneseSpeechText } from "@/lib/japanese-speech";
+import { resolveExpressiveTts } from "@/lib/listening-expression";
 import type { ListeningPracticeItem } from "@/lib/listening-practice-store";
 
 type Props = {
@@ -17,6 +18,8 @@ type TtsSegmentPayload = {
   voice: string;
   rate: string;
   pitch: string;
+  volume?: string;
+  emotion?: string;
 };
 type ListeningToken = {
   text: string;
@@ -34,6 +37,11 @@ type ScriptLine = {
   speechText: string;
   speechLength: number;
   tokens: ListeningToken[];
+  emotion?: string;
+  voice?: string;
+  rate?: string;
+  pitch?: string;
+  volume?: string;
 };
 type TimelineEntry = {
   lineIndex: number;
@@ -92,8 +100,12 @@ function normalizeBooleanLabel(value: string): boolean | null {
   return null;
 }
 
+function compactRubyReading(_match: string, _kanji: string, reading: string): string {
+  return reading.replace(/\s+/g, "");
+}
+
 function stripInlineRuby(value: string): string {
-  return value.replace(INLINE_RUBY_PATTERN, "$1");
+  return value.replace(INLINE_RUBY_PATTERN, compactRubyReading);
 }
 
 function applySpeechPronunciationOverrides(value: string): string {
@@ -242,6 +254,11 @@ function buildScriptLinesFromDialogue(
       speechText: normalizedSpeech,
       speechLength: compactSpeechCursorText(normalizedSpeech).length,
       tokens: buildListeningTokens(normalizedDisplay),
+      emotion: turn.emotion,
+      voice: turn.voice,
+      rate: turn.rate,
+      pitch: turn.pitch,
+      volume: turn.volume,
     });
   }
 
@@ -542,6 +559,41 @@ function speakerBadgeTheme(role: SpeakerRole): string {
   return "bg-[#eef3ff] text-[#3554a8]";
 }
 
+function formatClock(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds <= 0) {
+    return "0:00";
+  }
+  const safeSeconds = Math.floor(Math.max(0, seconds));
+  const minutes = Math.floor(safeSeconds / 60);
+  const remainingSeconds = String(safeSeconds % 60).padStart(2, "0");
+  return `${minutes}:${remainingSeconds}`;
+}
+
+function signedNumber(value: string | undefined): number {
+  const parsed = Number.parseInt(value || "0", 10);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function clampNumber(value: number, minimum: number, maximum: number): number {
+  return Math.max(minimum, Math.min(maximum, value));
+}
+
+function formatPlaybackRate(value: number): string {
+  return `${Number(value.toFixed(2))}x`;
+}
+
+function audioDownloadName(title: string, provider: string): string {
+  const safeTitle =
+    title
+      .normalize("NFKC")
+      .replace(/[\\/:*?"<>|]+/g, "-")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 80) || "bai-nghe";
+  return `${safeTitle}.${provider === "gemini" ? "wav" : "mp3"}`;
+}
+
 export function ListeningPracticeClient({ item }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const examAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -562,7 +614,12 @@ export function ListeningPracticeClient({ item }: Props) {
   const [femaleVoice, setFemaleVoice] = useState(DEFAULT_FEMALE_VOICE);
   const [rate, setRate] = useState(item.tts.rate || "-5%");
   const [pitch, setPitch] = useState(item.tts.pitch || "+0Hz");
+  const [ttsProvider, setTtsProvider] = useState<"auto" | "edge">(item.tts.provider || "auto");
   const [rolePlayback, setRolePlayback] = useState(true);
+  const [expressivePlayback, setExpressivePlayback] = useState(item.tts.expressive !== false);
+  const [audioProvider, setAudioProvider] = useState("");
+  const [examAudioProvider, setExamAudioProvider] = useState("");
+  const [showAudioMenu, setShowAudioMenu] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [audioUrl, setAudioUrl] = useState("");
   const [examAudioUrl, setExamAudioUrl] = useState("");
@@ -611,18 +668,30 @@ export function ListeningPracticeClient({ item }: Props) {
       } else if (rolePlayback && line.speakerRole === "female") {
         segmentVoice = femaleVoice;
       }
+      const expression = resolveExpressiveTts(line.speechText, {
+        enabled: expressivePlayback,
+        emotion: line.emotion,
+        baseRate: rate,
+        basePitch: pitch,
+        baseVolume: item.tts.volume,
+        rate: line.rate,
+        pitch: line.pitch,
+        volume: line.volume,
+      });
       return {
         text: line.speechText,
-        voice: segmentVoice,
-        rate,
-        pitch,
+        voice: line.voice || segmentVoice,
+        rate: expression.rate,
+        pitch: expression.pitch,
+        volume: expression.volume,
+        emotion: expression.emotion,
       };
     });
     return {
       cleanedText,
       segments,
     };
-  }, [scriptLines, voice, maleVoice, femaleVoice, rolePlayback, rate, pitch]);
+  }, [expressivePlayback, femaleVoice, item.tts.volume, maleVoice, pitch, rate, rolePlayback, scriptLines, voice]);
   const examPlan = useMemo(() => {
     const questionVoice = voice;
     const instruction = cleanExamSpeechText(
@@ -637,7 +706,7 @@ export function ListeningPracticeClient({ item }: Props) {
       pitch,
     };
     const scriptSegments =
-      hasDialogueMarkers && rolePlayback
+      expressivePlayback || (hasDialogueMarkers && rolePlayback)
         ? scriptPlan.segments
         : scriptPlan.cleanedText
           ? [
@@ -658,7 +727,7 @@ export function ListeningPracticeClient({ item }: Props) {
       cleanedText: segments.map((segment) => segment.text).join("\n"),
       segments,
     };
-  }, [hasDialogueMarkers, item.examMode, item.questions, pitch, rate, rolePlayback, scriptPlan, voice]);
+  }, [expressivePlayback, hasDialogueMarkers, item.examMode, item.questions, pitch, rate, rolePlayback, scriptPlan, voice]);
 
   const clearTicker = useCallback(() => {
     if (tickerRef.current !== null) {
@@ -835,7 +904,12 @@ export function ListeningPracticeClient({ item }: Props) {
     setFemaleVoice(DEFAULT_FEMALE_VOICE);
     setRate(item.tts.rate || "-5%");
     setPitch(item.tts.pitch || "+0Hz");
+    setTtsProvider(item.tts.provider || "auto");
     setRolePlayback(true);
+    setExpressivePlayback(item.tts.expressive !== false);
+    setAudioProvider("");
+    setExamAudioProvider("");
+    setShowAudioMenu(false);
     setPracticeMode("study");
     setAudioUrl("");
     setExamAudioUrl("");
@@ -861,7 +935,9 @@ export function ListeningPracticeClient({ item }: Props) {
     clearTicker,
     item.id,
     item.tts.pitch,
+    item.tts.provider,
     item.tts.rate,
+    item.tts.expressive,
     revokeGeneratedAudioUrl,
     revokeGeneratedExamAudioUrl,
     stopBrowserSpeech,
@@ -942,9 +1018,11 @@ export function ListeningPracticeClient({ item }: Props) {
   const generateAudio = async () => {
     setState("generating");
     setError("");
+    setAudioProvider("");
+    setShowAudioMenu(false);
     stopBrowserSpeech(true);
     try {
-      const useSegments = hasDialogueMarkers && rolePlayback;
+      const useSegments = expressivePlayback || (hasDialogueMarkers && rolePlayback);
       const response = await fetch("/api/listening-tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -953,6 +1031,15 @@ export function ListeningPracticeClient({ item }: Props) {
           voice,
           rate,
           pitch,
+          volume: item.tts.volume || "+0%",
+          provider: ttsProvider,
+          expressive: expressivePlayback,
+          context: [
+            item.situation || `${item.title}. Hội thoại luyện nghe tiếng Nhật đời thường.`,
+            item.tts.performanceDirection,
+          ]
+            .filter(Boolean)
+            .join("\n"),
           segments: useSegments ? scriptPlan.segments : undefined,
           allowFallbackDemo: false,
         }),
@@ -963,6 +1050,7 @@ export function ListeningPracticeClient({ item }: Props) {
       }
 
       const blob = await response.blob();
+      setAudioProvider(response.headers.get("X-TTS-Provider") || "edge");
       const nextUrl = URL.createObjectURL(blob);
       revokeGeneratedAudioUrl();
       generatedUrlRef.current = nextUrl;
@@ -987,6 +1075,7 @@ export function ListeningPracticeClient({ item }: Props) {
 
     setExamState("generating");
     setExamError("");
+    setExamAudioProvider("");
     stopBrowserSpeech(true);
     const audio = audioRef.current;
     if (audio) {
@@ -1003,6 +1092,15 @@ export function ListeningPracticeClient({ item }: Props) {
           voice,
           rate,
           pitch,
+          volume: item.tts.volume || "+0%",
+          provider: ttsProvider,
+          expressive: expressivePlayback,
+          context: [
+            `${item.situation || item.title}. Đây là bài nghe JLPT; phần hội thoại tự nhiên, phần hướng dẫn và câu hỏi trung tính, rõ ràng.`,
+            item.tts.performanceDirection,
+          ]
+            .filter(Boolean)
+            .join("\n"),
           segments: examPlan.segments,
           allowFallbackDemo: false,
         }),
@@ -1013,6 +1111,7 @@ export function ListeningPracticeClient({ item }: Props) {
       }
 
       const blob = await response.blob();
+      setExamAudioProvider(response.headers.get("X-TTS-Provider") || "edge");
       const nextUrl = URL.createObjectURL(blob);
       revokeGeneratedExamAudioUrl();
       generatedExamUrlRef.current = nextUrl;
@@ -1089,9 +1188,20 @@ export function ListeningPracticeClient({ item }: Props) {
       setActiveTokenIndex(tokenIndexFromCharIndex(line, 0));
 
       const utterance = new SpeechSynthesisUtterance(line.speechText);
+      const expression = resolveExpressiveTts(line.speechText, {
+        enabled: expressivePlayback,
+        emotion: line.emotion,
+        baseRate: rate,
+        basePitch: pitch,
+        baseVolume: item.tts.volume,
+        rate: line.rate,
+        pitch: line.pitch,
+        volume: line.volume,
+      });
       utterance.lang = "ja-JP";
-      utterance.rate = playbackRate;
-      utterance.pitch = 1;
+      utterance.rate = clampNumber(playbackRate * (1 + signedNumber(expression.rate) / 100), 0.55, 1.8);
+      utterance.pitch = clampNumber(1 + signedNumber(expression.pitch) / 30, 0.55, 1.6);
+      utterance.volume = clampNumber(1 + signedNumber(expression.volume) / 100, 0.2, 1);
 
       utterance.onboundary = (event) => {
         if (browserSessionRef.current !== sessionId || typeof event.charIndex !== "number") {
@@ -1150,6 +1260,41 @@ export function ListeningPracticeClient({ item }: Props) {
     setAnswers({});
     setChecked(false);
   };
+
+  const toggleAudioPlayback = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio || !audioUrl) {
+      return;
+    }
+
+    if (audio.paused) {
+      void audio.play().catch(() => {
+        setState("error");
+        setError("Khong phat duoc audio. Hay thu tao lai audio hoac dung trinh duyet am thanh.");
+      });
+      return;
+    }
+
+    audio.pause();
+  }, [audioUrl]);
+
+  const handleAudioSeek = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const nextTime = Number(event.target.value);
+      setAudioCurrentTime(nextTime);
+      const audio = audioRef.current;
+      if (audio && audioDuration > 0) {
+        audio.currentTime = nextTime;
+      }
+      syncScriptHighlight(nextTime);
+    },
+    [audioDuration, syncScriptHighlight]
+  );
+
+  const audioProgressPercent =
+    audioDuration > 0 ? Math.min(100, Math.max(0, (audioCurrentTime / audioDuration) * 100)) : 0;
+  const hasAudio = Boolean(audioUrl);
+  const downloadName = audioDownloadName(item.title, audioProvider);
 
   return (
     <div className="space-y-6">
@@ -1274,18 +1419,40 @@ export function ListeningPracticeClient({ item }: Props) {
                   <option value="+5Hz">Cao +5Hz</option>
                 </select>
               </label>
+              <label className="text-xs font-black uppercase tracking-[0.14em] text-white/68">
+                Cong nghe tao giong
+                <select
+                  value={ttsProvider}
+                  onChange={(event) => setTtsProvider(event.target.value === "edge" ? "edge" : "auto")}
+                  className="mt-2 h-11 w-full rounded-2xl border border-white/20 bg-[#0e274a] px-3 text-sm font-black text-white outline-none"
+                >
+                  <option value="auto">Gemini bieu cam, het quota dung Edge</option>
+                  <option value="edge">Chi dung Edge TTS mien phi</option>
+                </select>
+              </label>
             </div>
 
             {hasDialogueMarkers ? (
-              <label className="mt-3 flex items-center gap-2 text-sm font-bold text-white/85">
-                <input
-                  type="checkbox"
-                  checked={rolePlayback}
-                  onChange={(event) => setRolePlayback(event.target.checked)}
-                  className="h-4 w-4 rounded border-white/30 bg-transparent"
-                />
-                Bat phan vai nam/nu theo dong hoi thoai
-              </label>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                <label className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/8 px-3 py-2 text-sm font-bold text-white/85">
+                  <input
+                    type="checkbox"
+                    checked={rolePlayback}
+                    onChange={(event) => setRolePlayback(event.target.checked)}
+                    className="h-4 w-4 rounded border-white/30 bg-transparent"
+                  />
+                  Phân vai nam/nữ
+                </label>
+                <label className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/8 px-3 py-2 text-sm font-bold text-white/85">
+                  <input
+                    type="checkbox"
+                    checked={expressivePlayback}
+                    onChange={(event) => setExpressivePlayback(event.target.checked)}
+                    className="h-4 w-4 rounded border-white/30 bg-transparent"
+                  />
+                  Biểu cảm theo ngữ cảnh
+                </label>
+              </div>
             ) : null}
 
             <button
@@ -1300,7 +1467,13 @@ export function ListeningPracticeClient({ item }: Props) {
 
             {state === "ready" ? (
               <p className="mt-3 rounded-2xl border border-emerald-200/30 bg-emerald-300/10 px-3 py-2 text-sm font-bold text-[#aef7ee]">
-                Da tao xong audio.
+                Da tao xong audio bang{" "}
+                {audioProvider === "gemini"
+                  ? "Gemini bieu cam"
+                  : audioProvider === "edge-fallback"
+                    ? "Edge TTS du phong"
+                    : "Edge TTS"}
+                .
               </p>
             ) : null}
             {state === "error" ? (
@@ -1313,28 +1486,32 @@ export function ListeningPracticeClient({ item }: Props) {
       </section>
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,0.92fr)_minmax(360px,1.08fr)]">
-        <article className="rounded-[28px] border border-[#d8e2ee] bg-white p-5 shadow-[0_18px_42px_rgba(18,60,105,0.08)]">
+        <article className="overflow-hidden rounded-[30px] border border-[#dfe7f2] bg-white p-4 shadow-[0_22px_60px_rgba(18,60,105,0.10)]">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#22a6a1]">Audio</p>
-              <h3 className="mt-1 text-2xl font-black text-[#111827]">Nghe va lap lai</h3>
+            <div className="flex items-center gap-3">
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(135deg,#eef5ff,#5b6ee1)] text-white shadow-[0_14px_30px_rgba(78,96,205,0.28)]">
+                <Headphones className="h-6 w-6" />
+              </span>
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#64748b]">Audio shadowing</p>
+                <h3 className="mt-1 text-2xl font-black text-[#0f172a]">Nghe va lap lai</h3>
+              </div>
             </div>
             <button
               type="button"
               onClick={speakWithBrowser}
-              className="inline-flex h-10 items-center gap-2 rounded-full border border-[#d8e2ee] bg-[#f8fcff] px-4 text-sm font-black text-[#123c69] transition hover:bg-[#eef7fb]"
+              className="inline-flex h-10 items-center gap-2 rounded-full border border-[#dfe7f2] bg-[#fbfdff] px-4 text-sm font-black text-[#3554a8] shadow-sm transition hover:border-[#bfc9ff] hover:bg-[#f4f7ff]"
             >
               <Volume2 className="h-4 w-4" />
-              Fallback browser
+              Trinh duyet am thanh
             </button>
           </div>
 
           <audio
             ref={audioRef}
             src={audioUrl || undefined}
-            controls
             preload="metadata"
-            className="mt-5 w-full"
+            className="hidden"
             onLoadedMetadata={handleAudioLoadedMetadata}
             onPlay={handleAudioPlay}
             onPause={handleAudioPause}
@@ -1344,36 +1521,122 @@ export function ListeningPracticeClient({ item }: Props) {
             onEnded={handleAudioEnded}
           />
 
-          {!audioUrl ? (
-            <p className="mt-3 text-sm font-semibold leading-6 text-[#667085]">
-              Bam &quot;Tao audio bai nay&quot; de sinh file nghe tu script.
-            </p>
-          ) : null}
-
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            {[0.8, 1, 1.15].map((speed) => (
+          <div className="mt-5 rounded-[26px] border border-[#edf1f6] bg-[linear-gradient(135deg,#ffffff,#f8fbff_58%,#fff8f1)] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+            <div className="relative flex items-center gap-3 rounded-[22px] border border-[#e3e8f4] bg-white px-3 py-3 shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
               <button
-                key={speed}
                 type="button"
-                onClick={() => setPlaybackRate(speed)}
-                className={`rounded-full border px-4 py-2 text-sm font-black transition ${
-                  playbackRate === speed
-                    ? "border-[#123c69] bg-[#123c69] text-white"
-                    : "border-[#d8e2ee] bg-white text-[#526070] hover:bg-[#f8fcff]"
-                }`}
+                onClick={toggleAudioPlayback}
+                disabled={!hasAudio}
+                className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#5568df,#6b7cff)] text-white shadow-[0_12px_22px_rgba(85,104,223,0.28)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-45"
+                aria-label={isPlaybackActive ? "Tam dung audio" : "Phat audio"}
               >
-                {speed}x
+                {isPlaybackActive ? <Pause className="h-5 w-5 fill-white" /> : <Play className="h-5 w-5 fill-white" />}
               </button>
-            ))}
+              <span className="min-w-[78px] text-sm font-black tabular-nums text-[#334155]">
+                {formatClock(audioCurrentTime)} / {formatClock(audioDuration)}
+              </span>
+              <input
+                type="range"
+                min={0}
+                max={audioDuration > 0 ? audioDuration : 0}
+                step={0.05}
+                value={audioDuration > 0 ? Math.min(audioCurrentTime, audioDuration) : 0}
+                onChange={handleAudioSeek}
+                disabled={!hasAudio || audioDuration <= 0}
+                className="h-2 flex-1 cursor-pointer appearance-none rounded-full bg-[#e1e6f0] accent-[#5568df] disabled:cursor-not-allowed disabled:opacity-50"
+                style={{
+                  background: `linear-gradient(to right, #5568df ${audioProgressPercent}%, #e1e6f0 ${audioProgressPercent}%)`,
+                }}
+              />
+              <Volume2 className="hidden h-5 w-5 text-[#334155] sm:block" />
+              <div className="relative shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setShowAudioMenu((value) => !value)}
+                  disabled={!hasAudio}
+                  aria-label="Mở tùy chọn audio"
+                  aria-expanded={showAudioMenu}
+                  className="grid h-9 w-9 place-items-center rounded-full text-[#64748b] transition hover:bg-[#f1f4fa] hover:text-[#334155] disabled:cursor-not-allowed disabled:opacity-35"
+                >
+                  <MoreVertical className="h-5 w-5" />
+                </button>
+                {showAudioMenu && hasAudio ? (
+                  <div className="absolute right-0 top-11 z-20 min-w-48 rounded-2xl border border-[#dfe6f1] bg-white p-1.5 shadow-[0_18px_42px_rgba(15,23,42,0.16)]">
+                    <a
+                      href={audioUrl}
+                      download={downloadName}
+                      onClick={() => setShowAudioMenu(false)}
+                      className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-black text-[#334155] transition hover:bg-[#f4f6ff] hover:text-[#4659bd]"
+                    >
+                      <Download className="h-4 w-4" />
+                      Tải audio xuống
+                    </a>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
+            {!audioUrl ? (
+              <p className="mt-3 rounded-2xl border border-dashed border-[#cbd5e1] bg-white/70 px-4 py-3 text-sm font-semibold leading-6 text-[#64748b]">
+                Bam &quot;Tao audio bai nay&quot; de sinh file nghe, hoac dung &quot;Trinh duyet am thanh&quot; de doc thu ngay.
+              </p>
+            ) : null}
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-[auto_minmax(220px,1fr)] sm:items-center">
+              <div className="flex flex-wrap items-center gap-2">
+                {[0.8, 1, 1.15].map((speed) => (
+                  <button
+                    key={speed}
+                    type="button"
+                    onClick={() => setPlaybackRate(speed)}
+                    className={`h-8 rounded-full border px-4 text-xs font-black shadow-sm transition ${
+                      playbackRate === speed
+                        ? "border-[#5b6ee1] bg-[linear-gradient(135deg,#5b6ee1,#7888ff)] text-white"
+                        : "border-[#e0e7f3] bg-white text-[#526070] hover:border-[#bec8ff] hover:bg-[#f7f9ff]"
+                    }`}
+                  >
+                    {speed}x
+                  </button>
+                ))}
+              </div>
+
+              <label className="flex min-w-0 items-center gap-3 rounded-2xl border border-[#e0e7f3] bg-white px-3 py-2 shadow-sm">
+                <span className="shrink-0 text-[11px] font-black uppercase tracking-[0.12em] text-[#64748b]">
+                  Tùy chỉnh
+                </span>
+                <input
+                  type="range"
+                  min={0.5}
+                  max={2}
+                  step={0.05}
+                  value={playbackRate}
+                  onChange={(event) => setPlaybackRate(Number(event.target.value))}
+                  className="h-2 min-w-0 flex-1 cursor-pointer appearance-none rounded-full bg-[#e1e6f0] accent-[#5568df]"
+                  aria-label="Tùy chỉnh tốc độ phát"
+                />
+                <button
+                  type="button"
+                  onClick={() => setPlaybackRate(1)}
+                  title="Đặt lại tốc độ 1x"
+                  className="min-w-14 rounded-xl bg-[#eef1ff] px-2 py-1 text-center text-xs font-black tabular-nums text-[#4659bd] transition hover:bg-[#e1e6ff]"
+                >
+                  {formatPlaybackRate(playbackRate)}
+                </button>
+              </label>
+            </div>
           </div>
 
-          <div className="mt-5 rounded-2xl border border-[#edf1f6] bg-[#fbfdff] p-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="mt-4 rounded-[26px] border border-[#e4eaf4] bg-white p-3 shadow-[0_16px_40px_rgba(15,23,42,0.06)]">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setShowTranscript((value) => !value)}
-                  className="inline-flex h-9 items-center rounded-full border border-[#d8e2ee] bg-white px-4 text-sm font-black text-[#123c69] transition hover:bg-[#eef7fb]"
+                  className={`inline-flex h-9 items-center rounded-xl border px-4 text-xs font-black transition ${
+                    showTranscript
+                      ? "border-[#cdd6ff] bg-[#f4f6ff] text-[#3554a8]"
+                      : "border-[#e0e7f3] bg-white text-[#526070] hover:bg-[#f8fbff]"
+                  }`}
                 >
                   {showTranscript ? "An script JP" : "Hien script JP"}
                 </button>
@@ -1381,31 +1644,35 @@ export function ListeningPracticeClient({ item }: Props) {
                   <button
                     type="button"
                     onClick={() => setShowTranslation((value) => !value)}
-                    className="inline-flex h-9 items-center rounded-full border border-[#d8e2ee] bg-white px-4 text-sm font-black text-[#123c69] transition hover:bg-[#eef7fb]"
+                    className={`inline-flex h-9 items-center rounded-xl border px-4 text-xs font-black transition ${
+                      showTranslation
+                        ? "border-[#cdd6ff] bg-[#f4f6ff] text-[#3554a8]"
+                        : "border-[#e0e7f3] bg-white text-[#526070] hover:bg-[#f8fbff]"
+                    }`}
                   >
                     {showTranslation ? "An ban dich VI" : "Hien ban dich VI"}
                   </button>
                 ) : null}
               </div>
-              {showTranscript && (
+              {showTranscript ? (
                 <label className="inline-flex items-center gap-2 text-xs font-bold text-[#526070]">
                   <input
                     type="checkbox"
                     checked={followScript}
                     onChange={(event) => setFollowScript(event.target.checked)}
-                    className="h-4 w-4 rounded border-[#d8e2ee]"
+                    className="h-4 w-4 rounded border-[#cbd5e1] accent-[#5568df]"
                   />
                   Tu dong theo dong dang doc
                 </label>
-              )}
+              ) : null}
             </div>
 
             {showTranscript ? (
               <>
-                <div className="mt-3 rounded-2xl border border-[#ffe2c5] bg-[#fff8f1] px-3 py-2">
+                <div className="mt-3 rounded-[20px] border border-[#ffd9b5] bg-[#fff8f1] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
                   <div className="mb-1 flex items-center justify-between gap-2">
-                    <span className="rounded-full bg-[#ffedd9] px-2.5 py-0.5 text-xs font-black text-[#b45309]">
-                      Dang noi realtime
+                    <span className="rounded-full bg-[#ffedd9] px-2.5 py-0.5 text-[11px] font-black text-[#e85f00]">
+                      Dang phat
                     </span>
                     {activeScriptLine ? (
                       <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#7c2d12]">
@@ -1413,7 +1680,7 @@ export function ListeningPracticeClient({ item }: Props) {
                       </span>
                     ) : null}
                   </div>
-                  <p className="font-[var(--font-jp)] text-[1.35rem] font-bold leading-[2.2] text-[#111827]">
+                  <p className="font-[var(--font-jp)] text-[1.22rem] font-bold leading-[2.05] text-[#111827]">
                     {activeScriptLine ? (
                       activeScriptLine.tokens.map((token, tokenIndex) => {
                         const runState = resolveTokenRunState(true, token, tokenIndex, activeTokenIndex);
@@ -1440,65 +1707,77 @@ export function ListeningPracticeClient({ item }: Props) {
                   </p>
                 </div>
 
-                <div ref={scriptContainerRef} className="mt-3 max-h-[460px] space-y-2 overflow-y-auto pr-1">
-                {scriptLines.map((line) => {
-                  const lineActive = line.index === activeLineIndex;
-                  return (
-                    <div
-                      key={`script-line-${line.index}`}
-                      ref={(node) => {
-                        if (node) {
-                          lineRefs.current.set(line.index, node);
-                        } else {
-                          lineRefs.current.delete(line.index);
-                        }
-                      }}
-                      className={`rounded-2xl border px-3 py-2 transition ${speakerTheme(line.speakerRole)} ${
-                        lineActive ? "ring-2 ring-[#ffb070]" : ""
-                      }`}
-                    >
-                      <div className="mb-1 flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <span className={`rounded-full px-2.5 py-0.5 text-xs font-black ${speakerBadgeTheme(line.speakerRole)}`}>
-                            {line.speakerLabel || "Noi dung"}
-                          </span>
-                          <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#64748b]">
-                            Dong {line.index + 1}
-                          </span>
-                        </div>
-                        {lineActive ? <span className="text-[11px] font-black text-[#ff6b00]">Dang phat</span> : null}
-                      </div>
-                      <p className="font-[var(--font-jp)] text-[1.28rem] font-semibold leading-[2.2] text-[#111827]">
-                        {line.tokens.map((token, tokenIndex) => {
-                          const runState = resolveTokenRunState(lineActive, token, tokenIndex, activeTokenIndex);
-                          return (
+                <div ref={scriptContainerRef} className="mt-3 max-h-[430px] space-y-2 overflow-y-auto pr-1">
+                  {scriptLines.map((line) => {
+                    const lineActive = line.index === activeLineIndex;
+                    const lineTranslation = translationLines[line.index];
+                    return (
+                      <div
+                        key={`script-line-${line.index}`}
+                        ref={(node) => {
+                          if (node) {
+                            lineRefs.current.set(line.index, node);
+                          } else {
+                            lineRefs.current.delete(line.index);
+                          }
+                        }}
+                        className={`rounded-[18px] border px-3 py-2.5 shadow-sm transition ${
+                          lineActive
+                            ? "border-[#ffc891] bg-[#fff7ef] ring-2 ring-[#ffd7b0]"
+                            : speakerTheme(line.speakerRole)
+                        }`}
+                      >
+                        <div className="mb-1 flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
                             <span
-                              key={`script-${line.index}-${tokenIndex}-${token.text}`}
-                              className={
-                                runState === "active" && !token.kanji
-                                  ? "rounded-md bg-[#ffd7b0] px-0.5 text-[#ff6b00]"
-                                  : runState === "passed"
-                                    ? "text-[#155e75]"
-                                    : ""
-                              }
+                              className={`rounded-full px-2.5 py-0.5 text-[11px] font-black ${speakerBadgeTheme(
+                                line.speakerRole
+                              )}`}
                             >
-                              <ScriptTokenText state={runState} token={token} />
+                              {line.speakerLabel || "Noi dung"}
                             </span>
-                          );
-                        })}
-                      </p>
-                    </div>
-                  );
-                })}
+                            <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#64748b]">
+                              Dong {line.index + 1}
+                            </span>
+                          </div>
+                          {lineActive ? <span className="text-[11px] font-black text-[#ff6b00]">Dang phat</span> : null}
+                        </div>
+                        <p className="font-[var(--font-jp)] text-[1.2rem] font-semibold leading-[2.05] text-[#111827]">
+                          {line.tokens.map((token, tokenIndex) => {
+                            const runState = resolveTokenRunState(lineActive, token, tokenIndex, activeTokenIndex);
+                            return (
+                              <span
+                                key={`script-${line.index}-${tokenIndex}-${token.text}`}
+                                className={
+                                  runState === "active" && !token.kanji
+                                    ? "rounded-md bg-[#ffd7b0] px-0.5 text-[#ff6b00]"
+                                    : runState === "passed"
+                                      ? "text-[#155e75]"
+                                      : ""
+                                }
+                              >
+                                <ScriptTokenText state={runState} token={token} />
+                              </span>
+                            );
+                          })}
+                        </p>
+                        {showTranslation && lineTranslation ? (
+                          <p className="mt-1 rounded-xl bg-white/65 px-3 py-2 text-sm font-semibold leading-6 text-[#475569]">
+                            {lineTranslation}
+                          </p>
+                        ) : null}
+                      </div>
+                    );
+                  })}
                 </div>
               </>
             ) : (
-              <p className="mt-3 text-sm font-semibold leading-7 text-[#667085]">
+              <p className="mt-3 rounded-2xl border border-dashed border-[#d8e2ee] bg-[#f8fbff] px-4 py-4 text-sm font-semibold leading-7 text-[#667085]">
                 Script se hien theo tung dong, co phan vai va to mau realtime theo audio.
               </p>
             )}
 
-            {showTranslation && translationLines.length > 0 ? (
+            {showTranslation && translationLines.length > 0 && !showTranscript ? (
               <div className="mt-3 rounded-2xl border border-[#d5def0] bg-[#f7faff] p-3">
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <span className="rounded-full bg-[#e8efff] px-2.5 py-0.5 text-xs font-black text-[#3554a8]">
@@ -1508,31 +1787,30 @@ export function ListeningPracticeClient({ item }: Props) {
                     {translationLines.length} dong
                   </span>
                 </div>
-                {translationLines.length > 1 ? (
-                  <div className="max-h-[240px] space-y-2 overflow-y-auto pr-1">
-                    {translationLines.map((line, index) => (
-                      <p
-                        key={`vi-line-${index}-${line.slice(0, 20)}`}
-                        className="rounded-xl border border-[#dbe6ff] bg-white px-3 py-2 text-sm font-semibold leading-7 text-[#25324a]"
-                      >
-                        <span className="mr-2 text-xs font-black text-[#64748b]">DONG {index + 1}</span>
-                        {line}
-                      </p>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm font-semibold leading-7 text-[#25324a]">{translationLines[0]}</p>
-                )}
+                <div className="max-h-[220px] space-y-2 overflow-y-auto pr-1">
+                  {translationLines.map((line, index) => (
+                    <p
+                      key={`vi-line-${index}-${line.slice(0, 20)}`}
+                      className="rounded-xl border border-[#dbe6ff] bg-white px-3 py-2 text-sm font-semibold leading-7 text-[#25324a]"
+                    >
+                      <span className="mr-2 text-xs font-black text-[#64748b]">DONG {index + 1}</span>
+                      {line}
+                    </p>
+                  ))}
+                </div>
               </div>
             ) : null}
 
-            {audioDuration > 0 ? (
-              <p className="mt-3 text-xs font-semibold text-[#667085]">
-                {audioDuration > 0
-                  ? `Tien do: ${audioCurrentTime.toFixed(1)}s / ${audioDuration.toFixed(1)}s`
-                  : "Dang tai metadata audio..."}
-              </p>
-            ) : null}
+            <div className="mt-3 flex items-center gap-3 rounded-full border border-[#edf1f6] bg-[#fbfdff] px-3 py-2">
+              <span className="text-xs font-black text-[#64748b]">{formatClock(audioCurrentTime)}</span>
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#e4e8f2]">
+                <div
+                  className="h-full rounded-full bg-[linear-gradient(90deg,#5568df,#ff9d4d)] transition-[width]"
+                  style={{ width: `${audioProgressPercent}%` }}
+                />
+              </div>
+              <span className="text-xs font-black text-[#64748b]">{formatClock(audioDuration)}</span>
+            </div>
           </div>
         </article>
 
@@ -1626,7 +1904,13 @@ export function ListeningPracticeClient({ item }: Props) {
                 ) : null}
                 {examState === "ready" ? (
                   <p className="mt-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-700">
-                    Da tao xong audio thi.
+                    Da tao xong audio thi bang{" "}
+                    {examAudioProvider === "gemini"
+                      ? "Gemini bieu cam"
+                      : examAudioProvider === "edge-fallback"
+                        ? "Edge TTS du phong"
+                        : "Edge TTS"}
+                    .
                   </p>
                 ) : null}
                 {examState === "error" ? (

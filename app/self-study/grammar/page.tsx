@@ -1,9 +1,13 @@
 import Link from "next/link";
-import { ChevronLeft, Layers3, NotebookPen, StickyNote, Trash2 } from "lucide-react";
+import { BookOpenCheck, ChevronLeft, Layers3, NotebookPen, StickyNote, Trash2 } from "lucide-react";
 
-import { deleteGrammarPracticeItemAction } from "@/app/actions/grammar-practice";
+import {
+  deleteGrammarPracticeItemAction,
+  deleteGrammarPracticeQuizDeckAction,
+} from "@/app/actions/grammar-practice";
 import { GrammarPracticeClient } from "@/app/components/grammar-practice-client";
 import { GrammarPracticeImportForm } from "@/app/components/grammar-practice-import-form";
+import { GrammarReviewQuizClient } from "@/app/components/grammar-review-quiz-client";
 import { requireUser } from "@/lib/auth";
 import {
   DEFAULT_GRAMMAR_DECK_NAME,
@@ -76,6 +80,7 @@ export default async function SelfStudyGrammarPage(props: { searchParams: Search
 
   const store = await loadGrammarPracticeStore(user.id);
   const allItems = [...store.items].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const allQuizDecks = [...store.quizDecks].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const levelFilteredItems =
     requestedLevel && requestedLevel !== "ALL"
       ? allItems.filter((item) => item.jlptLevel === requestedLevel)
@@ -104,6 +109,7 @@ export default async function SelfStudyGrammarPage(props: { searchParams: Search
 
   const totalExamples = allItems.reduce((sum, item) => sum + item.examples.length, 0);
   const totalNotes = allItems.reduce((sum, item) => sum + item.notes.length, 0);
+  const totalQuizQuestions = allQuizDecks.reduce((sum, deck) => sum + deck.items.length, 0);
 
   return (
     <section className="mx-auto max-w-[1360px] space-y-6 pb-10">
@@ -111,37 +117,44 @@ export default async function SelfStudyGrammarPage(props: { searchParams: Search
         <Link
           href="/self-study"
           className="grid h-11 w-11 place-items-center rounded-2xl border border-[#d8e2ee] bg-white text-[#123c69] shadow-[0_10px_24px_rgba(18,60,105,0.08)] transition hover:bg-[#f4fbfb]"
-          aria-label="Quay lai tu hoc"
+          aria-label="Quay lại tự học"
         >
           <ChevronLeft className="h-5 w-5" />
         </Link>
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#22a6a1]">Tu hoc ngu phap</p>
-          <h1 className="mt-1 text-3xl font-black text-[#111827]">Kho ngu phap JSON</h1>
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#22a6a1]">Tự học ngữ pháp</p>
+          <h1 className="mt-1 text-3xl font-black text-[#111827]">Kho ngữ pháp JSON</h1>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <article className="rounded-2xl border border-[#d8e2ee] bg-white px-5 py-4 shadow-[0_14px_28px_rgba(18,60,105,0.06)]">
           <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-[#64748b]">
             <Layers3 className="h-4 w-4 text-[#22a6a1]" />
-            Mau ngu phap
+            Mẫu ngữ pháp
           </p>
           <p className="mt-2 text-3xl font-black text-[#111827]">{allItems.length}</p>
         </article>
         <article className="rounded-2xl border border-[#d8e2ee] bg-white px-5 py-4 shadow-[0_14px_28px_rgba(18,60,105,0.06)]">
           <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-[#64748b]">
             <NotebookPen className="h-4 w-4 text-[#4f7cff]" />
-            Vi du cau
+            Ví dụ câu
           </p>
           <p className="mt-2 text-3xl font-black text-[#111827]">{totalExamples}</p>
         </article>
         <article className="rounded-2xl border border-[#d8e2ee] bg-white px-5 py-4 shadow-[0_14px_28px_rgba(18,60,105,0.06)]">
           <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-[#64748b]">
             <StickyNote className="h-4 w-4 text-[#e68a2e]" />
-            Ghi chu
+            Ghi chú
           </p>
           <p className="mt-2 text-3xl font-black text-[#111827]">{totalNotes}</p>
+        </article>
+        <article className="rounded-2xl border border-[#d8e2ee] bg-white px-5 py-4 shadow-[0_14px_28px_rgba(18,60,105,0.06)]">
+          <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-[#64748b]">
+            <BookOpenCheck className="h-4 w-4 text-[#8b5cf6]" />
+            Câu quiz
+          </p>
+          <p className="mt-2 text-3xl font-black text-[#111827]">{totalQuizQuestions}</p>
         </article>
       </div>
 
@@ -154,7 +167,7 @@ export default async function SelfStudyGrammarPage(props: { searchParams: Search
               !requestedLevel || requestedLevel === "ALL"
             )}`}
           >
-            Tat ca ({allItems.length})
+            Tất cả ({allItems.length})
           </Link>
           {levelCounts.map((entry) => (
             <Link
@@ -180,7 +193,7 @@ export default async function SelfStudyGrammarPage(props: { searchParams: Search
                   : "border-[#d8e2ee] bg-white text-[#526070] hover:bg-[#f8fcff]"
               }`}
             >
-              Tat ca muc ({levelFilteredItems.length})
+              Tất cả mục ({levelFilteredItems.length})
             </Link>
             {deckGroups.map((deck) => (
               <Link
@@ -199,11 +212,47 @@ export default async function SelfStudyGrammarPage(props: { searchParams: Search
         ) : null}
       </div>
 
+      <GrammarReviewQuizClient decks={allQuizDecks} />
+
+      {allQuizDecks.length > 0 ? (
+        <div className="rounded-[24px] border border-[#d8e2ee] bg-white p-4 shadow-[0_18px_42px_rgba(18,60,105,0.06)]">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#22a6a1]">Bộ quiz đã import</p>
+          <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {allQuizDecks.map((deck) => (
+              <article key={deck.id} className="rounded-2xl border border-[#d8e2ee] bg-white p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <span className="rounded-full bg-[#eef3ff] px-2.5 py-1 text-xs font-black text-[#3554a8]">
+                      {deck.jlptLevel}
+                    </span>
+                    <h3 className="mt-3 text-base font-black text-[#111827]">{deck.deckName}</h3>
+                    <p className="mt-1 text-sm font-semibold text-[#667085]">
+                      {deck.items.length} câu | {deck.topic}
+                    </p>
+                  </div>
+                  <form action={deleteGrammarPracticeQuizDeckAction}>
+                    <input type="hidden" name="deckId" value={deck.id} />
+                    <button
+                      type="submit"
+                      className="grid h-10 w-10 place-items-center rounded-full border border-rose-200 bg-rose-50 text-rose-600 transition hover:bg-rose-100"
+                      aria-label="Xóa bộ quiz"
+                      title="Xóa bộ quiz"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </form>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
       {selectedItem ? (
         <div className="rounded-[24px] border border-[#d8e2ee] bg-white p-4 shadow-[0_18px_42px_rgba(18,60,105,0.06)]">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#22a6a1]">Mau dang chon</p>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#22a6a1]">Mẫu đang chọn</p>
               <h2 className="mt-2 font-[var(--font-jp)] text-3xl font-black text-[#111827]">
                 {selectedItem.displayPattern || selectedItem.pattern}
               </h2>
@@ -220,8 +269,8 @@ export default async function SelfStudyGrammarPage(props: { searchParams: Search
               <button
                 type="submit"
                 className="grid h-11 w-11 place-items-center rounded-full border border-rose-200 bg-rose-50 text-rose-600 transition hover:bg-rose-100"
-                aria-label="Xoa mau ngu phap"
-                title="Xoa mau ngu phap"
+                aria-label="Xóa mẫu ngữ pháp"
+                title="Xóa mẫu ngữ pháp"
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -229,12 +278,12 @@ export default async function SelfStudyGrammarPage(props: { searchParams: Search
           </div>
           {selectedItem.structure ? (
             <p className="mt-3 text-sm font-semibold text-[#445169]">
-              <span className="font-black text-[#263750]">Cau truc:</span> {selectedItem.structure}
+              <span className="font-black text-[#263750]">Cấu trúc:</span> {selectedItem.structure}
             </p>
           ) : null}
           {selectedItem.examples.length > 0 ? (
             <div className="mt-3 rounded-xl border border-[#e7edf6] bg-[#fbfdff] px-3 py-3">
-              <p className="text-xs font-black uppercase tracking-[0.12em] text-[#667085]">Vi du nhanh</p>
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-[#667085]">Ví dụ nhanh</p>
               {selectedItem.examples.slice(0, 2).map((example, index) => (
                 <div key={`${selectedItem.id}-quick-example-${index}`} className="mt-2">
                   <p className="font-[var(--font-jp)] text-sm font-black text-[#111827]">
@@ -255,7 +304,7 @@ export default async function SelfStudyGrammarPage(props: { searchParams: Search
           <GrammarPracticeClient items={filteredItems} />
 
           <div className="rounded-[24px] border border-[#d8e2ee] bg-white p-4 shadow-[0_18px_42px_rgba(18,60,105,0.06)]">
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#22a6a1]">Danh sach mau ngu phap</p>
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#22a6a1]">Danh sách mẫu ngữ pháp</p>
             <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {filteredItems.map((item) => {
                 const active = selectedItem?.id === item.id;
@@ -275,7 +324,7 @@ export default async function SelfStudyGrammarPage(props: { searchParams: Search
                       <span className="rounded-full bg-[#eef3ff] px-2.5 py-1 text-xs font-black text-[#3554a8]">
                         {item.jlptLevel}
                       </span>
-                      <span className="text-xs font-bold text-[#667085]">{item.examples.length} vi du</span>
+                      <span className="text-xs font-bold text-[#667085]">{item.examples.length} ví dụ</span>
                     </div>
                     <h3 className="mt-3 font-[var(--font-jp)] text-xl font-black text-[#111827]">
                       {item.displayPattern || item.pattern}
@@ -289,14 +338,14 @@ export default async function SelfStudyGrammarPage(props: { searchParams: Search
         </>
       ) : (
         <div className="rounded-[24px] border border-dashed border-[#cbd8e7] bg-white p-8 text-center text-sm font-semibold text-[#667085]">
-          Chua co mau ngu phap trong bo loc hien tai. Hay import JSON de bat dau.
+          Chưa có mẫu ngữ pháp trong bộ lọc hiện tại. Hãy import JSON để bắt đầu.
         </div>
       )}
 
       <div className="rounded-[24px] border border-[#d8e2ee] bg-white p-5 shadow-[0_18px_42px_rgba(18,60,105,0.08)]">
-        <h2 className="text-xl font-black text-[#111827]">Import JSON ngu phap</h2>
+        <h2 className="text-xl font-black text-[#111827]">Import JSON ngữ pháp</h2>
         <p className="mt-1 text-sm text-[#667085]">
-          Dan JSON hoac tai file de them mau ngu phap, y nghia, vi du va ghi chu.
+          Dán JSON để thêm mẫu ngữ pháp hoặc bộ quiz ôn ngữ pháp có items/questions.
         </p>
         <div className="mt-4">
           <GrammarPracticeImportForm />

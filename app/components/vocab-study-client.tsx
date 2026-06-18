@@ -8,6 +8,7 @@ import {
   AUDIO_RATE_KEY,
   AUDIO_VOICE_KEY,
 } from "@/app/components/audio-settings-client";
+import { SpeakJpButton } from "@/app/components/speak-jp-button";
 import {
   readLearningProgress,
   upsertLearningProgress,
@@ -594,6 +595,33 @@ function pickBestReadingForItem(item: StudyItem): string {
   return pickBestReadingCandidate(
     expandReadingCandidates(buildReadingAliases(collectReadingCandidates(item)))
   );
+}
+
+function buildQuizOptionSpeakText(
+  option: StudyItem,
+  optionMain: string,
+  optionReading: string,
+  showFurigana: boolean,
+  quizPromptMode: QuizPromptMode
+): string {
+  if (quizPromptMode === "kanji_to_vi") {
+    const bestReading = pickBestReadingForItem(option);
+    if (bestReading) {
+      return bestReading;
+    }
+    return stripInlineReading(displayJapanese(option)).trim();
+  }
+
+  if (showFurigana && optionReading.trim()) {
+    return optionReading.trim();
+  }
+
+  const stripped = stripInlineReading(optionMain).trim();
+  if (stripped) {
+    return stripped;
+  }
+
+  return optionMain.trim();
 }
 
 function collapseRepeatedPattern(value: string): string {
@@ -1796,39 +1824,57 @@ export function VocabStudyClient({
                 quizPromptMode === "kanji_to_vi"
                   ? "text-2xl leading-snug sm:text-3xl"
                   : "text-4xl";
+              const optionSpeakText = buildQuizOptionSpeakText(
+                option,
+                optionMain,
+                optionReading,
+                showFurigana,
+                quizPromptMode
+              );
+              const canSpeakOption = hasJapaneseChars(optionSpeakText);
 
               return (
-                <button
-                  key={`${option.id}-${optionIndex}`}
-                  type="button"
-                  className={`rounded-xl border px-6 py-5 text-left font-semibold transition ${optionTextClass} ${
-                    correct
-                      ? "border-emerald-300 bg-emerald-600/25"
-                      : wrong
-                        ? "border-rose-300 bg-rose-600/25"
-                        : selected
-                          ? "border-sky-300 bg-sky-600/25"
-                          : "border-slate-500 bg-[#394971] hover:bg-[#41527e]"
-                  }`}
-                  onClick={() => !checkedQuiz && setSelectedOptionId(option.id)}
-                >
-                  <span className="mr-3 text-2xl text-slate-300">{optionNo}</span>
-                  {showFurigana ? (
-                    <ruby className="font-kanji leading-none [ruby-position:over]">
-                      <span className="font-kanji text-[1.08em] font-semibold">{optionMain}</span>
-                      <rt className="relative top-[0.08em] text-[0.42em] leading-none font-semibold text-slate-200/95">
-                        {optionReading}
-                      </rt>
-                    </ruby>
-                  ) : (
-                    <span className="font-kanji text-[1.08em] font-semibold leading-none">{optionMain}</span>
-                  )}
-                  {showMeaningAfterCheck ? (
-                    <p className="mt-2 text-base font-medium text-slate-200">
-                      {option.meaning}
-                    </p>
+                <div key={`${option.id}-${optionIndex}`} className="flex items-stretch gap-2">
+                  <button
+                    type="button"
+                    className={`flex-1 rounded-xl border px-6 py-5 text-left font-semibold transition ${optionTextClass} ${
+                      correct
+                        ? "border-emerald-300 bg-emerald-600/25"
+                        : wrong
+                          ? "border-rose-300 bg-rose-600/25"
+                          : selected
+                            ? "border-sky-300 bg-sky-600/25"
+                            : "border-slate-500 bg-[#394971] hover:bg-[#41527e]"
+                    }`}
+                    onClick={() => !checkedQuiz && setSelectedOptionId(option.id)}
+                  >
+                    <span className="mr-3 text-2xl text-slate-300">{optionNo}</span>
+                    {showFurigana ? (
+                      <ruby className="font-kanji leading-none [ruby-position:over]">
+                        <span className="font-kanji text-[1.08em] font-semibold">{optionMain}</span>
+                        <rt className="relative top-[0.08em] text-[0.42em] leading-none font-semibold text-slate-200/95">
+                          {optionReading}
+                        </rt>
+                      </ruby>
+                    ) : (
+                      <span className="font-kanji text-[1.08em] font-semibold leading-none">{optionMain}</span>
+                    )}
+                    {showMeaningAfterCheck ? (
+                      <p className="mt-2 text-base font-medium text-slate-200">
+                        {option.meaning}
+                      </p>
+                    ) : null}
+                  </button>
+                  {canSpeakOption ? (
+                    <div className="flex items-center">
+                      <SpeakJpButton
+                        text={optionSpeakText}
+                        title="Phat am dap an"
+                        className="h-11 w-11 border-slate-400/80 bg-slate-700 text-slate-100 hover:bg-slate-600"
+                      />
+                    </div>
                   ) : null}
-                </button>
+                </div>
               );
             })}
           </div>

@@ -2,7 +2,12 @@ import Link from "next/link";
 
 import {
   KanjiWriteFlashcardClient,
+  type KanjiWriteComponent,
   type KanjiWriteFlashcardItem,
+  type KanjiWriteRadical,
+  type KanjiWriteRelatedWord,
+  type KanjiWriteSourceOption,
+  type KanjiWriteStructure,
 } from "@/app/components/kanji-write-flashcard-client";
 import { normalizeJlptLevel } from "@/lib/admin-vocab-library";
 import { requireUser } from "@/lib/auth";
@@ -111,6 +116,155 @@ function pickBetterHanviet(current: string, next: string): string {
   return cleanCurrent.length >= cleanNext.length ? cleanCurrent : cleanNext;
 }
 
+function mergeDisplayText(current: string, next: string): string {
+  const cleanCurrent = current.trim();
+  const cleanNext = next.trim();
+  if (!cleanCurrent) {
+    return cleanNext;
+  }
+  if (!cleanNext) {
+    return cleanCurrent;
+  }
+
+  const currentKey = normalizeComparableText(cleanCurrent);
+  const nextKey = normalizeComparableText(cleanNext);
+  if (currentKey === nextKey || currentKey.includes(nextKey)) {
+    return cleanCurrent;
+  }
+  if (nextKey.includes(currentKey)) {
+    return cleanNext;
+  }
+  return `${cleanCurrent}; ${cleanNext}`;
+}
+
+function mergeStringList(current: string[], next: string[]): string[] {
+  const values = [...current, ...next]
+    .map((item) => item.trim())
+    .filter(Boolean);
+  return Array.from(new Set(values));
+}
+
+function cloneRadical(radical: KanjiWriteRadical | null | undefined): KanjiWriteRadical | null {
+  return radical
+    ? {
+        symbol: radical.symbol,
+        name: radical.name,
+        meaning: radical.meaning,
+        position: radical.position,
+        note: radical.note,
+      }
+    : null;
+}
+
+function cloneComponents(components: KanjiWriteComponent[] | undefined): KanjiWriteComponent[] {
+  return (components ?? []).map((component) => ({
+    symbol: component.symbol,
+    name: component.name,
+    meaning: component.meaning,
+    position: component.position,
+    role: component.role,
+  }));
+}
+
+function cloneStructure(
+  structure: KanjiWriteStructure | null | undefined
+): KanjiWriteStructure | null {
+  return structure
+    ? {
+        type: structure.type,
+        formula: structure.formula,
+        meaning: structure.meaning,
+        note: structure.note,
+      }
+    : null;
+}
+
+type RelatedWordLike = {
+  id?: string;
+  word?: string;
+  reading?: string;
+  kanji?: string;
+  hanviet?: string;
+  meaning?: string;
+  type?: string;
+  jlptLevel?: string;
+  exampleSentence?: string;
+  exampleMeaning?: string;
+  note?: string;
+  sourceLabel?: string;
+};
+
+function toWriteRelatedWord(
+  word: RelatedWordLike,
+  fallbackId: string,
+  fallbackSourceLabel: string
+): KanjiWriteRelatedWord | null {
+  const surface = (word.word ?? word.kanji ?? "").trim();
+  const meaning = (word.meaning ?? "").trim();
+  if (!surface || !meaning) {
+    return null;
+  }
+
+  return {
+    id: (word.id ?? fallbackId).trim() || fallbackId,
+    word: surface,
+    reading: (word.reading ?? "").trim(),
+    kanji: (word.kanji ?? "").trim(),
+    hanviet: (word.hanviet ?? "").trim(),
+    meaning,
+    type: (word.type ?? "").trim(),
+    jlptLevel: (word.jlptLevel ?? "").trim(),
+    exampleSentence: (word.exampleSentence ?? "").trim(),
+    exampleMeaning: (word.exampleMeaning ?? "").trim(),
+    note: (word.note ?? "").trim(),
+    sourceLabel: (word.sourceLabel ?? fallbackSourceLabel).trim() || fallbackSourceLabel,
+  };
+}
+
+function buildExampleRelatedWord(options: {
+  character: string;
+  exampleWord: string;
+  exampleMeaning: string;
+  jlptLevel: string;
+  sourceLabel: string;
+}): KanjiWriteRelatedWord | null {
+  const word = options.exampleWord.trim();
+  const meaning = options.exampleMeaning.trim();
+  if (!word || !meaning) {
+    return null;
+  }
+
+  return {
+    id: `example:${options.character}:${word}`,
+    word,
+    reading: "",
+    kanji: /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/.test(word) ? word : "",
+    hanviet: "",
+    meaning,
+    type: "",
+    jlptLevel: options.jlptLevel,
+    exampleSentence: "",
+    exampleMeaning: "",
+    note: "",
+    sourceLabel: options.sourceLabel,
+  };
+}
+
+function dedupeRelatedWords(words: KanjiWriteRelatedWord[]): KanjiWriteRelatedWord[] {
+  const unique = new Map<string, KanjiWriteRelatedWord>();
+  for (const word of words) {
+    const key = [
+      normalizeComparableText(word.word || word.kanji),
+      normalizeComparableText(word.reading),
+      normalizeComparableText(word.meaning),
+    ].join("|");
+    if (!unique.has(key)) {
+      unique.set(key, word);
+    }
+  }
+  return Array.from(unique.values());
+}
+
 function buildSourceLabel(item: WritingItemDraft): string {
   const decks = Array.from(item.personalDecks).filter(Boolean);
   if (decks.length === 0) {
@@ -147,9 +301,20 @@ function upsertWritingItem(
         character,
         meaning: itemMeaning,
         hanviet: item.hanviet,
+        onReading: item.onReading,
+        kunReading: item.kunReading,
         strokeCount: Math.max(1, item.strokeCount || 1),
         jlptLevel: item.jlptLevel,
         sourceLabel: item.sourceLabel,
+        strokeHint: item.strokeHint,
+        radical: cloneRadical(item.radical),
+        radicalHint: item.radicalHint,
+        mnemonic: item.mnemonic,
+        components: cloneComponents(item.components),
+        structure: cloneStructure(item.structure),
+        category: item.category,
+        tags: [...item.tags],
+        relatedWords: dedupeRelatedWords(item.relatedWords),
         order: item.order,
         hasCore: item.sourceType === "core",
         personalDecks: item.sourceType === "personal" && item.deckName ? new Set([item.deckName]) : new Set<string>(),
@@ -161,6 +326,23 @@ function upsertWritingItem(
       ? mergeMeaning(itemMeaning, existing.meaning)
       : mergeMeaning(existing.meaning, itemMeaning);
     existing.hanviet = pickBetterHanviet(existing.hanviet, item.hanviet);
+    existing.onReading = mergeDisplayText(existing.onReading, item.onReading);
+    existing.kunReading = mergeDisplayText(existing.kunReading, item.kunReading);
+    existing.strokeHint = mergeDisplayText(existing.strokeHint, item.strokeHint);
+    existing.radicalHint = mergeDisplayText(existing.radicalHint, item.radicalHint);
+    existing.mnemonic = mergeDisplayText(existing.mnemonic, item.mnemonic);
+    existing.category = existing.category || item.category;
+    existing.tags = mergeStringList(existing.tags, item.tags);
+    existing.relatedWords = dedupeRelatedWords([...existing.relatedWords, ...item.relatedWords]);
+    if (!existing.radical && item.radical) {
+      existing.radical = cloneRadical(item.radical);
+    }
+    if (existing.components.length === 0 && item.components.length > 0) {
+      existing.components = cloneComponents(item.components);
+    }
+    if (!existing.structure && item.structure) {
+      existing.structure = cloneStructure(item.structure);
+    }
     existing.strokeCount = item.sourceType === "core" ? Math.max(1, item.strokeCount || 1) : existing.strokeCount;
     existing.jlptLevel = pickEarlierLevel(existing.jlptLevel, item.jlptLevel);
     if (Number.isFinite(item.order)) {
@@ -198,8 +380,12 @@ export default async function KanjiWriteFlashcardPage(props: { searchParams: Sea
         id: true,
         character: true,
         meaning: true,
+        onReading: true,
+        kunReading: true,
         strokeCount: true,
         jlptLevel: true,
+        exampleWord: true,
+        exampleMeaning: true,
       },
     }),
     loadAdminKanjiMetadata(),
@@ -208,6 +394,24 @@ export default async function KanjiWriteFlashcardPage(props: { searchParams: Sea
 
   const metadataMap = new Map(kanjiMetadata.entries.map((entry) => [entry.character, entry]));
   const groupedItems = new Map<string, WritingItemDraft>();
+  const coreCharacters = new Set(dbKanji.flatMap((item) => extractKanjiChars(item.character)));
+  const personalCharacters = new Set(userKanjiStore.items.flatMap((item) => extractKanjiChars(item.character)));
+  const allCharacters = new Set([...coreCharacters, ...personalCharacters]);
+  const personalDeckCharacters = new Map<string, Set<string>>();
+  for (const deckName of userKanjiStore.decks) {
+    const normalizedDeckName = deckName.trim();
+    if (normalizedDeckName) {
+      personalDeckCharacters.set(normalizedDeckName, new Set());
+    }
+  }
+  for (const item of userKanjiStore.items) {
+    const deckName = item.deckName.trim() || "Chua phan loai";
+    const characters = personalDeckCharacters.get(deckName) ?? new Set<string>();
+    for (const character of extractKanjiChars(item.character)) {
+      characters.add(character);
+    }
+    personalDeckCharacters.set(deckName, characters);
+  }
 
   if (includePersonal) {
     for (const item of userKanjiStore.items) {
@@ -215,14 +419,39 @@ export default async function KanjiWriteFlashcardPage(props: { searchParams: Sea
       if (deckFilter && deckName !== deckFilter) {
         continue;
       }
+      const relatedWords = dedupeRelatedWords([
+        ...item.relatedWords
+          .map((word, index) =>
+            toWriteRelatedWord(word, `personal:${item.id}:${index}`, "Cá nhân")
+          )
+          .filter((word): word is KanjiWriteRelatedWord => !!word),
+        buildExampleRelatedWord({
+          character: item.character,
+          exampleWord: item.exampleWord,
+          exampleMeaning: item.exampleMeaning,
+          jlptLevel: item.jlptLevel,
+          sourceLabel: "Ví dụ cá nhân",
+        }),
+      ].filter((word): word is KanjiWriteRelatedWord => !!word));
       upsertWritingItem(groupedItems, {
         id: item.id,
         character: item.character,
         meaning: item.meaning,
         hanviet: item.hanviet,
+        onReading: item.onReading,
+        kunReading: item.kunReading,
         strokeCount: Math.max(1, item.strokeCount || 1),
         jlptLevel: item.jlptLevel,
         sourceLabel: item.deckName ? `Cá nhân: ${item.deckName}` : "Cá nhân",
+        strokeHint: item.strokeHint,
+        radical: null,
+        radicalHint: "",
+        mnemonic: "",
+        components: [],
+        structure: null,
+        category: item.category,
+        tags: item.tags,
+        relatedWords,
         order: item.order,
         sourceType: "personal",
         deckName: item.deckName,
@@ -233,14 +462,40 @@ export default async function KanjiWriteFlashcardPage(props: { searchParams: Sea
   if (includeCore) {
     for (const item of dbKanji) {
       const metadata = metadataMap.get(item.character);
+      const jlptLevel = normalizeJlptLevel(item.jlptLevel);
+      const relatedWords = dedupeRelatedWords([
+        ...(metadata?.relatedWords ?? [])
+          .map((word, index) =>
+            toWriteRelatedWord(word, `core:${item.id}:${index}`, "Kanji JSON")
+          )
+          .filter((word): word is KanjiWriteRelatedWord => !!word),
+        buildExampleRelatedWord({
+          character: item.character,
+          exampleWord: item.exampleWord,
+          exampleMeaning: item.exampleMeaning,
+          jlptLevel,
+          sourceLabel: "Ví dụ hệ thống",
+        }),
+      ].filter((word): word is KanjiWriteRelatedWord => !!word));
       upsertWritingItem(groupedItems, {
         id: item.id,
         character: item.character,
         meaning: item.meaning,
         hanviet: pickHanviet(item.character, "", metadata?.relatedWords ?? []),
+        onReading: item.onReading,
+        kunReading: item.kunReading,
         strokeCount: Math.max(1, item.strokeCount || 1),
-        jlptLevel: normalizeJlptLevel(item.jlptLevel),
+        jlptLevel,
         sourceLabel: "Hệ thống",
+        strokeHint: metadata?.strokeHint ?? "",
+        radical: cloneRadical(metadata?.radical),
+        radicalHint: metadata?.radicalHint ?? "",
+        mnemonic: metadata?.mnemonic ?? "",
+        components: cloneComponents(metadata?.components),
+        structure: cloneStructure(metadata?.structure),
+        category: metadata?.category ?? "",
+        tags: metadata?.tags ?? [],
+        relatedWords,
         order: metadata?.order ?? null,
         sourceType: "core",
       });
@@ -254,10 +509,54 @@ export default async function KanjiWriteFlashcardPage(props: { searchParams: Sea
     character: item.character,
     meaning: item.meaning,
     hanviet: item.hanviet,
+    onReading: item.onReading,
+    kunReading: item.kunReading,
     strokeCount: item.strokeCount,
     jlptLevel: item.jlptLevel,
     sourceLabel: buildSourceLabel(item),
+    strokeHint: item.strokeHint,
+    radical: cloneRadical(item.radical),
+    radicalHint: item.radicalHint,
+    mnemonic: item.mnemonic,
+    components: cloneComponents(item.components),
+    structure: cloneStructure(item.structure),
+    category: item.category,
+    tags: item.tags,
+    relatedWords: dedupeRelatedWords(item.relatedWords),
   }));
+  const sourceOptions: KanjiWriteSourceOption[] = [
+    {
+      value: "all",
+      label: "Tất cả",
+      count: allCharacters.size,
+      href: "/kanji/write-flashcard",
+      active: scope === "all" && !deckFilter,
+    },
+    {
+      value: "core",
+      label: "Hệ thống",
+      count: coreCharacters.size,
+      href: "/kanji/write-flashcard?scope=core",
+      active: scope === "core",
+    },
+    {
+      value: "personal",
+      label: "Kanji cá nhân",
+      count: personalCharacters.size,
+      href: "/kanji/write-flashcard?scope=personal",
+      active: scope === "personal" && !deckFilter,
+    },
+    ...Array.from(personalDeckCharacters.entries())
+      .filter(([, characters]) => characters.size > 0)
+      .sort(([left], [right]) => left.localeCompare(right, "vi"))
+      .map(([deckName, characters]) => ({
+        value: `deck:${deckName}`,
+        label: deckName,
+        count: characters.size,
+        href: `/kanji/write-flashcard?scope=personal&deck=${encodeURIComponent(deckName)}`,
+        active: deckFilter === deckName,
+      })),
+  ];
 
   return (
     <section className="space-y-6">
@@ -289,7 +588,11 @@ export default async function KanjiWriteFlashcardPage(props: { searchParams: Sea
         </div>
       </div>
 
-      <KanjiWriteFlashcardClient items={items} />
+      <KanjiWriteFlashcardClient
+        key={deckFilter ? `deck:${deckFilter}` : scope}
+        items={items}
+        sourceOptions={sourceOptions}
+      />
     </section>
   );
 }

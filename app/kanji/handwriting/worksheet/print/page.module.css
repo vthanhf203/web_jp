@@ -1,0 +1,215 @@
+.pageWrap {
+  min-height: calc(100vh - 160px);
+  padding-bottom: 2rem;
+}
+
+.toolbar {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.paper {
+  margin: 0 auto;
+  width: min(297mm, 100%);
+  border: 1px solid #d7dde8;
+  border-radius: 1rem;
+  background: #fff;
+  padding: 9mm;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid #cfd8e6;
+  padding-bottom: 0.55rem;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.meta {
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.sheetBody {
+  margin-top: 0.6rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 42mm minmax(0, 1fr);
+  gap: 0.45rem;
+  border: 1px solid #cfd8e6;
+  border-radius: 0.52rem;
+  padding: 0.35rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.side {
+  display: grid;
+  grid-template-columns: 15mm 1fr;
+  gap: 0.35rem;
+  align-items: start;
+}
+
+.sampleBox {
+  display: grid;
+  height: 15mm;
+  width: 15mm;
+  place-items: center;
+  border: 1px solid #d7dde8;
+  border-radius: 0.35rem;
+  background: #f8fbff;
+  color: #0f172a;
+}
+
+.rowInfo {
+  min-width: 0;
+}
+
+.rowLabel {
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.rowMeta {
+  margin-top: 0.08rem;
+  font-size: 0.58rem;
+  line-height: 1.25;
+  color: #475569;
+}
+
+.rowReading {
+  margin-top: 0.08rem;
+  overflow: hidden;
+  font-size: 0.58rem;
+  line-height: 1.25;
+  color: #334155;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.practiceArea {
+  min-width: 0;
+}
+
+.practiceGrid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  border: 1px solid #d7dde8;
+  border-radius: 0.35rem;
+  overflow: hidden;
+}
+
+.practiceCell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-right: 1px solid #d7dde8;
+  overflow: hidden;
+  color: #0f172a;
+}
+
+.practiceCell:last-child {
+  border-right: none;
+}
+
+.practiceCell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, transparent 49.35%, #e3e8f2 49.35%, #e3e8f2 50.65%, transparent 50.65%),
+    linear-gradient(to bottom, transparent 49.35%, #e3e8f2 49.35%, #e3e8f2 50.65%, transparent 50.65%);
+}
+
+.cellSample {
+  position: absolute;
+  inset: 8%;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.related {
+  margin-top: 0.28rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.18rem;
+  font-size: 0.56rem;
+  line-height: 1.2;
+  color: #475569;
+}
+
+.relatedWord {
+  display: inline-flex;
+  max-width: 42mm;
+  align-items: center;
+  gap: 0.12rem;
+  border-radius: 999px;
+  background: #f1f5f9;
+  padding: 0.12rem 0.35rem;
+}
+
+.legend {
+  margin-top: 0.5rem;
+  font-size: 0.65rem;
+  color: #64748b;
+}
+
+@media print {
+  :global(body) {
+    background: #fff !important;
+  }
+
+  :global(header),
+  :global(aside),
+  :global([role="status"][aria-live="polite"]) {
+    display: none !important;
+  }
+
+  :global(main) {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .toolbar {
+    display: none !important;
+  }
+
+  .paper {
+    width: 100%;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .pageWrap {
+    padding: 0;
+    min-height: auto;
+  }
+}
+
+@page {
+  size: A4 landscape;
+  margin: 9mm;
+}

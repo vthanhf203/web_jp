@@ -9,8 +9,10 @@ import {
 } from "@/lib/admin-vocab-library";
 import { requireUser } from "@/lib/auth";
 import { loadGrammarDataset } from "@/lib/grammar-dataset";
+import { buildJapaneseLookupTextCandidates } from "@/lib/japanese-lookup-text";
 import { prisma } from "@/lib/prisma";
 import { loadUserPersonalState } from "@/lib/user-personal-data";
+import { KanaSearchInput } from "@/app/components/kana-search-input";
 
 type SearchParams = Promise<{
   q?: string | string[];
@@ -100,6 +102,14 @@ type SearchPageState = {
   admin: number;
   grammar: number;
 };
+
+type QueryProfile = {
+  comparable: string;
+  tokens: string[];
+  penalty: number;
+};
+
+type SemanticVector = Map<string, number>;
 
 type PageMeta = {
   page: number;
@@ -428,7 +438,19 @@ function buildFieldVariants(fields: string[]): string[] {
   return [...variants];
 }
 
-function scoreByFields(queryComparable: string, queryTokens: string[], fields: string[]): number {
+function buildTokenPhrases(tokens: string[], size: number): string[] {
+  if (tokens.length < size) {
+    return [];
+  }
+
+  const phrases: string[] = [];
+  for (let index = 0; index <= tokens.length - size; index += 1) {
+    phrases.push(tokens.slice(index, index + size).join(" "));
+  }
+  return phrases;
+}
+
+function scoreSingleQueryByFields(queryComparable: string, queryTokens: string[], fields: string[]): number {
   if (!queryComparable || queryTokens.length === 0) {
     return -1;
   }
@@ -440,6 +462,8 @@ function scoreByFields(queryComparable: string, queryTokens: string[], fields: s
 
   const merged = fieldVariants.join(" ");
   const words = merged.split(" ").filter(Boolean);
+  const queryBigrams = buildTokenPhrases(queryTokens, 2);
+  const queryTrigrams = buildTokenPhrases(queryTokens, 3);
 
   const matchedScores = queryTokens
     .map((token) => tokenMatchScore(token, merged, words))
@@ -473,11 +497,191 @@ function scoreByFields(queryComparable: string, queryTokens: string[], fields: s
     }
   }
 
+  let phraseBonus = 0;
+  for (const field of fieldVariants) {
+    for (const phrase of queryTrigrams) {
+      if (field.includes(phrase)) {
+        phraseBonus = Math.max(phraseBonus, 84 + phrase.length * 2);
+      }
+    }
+    for (const phrase of queryBigrams) {
+      if (field.includes(phrase)) {
+        phraseBonus = Math.max(phraseBonus, 40 + phrase.length);
+      }
+    }
+  }
+
   const tokenBonus = matchedScores.reduce((sum, score) => sum + score, 0);
   const coverageBonus = Math.min(matchedScores.length * 16, 64);
   const lengthBonus = Math.min(queryComparable.length * 2, 32);
 
-  return bestFieldScore + Math.min(tokenBonus, 96) + coverageBonus + lengthBonus;
+  return bestFieldScore + Math.min(tokenBonus, 96) + coverageBonus + lengthBonus + phraseBonus;
+}
+
+function buildQueryProfiles(rawQuery: string): QueryProfile[] {
+  const candidates = buildJapaneseLookupTextCandidates(rawQuery);
+  const sourceCandidates = candidates.length > 0 ? candidates : [rawQuery.trim()];
+  const seen = new Set<string>();
+
+  return sourceCandidates
+    .map((candidate, index) => {
+      const comparable = toComparableText(candidate);
+      if (!comparable || seen.has(comparable)) {
+        return null;
+      }
+      seen.add(comparable);
+      return {
+        comparable,
+        tokens: tokenizeQuery(candidate),
+        penalty: index * 8,
+      };
+    })
+    .filter((profile): profile is QueryProfile => Boolean(profile));
+}
+
+function scoreByFields(queryProfiles: QueryProfile[], fields: string[]): number {
+  let bestScore = -1;
+
+  for (const profile of queryProfiles) {
+    const score = scoreSingleQueryByFields(profile.comparable, profile.tokens, fields);
+    if (score < 0) {
+      continue;
+    }
+    bestScore = Math.max(bestScore, score - profile.penalty);
+  }
+
+  return bestScore;
+}
+
+function isJapaneseTerm(value: string): boolean {
+  return /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/.test(value);
+}
+
+function shouldUseSemanticTerm(value: string): boolean {
+  return value.length >= 2 || isJapaneseTerm(value) || /\d/.test(value);
+}
+
+function addVectorTerm(vector: SemanticVector, term: string, weight: number): void {
+  const cleanTerm = term.trim();
+  if (!cleanTerm || !shouldUseSemanticTerm(cleanTerm)) {
+    return;
+  }
+  vector.set(cleanTerm, (vector.get(cleanTerm) ?? 0) + weight);
+}
+
+function addJapaneseNgrams(vector: SemanticVector, term: string, weight: number): void {
+  if (!isJapaneseTerm(term)) {
+    return;
+  }
+
+  const chars = Array.from(term).filter((char) => /[\p{L}\p{N}]/u.test(char));
+  for (const char of chars) {
+    addVectorTerm(vector, char, weight * 0.45);
+  }
+  for (let index = 0; index < chars.length - 1; index += 1) {
+    addVectorTerm(vector, `${chars[index]}${chars[index + 1]}`, weight * 0.72);
+  }
+}
+
+function addTokenNgrams(vector: SemanticVector, terms: string[], weight: number): void {
+  if (terms.length < 2) {
+    return;
+  }
+
+  for (let index = 0; index < terms.length - 1; index += 1) {
+    addVectorTerm(vector, `${terms[index]} ${terms[index + 1]}`, weight * 1.18);
+  }
+
+  if (terms.length < 3) {
+    return;
+  }
+
+  for (let index = 0; index < terms.length - 2; index += 1) {
+    addVectorTerm(vector, `${terms[index]} ${terms[index + 1]} ${terms[index + 2]}`, weight * 1.36);
+  }
+}
+
+function addComparableToVector(vector: SemanticVector, comparable: string, weight: number): void {
+  const terms = comparable.split(" ").filter(Boolean);
+  for (const term of terms) {
+    addVectorTerm(vector, term, weight);
+    addJapaneseNgrams(vector, term, weight);
+  }
+  addTokenNgrams(vector, terms, weight);
+}
+
+function buildSemanticVector(values: string[], baseWeight = 1): SemanticVector {
+  const vector: SemanticVector = new Map();
+  for (const value of values) {
+    const variants = buildFieldVariants([value]);
+    for (const variant of variants) {
+      addComparableToVector(vector, variant, baseWeight);
+    }
+  }
+  return vector;
+}
+
+function cosineSimilarity(left: SemanticVector, right: SemanticVector): number {
+  if (left.size === 0 || right.size === 0) {
+    return 0;
+  }
+
+  let dot = 0;
+  let leftNorm = 0;
+  let rightNorm = 0;
+
+  for (const value of left.values()) {
+    leftNorm += value * value;
+  }
+  for (const value of right.values()) {
+    rightNorm += value * value;
+  }
+  for (const [term, leftValue] of left) {
+    dot += leftValue * (right.get(term) ?? 0);
+  }
+
+  if (leftNorm === 0 || rightNorm === 0) {
+    return 0;
+  }
+
+  return dot / (Math.sqrt(leftNorm) * Math.sqrt(rightNorm));
+}
+
+function scoreCosineByFields(queryProfiles: QueryProfile[], fields: string[]): number {
+  const fieldVariants = buildFieldVariants(fields);
+  if (fieldVariants.length === 0) {
+    return -1;
+  }
+
+  const fieldVector = buildSemanticVector(fieldVariants, 1);
+  let bestScore = -1;
+
+  for (const profile of queryProfiles) {
+    const queryVector = buildSemanticVector([profile.comparable], 1.35);
+    const cosine = cosineSimilarity(queryVector, fieldVector);
+    if (cosine <= 0) {
+      continue;
+    }
+
+    const matchedTokens = profile.tokens.filter((token) => fieldVector.has(token)).length;
+    const coverage = profile.tokens.length > 0 ? matchedTokens / profile.tokens.length : 0;
+    const score = Math.round(cosine * 92 + coverage * 18 - profile.penalty);
+    bestScore = Math.max(bestScore, score);
+  }
+
+  return bestScore;
+}
+
+function scoreSearchCandidate(queryProfiles: QueryProfile[], fields: string[]): number {
+  const lexicalScore = scoreByFields(queryProfiles, fields);
+  const cosineScore = scoreCosineByFields(queryProfiles, fields);
+
+  if (lexicalScore >= 0) {
+    const cosineCap = lexicalScore >= 180 ? 18 : 42;
+    return lexicalScore + Math.min(Math.max(cosineScore, 0), cosineCap);
+  }
+
+  return cosineScore >= 32 ? cosineScore : -1;
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -710,8 +914,7 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
   };
   const selectedLevel =
     levelRaw && levelRaw.toUpperCase() !== "ALL" ? normalizeJlptLevel(levelRaw) : null;
-  const queryComparable = toComparableText(rawQuery);
-  const queryTokens = tokenizeQuery(rawQuery);
+  const queryProfiles = buildQueryProfiles(rawQuery);
 
   const [personalState, kanjiRowsRaw, vocabRowsRaw, adminLibrary, grammarDataset] = await Promise.all([
     loadUserPersonalState(user.id),
@@ -753,7 +956,7 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
   const kanjiRowsAll: KanjiResult[] = rawQuery
     ? kanjiRowsRaw
         .map((row) => {
-          const score = scoreByFields(queryComparable, queryTokens, [
+          const score = scoreSearchCandidate(queryProfiles, [
             row.character,
             row.meaning,
             row.onReading,
@@ -771,7 +974,7 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
   const vocabRowsAll: VocabResult[] = rawQuery
     ? vocabRowsRaw
         .map((row) => {
-          const score = scoreByFields(queryComparable, queryTokens, [
+          const score = scoreSearchCandidate(queryProfiles, [
             row.word,
             row.reading,
             row.meaning,
@@ -789,7 +992,7 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
         .filter((lesson) => (selectedLevel ? lesson.jlptLevel === selectedLevel : true))
         .flatMap((lesson) =>
           lesson.items.map((item) => {
-            const score = scoreByFields(queryComparable, queryTokens, [
+            const score = scoreSearchCandidate(queryProfiles, [
               item.word,
               item.reading,
               item.kanji,
@@ -825,7 +1028,7 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
         .filter((lesson) => (selectedLevel ? lesson.level === selectedLevel : true))
         .flatMap((lesson) =>
           lesson.points.map((point) => {
-            const score = scoreByFields(queryComparable, queryTokens, [
+            const score = scoreSearchCandidate(queryProfiles, [
               point.title,
               point.meaning,
               point.content,
@@ -898,24 +1101,11 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
           </p>
 
           <form className="mt-5 flex flex-wrap items-center gap-2">
-            <label className="group relative min-w-[300px] flex-1">
-              <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">⌕</span>
-              <input
-                type="search"
-                name="q"
-                defaultValue={rawQuery}
-                className="h-13 w-full rounded-2xl border border-[#bfd0ff] bg-white/95 pl-11 pr-11 text-[15px] font-semibold text-slate-800 outline-none transition focus:border-[#6378ff] focus:ring-4 focus:ring-[#6378ff22]"
-                placeholder="Ví dụ: 学校, べんきょう, benkyou, mẹ mình, N1 は N2 です"
-              />
-              {rawQuery ? (
-                <Link
-                  href={buildSearchHref("", selectedLevel)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full px-2 py-1 text-sm text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-                >
-                  ×
-                </Link>
-              ) : null}
-            </label>
+            <KanaSearchInput
+              name="q"
+              defaultValue={rawQuery}
+              placeholder="Ví dụ: 学校, べんきょう, benkyou, mẹ mình, N1 は N2 です"
+            />
 
             <select
               name="level"
@@ -984,7 +1174,7 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
       {rawQuery && totalResults > 0 ? (
         <article className="rounded-2xl border border-[#dbe3ff] bg-white/90 p-4 text-sm text-slate-600">
           Tìm thấy <strong>{totalResults}</strong> kết quả cho <strong>{rawQuery}</strong>
-          {selectedLevel ? <span> trong cấp <strong>{selectedLevel}</strong></span> : null}. Thuật toán ưu tiên: exact match → prefix → contains → fuzzy gần đúng.
+          {selectedLevel ? <span> trong cấp <strong>{selectedLevel}</strong></span> : null}. Thuật toán ưu tiên: exact match → prefix → contains → fuzzy gần đúng → cosine hỗ trợ.
         </article>
       ) : null}
 
@@ -1156,3 +1346,4 @@ export default async function GlobalSearchPage(props: { searchParams: SearchPara
     </section>
   );
 }
+

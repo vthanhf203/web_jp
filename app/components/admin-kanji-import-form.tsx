@@ -6,6 +6,7 @@ import {
   importAdminKanjiAction,
   type AdminImportState,
 } from "@/app/actions/admin-content";
+import { OpenDictionaryQuickFill } from "@/app/components/open-dictionary-quick-fill";
 
 const initialState: AdminImportState = {
   status: "idle",
@@ -79,6 +80,21 @@ export function AdminKanjiImportForm({ selectedLevel }: AdminKanjiImportFormProp
 
   const canInteract = hydrated && !pending && !isLoadingExisting;
 
+  function appendJsonLine(payload: Record<string, unknown>) {
+    const line = JSON.stringify(payload);
+    setRawInput((current) => {
+      const nextValue = current.trim() ? `${current.trim()}\n${line}` : line;
+      if (hydrated) {
+        persistDraft(nextValue);
+      }
+      return nextValue;
+    });
+    setClientMessage({
+      type: "success",
+      text: "Added one kanji from the offline dictionary.",
+    });
+  }
+
   return (
     <form
       action={formAction}
@@ -88,6 +104,21 @@ export function AdminKanjiImportForm({ selectedLevel }: AdminKanjiImportFormProp
       }}
       className="space-y-3"
     >
+      <OpenDictionaryQuickFill
+        mode="kanji"
+        onPickKanji={(entry) => {
+          appendJsonLine({
+            id: `kanji-${entry.character}`,
+            character: entry.character,
+            meaning: entry.meanings.join("; "),
+            onReading: entry.onReadings,
+            kunReading: entry.kunReadings,
+            strokeCount: entry.strokeCount || 1,
+            jlptLevel: entry.jlptLevel || selectedLevel || "N5",
+            tags: ["KANJIDIC2"],
+          });
+        }}
+      />
       <textarea
         name="rawInput"
         value={rawInput}

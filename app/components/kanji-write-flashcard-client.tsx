@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   Check,
   ChevronLeft,
@@ -7,6 +8,7 @@ import {
   Eraser,
   Eye,
   RotateCcw,
+  Search,
   Shuffle,
   Undo2,
 } from "lucide-react";
@@ -24,13 +26,71 @@ export type KanjiWriteFlashcardItem = {
   character: string;
   meaning: string;
   hanviet: string;
+  onReading: string;
+  kunReading: string;
   strokeCount: number;
   jlptLevel: string;
+  sourceLabel: string;
+  strokeHint: string;
+  radical: KanjiWriteRadical | null;
+  radicalHint: string;
+  mnemonic: string;
+  components: KanjiWriteComponent[];
+  structure: KanjiWriteStructure | null;
+  category: string;
+  tags: string[];
+  relatedWords: KanjiWriteRelatedWord[];
+};
+
+export type KanjiWriteRadical = {
+  symbol: string;
+  name: string;
+  meaning: string;
+  position: string;
+  note: string;
+};
+
+export type KanjiWriteComponent = {
+  symbol: string;
+  name: string;
+  meaning: string;
+  position: string;
+  role: string;
+};
+
+export type KanjiWriteStructure = {
+  type: string;
+  formula: string;
+  meaning: string;
+  note: string;
+};
+
+export type KanjiWriteRelatedWord = {
+  id: string;
+  word: string;
+  reading: string;
+  kanji: string;
+  hanviet: string;
+  meaning: string;
+  type: string;
+  jlptLevel: string;
+  exampleSentence: string;
+  exampleMeaning: string;
+  note: string;
   sourceLabel: string;
 };
 
 type Props = {
   items: KanjiWriteFlashcardItem[];
+  sourceOptions: KanjiWriteSourceOption[];
+};
+
+export type KanjiWriteSourceOption = {
+  value: string;
+  label: string;
+  count: number;
+  href: string;
+  active: boolean;
 };
 
 type Point = {
@@ -156,6 +216,48 @@ function loadKanjiVg(character: string): Promise<KanjiVgData> {
   return promise;
 }
 
+function KanjiVgGlyph({
+  data,
+  character,
+  className = "",
+  fallbackClassName = "",
+  strokeWidth = 4.2,
+}: {
+  data: KanjiVgData | null;
+  character: string;
+  className?: string;
+  fallbackClassName?: string;
+  strokeWidth?: number;
+}) {
+  if (!data || data.paths.length === 0) {
+    return (
+      <span lang="ja" className={`font-kanji ${fallbackClassName || className}`}>
+        {character}
+      </span>
+    );
+  }
+
+  const viewBox = data.viewBox;
+
+  return (
+    <svg
+      lang="ja"
+      role="img"
+      aria-label={character}
+      className={className}
+      viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
+      preserveAspectRatio="xMidYMid meet"
+      focusable="false"
+    >
+      <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={strokeWidth}>
+        {data.paths.map((path, index) => (
+          <path key={`${index}-${path}`} d={path} />
+        ))}
+      </g>
+    </svg>
+  );
+}
+
 function getMetricsForSize(width: number, height: number, viewBox: ViewBox, padding = 20): DrawMetrics {
   const usableWidth = Math.max(1, width - padding * 2);
   const usableHeight = Math.max(1, height - padding * 2);
@@ -228,6 +330,22 @@ function drawKanjiVgPaths(
   height: number,
   padding = 20
 ) {
+  drawKanjiVgPathList(ctx, data, data.paths, style, width, height, padding);
+}
+
+function drawKanjiVgPathList(
+  ctx: CanvasRenderingContext2D,
+  data: KanjiVgData,
+  paths: string[],
+  style: { strokeStyle: string; lineWidth: number; lineCap?: CanvasLineCap; lineJoin?: CanvasLineJoin },
+  width: number,
+  height: number,
+  padding = 20
+) {
+  if (paths.length === 0) {
+    return;
+  }
+
   withSvgTransform(
     ctx,
     width,
@@ -239,13 +357,105 @@ function drawKanjiVgPaths(
       ctx.lineWidth = style.lineWidth;
       ctx.lineCap = style.lineCap ?? "round";
       ctx.lineJoin = style.lineJoin ?? "round";
-      for (const d of data.paths) {
+      for (const d of paths) {
         ctx.stroke(new Path2D(d));
       }
       ctx.restore();
     },
     padding
   );
+}
+
+function getPathStartPoint(path: string): Point | null {
+  const match = path.match(/[Mm]\s*(-?\d+(?:\.\d+)?)(?:[\s,]+)(-?\d+(?:\.\d+)?)/);
+  if (!match) {
+    return null;
+  }
+
+  const x = Number(match[1]);
+  const y = Number(match[2]);
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    return null;
+  }
+
+  return { x, y };
+}
+
+function drawStrokeStartMarker(
+  ctx: CanvasRenderingContext2D,
+  data: KanjiVgData,
+  path: string,
+  strokeNumber: number,
+  width: number,
+  height: number,
+  padding = 20
+) {
+  const point = getPathStartPoint(path);
+  if (!point) {
+    return;
+  }
+
+  withSvgTransform(
+    ctx,
+    width,
+    height,
+    data.viewBox,
+    () => {
+      ctx.save();
+      ctx.fillStyle = "rgba(249, 115, 22, 0.94)";
+      ctx.strokeStyle = "rgba(255, 247, 237, 0.95)";
+      ctx.lineWidth = 0.95;
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, 4.25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "#fff7ed";
+      ctx.font = `${strokeNumber >= 10 ? "700 4.4px" : "700 5.2px"} sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(String(strokeNumber), point.x, point.y + 0.15);
+      ctx.restore();
+    },
+    padding
+  );
+}
+
+function drawStrokeOrderGuide(
+  ctx: CanvasRenderingContext2D,
+  data: KanjiVgData,
+  completedCount: number,
+  width: number,
+  height: number,
+  padding = 20
+) {
+  const safeCompletedCount = Math.max(0, Math.min(completedCount, data.paths.length));
+  const completedPaths = data.paths.slice(0, safeCompletedCount);
+  drawKanjiVgPathList(
+    ctx,
+    data,
+    completedPaths,
+    { strokeStyle: "rgba(34, 197, 94, 0.24)", lineWidth: 3.2 },
+    width,
+    height,
+    padding
+  );
+
+  const nextPath = data.paths[safeCompletedCount];
+  if (!nextPath) {
+    return;
+  }
+
+  drawKanjiVgPathList(
+    ctx,
+    data,
+    [nextPath],
+    { strokeStyle: "rgba(249, 115, 22, 0.84)", lineWidth: 4.7 },
+    width,
+    height,
+    padding
+  );
+  drawStrokeStartMarker(ctx, data, nextPath, safeCompletedCount + 1, width, height, padding);
 }
 
 function drawUserStrokes(
@@ -646,13 +856,137 @@ function statusClass(status: CheckResult["status"]) {
   return "border-rose-200 bg-rose-50 text-rose-900";
 }
 
-export function KanjiWriteFlashcardClient({ items }: Props) {
+function joinVisible(values: Array<string | undefined | null>): string {
+  return values
+    .map((value) => value?.trim() ?? "")
+    .filter(Boolean)
+    .join(" · ");
+}
+
+function katakanaToHiragana(value: string): string {
+  return value.replace(/[\u30a1-\u30f6]/g, (char) =>
+    String.fromCharCode(char.charCodeAt(0) - 0x60)
+  );
+}
+
+function normalizeForSearch(value: string): string {
+  return katakanaToHiragana(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function tokenizeSearch(value: string): string[] {
+  return normalizeForSearch(value)
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+}
+
+function isSingleKanjiQuery(value: string): boolean {
+  const chars = Array.from(value);
+  return chars.length === 1 && /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/.test(chars[0]);
+}
+
+function buildSearchIndex(item: KanjiWriteFlashcardItem): string {
+  return normalizeForSearch(
+    [
+      item.character,
+      item.meaning,
+      item.hanviet,
+      item.onReading,
+      item.kunReading,
+      item.strokeHint,
+      item.radical?.symbol,
+      item.radical?.name,
+      item.radical?.meaning,
+      item.radicalHint,
+      item.mnemonic,
+      item.structure?.formula,
+      item.structure?.meaning,
+      item.category,
+      item.tags.join(" "),
+      item.relatedWords
+        .map((word) =>
+          [
+            word.word,
+            word.kanji,
+            word.reading,
+            word.hanviet,
+            word.meaning,
+            word.exampleSentence,
+            word.exampleMeaning,
+          ].join(" ")
+        )
+        .join(" "),
+      item.jlptLevel,
+      item.sourceLabel,
+      String(item.strokeCount),
+      `${item.strokeCount} nét`,
+    ]
+      .filter(Boolean)
+      .join(" ")
+  );
+}
+
+function scoreSearchMatch(
+  item: KanjiWriteFlashcardItem,
+  normalizedQuery: string,
+  tokens: string[]
+): number {
+  if (!normalizedQuery && tokens.length === 0) {
+    return 0;
+  }
+
+  const character = normalizeForSearch(item.character);
+  const meaning = normalizeForSearch(item.meaning);
+  const hanviet = normalizeForSearch(item.hanviet);
+  const onReading = normalizeForSearch(item.onReading);
+  const kunReading = normalizeForSearch(item.kunReading);
+  const index = buildSearchIndex(item);
+
+  if (isSingleKanjiQuery(normalizedQuery) && character !== normalizedQuery) {
+    return 0;
+  }
+
+  if (tokens.length > 0 && !tokens.every((token) => index.includes(token))) {
+    return 0;
+  }
+
+  let score = 0;
+  if (normalizedQuery) {
+    if (character === normalizedQuery) score += 180;
+    if (meaning === normalizedQuery) score += 130;
+    if (hanviet === normalizedQuery) score += 120;
+    if (onReading === normalizedQuery || kunReading === normalizedQuery) score += 100;
+    if (character.includes(normalizedQuery)) score += 70;
+    if (meaning.includes(normalizedQuery)) score += 54;
+    if (hanviet.includes(normalizedQuery)) score += 50;
+    if (onReading.includes(normalizedQuery) || kunReading.includes(normalizedQuery)) score += 42;
+    if (index.includes(normalizedQuery)) score += 20;
+  }
+
+  for (const token of tokens) {
+    if (character === token) score += 52;
+    if (character.includes(token)) score += 26;
+    if (meaning.includes(token)) score += 16;
+    if (hanviet.includes(token)) score += 16;
+    if (onReading.includes(token) || kunReading.includes(token)) score += 14;
+  }
+
+  return score;
+}
+
+export function KanjiWriteFlashcardClient({ items, sourceOptions }: Props) {
   const [levelFilter, setLevelFilter] = useState("ALL");
+  const [query, setQuery] = useState("");
   const [shuffleMode, setShuffleMode] = useState(false);
   const [shuffleSeed, setShuffleSeed] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [strokes, setStrokes] = useState<DrawStroke[]>([]);
   const [showTarget, setShowTarget] = useState(false);
+  const [showStrokeGuide, setShowStrokeGuide] = useState(true);
   const [data, setData] = useState<KanjiVgData | null>(null);
   const [dataError, setDataError] = useState("");
   const [loadingData, setLoadingData] = useState(false);
@@ -662,17 +996,69 @@ export function KanjiWriteFlashcardClient({ items }: Props) {
   const activeStrokeRef = useRef<DrawStroke | null>(null);
   const activePointerRef = useRef<number | null>(null);
 
+  const normalizedQuery = useMemo(() => normalizeForSearch(query), [query]);
+  const queryTokens = useMemo(() => tokenizeSearch(query), [query]);
   const levels = useMemo(() => sortLevels(Array.from(new Set(items.map((item) => item.jlptLevel).filter(Boolean)))), [items]);
-  const filteredItems = useMemo(
-    () => items.filter((item) => levelFilter === "ALL" || item.jlptLevel === levelFilter),
-    [items, levelFilter]
-  );
+  const filteredItems = useMemo(() => {
+    const scored: Array<{ item: KanjiWriteFlashcardItem; index: number; score: number }> = [];
+    const hasSearchQuery = Boolean(normalizedQuery || queryTokens.length > 0);
+
+    items.forEach((item, index) => {
+      if (levelFilter !== "ALL" && item.jlptLevel !== levelFilter) {
+        return;
+      }
+
+      const score = scoreSearchMatch(item, normalizedQuery, queryTokens);
+      if (hasSearchQuery && score <= 0) {
+        return;
+      }
+
+      scored.push({ item, index, score });
+    });
+
+    if (hasSearchQuery) {
+      scored.sort((a, b) => b.score - a.score || a.index - b.index);
+    }
+
+    return scored.map((entry) => entry.item);
+  }, [items, levelFilter, normalizedQuery, queryTokens]);
   const orderedItems = useMemo(
     () => (shuffleMode ? shuffleArray(filteredItems) : filteredItems),
     [filteredItems, shuffleMode, shuffleSeed]
   );
   const current = orderedItems[currentIndex] ?? null;
   const expectedStrokeCount = data?.paths.length ?? current?.strokeCount ?? 1;
+  const relatedWords = current?.relatedWords ?? [];
+  const radicalLine = current?.radical
+    ? joinVisible([
+        current.radical.symbol,
+        current.radical.name,
+        current.radical.meaning,
+        current.radical.position,
+      ])
+    : "";
+  const componentLine = current
+    ? joinVisible([
+        current.structure?.formula,
+        current.components.length > 0
+          ? current.components
+              .slice(0, 3)
+              .map((component) =>
+                joinVisible([component.symbol, component.name, component.meaning])
+              )
+              .join("; ")
+          : "",
+      ])
+    : "";
+  const hintLine = current
+    ? current.mnemonic || current.radicalHint || current.structure?.meaning || ""
+    : "";
+  const nextGuideStrokeNumber = data ? Math.min(strokes.length + 1, data.paths.length) : 0;
+  const strokeGuideLabel = !data
+    ? "Đang tải thứ tự nét"
+    : strokes.length < data.paths.length
+      ? `Gợi ý nét ${nextGuideStrokeNumber}/${data.paths.length}`
+      : "Đã vẽ đủ số nét";
 
   const resetAnswer = useCallback(() => {
     strokesRef.current = [];
@@ -695,6 +1081,7 @@ export function KanjiWriteFlashcardClient({ items }: Props) {
       }
 
       drawGuideGrid(ctx, canvas.width);
+      const allStrokes = liveStroke ? [...strokesRef.current, liveStroke] : strokesRef.current;
 
       if (data && showTarget) {
         drawKanjiVgPaths(
@@ -706,8 +1093,11 @@ export function KanjiWriteFlashcardClient({ items }: Props) {
         );
       }
 
+      if (data && showStrokeGuide) {
+        drawStrokeOrderGuide(ctx, data, strokesRef.current.length, canvas.width, canvas.height);
+      }
+
       if (data) {
-        const allStrokes = liveStroke ? [...strokesRef.current, liveStroke] : strokesRef.current;
         drawUserStrokes(
           ctx,
           allStrokes,
@@ -718,7 +1108,7 @@ export function KanjiWriteFlashcardClient({ items }: Props) {
         );
       }
     },
-    [data, showTarget]
+    [data, showStrokeGuide, showTarget]
   );
 
   useEffect(() => {
@@ -917,7 +1307,28 @@ export function KanjiWriteFlashcardClient({ items }: Props) {
           </button>
         </div>
 
-        <div className="mt-5 flex flex-wrap gap-2">
+        <div className="mt-5 rounded-2xl border border-emerald-100 bg-emerald-50/70 p-3">
+          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-700">
+            Nguồn Kanji
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {sourceOptions.map((option) => (
+              <Link
+                key={option.value}
+                href={option.href}
+                className={`rounded-full border px-4 py-2 text-sm font-black transition ${
+                  option.active
+                    ? "border-emerald-600 bg-emerald-600 text-white shadow-sm"
+                    : "border-emerald-200 bg-white text-emerald-800 hover:border-emerald-400 hover:bg-emerald-100"
+                }`}
+              >
+                {option.label} ({option.count})
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => setLevelFilter("ALL")}
@@ -961,27 +1372,50 @@ export function KanjiWriteFlashcardClient({ items }: Props) {
             </p>
           </div>
 
+          <label className="relative mt-4 block">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setCurrentIndex(0);
+                resetAnswer();
+              }}
+              placeholder="Tìm Kanji, nghĩa, Hán Việt, On/Kun, từ liên quan..."
+              className="h-11 w-full rounded-2xl border border-slate-200 bg-white pl-10 pr-4 text-sm font-semibold text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+            />
+          </label>
+
           <div className="mt-4 grid max-h-72 grid-cols-2 gap-2 overflow-y-auto pr-1 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
-            {orderedItems.map((item, index) => {
-              const active = index === currentIndex;
-              return (
-                <button
-                  key={`${item.id}-${item.character}-${index}`}
-                  type="button"
-                  onClick={() => setCurrentIndex(index)}
-                  className={`min-h-[78px] rounded-2xl border px-3 py-2 text-left transition ${
-                    active
-                      ? "border-sky-300 bg-sky-100 text-sky-950 shadow-[0_10px_24px_rgba(14,165,233,0.16)]"
-                      : "border-slate-200 bg-white text-slate-700 hover:border-sky-200 hover:bg-sky-50"
-                  }`}
-                >
-                  <span className="block text-2xl font-black leading-none">{item.character}</span>
-                  <span className="mt-2 line-clamp-2 block text-xs font-bold leading-4 text-slate-500">
-                    {item.meaning}
-                  </span>
-                </button>
-              );
-            })}
+            {orderedItems.length > 0 ? (
+              orderedItems.map((item, index) => {
+                const active = index === currentIndex;
+                return (
+                  <button
+                    key={`${item.id}-${item.character}-${index}`}
+                    type="button"
+                    onClick={() => setCurrentIndex(index)}
+                    className={`min-h-[78px] rounded-2xl border px-3 py-2 text-left transition ${
+                      active
+                        ? "border-sky-300 bg-sky-100 text-sky-950 shadow-[0_10px_24px_rgba(14,165,233,0.16)]"
+                        : "border-slate-200 bg-white text-slate-700 hover:border-sky-200 hover:bg-sky-50"
+                    }`}
+                  >
+                    <span lang="ja" className="font-kanji block text-2xl font-black leading-none">
+                      {item.character}
+                    </span>
+                    <span className="mt-2 line-clamp-2 block text-xs font-bold leading-4 text-slate-500">
+                      {item.meaning}
+                    </span>
+                  </button>
+                );
+              })
+            ) : (
+              <div className="col-span-full rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-6 text-center text-sm font-bold text-slate-500">
+                Không tìm thấy Kanji phù hợp.
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1007,13 +1441,129 @@ export function KanjiWriteFlashcardClient({ items }: Props) {
                   Hãy vẽ chữ Kanji tương ứng với nghĩa trên. App chấm thoáng theo vùng dung sai, không bắt nét phải đè
                   đúng y chang đường mẫu.
                 </p>
+
+                <div className="mt-4 grid min-h-[230px] gap-3 rounded-2xl border border-sky-100/16 bg-slate-950/12 p-4 lg:grid-cols-[minmax(290px,0.82fr)_1fr]">
+                  <div className="flex min-w-0 items-start gap-3">
+                    <div className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-sky-50/92 text-[#263750] shadow-inner">
+                      <KanjiVgGlyph
+                        data={data}
+                        character={current.character}
+                        className="h-12 w-12"
+                        fallbackClassName="text-5xl font-black leading-none"
+                        strokeWidth={4.6}
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-black uppercase tracking-[0.16em] text-sky-100/65">
+                        Thông tin Kanji
+                      </p>
+                      <p className="mt-1 text-base font-black leading-5 text-white">
+                        {current.onReading || current.kunReading ? (
+                          <>
+                            {current.onReading ? (
+                              <span>
+                                On:{" "}
+                                <span lang="ja" className="font-kanji">
+                                  {current.onReading}
+                                </span>
+                              </span>
+                            ) : null}
+                            {current.onReading && current.kunReading ? (
+                              <span className="mx-1 text-sky-100/55">·</span>
+                            ) : null}
+                            {current.kunReading ? (
+                              <span>
+                                Kun:{" "}
+                                <span lang="ja" className="font-kanji">
+                                  {current.kunReading}
+                                </span>
+                              </span>
+                            ) : null}
+                          </>
+                        ) : (
+                          "Chưa có On/Kun"
+                        )}
+                      </p>
+                      <div className="mt-2 space-y-1 text-xs font-semibold leading-5 text-sky-50/78">
+                        {radicalLine ? (
+                          <p>
+                            <span className="font-black text-sky-50">Bộ thủ:</span> {radicalLine}
+                          </p>
+                        ) : null}
+                        {componentLine ? (
+                          <p className="line-clamp-2">
+                            <span className="font-black text-sky-50">Cấu tạo:</span> {componentLine}
+                          </p>
+                        ) : null}
+                        {hintLine ? (
+                          <p className="line-clamp-2">
+                            <span className="font-black text-sky-50">Gợi nhớ:</span> {hintLine}
+                          </p>
+                        ) : null}
+                        {!radicalLine && !componentLine && !hintLine ? (
+                          <p className="text-sky-50/55">Chưa có bộ thủ/cấu tạo trong dữ liệu.</p>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 border-t border-sky-100/10 pt-3 lg:border-l lg:border-t-0 lg:pl-3 lg:pt-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-[11px] font-black uppercase tracking-[0.16em] text-sky-100/65">
+                        Từ liên quan
+                      </p>
+                      <span className="rounded-full bg-sky-100/10 px-2 py-0.5 text-[10px] font-black text-sky-50">
+                        {relatedWords.length} từ
+                      </span>
+                    </div>
+                    {relatedWords.length > 0 ? (
+                      <div className="mt-2 max-h-48 space-y-1.5 overflow-y-auto pr-1">
+                        {relatedWords.map((word) => (
+                          <article
+                            key={word.id}
+                            className="rounded-xl border border-sky-100/14 bg-[#465783]/58 px-3 py-2"
+                          >
+                            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                              <span lang="ja" className="font-kanji text-[1.03rem] font-semibold leading-6 text-sky-50 antialiased">
+                                {word.word || word.kanji}
+                              </span>
+                              {word.reading ? (
+                                <span lang="ja" className="font-kanji text-[11px] font-medium leading-5 text-sky-50/68 antialiased">
+                                  {word.reading}
+                                </span>
+                              ) : null}
+                              {word.jlptLevel ? (
+                                <span className="rounded-full bg-sky-100/10 px-1.5 py-0.5 text-[10px] font-black text-sky-50">
+                                  {word.jlptLevel}
+                                </span>
+                              ) : null}
+                            </div>
+                            <p className="line-clamp-1 text-xs font-semibold leading-5 text-sky-50/76">
+                              {word.hanviet ? `${word.hanviet} - ` : ""}
+                              {word.meaning}
+                            </p>
+                          </article>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-xs font-semibold text-sky-50/58">
+                        Chưa có từ liên quan cho Kanji này.
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="rounded-[1.5rem] border border-white/10 bg-white/7 p-4">
-                <div className="flex items-center justify-between gap-3 text-sm font-bold text-sky-50/85">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-sm font-bold text-sky-50/85">
                   <span>
                     {currentIndex + 1} / {orderedItems.length}
                   </span>
+                  {showStrokeGuide ? (
+                    <span className="rounded-full bg-orange-400/18 px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-orange-50">
+                      {strokeGuideLabel}
+                    </span>
+                  ) : null}
                   <span>{strokes.length} nét đã vẽ</span>
                 </div>
                 <div className="mt-3 overflow-hidden rounded-[1.25rem] border border-sky-100/60 bg-white shadow-inner">
@@ -1030,6 +1580,27 @@ export function KanjiWriteFlashcardClient({ items }: Props) {
                     aria-label="Bảng vẽ Kanji"
                   />
                 </div>
+                {data && showStrokeGuide ? (
+                  <div className="mt-3 rounded-2xl border border-orange-200/45 bg-orange-400/12 px-3 py-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-black uppercase tracking-[0.14em] text-orange-50">
+                      <span>{strokeGuideLabel}</span>
+                      <span>
+                        {Math.min(strokes.length, expectedStrokeCount)} / {expectedStrokeCount} nét
+                      </span>
+                    </div>
+                    <div className="mt-2 flex gap-1.5 overflow-hidden" aria-hidden="true">
+                      {data.paths.map((_, index) => {
+                        const segmentClass =
+                          index < strokes.length
+                            ? "bg-emerald-300"
+                            : index === strokes.length
+                              ? "bg-orange-300"
+                              : "bg-white/25";
+                        return <span key={index} className={`h-1.5 min-w-[6px] flex-1 rounded-full ${segmentClass}`} />;
+                      })}
+                    </div>
+                  </div>
+                ) : null}
                 {loadingData ? (
                   <p className="mt-3 text-center text-xs font-bold text-sky-100/80">Đang tải nét KanjiVG...</p>
                 ) : null}
@@ -1042,7 +1613,7 @@ export function KanjiWriteFlashcardClient({ items }: Props) {
             </div>
 
             <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto]">
-              <div className="grid gap-2 sm:grid-cols-3">
+              <div className="grid gap-2 sm:grid-cols-4">
                 <button
                   type="button"
                   onClick={handleCheck}
@@ -1056,10 +1627,21 @@ export function KanjiWriteFlashcardClient({ items }: Props) {
                   type="button"
                   onClick={() => setShowTarget((value) => !value)}
                   disabled={!data}
+                  aria-pressed={showTarget}
                   className="inline-flex items-center justify-center gap-2 rounded-2xl border border-sky-100/60 bg-white/10 px-4 py-3 text-sm font-black text-white transition hover:bg-white/16 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Eye className="h-4 w-4" />
                   {showTarget ? "Ẩn mẫu" : "Hiện mẫu"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowStrokeGuide((value) => !value)}
+                  disabled={!data}
+                  aria-pressed={showStrokeGuide}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-orange-200/55 bg-orange-400/14 px-4 py-3 text-sm font-black text-orange-50 transition hover:bg-orange-400/22 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  {showStrokeGuide ? "Tắt gợi ý" : "Gợi ý nét"}
                 </button>
                 <button
                   type="button"
@@ -1109,7 +1691,13 @@ export function KanjiWriteFlashcardClient({ items }: Props) {
                       <div className="mt-2 flex flex-wrap items-end gap-3">
                         <div>
                           <p className="text-xs font-black uppercase tracking-[0.18em] opacity-70">Đáp án</p>
-                          <p className="text-5xl font-black leading-none">{current.character}</p>
+                          <KanjiVgGlyph
+                            data={data}
+                            character={current.character}
+                            className="mt-1 h-14 w-14"
+                            fallbackClassName="text-5xl font-black leading-none"
+                            strokeWidth={4.8}
+                          />
                         </div>
                         <div className="pb-1 text-sm font-bold leading-6">
                           <p>Nghĩa: {current.meaning}</p>
